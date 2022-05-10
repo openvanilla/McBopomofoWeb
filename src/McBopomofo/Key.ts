@@ -7,6 +7,12 @@ export enum KeyName {
   UNKNOWN,
 }
 
+// Encapsulates the keys accepted by KeyHandler. This class never attempts to
+// represent all key states that a generic input method framework desires to
+// handle. Instead, this class only reflects the keys KeyHandler will handle.
+//
+// This is not always a perfect representation (for example, shift muddles the
+// picture), but is sufficient for KeyHandler's needs.
 export class Key {
   static BACKSPACE: string = "Backspace";
   static RETURN: string = "Enter";
