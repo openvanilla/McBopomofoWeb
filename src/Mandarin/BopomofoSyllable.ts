@@ -1,11 +1,11 @@
 import { BopomofoCharacterMap } from "./BopomofoCharacterMap";
 
-type Component = number;
+export type Component = number;
 
 class PinyinParseHelper {
   static ConsumePrefix(target: string, prefix: string) {
     if (target.length < prefix.length) return false;
-    if (target.substring(0, prefix.length) == prefix) {
+    if (target.substring(0, prefix.length) === prefix) {
       target = target.substring(prefix.length, target.length - prefix.length);
       return true;
     }
@@ -21,7 +21,7 @@ export class BopomofoSyllable {
   }
 
   static FromHanyuPinyin(str: string): BopomofoSyllable {
-    if (str.length == 0) {
+    if (str.length === 0) {
       return new BopomofoSyllable();
     }
     let pinyin: string = str.toLocaleLowerCase();
@@ -186,7 +186,7 @@ export class BopomofoSyllable {
       thirdComponent = BopomofoSyllable.EI;
     } else if (PinyinParseHelper.ConsumePrefix(pinyin, "ung")) {
       // f exception
-      if (firstComponent == BopomofoSyllable.F) {
+      if (firstComponent === BopomofoSyllable.F) {
         thirdComponent = BopomofoSyllable.ENG;
       } else {
         secondComponent = BopomofoSyllable.U;
@@ -194,7 +194,7 @@ export class BopomofoSyllable {
       }
     } else if (PinyinParseHelper.ConsumePrefix(pinyin, "ong")) {
       // f exception
-      if (firstComponent == BopomofoSyllable.F) {
+      if (firstComponent === BopomofoSyllable.F) {
         thirdComponent = BopomofoSyllable.ENG;
       } else {
         secondComponent = BopomofoSyllable.U;
@@ -202,9 +202,9 @@ export class BopomofoSyllable {
       }
     } else if (PinyinParseHelper.ConsumePrefix(pinyin, "un")) {
       if (
-        firstComponent == BopomofoSyllable.J ||
-        firstComponent == BopomofoSyllable.Q ||
-        firstComponent == BopomofoSyllable.X
+        firstComponent === BopomofoSyllable.J ||
+        firstComponent === BopomofoSyllable.Q ||
+        firstComponent === BopomofoSyllable.X
       ) {
         secondComponent = BopomofoSyllable.UE;
       } else {
@@ -236,9 +236,9 @@ export class BopomofoSyllable {
       secondComponent = independentConsonant ? 0 : BopomofoSyllable.I;
     } else if (PinyinParseHelper.ConsumePrefix(pinyin, "u")) {
       if (
-        firstComponent == BopomofoSyllable.J ||
-        firstComponent == BopomofoSyllable.Q ||
-        firstComponent == BopomofoSyllable.X
+        firstComponent === BopomofoSyllable.J ||
+        firstComponent === BopomofoSyllable.Q ||
+        firstComponent === BopomofoSyllable.X
       ) {
         secondComponent = BopomofoSyllable.UE;
       } else {
@@ -408,7 +408,7 @@ export class BopomofoSyllable {
         }
 
         if (
-          (cc == BopomofoSyllable.N || cc == BopomofoSyllable.L) &&
+          (cc === BopomofoSyllable.N || cc === BopomofoSyllable.L) &&
           vc != BopomofoSyllable.E
         ) {
           middle = useVForUUmlaut ? "v" : "ü";
@@ -465,28 +465,28 @@ export class BopomofoSyllable {
 
     // ueng -> ong, but note "weng"
     if (
-      (mvc == BopomofoSyllable.U || mvc == BopomofoSyllable.UE) &&
-      vc == BopomofoSyllable.ENG
+      (mvc === BopomofoSyllable.U || mvc === BopomofoSyllable.UE) &&
+      vc === BopomofoSyllable.ENG
     ) {
       middle = "";
       vowel =
-        cc == BopomofoSyllable.J ||
-        cc == BopomofoSyllable.Q ||
-        cc == BopomofoSyllable.X
+        cc === BopomofoSyllable.J ||
+        cc === BopomofoSyllable.Q ||
+        cc === BopomofoSyllable.X
           ? "iong"
-          : !cc && mvc == BopomofoSyllable.U
+          : !cc && mvc === BopomofoSyllable.U
           ? "eng"
           : "ong";
     }
 
     // ien, uen, üen -> in, un, ün ; but note "wen", "yin" and "yun"
-    if (mvc && vc == BopomofoSyllable.EN) {
+    if (mvc && vc === BopomofoSyllable.EN) {
       if (cc) {
         vowel = "n";
       } else {
-        if (mvc == BopomofoSyllable.UE) {
+        if (mvc === BopomofoSyllable.UE) {
           vowel = "n"; // yun
-        } else if (mvc == BopomofoSyllable.U) {
+        } else if (mvc === BopomofoSyllable.U) {
           vowel = "en"; // wen
         } else {
           vowel = "in"; // yin
@@ -495,19 +495,19 @@ export class BopomofoSyllable {
     }
 
     // iou -> iu
-    if (cc && mvc == BopomofoSyllable.I && vc == BopomofoSyllable.OU) {
+    if (cc && mvc === BopomofoSyllable.I && vc === BopomofoSyllable.OU) {
       middle = "";
       vowel = "iu";
     }
 
     // ieng -> ing
-    if (mvc == BopomofoSyllable.I && vc == BopomofoSyllable.ENG) {
+    if (mvc === BopomofoSyllable.I && vc === BopomofoSyllable.ENG) {
       middle = "";
       vowel = "ing";
     }
 
     // uei -> ui
-    if (cc && mvc == BopomofoSyllable.U && vc == BopomofoSyllable.EI) {
+    if (cc && mvc === BopomofoSyllable.U && vc === BopomofoSyllable.EI) {
       middle = "";
       vowel = "ui";
     }
@@ -621,9 +621,9 @@ export class BopomofoSyllable {
   get belongsToJQXClass(): boolean {
     let consonant = this.syllable_ & BopomofoSyllable.ConsonantMask;
     return (
-      consonant == BopomofoSyllable.J ||
-      consonant == BopomofoSyllable.Q ||
-      consonant == BopomofoSyllable.X
+      consonant === BopomofoSyllable.J ||
+      consonant === BopomofoSyllable.Q ||
+      consonant === BopomofoSyllable.X
     );
   }
 

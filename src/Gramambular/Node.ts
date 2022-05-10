@@ -92,7 +92,7 @@ export class Node {
   }
 
   get highestUnigramScore(): number {
-    return this.unigrams_.length == 0 ? 0.0 : this.unigrams_[0].score;
+    return this.unigrams_.length === 0 ? 0.0 : this.unigrams_[0].score;
   }
 
   get currentKeyValue(): KeyValuePair {

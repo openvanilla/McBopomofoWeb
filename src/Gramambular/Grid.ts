@@ -25,11 +25,11 @@ export class Grid {
     if (location > this.spans_.length) return false;
     let n = this.spans_[location].nodeOfLength(length);
     if (n === undefined) return false;
-    return key == n.key;
+    return key === n.key;
   }
 
   expandGridByOneAtLocation(location: number): void {
-    if (location == 0 || location == this.spans_.length) {
+    if (location === 0 || location === this.spans_.length) {
       this.spans_.splice(location, 0, new Span());
     } else {
       this.spans_.splice(location, 0, new Span());
@@ -108,7 +108,7 @@ export class Grid {
       nodeAnchor.node.resetCandidate();
 
       for (let i = 0, c = candidates.length; i < c; ++i) {
-        if (candidates[i].value == value) {
+        if (candidates[i].value === value) {
           nodeAnchor.node.selectCandidateAtIndex(i);
           node = nodeAnchor;
           break;
@@ -130,7 +130,7 @@ export class Grid {
       nodeAnchor.node.resetCandidate();
 
       for (let i = 0, c = candidates.length; i < c; ++i) {
-        if (candidates[i].value == value) {
+        if (candidates[i].value === value) {
           nodeAnchor.node.selectFloatingCandidateAtIndex(i, overridingScore);
           break;
         }

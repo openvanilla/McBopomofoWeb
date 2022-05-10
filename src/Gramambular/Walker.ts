@@ -15,7 +15,7 @@ export class Walker {
     let paths: NodeAnchor[][] = [];
     let nodes = this.grid_.nodesEndingAt(location);
     nodes.forEach((node) => {
-      if (node.node == undefined) {
+      if (node.node === undefined) {
         return;
       }
       node.accumulatedScore = accumulatedScore + node.node.score;

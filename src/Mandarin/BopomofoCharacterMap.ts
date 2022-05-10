@@ -1,6 +1,4 @@
-import { BopomofoSyllable } from "./BopomofoSyllable";
-
-type Component = number;
+import { BopomofoSyllable, Component } from "./BopomofoSyllable";
 
 export class BopomofoCharacterMap {
   static sharedInstance: BopomofoCharacterMap = new BopomofoCharacterMap();
