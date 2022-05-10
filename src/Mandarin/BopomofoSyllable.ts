@@ -628,7 +628,7 @@ export class BopomofoSyllable {
   }
 
   // zi, ci, si, chi, chi, shi, ri
-  belongsToZCSRClass(): boolean {
+  get belongsToZCSRClass(): boolean {
     let consonant = this.syllable_ & BopomofoSyllable.ConsonantMask;
     return consonant >= BopomofoSyllable.ZH && consonant <= BopomofoSyllable.S;
   }
