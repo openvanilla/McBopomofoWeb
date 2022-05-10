@@ -4,18 +4,18 @@ import { LanguageModel } from "./LanguageModel";
 import { Unigram } from "./Unigram";
 
 export class Node {
-  protected LM_: LanguageModel;
+  private LM_: LanguageModel;
 
-  protected key_: string;
-  protected score_: number = 0.0;
+  private key_: string;
+  private score_: number = 0.0;
 
-  protected unigrams_: Unigram[];
-  protected candidates_: KeyValuePair[] = [];
-  protected valueUnigramIndexMap_: Map<string, number> = new Map();
-  protected preceedingGramBigramMap_: Map<KeyValuePair, Bigram[]> = new Map();
+  private unigrams_: Unigram[];
+  private candidates_: KeyValuePair[] = [];
+  private valueUnigramIndexMap_: Map<string, number> = new Map();
+  private preceedingGramBigramMap_: Map<KeyValuePair, Bigram[]> = new Map();
 
-  protected candidateFixed_: boolean = false;
-  protected selectedUnigramIndex_: number = 0;
+  private candidateFixed_: boolean = false;
+  private selectedUnigramIndex_: number = 0;
 
   constructor(key: string, unigrams: Unigram[], bigrams: Bigram[]) {
     this.key_ = key;

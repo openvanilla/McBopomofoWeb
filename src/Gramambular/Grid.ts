@@ -3,7 +3,7 @@ import { Node } from "./Node";
 import { NodeAnchor } from "./NodeAnchor";
 
 export class Grid {
-  protected spans_: Span[] = [];
+  private spans_: Span[] = [];
 
   clear = () => (this.spans_ = []);
 
@@ -37,6 +37,18 @@ export class Grid {
         this.spans_[i].removeNodeOfLengthGreaterThan(location - i);
       }
     }
+  }
+
+  shrinkGridByOneAtLocation(location: number): void {
+    if (location >= this.spans_.length) return;
+    delete this.spans_[location];
+    for (let i = 0; i < location; i++) {
+      this.spans_[i].removeNodeOfLengthGreaterThan(location - i);
+    }
+  }
+
+  get width(): number {
+    return this.spans_.length;
   }
 
   nodesEndingAt(location: number): NodeAnchor[] {

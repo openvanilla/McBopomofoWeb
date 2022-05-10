@@ -15,14 +15,14 @@ export class Bigram {
     this.score = score;
   }
 
-  toString(): string {
+  protected toString(): string {
     return (
       "(" + this.keyValue.toString() + "|" + this.preceedingKeyValue.toString(),
       "," + this.score + ")"
     );
   }
 
-  equals(another: Bigram): boolean {
+  protected equals(another: Bigram): boolean {
     return (
       this.preceedingKeyValue.equals(another.preceedingKeyValue) &&
       this.keyValue.equals(another.keyValue) &&
@@ -30,7 +30,7 @@ export class Bigram {
     );
   }
 
-  isGreaterThan(another: Bigram): boolean {
+  protected isGreaterThan(another: Bigram): boolean {
     if (this.preceedingKeyValue.isGreaterThan(another.preceedingKeyValue)) {
       return true;
     } else if (this.preceedingKeyValue.equals(another.preceedingKeyValue)) {
@@ -43,7 +43,7 @@ export class Bigram {
     return false;
   }
 
-  isLessThan(another: Bigram): boolean {
+  protected isLessThan(another: Bigram): boolean {
     if (this.preceedingKeyValue.isLessThan(another.preceedingKeyValue)) {
       return true;
     } else if (this.preceedingKeyValue.equals(another.preceedingKeyValue)) {
