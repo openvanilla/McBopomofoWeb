@@ -1,9 +1,9 @@
 import { KeyValuePair } from "./KeyValuePair";
 
 export class Bigram {
-  public preceedingKeyValue: KeyValuePair;
-  public keyValue: KeyValuePair;
-  public score: number;
+  preceedingKeyValue: KeyValuePair;
+  keyValue: KeyValuePair;
+  score: number;
 
   constructor(
     keyValue: KeyValuePair,

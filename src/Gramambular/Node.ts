@@ -33,25 +33,27 @@ export class Node {
       this.candidates_.push(unigram.keyValue);
     }
 
-    for (let i = 0; i < bigrams.length; i++) {
-      let bigram = bigrams[i];
+    bigrams.forEach((bigram) => {
       let list: Bigram[] = this.preceedingGramBigramMap_.get(
         bigram.preceedingKeyValue
       );
 
-      if (list === undefined) {
-        list = [];
-      }
+      if (list === undefined) list = [];
+
       list.push(bigram);
       this.preceedingGramBigramMap_.set(bigram.preceedingKeyValue, list);
-    }
+    });
   }
 
-  isCandidateFixed = (): boolean => this.candidateFixed_;
+  get isCandidateFixed(): boolean {
+    return this.candidateFixed_;
+  }
 
-  candidates = (): KeyValuePair[] => this.candidates_;
+  get candidates(): KeyValuePair[] {
+    return this.candidates_;
+  }
 
-  selectCandidateAtIndex(index: number, fix: boolean): void {
+  selectCandidateAtIndex(index: number, fix: boolean = false): void {
     if (index >= this.unigrams_.length) {
       this.selectedUnigramIndex_ = 0;
     } else {
@@ -81,18 +83,22 @@ export class Node {
     this.score_ = score;
   }
 
-  key = (): string => this.key_;
+  get key(): string {
+    return this.key_;
+  }
 
-  score = (): number => this.score_;
+  get score(): number {
+    return this.score_;
+  }
 
-  highestUnigramScore = (): number =>
-    this.unigrams_.length == 0 ? 0.0 : this.unigrams_[0].score;
+  get highestUnigramScore(): number {
+    return this.unigrams_.length == 0 ? 0.0 : this.unigrams_[0].score;
+  }
 
-  currentKeyValue() {
+  get currentKeyValue(): KeyValuePair {
     if (this.selectedUnigramIndex_ >= this.unigrams_.length) {
       return new KeyValuePair();
-    } else {
-      return this.candidates_[this.selectedUnigramIndex_];
     }
+    return this.candidates_[this.selectedUnigramIndex_];
   }
 }
