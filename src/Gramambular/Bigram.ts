@@ -6,8 +6,8 @@ export class Bigram {
   score: number;
 
   constructor(
-    keyValue: KeyValuePair,
-    preceedingKeyValue: KeyValuePair,
+    keyValue: KeyValuePair = new KeyValuePair("", ""),
+    preceedingKeyValue: KeyValuePair = new KeyValuePair("", ""),
     score: number = 0
   ) {
     this.keyValue = keyValue;
