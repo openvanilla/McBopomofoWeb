@@ -90,6 +90,24 @@ export class KeyHandler {
     this.builder_ = new BlockReadingBuilder(this.languageModel_);
   }
 
+  candidateSelected(
+    candidate: string,
+    stateCallback: (InputState) => void
+  ): void {
+    this.pinNode(candidate);
+    stateCallback(this.buildInputtingState());
+  }
+
+  candidatePanelCancelled(stateCallback: (InputState) => void): void {
+    stateCallback(this.buildInputtingState());
+  }
+
+  reset(): void {
+    this.reading_.clear();
+    this.builder_.clear();
+    this.walkedNodes_ = [];
+  }
+
   getComposedString(builderCursor: number): ComposedString {
     // To construct an Inputting state, we need to first retrieve the entire
     // composing buffer from the current grid, then split the composed string into
