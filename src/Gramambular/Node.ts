@@ -91,6 +91,15 @@ export class Node {
     return this.score_;
   }
 
+  scoreForCandidate(candidate: string): number {
+    for (let unigram of this.unigrams_) {
+      if (unigram.keyValue.value == candidate) {
+        return unigram.score;
+      }
+    }
+    return 0.0;
+  }
+
   get highestUnigramScore(): number {
     return this.unigrams_.length === 0 ? 0.0 : this.unigrams_[0].score;
   }

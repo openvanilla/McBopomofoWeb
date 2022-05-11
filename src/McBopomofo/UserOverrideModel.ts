@@ -116,7 +116,7 @@ function WalkedNodesToKey(
   return s;
 }
 
-class UserOverrideModel {
+export class UserOverrideModel {
   constructor(capacity: number, decayConstant: number) {
     this.capacity_ = capacity;
     this.decayExponent_ = Math.log(0.5) / decayConstant;
