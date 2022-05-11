@@ -6,8 +6,16 @@ import {
 } from "../Gramambular";
 import { BopomofoKeyboardLayout, BopomofoReadingBuffer } from "../Mandarin";
 import { UserOverrideModel } from "./UserOverrideModel";
-import { ChoosingCandidate, Inputting, NotEmpty } from "./InputState";
+import {
+  ChoosingCandidate,
+  EmptyIgnoringPrevious,
+  InputState,
+  Inputting,
+  Marking,
+  NotEmpty,
+} from "./InputState";
 import * as _ from "lodash";
+import { Key, KeyName } from "./Key";
 
 export class ComposedString {
   head: string = "";
@@ -23,6 +31,10 @@ export class ComposedString {
 
 const kComposingBufferSize: number = 10;
 const kNoOverrideThreshold: number = -8.0;
+const kJoinSeparator = "-";
+
+const kMinValidMarkingReadingCount = 2;
+const kMaxValidMarkingReadingCount = 6;
 
 export class KeyHandler {
   private selectPhraseAfterCursorAsCandidate_: boolean = false;
@@ -152,6 +164,142 @@ export class KeyHandler {
     return new ComposedString(head, tail, tooltip);
   }
 
+  handleCursorKeys(
+    key: Key,
+    state: InputState,
+    stateCallback: (state: InputState) => void,
+    errorCallback: () => void
+  ): boolean {
+    if (
+      state instanceof Inputting == false &&
+      state instanceof Marking == false
+    ) {
+      return false;
+    }
+
+    let markBeginCursorIndex = this.builder_.cursorIndex;
+    if (state instanceof Marking) {
+      markBeginCursorIndex = (state as Marking).markStartGridCursorIndex;
+    }
+
+    if (!this.reading_.isEmpty) {
+      errorCallback();
+      stateCallback(this.buildInputtingState());
+      return true;
+    }
+
+    let isValidMove = false;
+    switch (key.name) {
+      case KeyName.LEFT:
+        if (this.builder_.cursorIndex > 0) {
+          this.builder_.cursorIndex -= 1;
+          isValidMove = true;
+        }
+        break;
+      case KeyName.RIGHT:
+        if (this.builder_.cursorIndex < this.builder_.length) {
+          this.builder_.cursorIndex += 1;
+          isValidMove = true;
+        }
+        break;
+      case KeyName.HOME:
+        this.builder_.cursorIndex = 0;
+        isValidMove = true;
+        break;
+      case KeyName.END:
+        this.builder_.cursorIndex = this.builder_.length;
+        isValidMove = true;
+        break;
+      default:
+        // Ignored.
+        break;
+    }
+
+    if (!isValidMove) {
+      errorCallback();
+    }
+
+    if (key.shiftPressed && this.builder_.cursorIndex != markBeginCursorIndex) {
+      stateCallback(this.buildMarkingState(markBeginCursorIndex));
+    } else {
+      stateCallback(this.buildInputtingState());
+    }
+    return true;
+  }
+
+  handleDeleteKeys(
+    key: Key,
+    state: InputState,
+    stateCallback: (state: InputState) => void,
+    errorCallback: () => void
+  ): boolean {
+    if (state instanceof NotEmpty == false) {
+      return false;
+    }
+
+    if (this.reading_.hasToneMarkerOnly) {
+      this.reading_.clear();
+    } else if (this.reading_.isEmpty) {
+      let isValidDelete = false;
+
+      if (key.ascii == Key.BACKSPACE && this.builder_.cursorIndex > 0) {
+        this.builder_.deleteReadingBeforeCursor();
+        isValidDelete = true;
+      } else if (
+        key.ascii == Key.DELETE &&
+        this.builder_.cursorIndex < this.builder_.length
+      ) {
+        this.builder_.deleteReadingAfterCursor();
+        isValidDelete = true;
+      }
+      if (!isValidDelete) {
+        errorCallback();
+        stateCallback(this.buildInputtingState());
+        return true;
+      }
+      this.walk();
+    } else {
+      if (key.ascii == Key.BACKSPACE) {
+        this.reading_.backspace();
+      } else {
+        // Del not supported when bopomofo reading is active.
+        errorCallback();
+      }
+    }
+
+    if (this.reading_.isEmpty && this.builder_.length == 0) {
+      // Cancel the previous input state if everything is empty now.
+      stateCallback(new EmptyIgnoringPrevious());
+    } else {
+      stateCallback(this.buildInputtingState());
+    }
+    return true;
+  }
+
+  handlePunctuation(
+    punctuationUnigramKey: string,
+    stateCallback: (state: InputState) => void,
+    errorCallback: () => void
+  ): boolean {
+    if (!this.languageModel_.hasUnigramsForKey(punctuationUnigramKey)) {
+      return false;
+    }
+
+    if (!this.reading_.isEmpty) {
+      errorCallback();
+      stateCallback(this.buildInputtingState());
+      return true;
+    }
+
+    this.builder_.insertReadingAtCursor(punctuationUnigramKey);
+    let evictedText = this.popEvictedTextAndWalk();
+
+    let inputtingState = this.buildInputtingState();
+    inputtingState.evictedText = evictedText;
+    stateCallback(inputtingState);
+    return true;
+  }
+
   buildChoosingCandidateState(nonEmptyState: NotEmpty): ChoosingCandidate {
     let anchoredNodes = this.builder_.grid.nodesCrossingOrEndingAt(
       this.actualCandidateCursorIndex
@@ -188,6 +336,61 @@ export class KeyHandler {
     let composingBuffer = head + reading + tail;
     let cursorIndex = head.length + reading.length;
     return new Inputting(composingBuffer, cursorIndex, composedString.tooltip);
+  }
+
+  buildMarkingState(beginCursorIndex: number): Marking {
+    // We simply build two composed strings and use the delta between the shorter
+    // and the longer one as the marked text.
+    let from = this.getComposedString(beginCursorIndex);
+    let to = this.getComposedString(this.builder_.cursorIndex);
+    let composedStringCursorIndex = to.head.length;
+    let composed = to.head + to.tail;
+    let fromIndex = beginCursorIndex;
+    let toIndex = this.builder_.cursorIndex;
+
+    if (beginCursorIndex > this.builder_.cursorIndex) {
+      [from, to] = [to, from];
+      [fromIndex, toIndex] = [toIndex, fromIndex];
+    }
+
+    // Now from is shorter and to is longer. The marked text is just the delta.
+    let head = from.head;
+    let marked = to.head.substring(from.head.length);
+    let tail = to.tail;
+
+    // Collect the readings.
+    let readings = this.builder_.readings.slice(fromIndex, toIndex);
+
+    let readingUiText = _.join(readings, " "); // What the user sees.
+    let readingValue = _.join(readings, "-"); // What is used for adding a user phrase.
+
+    let isValid = false;
+    let status = "";
+    // Validate the marking.
+    if (readings.length < kMinValidMarkingReadingCount) {
+      status = kMinValidMarkingReadingCount + " syllables required.";
+    } else if (readings.length > kMaxValidMarkingReadingCount) {
+      status = kMaxValidMarkingReadingCount + " syllables maximum.";
+      // } else if (MarkedPhraseExists(languageModel_.get(), readingValue, marked)) {
+      //   status = localizedStrings_->phraseAlreadyExists();
+    } else {
+      status = "press Enter to add the phrase.";
+      isValid = true;
+    }
+
+    let tooltip = "Marked: " + marked + ", syllables: " + readingUiText + ", ";
+
+    return new Marking(
+      composed,
+      composedStringCursorIndex,
+      tooltip,
+      beginCursorIndex,
+      head,
+      marked,
+      tail,
+      readingValue,
+      isValid
+    );
   }
 
   get actualCandidateCursorIndex(): number {
