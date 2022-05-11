@@ -6,10 +6,18 @@ import {
 } from "../Gramambular";
 import { BopomofoKeyboardLayout, BopomofoReadingBuffer } from "../Mandarin";
 import { UserOverrideModel } from "./UserOverrideModel";
+import * as _ from "lodash";
+
 export class ComposedString {
   head: string = "";
   tail: string = "";
   tooltip: string = "";
+
+  constructor(head: string, tail: string, tooltip: string) {
+    this.head = head;
+    this.tail = tail;
+    this.tooltip = tooltip;
+  }
 }
 
 const kComposingBufferSize: number = 10;
@@ -67,6 +75,80 @@ export class KeyHandler {
       BopomofoKeyboardLayout.StandardLayout
     );
     this.builder_ = new BlockReadingBuilder(this.languageModel_);
+  }
+
+  getComposedString(builderCursor: number): ComposedString {
+    // To construct an Inputting state, we need to first retrieve the entire
+    // composing buffer from the current grid, then split the composed string into
+    // head and tail, so that we can insert the current reading (if not-empty)
+    // between them.
+    //
+    // We'll also need to compute the UTF-8 cursor index. The idea here is we use
+    // a "running" index that will eventually catch the cursor index in the
+    // builder. The tricky part is that if the spanning length of the node that
+    // the cursor is at does not agree with the actual codepoint count of the
+    // node's value, we'll need to move the cursor at the end of the node to avoid
+    // confusions.
+
+    let runningCursor: number = 0; // spanning-length-based, like the builder cursor
+    let composed: string = "";
+    let composedCursor: number = 0; // UTF-8 (so "byte") cursor per fcitx5 requirement.
+
+    let tooltip = "";
+
+    for (let anchor of this.walkedNodes_) {
+      let node = anchor.node;
+      if (node == undefined) {
+        continue;
+      }
+      let value = node.currentKeyValue.value;
+      composed += value;
+
+      // No work if runningCursor has already caught up with builderCursor.
+      if (runningCursor === builderCursor) {
+        continue;
+      }
+      let spanningLength = anchor.spanningLength;
+      // Simple case: if the running cursor is behind, add the spanning length.
+      if (runningCursor + spanningLength <= builderCursor) {
+        composedCursor += value.length;
+        runningCursor += spanningLength;
+        continue;
+      }
+
+      let distance = builderCursor - runningCursor;
+      let u32Value = _.toArray(value);
+      let cpLen = Math.min(distance, u32Value.length);
+      let actualString = _.join(u32Value.slice(0, cpLen), "");
+      composedCursor += actualString.length;
+      runningCursor += distance;
+
+      // Create a tooltip to warn the user that their cursor is between two
+      // readings (syllables) even if the cursor is not in the middle of a
+      // composed string due to its being shorter than the number of readings.
+      if (actualString.length < spanningLength) {
+        // builderCursor is guaranteed to be > 0. If it was 0, we wouldn't even
+        // reach here due to runningCursor having already "caught up" with
+        // builderCursor. It is also guaranteed to be less than the size of the
+        // builder's readings for the same reason: runningCursor would have
+        // already caught up.
+        let prevReading = this.builder_.readings[builderCursor - 1];
+        let nextReading = this.builder_.readings[builderCursor];
+        tooltip =
+          "Cursor is between syllables " +
+          prevReading +
+          " and " +
+          nextReading +
+          ".";
+      }
+    }
+
+    let head = composed.substr(0, composedCursor);
+    let tail = composed.substr(
+      composedCursor,
+      composed.length - composedCursor
+    );
+    return new ComposedString(head, tail, tooltip);
   }
 
   get actualCandidateCursorIndex(): number {
