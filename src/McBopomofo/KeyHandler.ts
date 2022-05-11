@@ -8,6 +8,7 @@ import { BopomofoKeyboardLayout, BopomofoReadingBuffer } from "../Mandarin";
 import { UserOverrideModel } from "./UserOverrideModel";
 import {
   ChoosingCandidate,
+  Committing,
   EmptyIgnoringPrevious,
   InputState,
   Inputting,
@@ -29,14 +30,48 @@ export class ComposedString {
   }
 }
 
-const kComposingBufferSize: number = 10;
-const kNoOverrideThreshold: number = -8.0;
-const kJoinSeparator = "-";
+const kPunctuationListKey = "`"; // Hit the key to bring up the list.
+const kPunctuationListUnigramKey = "_punctuation_list";
+const kPunctuationKeyPrefix = "_punctuation_";
+const kCtrlPunctuationKeyPrefix = "_ctrl_punctuation_";
+const kLetterPrefix = "_letter_";
 
 const kMinValidMarkingReadingCount = 2;
 const kMaxValidMarkingReadingCount = 6;
 
-export class KeyHandler {
+const kComposingBufferSize: number = 10;
+// Unigram whose score is below this shouldn't be put into user override model.
+const kNoOverrideThreshold: number = -8.0;
+const kEpsilon = 0.000001;
+const kJoinSeparator = "-";
+
+function GetKeyboardLayoutName(layout: BopomofoKeyboardLayout): string {
+  if (layout == BopomofoKeyboardLayout.ETenLayout) {
+    return "ETen";
+  } else if (layout == BopomofoKeyboardLayout.HsuLayout) {
+    return "Hsu";
+  } else if (layout == BopomofoKeyboardLayout.ETen26Layout) {
+    return "ETen26";
+  } else if (layout == BopomofoKeyboardLayout.HanyuPinyinLayout) {
+    return "HanyuPinyin";
+  } else if (layout == BopomofoKeyboardLayout.IBMLayout) {
+    return "IBM";
+  }
+  return "Standard";
+}
+
+function FindHighestScore(nodeAnchors: NodeAnchor[], epsilon: number): number {
+  let highestScore = 0.0;
+  for (let anchor of nodeAnchors) {
+    let score = anchor.node.highestUnigramScore;
+    if (score > highestScore) {
+      highestScore = score;
+    }
+  }
+  return highestScore + epsilon;
+}
+
+export default class KeyHandler {
   private selectPhraseAfterCursorAsCandidate_: boolean = false;
   public get selectPhraseAfterCursorAsCandidate(): boolean {
     return this.selectPhraseAfterCursorAsCandidate_;
@@ -53,13 +88,13 @@ export class KeyHandler {
     this.moveCursorAfterSelection_ = value;
   }
 
-  // private putLowercaseLettersToComposingBuffer_: boolean = false;
-  // public get putLowercaseLettersToComposingBuffer(): boolean {
-  //   return this.putLowercaseLettersToComposingBuffer_;
-  // }
-  // public set putLowercaseLettersToComposingBuffer(value: boolean) {
-  //   this.putLowercaseLettersToComposingBuffer_ = value;
-  // }
+  private putLowercaseLettersToComposingBuffer_: boolean = false;
+  public get putLowercaseLettersToComposingBuffer(): boolean {
+    return this.putLowercaseLettersToComposingBuffer_;
+  }
+  public set putLowercaseLettersToComposingBuffer(value: boolean) {
+    this.putLowercaseLettersToComposingBuffer_ = value;
+  }
 
   private escKeyClearsEntireComposingBuffer_: boolean = false;
   public get escKeyClearsEntireComposingBuffer(): boolean {
@@ -88,6 +123,279 @@ export class KeyHandler {
       BopomofoKeyboardLayout.StandardLayout
     );
     this.builder_ = new BlockReadingBuilder(this.languageModel_);
+    this.builder_.joinSeparator = kJoinSeparator;
+  }
+
+  handle(
+    key: Key,
+    state: InputState,
+    stateCallback: (state: InputState) => void,
+    errorCallback: () => void
+  ): boolean {
+    // From Key's definition, if shiftPressed is true, it can't be a simple key
+    // that can be represented by ASCII.
+    let simpleAscii = key.ctrlPressed || key.shiftPressed ? "" : key.ascii;
+
+    // See if it's valid BPMF reading.
+    let keyConsumedByReading = false;
+    if (this.reading_.isValidKey(simpleAscii)) {
+      this.reading_.combineKey(simpleAscii);
+      keyConsumedByReading = true;
+      // If asciiChar does not lead to a tone marker, we are done. Tone marker
+      // would lead to composing of the reading, which is handled after this.
+      if (!this.reading_.hasToneMarker) {
+        stateCallback(this.buildInputtingState());
+        return true;
+      }
+    }
+
+    // Compose the reading if either there's a tone marker, or if the reading is
+    // not empty, and space is pressed.
+    let shouldComposeReading =
+      (this.reading_.hasToneMarker && !this.reading_.hasToneMarkerOnly) ||
+      (!this.reading_.isEmpty && simpleAscii == Key.SPACE);
+
+    if (shouldComposeReading) {
+      let syllable = this.reading_.syllable.composedString;
+      this.reading_.clear();
+
+      if (!this.languageModel_.hasUnigramsForKey(syllable)) {
+        errorCallback();
+        if (!this.builder_.length) {
+          stateCallback(new EmptyIgnoringPrevious());
+        } else {
+          stateCallback(this.buildInputtingState());
+        }
+        return true;
+      }
+
+      this.builder_.insertReadingAtCursor(syllable);
+      let evictedText = this.popEvictedTextAndWalk();
+
+      let overrideValue = this.userOverrideModel_.suggest(
+        this.walkedNodes_,
+        this.builder_.cursorIndex,
+        new Date().getTime()
+      );
+      if (overrideValue.length != 0) {
+        let cursorIndex = this.actualCandidateCursorIndex;
+        let nodes = this.builder_.grid.nodesCrossingOrEndingAt(cursorIndex);
+        let highestScore = FindHighestScore(nodes, kEpsilon);
+        this.builder_.grid.overrideNodeScoreForSelectedCandidate(
+          cursorIndex,
+          overrideValue,
+          highestScore
+        );
+      }
+
+      let inputtingState = this.buildInputtingState();
+      inputtingState.evictedText = evictedText;
+      stateCallback(inputtingState);
+      return true;
+    }
+
+    // The only possibility for this to be true is that the Bopomofo reading
+    // already has a tone marker but the last key is *not* a tone marker key. An
+    // example is the sequence "6u" with the Standard layout, which produces "ㄧˊ"
+    // but does not compose. Only sequences such as "u6", "6u6", "6u3", or "6u "
+    // would compose.
+    if (keyConsumedByReading) {
+      stateCallback(this.buildInputtingState());
+      return true;
+    }
+
+    // Shift + Space.
+    if (key.ascii == Key.SPACE && key.shiftPressed) {
+      if (this.putLowercaseLettersToComposingBuffer_) {
+        this.builder_.insertReadingAtCursor(" ");
+        let evictedText = this.popEvictedTextAndWalk();
+        let inputtingState = this.buildInputtingState();
+        inputtingState.evictedText = evictedText;
+        stateCallback(inputtingState);
+      } else {
+        if (this.builder_.length) {
+          let inputtingState = this.buildInputtingState();
+          // Steal the composingBuffer built by the inputting state.
+          let committingState = new Committing(inputtingState.composingBuffer);
+          stateCallback(committingState);
+        }
+        let committingState = new Committing(" ");
+        stateCallback(committingState);
+        this.reset();
+      }
+      return true;
+    }
+
+    // Space hit: see if we should enter the candidate choosing state.
+    let maybeNotEmptyState = state as NotEmpty;
+
+    if (
+      simpleAscii == Key.SPACE &&
+      maybeNotEmptyState instanceof NotEmpty &&
+      this.reading_.isEmpty
+    ) {
+      stateCallback(this.buildChoosingCandidateState(maybeNotEmptyState));
+      return true;
+    }
+
+    // Esc hit.
+    if (simpleAscii == Key.ESC) {
+      if (maybeNotEmptyState instanceof NotEmpty == false) {
+        return false;
+      }
+
+      if (this.escKeyClearsEntireComposingBuffer_) {
+        this.reset();
+        stateCallback(new EmptyIgnoringPrevious());
+        return true;
+      }
+
+      if (!this.reading_.isEmpty) {
+        this.reading_.clear();
+        if (!this.builder_.length) {
+          stateCallback(new EmptyIgnoringPrevious());
+        } else {
+          stateCallback(this.buildInputtingState());
+        }
+      } else {
+        stateCallback(this.buildInputtingState());
+      }
+      return true;
+    }
+
+    // Cursor keys.
+    if (key.isCursorKeys) {
+      return this.handleCursorKeys(key, state, stateCallback, errorCallback);
+    }
+
+    // Backspace and Del.
+    if (key.isDeleteKeys) {
+      return this.handleDeleteKeys(key, state, stateCallback, errorCallback);
+    }
+
+    // Enter.
+    if (key.ascii == Key.RETURN) {
+      if (maybeNotEmptyState instanceof NotEmpty == false) {
+        return false;
+      }
+
+      if (!this.reading_.isEmpty) {
+        errorCallback();
+        stateCallback(this.buildInputtingState());
+        return true;
+      }
+
+      // See if we are in Marking state, and, if a valid mark, accept it.
+      if (state instanceof Marking) {
+        let marking = state as Marking;
+        if (marking.acceptable) {
+          // TODO: Add phrase here.
+          // this.userPhraseAdder_.addUserPhrase(marking.reading, marking.markedText);
+          // onAddNewPhrase_(marking.markedText);
+          stateCallback(this.buildInputtingState());
+        } else {
+          errorCallback();
+          stateCallback(
+            this.buildMarkingState(marking.markStartGridCursorIndex)
+          );
+        }
+        return true;
+      }
+
+      let inputtingState = this.buildInputtingState();
+      // Steal the composingBuffer built by the inputting state.
+      let committingState = new Committing(inputtingState.composingBuffer);
+      stateCallback(committingState);
+      this.reset();
+      return true;
+    }
+
+    // Punctuation key: backtick or grave accent.
+    if (
+      simpleAscii == kPunctuationListKey &&
+      this.languageModel_.hasUnigramsForKey(kPunctuationListUnigramKey)
+    ) {
+      if (this.reading_.isEmpty) {
+        this.builder_.insertReadingAtCursor(kPunctuationListUnigramKey);
+
+        let evictedText = this.popEvictedTextAndWalk();
+
+        let inputtingState = this.buildInputtingState();
+        inputtingState.evictedText = evictedText;
+        let choosingCandidateState =
+          this.buildChoosingCandidateState(inputtingState);
+        stateCallback(inputtingState);
+        stateCallback(choosingCandidateState);
+      } else {
+        // Punctuation ignored if a bopomofo reading is active..
+        errorCallback();
+      }
+      return true;
+    }
+
+    if (key.ascii != "") {
+      let chrStr = key.ascii;
+      let unigram = "";
+      if (key.ctrlPressed) {
+        unigram = kCtrlPunctuationKeyPrefix + chrStr;
+        if (this.handlePunctuation(unigram, stateCallback, errorCallback)) {
+          return true;
+        }
+        return false;
+      }
+
+      // Bopomofo layout-specific punctuation handling.
+      unigram =
+        kPunctuationKeyPrefix +
+        GetKeyboardLayoutName(this.reading_.keyboardLayout) +
+        "_" +
+        chrStr;
+      if (this.handlePunctuation(unigram, stateCallback, errorCallback)) {
+        return true;
+      }
+
+      // Not handled, try generic punctuations.
+      unigram = kPunctuationKeyPrefix + chrStr;
+      if (this.handlePunctuation(unigram, stateCallback, errorCallback)) {
+        return true;
+      }
+
+      // Upper case letters.
+      if (simpleAscii >= "A" && simpleAscii <= "Z") {
+        if (this.putLowercaseLettersToComposingBuffer_) {
+          unigram = kLetterPrefix + chrStr;
+
+          // Ignore return value, since we always return true below.
+          this.handlePunctuation(unigram, stateCallback, errorCallback);
+        } else {
+          // If current state is *not* NonEmpty, it must be Empty.
+          if (maybeNotEmptyState instanceof NotEmpty == false) {
+            // We don't need to handle this key.
+            return false;
+          }
+
+          // First, commit what's already in the composing buffer.
+          let inputtingState = this.buildInputtingState();
+          // Steal the composingBuffer built by the inputting state.
+          let committingState = new Committing(inputtingState.composingBuffer);
+          stateCallback(committingState);
+
+          // Then we commit that single character.
+          stateCallback(new Committing(chrStr));
+          this.reset();
+        }
+        return true;
+      }
+    }
+
+    // No key is handled. Refresh and consume the key.
+    if (maybeNotEmptyState instanceof NotEmpty) {
+      errorCallback();
+      stateCallback(this.buildInputtingState());
+      return true;
+    }
+
+    return false;
   }
 
   candidateSelected(
@@ -390,7 +698,7 @@ export class KeyHandler {
     } else if (readings.length > kMaxValidMarkingReadingCount) {
       status = kMaxValidMarkingReadingCount + " syllables maximum.";
       // } else if (MarkedPhraseExists(languageModel_.get(), readingValue, marked)) {
-      //   status = localizedStrings_->phraseAlreadyExists();
+      //   status = localizedStrings_.phraseAlreadyExists();
     } else {
       status = "press Enter to add the phrase.";
       isValid = true;
