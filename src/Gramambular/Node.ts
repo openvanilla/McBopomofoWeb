@@ -93,7 +93,7 @@ export class Node {
 
   scoreForCandidate(candidate: string): number {
     for (let unigram of this.unigrams_) {
-      if (unigram.keyValue.value == candidate) {
+      if (unigram.keyValue.value === candidate) {
         return unigram.score;
       }
     }

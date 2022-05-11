@@ -48,14 +48,14 @@ function Score(
 
 function IsEndingPunctuation(value: string): boolean {
   return (
-    value == "，" ||
-    value == "。" ||
-    value == "！" ||
-    value == "？" ||
-    value == "」" ||
-    value == "』" ||
-    value == "”" ||
-    value == "”"
+    value === "，" ||
+    value === "。" ||
+    value === "！" ||
+    value === "？" ||
+    value === "」" ||
+    value === "』" ||
+    value === "”" ||
+    value === "”"
   );
 }
 
@@ -76,7 +76,7 @@ function WalkedNodesToKey(
     }
   }
 
-  if (n.length == 0) {
+  if (n.length === 0) {
     return "";
   }
 

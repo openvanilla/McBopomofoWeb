@@ -46,15 +46,15 @@ const kEpsilon = 0.000001;
 const kJoinSeparator = "-";
 
 function GetKeyboardLayoutName(layout: BopomofoKeyboardLayout): string {
-  if (layout == BopomofoKeyboardLayout.ETenLayout) {
+  if (layout === BopomofoKeyboardLayout.ETenLayout) {
     return "ETen";
-  } else if (layout == BopomofoKeyboardLayout.HsuLayout) {
+  } else if (layout === BopomofoKeyboardLayout.HsuLayout) {
     return "Hsu";
-  } else if (layout == BopomofoKeyboardLayout.ETen26Layout) {
+  } else if (layout === BopomofoKeyboardLayout.ETen26Layout) {
     return "ETen26";
-  } else if (layout == BopomofoKeyboardLayout.HanyuPinyinLayout) {
+  } else if (layout === BopomofoKeyboardLayout.HanyuPinyinLayout) {
     return "HanyuPinyin";
-  } else if (layout == BopomofoKeyboardLayout.IBMLayout) {
+  } else if (layout === BopomofoKeyboardLayout.IBMLayout) {
     return "IBM";
   }
   return "Standard";
@@ -153,7 +153,7 @@ export default class KeyHandler {
     // not empty, and space is pressed.
     let shouldComposeReading =
       (this.reading_.hasToneMarker && !this.reading_.hasToneMarkerOnly) ||
-      (!this.reading_.isEmpty && simpleAscii == Key.SPACE);
+      (!this.reading_.isEmpty && simpleAscii === Key.SPACE);
 
     if (shouldComposeReading) {
       let syllable = this.reading_.syllable.composedString;
@@ -205,7 +205,7 @@ export default class KeyHandler {
     }
 
     // Shift + Space.
-    if (key.ascii == Key.SPACE && key.shiftPressed) {
+    if (key.ascii === Key.SPACE && key.shiftPressed) {
       if (this.putLowercaseLettersToComposingBuffer_) {
         this.builder_.insertReadingAtCursor(" ");
         let evictedText = this.popEvictedTextAndWalk();
@@ -230,7 +230,7 @@ export default class KeyHandler {
     let maybeNotEmptyState = state as NotEmpty;
 
     if (
-      simpleAscii == Key.SPACE &&
+      simpleAscii === Key.SPACE &&
       maybeNotEmptyState instanceof NotEmpty &&
       this.reading_.isEmpty
     ) {
@@ -239,8 +239,8 @@ export default class KeyHandler {
     }
 
     // Esc hit.
-    if (simpleAscii == Key.ESC) {
-      if (maybeNotEmptyState instanceof NotEmpty == false) {
+    if (simpleAscii === Key.ESC) {
+      if (maybeNotEmptyState instanceof NotEmpty === false) {
         return false;
       }
 
@@ -274,8 +274,8 @@ export default class KeyHandler {
     }
 
     // Enter.
-    if (key.ascii == Key.RETURN) {
-      if (maybeNotEmptyState instanceof NotEmpty == false) {
+    if (key.ascii === Key.RETURN) {
+      if (maybeNotEmptyState instanceof NotEmpty === false) {
         return false;
       }
 
@@ -312,7 +312,7 @@ export default class KeyHandler {
 
     // Punctuation key: backtick or grave accent.
     if (
-      simpleAscii == kPunctuationListKey &&
+      simpleAscii === kPunctuationListKey &&
       this.languageModel_.hasUnigramsForKey(kPunctuationListUnigramKey)
     ) {
       if (this.reading_.isEmpty) {
@@ -369,7 +369,7 @@ export default class KeyHandler {
           this.handlePunctuation(unigram, stateCallback, errorCallback);
         } else {
           // If current state is *not* NonEmpty, it must be Empty.
-          if (maybeNotEmptyState instanceof NotEmpty == false) {
+          if (maybeNotEmptyState instanceof NotEmpty === false) {
             // We don't need to handle this key.
             return false;
           }
@@ -437,7 +437,7 @@ export default class KeyHandler {
 
     for (let anchor of this.walkedNodes_) {
       let node = anchor.node;
-      if (node == undefined) {
+      if (node === undefined) {
         continue;
       }
       let value = node.currentKeyValue.value;
@@ -497,8 +497,8 @@ export default class KeyHandler {
     errorCallback: () => void
   ): boolean {
     if (
-      state instanceof Inputting == false &&
-      state instanceof Marking == false
+      state instanceof Inputting === false &&
+      state instanceof Marking === false
     ) {
       return false;
     }
@@ -559,7 +559,7 @@ export default class KeyHandler {
     stateCallback: (state: InputState) => void,
     errorCallback: () => void
   ): boolean {
-    if (state instanceof NotEmpty == false) {
+    if (state instanceof NotEmpty === false) {
       return false;
     }
 
@@ -568,11 +568,11 @@ export default class KeyHandler {
     } else if (this.reading_.isEmpty) {
       let isValidDelete = false;
 
-      if (key.ascii == Key.BACKSPACE && this.builder_.cursorIndex > 0) {
+      if (key.ascii === Key.BACKSPACE && this.builder_.cursorIndex > 0) {
         this.builder_.deleteReadingBeforeCursor();
         isValidDelete = true;
       } else if (
-        key.ascii == Key.DELETE &&
+        key.ascii === Key.DELETE &&
         this.builder_.cursorIndex < this.builder_.length
       ) {
         this.builder_.deleteReadingAfterCursor();
@@ -585,7 +585,7 @@ export default class KeyHandler {
       }
       this.walk();
     } else {
-      if (key.ascii == Key.BACKSPACE) {
+      if (key.ascii === Key.BACKSPACE) {
         this.reading_.backspace();
       } else {
         // Del not supported when bopomofo reading is active.
@@ -593,7 +593,7 @@ export default class KeyHandler {
       }
     }
 
-    if (this.reading_.isEmpty && this.builder_.length == 0) {
+    if (this.reading_.isEmpty && this.builder_.length === 0) {
       // Cancel the previous input state if everything is empty now.
       stateCallback(new EmptyIgnoringPrevious());
     } else {
@@ -746,7 +746,7 @@ export default class KeyHandler {
 
     if (
       this.builder_.grid.width > kComposingBufferSize &&
-      this.walkedNodes_.length == 0
+      this.walkedNodes_.length === 0
     ) {
       let anchor = this.walkedNodes_[0];
       evictedText = anchor.node.currentKeyValue.value;
