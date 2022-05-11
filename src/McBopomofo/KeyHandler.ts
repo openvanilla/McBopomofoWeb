@@ -6,6 +6,7 @@ import {
 } from "../Gramambular";
 import { BopomofoKeyboardLayout, BopomofoReadingBuffer } from "../Mandarin";
 import { UserOverrideModel } from "./UserOverrideModel";
+import { ChoosingCandidate, Inputting, NotEmpty } from "./InputState";
 import * as _ from "lodash";
 
 export class ComposedString {
@@ -149,6 +150,44 @@ export class KeyHandler {
       composed.length - composedCursor
     );
     return new ComposedString(head, tail, tooltip);
+  }
+
+  buildChoosingCandidateState(nonEmptyState: NotEmpty): ChoosingCandidate {
+    let anchoredNodes = this.builder_.grid.nodesCrossingOrEndingAt(
+      this.actualCandidateCursorIndex
+    );
+
+    // sort the nodes, so that longer nodes (representing longer phrases) are
+    // placed at the top of the candidate list
+    anchoredNodes.sort((a, b) => {
+      return a.node.key.length - b.node.key.length;
+    });
+
+    let candidates: string[] = [];
+    for (let anchor of anchoredNodes) {
+      let nodeCandidates = anchor.node.candidates;
+      for (let kv of nodeCandidates) {
+        candidates.push(kv.value);
+      }
+    }
+
+    return new ChoosingCandidate(
+      nonEmptyState.composingBuffer,
+      nonEmptyState.cursorIndex,
+      candidates
+    );
+  }
+
+  buildInputtingState(): Inputting {
+    let composedString = this.getComposedString(this.builder_.cursorIndex);
+
+    let head = composedString.head;
+    let reading = this.reading_.composedString;
+    let tail = composedString.tail;
+
+    let composingBuffer = head + reading + tail;
+    let cursorIndex = head.length + reading.length;
+    return new Inputting(composingBuffer, cursorIndex, composedString.tooltip);
   }
 
   get actualCandidateCursorIndex(): number {

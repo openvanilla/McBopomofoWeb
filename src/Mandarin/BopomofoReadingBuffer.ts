@@ -99,7 +99,7 @@ export class BopomofoReadingBuffer {
     return this.syllable_.isEmpty;
   }
 
-  composedString(): string {
+  get composedString(): string {
     if (this.pinyinMode_) {
       return this.pinyinSequence_;
     }
