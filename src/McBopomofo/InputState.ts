@@ -49,7 +49,7 @@ export class NotEmpty implements InputState {
   constructor(buf: string, index: number, tooltipText: string = "") {
     this.composingBuffer_ = buf;
     this.cursorIndex_ = index;
-    this.tooltip_ = this.tooltip;
+    this.tooltip_ = tooltipText;
   }
 }
 

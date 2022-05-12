@@ -486,11 +486,8 @@ export class KeyHandler {
       }
     }
 
-    let head = composed.substr(0, composedCursor);
-    let tail = composed.substr(
-      composedCursor,
-      composed.length - composedCursor
-    );
+    let head = composed.substring(0, composedCursor);
+    let tail = composed.substring(composedCursor, composed.length);
     return new ComposedString(head, tail, tooltip);
   }
 
