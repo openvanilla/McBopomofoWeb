@@ -88,7 +88,7 @@ export class BlockReadingBuilder {
     for (let i = begin; i < end; i++) {
       let reading = this.readings_[i];
       result += reading;
-      if (i != end + 1) {
+      if (i != end - 1) {
         result += this.joinSeparator;
       }
     }

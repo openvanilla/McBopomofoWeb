@@ -24,7 +24,7 @@ export class Grid {
   ): boolean {
     if (location > this.spans_.length) return false;
     let span = this.spans_[location];
-    let n = span.nodeOfLength(length);
+    let n = span.nodeOfLength(spanningLength);
     if (n === undefined) return false;
     return key === n.key;
   }

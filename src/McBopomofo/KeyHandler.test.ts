@@ -6,6 +6,32 @@ import { Key } from "./Key";
 
 // test("", () => {});
 
+function asciiKey(input: string[]): Key[] {
+  let keys: Key[] = [];
+  for (let s of input) {
+    let key = Key.asciiKey(s);
+    keys.push(key);
+  }
+  return keys;
+}
+
+function handleKeySequence(keyHandler: KeyHandler, keys: Key[]) {
+  console.log(keys);
+  let currentState = new Empty();
+  for (let key of keys) {
+    keyHandler.handle(
+      key,
+      currentState,
+      (state) => {
+        console.log(state);
+        currentState = state;
+      },
+      () => {}
+    );
+  }
+  console.log(currentState);
+}
+
 describe("Test KeyHandler.test", () => {
   let keyHandler: KeyHandler;
   beforeEach(() => {
@@ -15,16 +41,23 @@ describe("Test KeyHandler.test", () => {
 
   afterEach(() => {});
 
-  test("", () => {
+  test("Test empty key", () => {
     let empty = new Empty();
-    let key = Key.asciiKey("a");
+    let key = new Key();
+    let stateCallbackCalled = false;
+    let errorCallbackCalled = false;
     keyHandler.handle(
       key,
       empty,
-      (state) => {
-        console.log(state);
-      },
-      () => {}
+      (state) => (stateCallbackCalled = true),
+      () => (errorCallbackCalled = true)
     );
+    expect(stateCallbackCalled).toBe(true);
+    expect(errorCallbackCalled).toBe(false);
+  });
+
+  test("Test su3cl3", () => {
+    let keys = asciiKey(["s", "u", "3", "c", "l", "3"]);
+    handleKeySequence(keyHandler, keys);
   });
 });

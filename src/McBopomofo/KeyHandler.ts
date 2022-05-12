@@ -119,7 +119,7 @@ export class KeyHandler {
   private reading_: BopomofoReadingBuffer;
   private builder_: BlockReadingBuilder;
   private walkedNodes_: NodeAnchor[] = [];
-  private userOverrideModel_?: UserOverrideModel;
+  private userOverrideModel_: UserOverrideModel | undefined;
 
   constructor(languageModel: LanguageModel) {
     this.languageModel_ = languageModel;
@@ -176,12 +176,12 @@ export class KeyHandler {
       this.builder_.insertReadingAtCursor(syllable);
       let evictedText = this.popEvictedTextAndWalk();
 
-      let overrideValue = this.userOverrideModel_!.suggest(
+      let overrideValue = this.userOverrideModel_?.suggest(
         this.walkedNodes_,
         this.builder_.cursorIndex,
         new Date().getTime()
       );
-      if (overrideValue.length != 0) {
+      if (overrideValue != null && overrideValue?.length != 0) {
         let cursorIndex = this.actualCandidateCursorIndex;
         let nodes = this.builder_.grid.nodesCrossingOrEndingAt(cursorIndex);
         let highestScore = FindHighestScore(nodes, kEpsilon);

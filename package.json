@@ -26,5 +26,8 @@
   "bugs": {
     "url": "https://github.com/zonble/McBopomofoWeb/issues"
   },
-  "homepage": "https://github.com/zonble/McBopomofoWeb#readme"
+  "homepage": "https://github.com/zonble/McBopomofoWeb#readme",
+  "dependencies": {
+    "lodash": "^4.17.21"
+  }
 }
