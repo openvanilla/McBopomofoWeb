@@ -1,3 +1,4 @@
+import { CandidateController } from "./CandidateController";
 import {
   ChoosingCandidate,
   Committing,
@@ -8,7 +9,11 @@ import {
   Marking,
   NotEmpty,
 } from "./InputState";
-import { InputUI } from "./InputUI";
+import {
+  ComposingBufferText,
+  ComposingBufferTextStyle,
+  InputUI,
+} from "./InputUI";
 import { Key, KeyName } from "./Key";
 import { KeyHandler } from "./KeyHandler";
 import { webData } from "./WebData";
@@ -41,6 +46,7 @@ export class InputController {
     let lm = new WebLanguageModel(webData);
     return new KeyHandler(lm);
   })();
+  private candidateController_: CandidateController = new CandidateController();
   private ui_: InputUI;
   private candidateKeys_ = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
 
@@ -104,7 +110,22 @@ export class InputController {
     }
   }
 
-  updatePreedit(state: NotEmpty) {}
+  updatePreedit(state: NotEmpty) {
+    if (state instanceof Marking) {
+      this.ui_.append(new ComposingBufferText(state.head));
+      this.ui_.append(
+        new ComposingBufferText(
+          state.markedText,
+          ComposingBufferTextStyle.Highlighted
+        )
+      );
+      this.ui_.append(new ComposingBufferText(state.tail));
+    } else {
+      this.ui_.append(new ComposingBufferText(state.composingBuffer));
+    }
+    this.ui_.setCursorIndex(state.cursorIndex);
+    this.ui_.setTooltip(state.tooltip);
+  }
 
   handleInputting(prev: InputState, state: Inputting) {
     this.ui_.reset();
@@ -115,10 +136,15 @@ export class InputController {
   }
 
   handleChoosingCandidate(prev: InputState, state: ChoosingCandidate) {
+    this.candidateController_.update(state.candidates, this.candidateKeys_);
+    let result = this.candidateController_.getCurrentPage();
+    this.ui_.setCandidates(result);
     this.updatePreedit(state);
+    this.ui_.update();
   }
 
   handleMarking(prev: InputState, state: Marking) {
     this.updatePreedit(state);
+    this.ui_.update();
   }
 }

@@ -1,2 +1,6 @@
 export { InputController } from "./McBopomofo/InputController";
-export { InputUI } from "./McBopomofo/InputUI";
+export {
+  InputUI,
+  ComposingBufferText,
+  ComposingBufferTextStyle,
+} from "./McBopomofo/InputUI";
