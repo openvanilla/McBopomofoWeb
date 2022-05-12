@@ -100,13 +100,25 @@ export class InputController {
   handleCommitting(prev: InputState, state: Committing) {
     this.ui_.reset();
     if (state.text.length > 0) {
-      this.ui_.setTooltip(state.text);
+      this.ui_.commitString(state.text);
     }
   }
 
-  handleInputting(prev: InputState, state: Inputting) {}
+  updatePreedit(state: NotEmpty) {}
 
-  handleChoosingCandidate(prev: InputState, state: ChoosingCandidate) {}
+  handleInputting(prev: InputState, state: Inputting) {
+    this.ui_.reset();
+    if (state.evictedText.length > 0) {
+      this.ui_.commitString(state.evictedText);
+    }
+    this.updatePreedit(state);
+  }
 
-  handleMarking(prev: InputState, state: Marking) {}
+  handleChoosingCandidate(prev: InputState, state: ChoosingCandidate) {
+    this.updatePreedit(state);
+  }
+
+  handleMarking(prev: InputState, state: Marking) {
+    this.updatePreedit(state);
+  }
 }
