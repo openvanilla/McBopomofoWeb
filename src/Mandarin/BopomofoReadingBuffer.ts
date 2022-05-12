@@ -2,7 +2,7 @@ import { BopomofoKeyboardLayout } from "./BopomofoKeyboardLayout";
 import { BopomofoSyllable } from "./BopomofoSyllable";
 
 export class BopomofoReadingBuffer {
-  private layout_?: BopomofoKeyboardLayout;
+  private layout_: BopomofoKeyboardLayout;
   private syllable_: BopomofoSyllable = new BopomofoSyllable(0);
   private pinyinMode_: boolean = false;
   private pinyinSequence_: string = "";

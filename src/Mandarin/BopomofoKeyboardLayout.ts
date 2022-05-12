@@ -1,7 +1,7 @@
 import { BopomofoSyllable, Component } from "./BopomofoSyllable";
 
 export type BopomofoKeyToComponentMap = Map<string, Component[]>;
-export type BopomofoComponentToKeyMap = Map<Comment, string>;
+export type BopomofoComponentToKeyMap = Map<Component, string>;
 
 export class BopomofoKeyboardLayout {
   private static StandardLayout_: BopomofoKeyboardLayout =
@@ -55,7 +55,7 @@ export class BopomofoKeyboardLayout {
     this.keyToComponent_ = ktcm;
     this.keyToComponent_.forEach((mapValue, mapKey) => {
       mapValue.forEach((v) => {
-        this.componentToKey_[v] = mapKey;
+        this.componentToKey_.set(v, mapKey);
       });
     });
   }
@@ -65,27 +65,30 @@ export class BopomofoKeyboardLayout {
   }
 
   componentToKey(component: Component): string {
-    return this.componentToKey_[component] ?? "";
+    return this.componentToKey_.get(component) ?? "";
   }
 
   keyToComponents(key: string): Component[] {
-    return this.keyToComponent_[key] ?? 0;
+    return this.keyToComponent_.get(key) ?? [];
   }
 
   keySequenceFromSyllable(syllable: BopomofoSyllable): string {
     let sequence = "";
     let c: Component = 0;
 
-    function STKS_COMBINE(component) {
+    function STKS_COMBINE(
+      component: Component,
+      layout: BopomofoKeyboardLayout
+    ) {
       if ((c = component)) {
-        let k: string = this.componentToKey(c);
+        let k: string = layout.componentToKey(c);
         if (k) sequence += k;
       }
     }
-    STKS_COMBINE(syllable.consonantComponent);
-    STKS_COMBINE(syllable.middleVowelComponent);
-    STKS_COMBINE(syllable.vowelComponent);
-    STKS_COMBINE(syllable.toneMarkerComponent);
+    STKS_COMBINE(syllable.consonantComponent, this);
+    STKS_COMBINE(syllable.middleVowelComponent, this);
+    STKS_COMBINE(syllable.vowelComponent, this);
+    STKS_COMBINE(syllable.toneMarkerComponent, this);
     return sequence;
   }
 
@@ -461,5 +464,3 @@ export class BopomofoKeyboardLayout {
     return new BopomofoKeyboardLayout(ktcm, "HanyuPinyin");
   }
 }
-
-

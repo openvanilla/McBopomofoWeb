@@ -23,7 +23,8 @@ export class Grid {
     key: string
   ): boolean {
     if (location > this.spans_.length) return false;
-    let n = this.spans_[location].nodeOfLength(length);
+    let span = this.spans_[location];
+    let n = span.nodeOfLength(length);
     if (n === undefined) return false;
     return key === n.key;
   }
@@ -57,7 +58,7 @@ export class Grid {
       for (let i = 0; i < location; i++) {
         let span = this.spans_[i];
         if (i + span.maximumLength >= location) {
-          let node = span.nodeOfLength(location - i);
+          let node = span?.nodeOfLength(location - i);
           if (node != undefined) {
             let na = new NodeAnchor();
             na.node = node;
@@ -76,7 +77,7 @@ export class Grid {
 
     if (this.spans_.length > 0 && location < this.spans_.length) {
       for (let i = 0; i < location; i++) {
-        let span = this.spans_[i];
+        let span = this.spans_[i] ?? new Span();
         if (i + span.maximumLength >= location) {
           for (let j = 1, m = span.maximumLength; j < m; j++) {
             if (i + j < location) {
@@ -104,12 +105,12 @@ export class Grid {
     let node = new NodeAnchor();
     for (let n = 0; n < nodes.length; n++) {
       let nodeAnchor = nodes[n];
-      let candidates = nodeAnchor.node.candidates ?? [];
-      nodeAnchor.node.resetCandidate();
+      let candidates = nodeAnchor.node?.candidates ?? [];
+      nodeAnchor.node?.resetCandidate();
 
       for (let i = 0, c = candidates.length; i < c; ++i) {
         if (candidates[i].value === value) {
-          nodeAnchor.node.selectCandidateAtIndex(i);
+          nodeAnchor.node?.selectCandidateAtIndex(i);
           node = nodeAnchor;
           break;
         }
@@ -126,12 +127,12 @@ export class Grid {
     let nodes = this.nodesCrossingOrEndingAt(location);
     for (let n = 0; n < nodes.length; n++) {
       let nodeAnchor = nodes[n];
-      let candidates = nodeAnchor.node.candidates ?? [];
-      nodeAnchor.node.resetCandidate();
+      let candidates = nodeAnchor.node?.candidates ?? [];
+      nodeAnchor.node?.resetCandidate();
 
       for (let i = 0, c = candidates.length; i < c; ++i) {
         if (candidates[i].value === value) {
-          nodeAnchor.node.selectFloatingCandidateAtIndex(i, overridingScore);
+          nodeAnchor.node?.selectFloatingCandidateAtIndex(i, overridingScore);
           break;
         }
       }

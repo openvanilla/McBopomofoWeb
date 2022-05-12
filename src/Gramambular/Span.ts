@@ -10,7 +10,7 @@ export class Span {
   }
 
   insertNodeOfLength(node: Node, length: number): void {
-    this.lengthNodeMap_[length] = node;
+    this.lengthNodeMap_.set(length, node);
     if (length > this.maximumLength_) {
       this.maximumLength_ = length;
     }
@@ -36,8 +36,8 @@ export class Span {
     this.maximumLength_ = max;
   }
 
-  nodeOfLength?(length: number): Node {
-    return this.lengthNodeMap_[length];
+  nodeOfLength(length: number): Node | undefined {
+    return this.lengthNodeMap_.get(length);
   }
 
   get maximumLength(): number {

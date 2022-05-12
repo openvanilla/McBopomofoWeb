@@ -64,7 +64,10 @@ function GetKeyboardLayoutName(layout: BopomofoKeyboardLayout): string {
 function FindHighestScore(nodeAnchors: NodeAnchor[], epsilon: number): number {
   let highestScore = 0.0;
   for (let anchor of nodeAnchors) {
-    let score = anchor.node.highestUnigramScore;
+    if (anchor.node === undefined) {
+      continue;
+    }
+    let score = anchor.node!.highestUnigramScore;
     if (score > highestScore) {
       highestScore = score;
     }
@@ -116,7 +119,7 @@ export class KeyHandler {
   private reading_: BopomofoReadingBuffer;
   private builder_: BlockReadingBuilder;
   private walkedNodes_: NodeAnchor[] = [];
-  private userOverrideModel_: UserOverrideModel;
+  private userOverrideModel_?: UserOverrideModel;
 
   constructor(languageModel: LanguageModel) {
     this.languageModel_ = languageModel;
@@ -173,7 +176,7 @@ export class KeyHandler {
       this.builder_.insertReadingAtCursor(syllable);
       let evictedText = this.popEvictedTextAndWalk();
 
-      let overrideValue = this.userOverrideModel_.suggest(
+      let overrideValue = this.userOverrideModel_!.suggest(
         this.walkedNodes_,
         this.builder_.cursorIndex,
         new Date().getTime()
@@ -401,13 +404,13 @@ export class KeyHandler {
 
   candidateSelected(
     candidate: string,
-    stateCallback: (InputState) => void
+    stateCallback: (state: InputState) => void
   ): void {
     this.pinNode(candidate);
     stateCallback(this.buildInputtingState());
   }
 
-  candidatePanelCancelled(stateCallback: (InputState) => void): void {
+  candidatePanelCancelled(stateCallback: (state: InputState) => void): void {
     stateCallback(this.buildInputtingState());
   }
 
@@ -635,14 +638,16 @@ export class KeyHandler {
     // sort the nodes, so that longer nodes (representing longer phrases) are
     // placed at the top of the candidate list
     anchoredNodes.sort((a, b) => {
-      return a.node.key.length - b.node.key.length;
+      return (a.node?.key.length ?? 0) - (b.node?.key.length ?? 0);
     });
 
     let candidates: string[] = [];
     for (let anchor of anchoredNodes) {
-      let nodeCandidates = anchor.node.candidates;
-      for (let kv of nodeCandidates) {
-        candidates.push(kv.value);
+      let nodeCandidates = anchor.node?.candidates;
+      if (nodeCandidates != undefined) {
+        for (let kv of nodeCandidates) {
+          candidates.push(kv.value);
+        }
       }
     }
 
@@ -750,7 +755,7 @@ export class KeyHandler {
       this.walkedNodes_.length === 0
     ) {
       let anchor = this.walkedNodes_[0];
-      evictedText = anchor.node.currentKeyValue.value;
+      evictedText = anchor.node?.currentKeyValue.value ?? "";
       this.builder_.removeHeadReadings(anchor.spanningLength);
     }
 
@@ -764,14 +769,16 @@ export class KeyHandler {
       cursorIndex,
       candidate
     );
-    let score = selectedNode.node.scoreForCandidate(candidate);
-    if (score > kNoOverrideThreshold) {
-      this.userOverrideModel_.observe(
-        this.walkedNodes_,
-        cursorIndex,
-        candidate,
-        new Date().getTime()
-      );
+    let score = selectedNode.node?.scoreForCandidate(candidate);
+    if (score != undefined) {
+      if (score > kNoOverrideThreshold) {
+        this.userOverrideModel_!.observe(
+          this.walkedNodes_,
+          cursorIndex,
+          candidate,
+          new Date().getTime()
+        );
+      }
     }
 
     this.walk();

@@ -125,10 +125,12 @@ export class BlockReadingBuilder {
             combinedReading
           )
         ) {
-          let unigrams = this.LM_.unigramsForKey(combinedReading);
-          if (unigrams.length > 0) {
-            let n = new Node(combinedReading, unigrams, []);
-            this.grid_.insertNode(n, p, q);
+          let unigrams = this.LM_!.unigramsForKey(combinedReading);
+          if (unigrams != undefined) {
+            if (unigrams.length > 0) {
+              let n = new Node(combinedReading, unigrams, []);
+              this.grid_.insertNode(n, p, q);
+            }
           }
         }
       }

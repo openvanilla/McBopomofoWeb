@@ -4,7 +4,7 @@ import { LanguageModel } from "./LanguageModel";
 import { Unigram } from "./Unigram";
 
 export class Node {
-  private LM_: LanguageModel;
+  private LM_?: LanguageModel;
 
   private key_: string;
   private score_: number = 0.0;
@@ -34,10 +34,7 @@ export class Node {
     }
 
     bigrams.forEach((bigram) => {
-      let list: Bigram[] = this.preceedingGramBigramMap_.get(
-        bigram.preceedingKeyValue
-      );
-
+      let list = this.preceedingGramBigramMap_.get(bigram.preceedingKeyValue);
       if (list === undefined) list = [];
 
       list.push(bigram);

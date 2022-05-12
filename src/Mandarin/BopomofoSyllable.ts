@@ -537,9 +537,9 @@ export class BopomofoSyllable {
     for (let i = 0; i < str.length; i++) {
       let char = str.charAt(i);
       let component =
-        BopomofoCharacterMap.sharedInstance.characterToComponent[char];
+        BopomofoCharacterMap.sharedInstance.characterToComponent.get(char);
       if (component != undefined) {
-        syllable.addEqual(component);
+        syllable.addEqual(new BopomofoSyllable(component));
       }
     }
     return syllable;
@@ -547,22 +547,21 @@ export class BopomofoSyllable {
 
   get composedString(): string {
     let str = "";
-    function append(mask) {
-      if ((this.syllable_ & mask) != 0) {
-        let char =
-          BopomofoCharacterMap.sharedInstance.componentToCharacter[
-            this.syllable_ & mask
-          ];
+    function append(mask: Component, syllable: BopomofoSyllable) {
+      if ((syllable.syllable_ & mask) != 0) {
+        let char = BopomofoCharacterMap.sharedInstance.componentToCharacter.get(
+          syllable.syllable_ & mask
+        );
         if (char != undefined) {
           str += char;
         }
       }
     }
 
-    append(BopomofoSyllable.ConsonantMask);
-    append(BopomofoSyllable.MiddleVowelMask);
-    append(BopomofoSyllable.VowelMask);
-    append(BopomofoSyllable.ToneMarkerMask);
+    append(BopomofoSyllable.ConsonantMask, this);
+    append(BopomofoSyllable.MiddleVowelMask, this);
+    append(BopomofoSyllable.VowelMask, this);
+    append(BopomofoSyllable.ToneMarkerMask, this);
     return str;
   }
 
@@ -606,14 +605,16 @@ export class BopomofoSyllable {
   }
 
   isOverlappingWith(another: BopomofoSyllable): boolean {
-    function IOW_SAND(mask: Component) {
-      return (this.syllable_ & mask) != 0 && (another.syllable_ & mask) != 0;
+    function IOW_SAND(mask: Component, syllable: BopomofoSyllable) {
+      return (
+        (syllable.syllable_ & mask) != 0 && (another.syllable_ & mask) != 0
+      );
     }
     return (
-      IOW_SAND(BopomofoSyllable.ConsonantMask) ||
-      IOW_SAND(BopomofoSyllable.MiddleVowelMask) ||
-      IOW_SAND(BopomofoSyllable.VowelMask) ||
-      IOW_SAND(BopomofoSyllable.ToneMarkerMask)
+      IOW_SAND(BopomofoSyllable.ConsonantMask, this) ||
+      IOW_SAND(BopomofoSyllable.MiddleVowelMask, this) ||
+      IOW_SAND(BopomofoSyllable.VowelMask, this) ||
+      IOW_SAND(BopomofoSyllable.ToneMarkerMask, this)
     );
   }
 
@@ -669,15 +670,16 @@ export class BopomofoSyllable {
   }
 
   addEqual(another: BopomofoSyllable): BopomofoSyllable {
-    function OPE_SOVER(mask: Component) {
+    function OPE_SOVER(mask: Component, syllable: BopomofoSyllable) {
       if (another.syllable_ & mask) {
-        this.syllable_ = (this.syllable_ & ~mask) | (another.syllable_ & mask);
+        syllable.syllable_ =
+          (syllable.syllable_ & ~mask) | (another.syllable_ & mask);
       }
     }
-    OPE_SOVER(BopomofoSyllable.ConsonantMask);
-    OPE_SOVER(BopomofoSyllable.MiddleVowelMask);
-    OPE_SOVER(BopomofoSyllable.VowelMask);
-    OPE_SOVER(BopomofoSyllable.ToneMarkerMask);
+    OPE_SOVER(BopomofoSyllable.ConsonantMask, this);
+    OPE_SOVER(BopomofoSyllable.MiddleVowelMask, this);
+    OPE_SOVER(BopomofoSyllable.VowelMask, this);
+    OPE_SOVER(BopomofoSyllable.ToneMarkerMask, this);
     return this;
   }
 

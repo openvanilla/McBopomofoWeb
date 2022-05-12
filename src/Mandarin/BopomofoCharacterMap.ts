@@ -8,8 +8,8 @@ export class BopomofoCharacterMap {
     return this.characterToComponent_;
   }
 
-  private componentToCharacter_: Map<string, Component> = new Map();
-  get componentToCharacter(): Map<string, Component> {
+  private componentToCharacter_: Map<Component, string> = new Map();
+  get componentToCharacter(): Map<Component, string> {
     return this.componentToCharacter_;
   }
 
@@ -59,7 +59,7 @@ export class BopomofoCharacterMap {
     ]);
 
     this.characterToComponent_.forEach((value, key) => {
-      this.componentToCharacter[value] = key;
+      this.componentToCharacter.set(value, key);
     });
   }
 }

@@ -7,13 +7,13 @@ export class WebLanguageModel implements LanguageModel {
     this.map_ = map;
   }
 
-  bigramsForKey?(preceedingKey: string, key: string): Bigram[] {
+  bigramsForKey(preceedingKey: string, key: string): Bigram[] {
     return [];
   }
 
-  unigramsForKey?(key: string): Unigram[] {
+  unigramsForKey(key: string): Unigram[] {
     let list = this.map_.get(key);
-    if (list === undefined) return undefined;
+    if (list === undefined) return [];
     let result: Unigram[] = [];
     for (let item of list) {
       let g = new Unigram(new KeyValuePair(key, item[0]), item[1]);
