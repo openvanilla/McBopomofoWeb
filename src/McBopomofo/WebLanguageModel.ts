@@ -1,9 +1,9 @@
 import { Bigram, KeyValuePair, LanguageModel, Unigram } from "../Gramambular";
 
 export class WebLanguageModel implements LanguageModel {
-  private map_: Map<string, [[string, number]]>;
+  private map_: Map<string, [string, number][]>;
 
-  constructor(map: Map<string, [[string, number]]>) {
+  constructor(map: Map<string, [string, number][]>) {
     this.map_ = map;
   }
 

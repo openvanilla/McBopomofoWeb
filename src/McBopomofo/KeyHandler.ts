@@ -15,6 +15,7 @@ import {
   Marking,
   NotEmpty,
 } from "./InputState";
+
 import * as _ from "lodash";
 import { Key, KeyName } from "./Key";
 
@@ -71,7 +72,7 @@ function FindHighestScore(nodeAnchors: NodeAnchor[], epsilon: number): number {
   return highestScore + epsilon;
 }
 
-export default class KeyHandler {
+export class KeyHandler {
   private selectPhraseAfterCursorAsCandidate_: boolean = false;
   public get selectPhraseAfterCursorAsCandidate(): boolean {
     return this.selectPhraseAfterCursorAsCandidate_;
