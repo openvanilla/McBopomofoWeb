@@ -4,8 +4,6 @@ import { webData } from "./WebData";
 import { Empty } from "./InputState";
 import { Key } from "./Key";
 
-// test("", () => {});
-
 function asciiKey(input: string[]): Key[] {
   let keys: Key[] = [];
   for (let s of input) {

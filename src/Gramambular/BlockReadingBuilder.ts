@@ -135,5 +135,7 @@ export class BlockReadingBuilder {
         }
       }
     }
+
+    console.log("build 5");
   }
 }

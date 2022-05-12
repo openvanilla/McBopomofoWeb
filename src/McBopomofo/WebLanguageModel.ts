@@ -12,9 +12,7 @@ export class WebLanguageModel implements LanguageModel {
   }
 
   unigramsForKey(key: string): Unigram[] {
-    // console.log(key);
     let list = this.map_.get(key);
-    // console.log(list);
     if (list === undefined) return [];
     let result: Unigram[] = [];
     for (let item of list) {

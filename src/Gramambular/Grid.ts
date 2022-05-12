@@ -5,6 +5,10 @@ import { NodeAnchor } from "./NodeAnchor";
 export class Grid {
   private spans_: Span[] = [];
 
+  constructor() {
+    this.spans_ = [];
+  }
+
   clear = () => (this.spans_ = []);
 
   insertNode(node: Node, location: number, spanningLength: number): void {
@@ -54,9 +58,12 @@ export class Grid {
 
   nodesEndingAt(location: number): NodeAnchor[] {
     let result: NodeAnchor[] = [];
+    console.log("location " + location);
+
     if (this.spans_.length > 0 && location < this.spans_.length) {
       for (let i = 0; i < location; i++) {
         let span = this.spans_[i];
+
         if (i + span.maximumLength >= location) {
           let node = span?.nodeOfLength(location - i);
           if (node != undefined) {
@@ -69,6 +76,7 @@ export class Grid {
         }
       }
     }
+    console.log("nodesEndingAt 2" + result);
     return result;
   }
 

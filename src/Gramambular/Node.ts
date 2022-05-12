@@ -88,6 +88,10 @@ export class Node {
     return this.score_;
   }
 
+  toString(): string {
+    return "(Node " + this.key_ + "," + this.score + ")";
+  }
+
   scoreForCandidate(candidate: string): number {
     for (let unigram of this.unigrams_) {
       if (unigram.keyValue.value === candidate) {

@@ -10,6 +10,7 @@ export class Span {
   }
 
   insertNodeOfLength(node: Node, length: number): void {
+    console.log("insertNodeOfLength " + length);
     this.lengthNodeMap_.set(length, node);
     if (length > this.maximumLength_) {
       this.maximumLength_ = length;
