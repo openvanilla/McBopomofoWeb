@@ -1,7 +1,7 @@
 import { Node } from "./Node";
 
 export class Span {
-  protected lengthNodeMap_: Map<number, Node> = new Map();
+  protected lengthNodeMap_: Map<string, Node> = new Map();
   protected maximumLength_: number = 0;
 
   clear(): void {
@@ -10,8 +10,7 @@ export class Span {
   }
 
   insertNodeOfLength(node: Node, length: number): void {
-    console.log("insertNodeOfLength " + length);
-    this.lengthNodeMap_.set(length, node);
+    this.lengthNodeMap_.set(length + "", node);
     if (length > this.maximumLength_) {
       this.maximumLength_ = length;
     }
@@ -24,7 +23,8 @@ export class Span {
 
     let max = 0;
     let removeSet = new Set<number>();
-    this.lengthNodeMap_.forEach((value, key) => {
+    this.lengthNodeMap_.forEach((value, keyString) => {
+      let key = +keyString;
       if (key > length) {
         removeSet.add(key);
       } else {
@@ -32,13 +32,13 @@ export class Span {
       }
     });
 
-    removeSet.forEach((value) => this.lengthNodeMap_.delete(value));
+    removeSet.forEach((value) => this.lengthNodeMap_.delete(value + ""));
 
     this.maximumLength_ = max;
   }
 
   nodeOfLength(length: number): Node | undefined {
-    return this.lengthNodeMap_.get(length);
+    return this.lengthNodeMap_.get(length + "");
   }
 
   get maximumLength(): number {

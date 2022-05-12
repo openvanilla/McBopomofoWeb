@@ -58,9 +58,8 @@ export class Grid {
 
   nodesEndingAt(location: number): NodeAnchor[] {
     let result: NodeAnchor[] = [];
-    console.log("location " + location);
 
-    if (this.spans_.length > 0 && location < this.spans_.length) {
+    if (this.spans_.length > 0 && location <= this.spans_.length) {
       for (let i = 0; i < location; i++) {
         let span = this.spans_[i];
 
@@ -76,7 +75,6 @@ export class Grid {
         }
       }
     }
-    console.log("nodesEndingAt 2" + result);
     return result;
   }
 

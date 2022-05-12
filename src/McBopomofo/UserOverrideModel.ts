@@ -11,10 +11,10 @@ class Observation {
 
   update(candidate: string, timestamp: number): void {
     this.count++;
-    let o = this.overrides[candidate] ?? new Override();
+    let o = this.overrides.get(candidate) ?? new Override();
     o.timestamp = timestamp;
     o.count++;
-    this.overrides[candidate] = o;
+    this.overrides.set(candidate, o);
   }
 }
 
@@ -81,14 +81,14 @@ function WalkedNodesToKey(
   }
 
   let r = n.length - 1;
-  let current = n[r].node.currentKeyValue.key ?? "";
+  let current = n[r].node?.currentKeyValue.key ?? "";
   if (r >= 0) {
-    let value = n[r].node.currentKeyValue.value ?? "";
+    let value = n[r].node?.currentKeyValue.value ?? "";
     if (IsEndingPunctuation(value)) {
       s += "()";
       r = -1;
     } else {
-      s += "(" + n[r].node.currentKeyValue.key + "," + value + ")";
+      s += "(" + n[r].node?.currentKeyValue.key + "," + value + ")";
       r--;
     }
   } else {
@@ -99,12 +99,12 @@ function WalkedNodesToKey(
   s = "";
 
   if (r >= 0) {
-    let value = n[r].node.currentKeyValue.value ?? "";
+    let value = n[r].node?.currentKeyValue.value ?? "";
     if (IsEndingPunctuation(value)) {
       s += "()";
       r = -1;
     } else {
-      s += "(" + n[r].node.currentKeyValue.key + "," + value + ")";
+      s += "(" + n[r].node?.currentKeyValue.key + "," + value + ")";
       r--;
     }
   } else {
@@ -129,23 +129,23 @@ export class UserOverrideModel {
     timestamp: number
   ) {
     let key = WalkedNodesToKey(walkedNodes, cursorIndex);
-    let observation = this.lruMap_[key];
+    let observation = this.lruMap_.get(key);
     if (observation === undefined) {
       let observation = new Observation();
       observation.update(candidate, timestamp);
       let keyValuePair = new KeyObservationPair(key, observation);
       this.lruList_.splice(0, 0, keyValuePair);
-      this.lruMap_[key] = observation;
+      this.lruMap_.set(key, observation);
 
       if (this.lruList_.length > this.capacity_) {
         let lastKeyValuePair = this.lruList_[this.lruList_.length - 1];
-        delete this.lruMap_[lastKeyValuePair.key];
+        this.lruMap_.delete(lastKeyValuePair.key);
         this.lruList_.pop();
       }
     } else {
-      observation.update(timestamp);
+      observation.update(candidate, timestamp);
       this.lruList_.splice(0, 0, new KeyObservationPair(key, observation));
-      this.lruMap_[key] = observation;
+      this.lruMap_.set(key, observation);
     }
   }
 
@@ -155,7 +155,7 @@ export class UserOverrideModel {
     timestamp: number
   ): string {
     let key = WalkedNodesToKey(walkedNodes, cursorIndex);
-    let observation: Observation = this.lruMap_[key];
+    let observation = this.lruMap_.get(key);
     if (observation === undefined) {
       return "";
     }
@@ -167,7 +167,7 @@ export class UserOverrideModel {
     overrides.forEach((o, key) => {
       let overrideScore = Score(
         o.count,
-        observation.count,
+        observation?.count ?? 0,
         o.timestamp,
         timestamp,
         this.decayExponent_

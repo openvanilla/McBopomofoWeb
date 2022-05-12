@@ -12,11 +12,8 @@ export class Walker {
     if (!location || location > this.grid_.width) {
       return [];
     }
-    console.log("reverseWalk 1");
     let paths: NodeAnchor[][] = [];
     let nodes = this.grid_.nodesEndingAt(location);
-
-    console.log("reverseWalk nodes length " + nodes.length);
 
     nodes.forEach((node) => {
       if (node.node === undefined) {
@@ -30,13 +27,10 @@ export class Walker {
       path.splice(0, 0, node);
       paths.push(path);
     });
-    console.log("reverseWalk 2");
 
     if (!paths.length) {
       return [];
     }
-
-    console.log("reverseWalk 3");
 
     let result: NodeAnchor[] = paths[0];
     paths.forEach((path) => {
@@ -48,7 +42,6 @@ export class Walker {
       }
     });
 
-    console.log("reverseWalk 4");
     return result;
   }
 }
