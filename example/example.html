@@ -2,14 +2,47 @@
 
 <head>
     <meta charset="utf-8">
+    <title>McBopomofo Example</title>
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 14pt;
+            margin: 20px;
+        }
+
+        textarea {
+            background-color: blue;
+            font-size: 14pt;
+            color: #FFF;
+            border: 0;
+            padding: 10px;
+            width: 100%;
+            height: 300px;
+        }
+
+        .function {
+            border: 1px solid #CCC;
+            padding: 10px;
+            height: 4em;
+            background-color: green;
+            color: #FFF;
+        }
+
+        #candidates {
+            margin-top: 10px;
+        }
+    </style>
 </head>
 
 <bodY>
     <h1>McBopomofo Example</h1>
+    <p>您不需要額外安裝中文輸入法，就可以在以下文字框用線上版小麥注音輸入中文</p>
     <textarea id="text_area" rows="10" cols="50"></textarea>
-    <div class="composing_buffer" id="composing_buffer"></div>
-    <div class="candidates" id="candidates"></div>
-    <div class="tooltip" id="tooltip"></div>
+    <div class="function">
+        <div class="composing_buffer" id="composing_buffer">【麥】</div>
+        <div class="candidates" id="candidates"></div>
+        <div class="tooltip" id="tooltip"></div>
+    </div>
 </bodY>
 
 
@@ -20,21 +53,20 @@
         let that = {};
         that.reset = function () {
             console.log('reset called');
-            document.getElementById("composing_buffer").innerHTML = "";
+            document.getElementById("composing_buffer").innerHTML = "【麥】";
             document.getElementById("candidates").innerHTML = "";
             document.getElementById("tooltip").innerHTML = "";
         };
 
         that.commitString = function (string) {
-            console.log('commitString called ' + string);
-
             var selectionStart = document.getElementById("text_area").selectionStart;
             var selectionStop = document.getElementById("text_area").selectionStop;
             var text = document.getElementById("text_area").value;
             var head = text.substring(0, selectionStart);
             var tail = text.substring(selectionStart);
             document.getElementById("text_area").value = (head + string + tail);
-            document.getElementById("text_area").selectionStart = selectionStart + string.length;
+            let start = selectionStart + string.length;
+            document.getElementById("text_area").setSelectionRange(start, start)
         };
 
         that.update = function (string) {
@@ -44,7 +76,7 @@
 
             {
                 let buffer = state.composingBuffer;
-                let s = "";
+                let s = "【麥】";
                 for (let item of buffer) {
                     s += item.text;
                 }
@@ -84,6 +116,9 @@
             event.preventDefault();
         }
     })
+
+    document.getElementById("text_area").focus();
+
 </script>
 
 
