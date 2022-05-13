@@ -138,7 +138,7 @@ export class KeyHandler {
   ): boolean {
     // From Key's definition, if shiftPressed is true, it can't be a simple key
     // that can be represented by ASCII.
-    let simpleAscii = key.ctrlPressed || key.shiftPressed ? "" : key.ascii;
+    let simpleAscii = key.ascii;
 
     // See if it's valid BPMF reading.
     let keyConsumedByReading = false;
@@ -157,7 +157,11 @@ export class KeyHandler {
     // not empty, and space is pressed.
     let shouldComposeReading =
       (this.reading_.hasToneMarker && !this.reading_.hasToneMarkerOnly) ||
-      (!this.reading_.isEmpty && simpleAscii === Key.SPACE);
+      (!this.reading_.isEmpty && key.name == KeyName.SPACE);
+
+    console.log("this.reading_.isEmpty" + this.reading_.isEmpty);
+    console.log("simpleAscii is space..." + (key.name == KeyName.SPACE));
+    console.log("shouldComposeReading...." + shouldComposeReading);
 
     if (shouldComposeReading) {
       let syllable = this.reading_.syllable.composedString;
@@ -209,7 +213,7 @@ export class KeyHandler {
     }
 
     // Shift + Space.
-    if (key.ascii === Key.SPACE && key.shiftPressed) {
+    if (key.name === KeyName.SPACE && key.shiftPressed) {
       if (this.putLowercaseLettersToComposingBuffer_) {
         this.builder_.insertReadingAtCursor(" ");
         let evictedText = this.popEvictedTextAndWalk();
@@ -234,7 +238,7 @@ export class KeyHandler {
     let maybeNotEmptyState = state as NotEmpty;
 
     if (
-      simpleAscii === Key.SPACE &&
+      key.name === KeyName.SPACE &&
       maybeNotEmptyState instanceof NotEmpty &&
       this.reading_.isEmpty
     ) {
@@ -243,7 +247,7 @@ export class KeyHandler {
     }
 
     // Esc hit.
-    if (simpleAscii === Key.ESC) {
+    if (key.name === KeyName.ESC) {
       if (maybeNotEmptyState instanceof NotEmpty === false) {
         return false;
       }
@@ -278,7 +282,7 @@ export class KeyHandler {
     }
 
     // Enter.
-    if (key.ascii === Key.RETURN) {
+    if (key.name === KeyName.RETURN) {
       if (maybeNotEmptyState instanceof NotEmpty === false) {
         return false;
       }
@@ -569,11 +573,11 @@ export class KeyHandler {
     } else if (this.reading_.isEmpty) {
       let isValidDelete = false;
 
-      if (key.ascii === Key.BACKSPACE && this.builder_.cursorIndex > 0) {
+      if (key.name === KeyName.BACKSPACE && this.builder_.cursorIndex > 0) {
         this.builder_.deleteReadingBeforeCursor();
         isValidDelete = true;
       } else if (
-        key.ascii === Key.DELETE &&
+        key.name === KeyName.DELETE &&
         this.builder_.cursorIndex < this.builder_.length
       ) {
         this.builder_.deleteReadingAfterCursor();
@@ -586,7 +590,7 @@ export class KeyHandler {
       }
       this.walk();
     } else {
-      if (key.ascii === Key.BACKSPACE) {
+      if (key.name === KeyName.BACKSPACE) {
         this.reading_.backspace();
       } else {
         // Del not supported when bopomofo reading is active.

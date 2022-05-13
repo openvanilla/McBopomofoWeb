@@ -1,28 +1,20 @@
 import { Candidate } from "./CandidateController";
 
 export enum ComposingBufferTextStyle {
-  Normal,
-  Highlighted,
+  Normal = "normal",
+  Highlighted = "highlighted",
 }
 
 export class ComposingBufferText {
-  private text_: string;
-  get text(): string {
-    return this.text_;
-  }
-
-  private style_: ComposingBufferTextStyle;
-
-  get style(): ComposingBufferTextStyle {
-    return this.style_;
-  }
+  private text: string;
+  private style: ComposingBufferTextStyle;
 
   constructor(
     text: string,
     style: ComposingBufferTextStyle = ComposingBufferTextStyle.Normal
   ) {
-    this.text_ = text;
-    this.style_ = style;
+    this.text = text;
+    this.style = style;
   }
 }
 
@@ -48,5 +40,5 @@ export class InputUIState {
 export interface InputUI {
   reset(): void;
   commitString(text: string): void;
-  update(state: InputUIState): void;
+  update(state: string): void;
 }

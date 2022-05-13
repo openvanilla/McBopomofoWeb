@@ -68,26 +68,54 @@ class InputUIController {
       this.candidates,
       this.tooltip
     );
+    let json = JSON.stringify(state);
+    this.ui.update(json);
   }
 }
 
 function KeyFromKeyboardEvent(event: KeyboardEvent) {
   let keyName = KeyName.UNKNOWN;
-  switch (event.key) {
+  switch (event.code) {
     case "ArrowLeft":
       keyName = KeyName.LEFT;
+      break;
     case "ArrowRight":
       keyName = KeyName.RIGHT;
+      break;
+    case "ArrowUp":
+      keyName = KeyName.UP;
+      break;
+    case "ArrowDown":
+      keyName = KeyName.DOWN;
+      break;
     case "Home":
       keyName = KeyName.HOME;
+      break;
     case "End":
       keyName = KeyName.END;
+      break;
+    case "Backspace":
+      keyName = KeyName.BACKSPACE;
+      break;
+    case "Delete":
+      keyName = KeyName.DELETE;
+      break;
+    case "Enter":
+      keyName = KeyName.RETURN;
+      break;
+    case "Escape":
+      keyName = KeyName.ESC;
+      break;
+    case "Space":
+      keyName = KeyName.SPACE;
+      break;
+
     default:
-      if (event.key.length == 1) {
-        keyName = KeyName.ASCII;
-      }
+      keyName = KeyName.ASCII;
       break;
   }
+  console.log('Key: "' + event.key + '"');
+  console.log('keyName: "' + keyName + '"');
   let key = new Key(event.key, keyName, event.shiftKey, event.ctrlKey);
   return key;
 }
@@ -140,7 +168,7 @@ export class InputController {
       return;
     }
 
-    if (key.ascii == Key.RETURN) {
+    if (key.name === KeyName.RETURN) {
       let current = this.candidateController_.selectedCandidate;
       this.keyHandler_.candidateSelected(current, (newState) => {
         this.enterNewState(newState);
@@ -148,14 +176,14 @@ export class InputController {
       return;
     }
 
-    if (key.ascii == Key.ESC || key.ascii == Key.BACKSPACE) {
+    if (key.name === KeyName.ESC || key.name === KeyName.BACKSPACE) {
       this.keyHandler_.candidatePanelCancelled((newState) => {
         this.enterNewState(newState);
       });
       return;
     }
 
-    if (key.ascii == Key.SPACE) {
+    if (key.name === KeyName.SPACE) {
       let current = this.candidateController_.currentPageIndex;
       let total = this.candidateController_.totalPageCount;
       if (current < total) {
@@ -163,17 +191,17 @@ export class InputController {
       } else {
         this.candidateController_.goToFirst();
       }
-    } else if (key.name == KeyName.LEFT) {
+    } else if (key.name === KeyName.LEFT) {
       this.candidateController_.goToPreviousItem();
-    } else if (key.name == KeyName.RIGHT) {
+    } else if (key.name === KeyName.RIGHT) {
       this.candidateController_.goToNextItem();
-    } else if (key.name == KeyName.HOME) {
+    } else if (key.name === KeyName.HOME) {
       this.candidateController_.goToFirst();
-    } else if (key.name == KeyName.END) {
+    } else if (key.name === KeyName.END) {
       this.candidateController_.goToLast();
-    } else if (key.ascii == Key.UP) {
+    } else if (key.name === KeyName.UP) {
       this.candidateController_.goToPreviousPage();
-    } else if (key.ascii == Key.DOWN) {
+    } else if (key.name === KeyName.DOWN) {
       this.candidateController_.goToNextPage();
     }
     let result = this.candidateController_.getCurrentPage();

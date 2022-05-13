@@ -1,10 +1,17 @@
 export enum KeyName {
-  ASCII,
-  LEFT,
-  RIGHT,
-  HOME,
-  END,
-  UNKNOWN,
+  ASCII = "ASCII",
+  LEFT = "LEFT",
+  RIGHT = "RIGHT",
+  HOME = "HOME",
+  END = "END",
+  BACKSPACE = "BACKSPACE",
+  RETURN = "RETURN",
+  UP = "UP",
+  DOWN = "DOWN",
+  ESC = "ESC",
+  SPACE = "SPACE",
+  DELETE = "DELETE",
+  UNKNOWN = "UNKNOWN",
 }
 
 // Encapsulates the keys accepted by KeyHandler. This class never attempts to
@@ -14,15 +21,6 @@ export enum KeyName {
 // This is not always a perfect representation (for example, shift muddles the
 // picture), but is sufficient for KeyHandler's needs.
 export class Key {
-  static BACKSPACE: string = "Backspace";
-  static RETURN: string = "Enter";
-  static UP: string = "ArrowUp";
-  static DOWN: string = "ArrowDown";
-
-  static ESC: string = "Escape";
-  static SPACE: string = " ";
-  static DELETE: string = "Delete";
-
   private ascii_: string = "";
   get ascii(): string {
     return this.ascii_;
@@ -81,6 +79,6 @@ export class Key {
   }
 
   get isDeleteKeys(): boolean {
-    return this.ascii_ === Key.BACKSPACE || this.ascii_ === Key.DELETE;
+    return this.name === KeyName.BACKSPACE || this.name === KeyName.DELETE;
   }
 }

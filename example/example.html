@@ -20,12 +20,33 @@
         let that = {};
         that.reset = function () {
             console.log('reset called');
+            document.getElementById("composing_buffer").innerHTML = "";
+            document.getElementById("candidates").innerHTML = "";
+            document.getElementById("tooltip").innerHTML = "";
         };
+
         that.commitString = function (string) {
             console.log('commitString called ' + string);
+
+            var selectionStart = document.getElementById("text_area").selectionStart;
+            var selectionStop = document.getElementById("text_area").selectionStop;
+            var text = document.getElementById("text_area").value;
+            var head = text.substring(0, selectionStart);
+            var tail = text.substring(selectionStart);
+            document.getElementById("text_area").value = (head + string + tail);
+            document.getElementById("text_area").selectionStart = selectionStart + string.length;
         };
-        that.update = function (state) {
+
+        that.update = function (string) {
+            let state = JSON.parse(string);
+            console.log('update called ' + string);
             console.log('update called ' + state);
+            let buffer = state.composingBuffer;
+            let s = "";
+            for (let item of buffer) {
+                s += item.text;
+            }
+            document.getElementById("composing_buffer").innerHTML = s;
         };
 
         return that;
@@ -35,7 +56,10 @@
 
     document.getElementById("text_area").addEventListener('keydown', (event) => {
         console.log(event);
-        controller.keyEvent(event);
+        let accepted = controller.keyEvent(event);
+        if (accepted) {
+            event.preventDefault();
+        }
     })
 </script>
 

@@ -1,23 +1,12 @@
 export class Candidate {
-  keyCap_: string = "";
-  get keyCap(): string {
-    return this.keyCap_;
-  }
-
-  candidate_: string = "";
-  get candidate(): string {
-    return this.candidate_;
-  }
-
-  selected_: boolean = false;
-  get selected(): boolean {
-    return this.selected_;
-  }
+  keyCap: string = "";
+  candidate: string = "";
+  selected: boolean = false;
 
   constructor(keyCap: string, candidate: string, selected: boolean) {
-    this.keyCap_ = keyCap;
-    this.candidate_ = candidate;
-    this.selected_ = selected;
+    this.keyCap = keyCap;
+    this.candidate = candidate;
+    this.selected = selected;
   }
 }
 
@@ -29,7 +18,7 @@ export class CandidateController {
   selectedCandidateWithKey(key: string): string | undefined {
     let selectedIndex = -1;
     for (let i = 0; i < this.keyCaps_.length; i++) {
-      if (this.keyCaps_[i] == key) {
+      if (this.keyCaps_[i] === key) {
         selectedIndex = i;
         break;
       }
@@ -73,7 +62,7 @@ export class CandidateController {
       let candidate = new Candidate(
         this.keyCaps_[keyCapIndex],
         this.candidates_[i],
-        i == this.currentSelectedIndex_
+        i === this.currentSelectedIndex_
       );
       list.push(candidate);
       keyCapIndex++;
@@ -86,7 +75,7 @@ export class CandidateController {
   }
 
   goToLast(): void {
-    if (this.candidates_.length == 0) return;
+    if (this.candidates_.length === 0) return;
     this.currentSelectedIndex_ = this.candidates_.length - 1;
   }
 
@@ -106,7 +95,7 @@ export class CandidateController {
 
   goToPreviousPage(): void {
     let current = Math.floor(this.currentSelectedIndex_ / this.keyCaps_.length);
-    if (current == 0) {
+    if (current === 0) {
       return;
     }
     current -= 1;
@@ -116,7 +105,7 @@ export class CandidateController {
   goToNextPage(): void {
     let current = Math.floor(this.currentSelectedIndex_ / this.keyCaps_.length);
     let last = Math.floor(this.candidates_.length / this.keyCaps_.length);
-    if (current == last) {
+    if (current === last) {
       return;
     }
     current += 1;
