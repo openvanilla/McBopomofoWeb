@@ -48,11 +48,8 @@ export class Grid {
   }
 
   shrinkGridByOneAtLocation(location: number): void {
-    console.log("shrinkGridByOneAtLocation " + location);
-    console.log("this.spans " + this.spans_);
     if (location >= this.spans_.length) return;
     this.spans_.splice(location, 1);
-    console.log("this.spans " + this.spans_);
     for (let i = 0; i < location; i++) {
       this.spans_[i].removeNodeOfLengthGreaterThan(location - i);
     }
@@ -63,14 +60,11 @@ export class Grid {
   }
 
   nodesEndingAt(location: number): NodeAnchor[] {
-    console.log("nodesEndingAt " + location);
     let result: NodeAnchor[] = [];
 
     if (this.spans_.length > 0 && location <= this.spans_.length) {
       for (let i = 0; i < location; i++) {
         let span = this.spans_[i];
-        // if (span === undefined) continue;
-
         if (i + span.maximumLength >= location) {
           let node = span.nodeOfLength(location - i);
           if (node != undefined) {
@@ -87,8 +81,6 @@ export class Grid {
   }
 
   nodesCrossingOrEndingAt(location: number): NodeAnchor[] {
-    console.log("nodesCrossingOrEndingAt " + location);
-
     let result: NodeAnchor[] = [];
 
     if (this.spans_.length > 0 && location <= this.spans_.length) {

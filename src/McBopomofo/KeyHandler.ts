@@ -646,7 +646,7 @@ export class KeyHandler {
     // sort the nodes, so that longer nodes (representing longer phrases) are
     // placed at the top of the candidate list
     anchoredNodes.sort((a, b) => {
-      return (a.node?.key.length ?? 0) - (b.node?.key.length ?? 0);
+      return (b.node?.key.length ?? 0) - (a.node?.key.length ?? 0);
     });
 
     let candidates: string[] = [];
@@ -760,7 +760,7 @@ export class KeyHandler {
 
     if (
       this.builder_.grid.width > kComposingBufferSize &&
-      this.walkedNodes_.length === 0
+      this.walkedNodes_.length != 0
     ) {
       let anchor = this.walkedNodes_[0];
       evictedText = anchor.node?.currentKeyValue.value ?? "";
