@@ -5,19 +5,21 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.ts$/, 
-        include: [path.resolve(__dirname, "src")], 
-        use: "ts-loader", 
+        test: /\.ts$/,
+        include: [path.resolve(__dirname, "src")],
+        use: "ts-loader",
       },
     ],
   },
   resolve: {
     extensions: [".ts", ".js"],
   },
-  devtool: "eval-source-map", 
+  devtool: "eval-source-map",
+  target: 'web',
   output: {
-    publicPath: "public",
     filename: "bundle.js",
+    library: 'mcbopomofo',
+    libraryTarget: 'umd',
     path: path.resolve(__dirname, "public"),
   },
 };

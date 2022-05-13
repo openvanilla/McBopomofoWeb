@@ -30,6 +30,7 @@
 
         return that;
     }();
+    const { InputController } = window.mcbopomofo;
     let controller = new InputController(ui);
 
     document.getElementById("text_area").addEventListener('keydown', (event) => {
