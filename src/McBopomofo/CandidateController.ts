@@ -26,6 +26,26 @@ export class CandidateController {
   private keyCaps_: string[] = [];
   private currentSelectedIndex_: number = 0;
 
+  selectedCandidateWithKey(key: string): string | undefined {
+    let selectedIndex = -1;
+    for (let i = 0; i < this.keyCaps_.length; i++) {
+      if (this.keyCaps_[i] == key) {
+        selectedIndex = i;
+        break;
+      }
+    }
+    if (selectedIndex < 0) {
+      return undefined;
+    }
+    let current = Math.floor(this.currentSelectedIndex_ / this.keyCaps_.length);
+    let offset = current * this.keyCaps_.length;
+    return this.candidates_[offset + selectedIndex];
+  }
+
+  get selectedCandidate(): string {
+    return this.candidates_[this.currentSelectedIndex_];
+  }
+
   get currentPageIndex(): number {
     return Math.floor(this.currentSelectedIndex_ / this.keyCaps_.length) + 1;
   }

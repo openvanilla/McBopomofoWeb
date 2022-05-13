@@ -1,4 +1,4 @@
-import { CandidateController } from "./CandidateController";
+import { Candidate, CandidateController } from "./CandidateController";
 import {
   ChoosingCandidate,
   Committing,
@@ -13,11 +13,63 @@ import {
   ComposingBufferText,
   ComposingBufferTextStyle,
   InputUI,
+  InputUIState,
 } from "./InputUI";
+
 import { Key, KeyName } from "./Key";
 import { KeyHandler } from "./KeyHandler";
 import { webData } from "./WebData";
 import { WebLanguageModel } from "./WebLanguageModel";
+
+class InputUIController {
+  private ui: InputUI;
+  private cursorIndex: number = 0;
+  private tooltip: string = "";
+  private candidates: Candidate[] = [];
+  private composingBuffer: ComposingBufferText[] = [];
+
+  constructor(ui: InputUI) {
+    this.ui = ui;
+  }
+
+  reset(): void {
+    this.cursorIndex = 0;
+    this.tooltip = "";
+    this.candidates = [];
+    this.composingBuffer = [];
+
+    this.ui.reset();
+  }
+
+  commitString(text: string): void {
+    this.ui.commitString(text);
+  }
+
+  append(text: ComposingBufferText): void {
+    this.composingBuffer.push(text);
+  }
+
+  setCursorIndex(index: number): void {
+    this.cursorIndex = index;
+  }
+
+  setCandidates(candidates: Candidate[]): void {
+    this.candidates = candidates;
+  }
+
+  setTooltip(tooltip: string): void {
+    this.tooltip = tooltip;
+  }
+
+  update(): void {
+    let state = new InputUIState(
+      this.composingBuffer,
+      this.cursorIndex,
+      this.candidates,
+      this.tooltip
+    );
+  }
+}
 
 function KeyFromKeyboardEvent(event: KeyboardEvent) {
   let keyName = KeyName.UNKNOWN;
@@ -47,24 +99,25 @@ export class InputController {
     return new KeyHandler(lm);
   })();
   private candidateController_: CandidateController = new CandidateController();
-  private ui_: InputUI;
+  private ui_: InputUIController;
   private candidateKeys_ = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
 
   constructor(ui: InputUI) {
-    this.ui_ = ui;
+    this.ui_ = new InputUIController(ui);
   }
 
   activate(): void {}
 
   deactivate(): void {}
 
-  keyEvent(event: KeyboardEvent): void {
-    if (event.isComposing) return;
-    if (event.metaKey) return;
+  keyEvent(event: KeyboardEvent): boolean {
+    if (event.isComposing) return false;
+    if (event.metaKey) return false;
     let key = KeyFromKeyboardEvent(event);
     if (this.state_ instanceof ChoosingCandidate) {
-      // TODO: handle candidates
-      return;
+      this.handleCandidateKeyEvent(key);
+      this.updatePreedit(this.state_);
+      return true;
     }
     let accepted = this.keyHandler_.handle(
       key,
@@ -72,6 +125,59 @@ export class InputController {
       (newState) => this.enterNewState(newState),
       () => {}
     );
+    return accepted;
+  }
+
+  handleCandidateKeyEvent(key: Key) {
+    let selected = this.candidateController_.selectedCandidateWithKey(
+      key.ascii
+    );
+
+    if (selected != undefined) {
+      this.keyHandler_.candidateSelected(selected, (newState) => {
+        this.enterNewState(newState);
+      });
+      return;
+    }
+
+    if (key.ascii == Key.RETURN) {
+      let current = this.candidateController_.selectedCandidate;
+      this.keyHandler_.candidateSelected(current, (newState) => {
+        this.enterNewState(newState);
+      });
+      return;
+    }
+
+    if (key.ascii == Key.ESC || key.ascii == Key.BACKSPACE) {
+      this.keyHandler_.candidatePanelCancelled((newState) => {
+        this.enterNewState(newState);
+      });
+      return;
+    }
+
+    if (key.ascii == Key.SPACE) {
+      let current = this.candidateController_.currentPageIndex;
+      let total = this.candidateController_.totalPageCount;
+      if (current < total) {
+        this.candidateController_.goToNextPage();
+      } else {
+        this.candidateController_.goToFirst();
+      }
+    } else if (key.name == KeyName.LEFT) {
+      this.candidateController_.goToPreviousItem();
+    } else if (key.name == KeyName.RIGHT) {
+      this.candidateController_.goToNextItem();
+    } else if (key.name == KeyName.HOME) {
+      this.candidateController_.goToFirst();
+    } else if (key.name == KeyName.END) {
+      this.candidateController_.goToLast();
+    } else if (key.ascii == Key.UP) {
+      this.candidateController_.goToPreviousPage();
+    } else if (key.ascii == Key.DOWN) {
+      this.candidateController_.goToNextPage();
+    }
+    let result = this.candidateController_.getCurrentPage();
+    this.ui_.setCandidates(result);
   }
 
   private enterNewState(state: InputState): void {
@@ -125,6 +231,7 @@ export class InputController {
     }
     this.ui_.setCursorIndex(state.cursorIndex);
     this.ui_.setTooltip(state.tooltip);
+    this.ui_.update();
   }
 
   handleInputting(prev: InputState, state: Inputting) {

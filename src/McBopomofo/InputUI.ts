@@ -26,15 +26,27 @@ export class ComposingBufferText {
   }
 }
 
+export class InputUIState {
+  composingBuffer: ComposingBufferText[];
+  cursorIndex: number;
+  candidates: Candidate[];
+  tooltip: string;
+
+  constructor(
+    composingBuffer: ComposingBufferText[],
+    cursorIndex: number,
+    candidates: Candidate[],
+    tooltip: string
+  ) {
+    this.composingBuffer = composingBuffer;
+    this.cursorIndex = cursorIndex;
+    this.candidates = candidates;
+    this.tooltip = tooltip;
+  }
+}
+
 export interface InputUI {
   reset(): void;
-
-  append(text: ComposingBufferText): void;
-  setCursorIndex(index: number): void;
-  setCandidates(candidates: Candidate[]): void;
-  setTooltip(tooltip: string): void;
-
   commitString(text: string): void;
-
-  update(): void;
+  update(state: InputUIState): void;
 }

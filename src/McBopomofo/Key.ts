@@ -16,6 +16,9 @@ export enum KeyName {
 export class Key {
   static BACKSPACE: string = "Backspace";
   static RETURN: string = "Enter";
+  static UP: string = "ArrowUp";
+  static DOWN: string = "ArrowDown";
+
   static ESC: string = "Escape";
   static SPACE: string = " ";
   static DELETE: string = "Delete";
