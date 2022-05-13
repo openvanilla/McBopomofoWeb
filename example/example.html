@@ -18,13 +18,23 @@
 
     let ui = function () {
         let that = {};
-        that.reset = function () { }
+        that.reset = function () {
+            console.log('reset called');
+        };
+        that.commitString = function (string) {
+            console.log('commitString called ' + string);
+        };
+        that.update = function (state) {
+            console.log('update called ' + state);
+        };
+
         return that;
     }();
     let controller = new InputController(ui);
 
     document.getElementById("text_area").addEventListener('keydown', (event) => {
         console.log(event);
+        controller.keyEvent(event);
     })
 </script>
 
