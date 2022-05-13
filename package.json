@@ -6,16 +6,22 @@
     "jest": "^28.1.0",
     "nodemon": "^2.0.16",
     "ts-jest": "^28.0.2",
+    "ts-loader": "^9.3.0",
     "ts-node": "^10.7.0",
-    "typescript": "^4.6.4"
+    "typescript": "^4.6.4",
+    "webpack": "^5.72.1",
+    "webpack-cli": "^4.9.2"
   },
   "name": "mcbopomofoweb",
   "version": "0.1.0",
   "description": "McBopomofo",
   "main": "index.js",
   "scripts": {
-    "build": "tsc",
-    "test": "jest"
+    "ts-build": "tsc",
+    "ts-build:watch": "tsc -w",
+    "build": "webpack --mode production",
+    "build:dev": "webpack --mode development",
+    "build:watch": "webpack --mode development --watch"
   },
   "repository": {
     "type": "git",
