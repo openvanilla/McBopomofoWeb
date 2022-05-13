@@ -1,0 +1,32 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+</head>
+
+<bodY>
+    <h1>McBopomofo Example</h1>
+    <textarea id="text_area" rows="10" cols="50"></textarea>
+    <div class="composing_buffer" id="composing_buffer"></div>
+    <div class="candidates" id="candidates"></div>
+    <div class="tooltip" id="tooltip"></div>
+</bodY>
+
+
+<script lang="javascript" src="../public/bundle.js"></script>
+<script lang="javascript">
+
+    let ui = function () {
+        let that = {};
+        that.reset = function () { }
+        return that;
+    }();
+    let controller = new InputController(ui);
+
+    document.getElementById("text_area").addEventListener('keydown', (event) => {
+        console.log(event);
+    })
+</script>
+
+
+</html>
