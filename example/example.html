@@ -48,12 +48,12 @@
 
 <script lang="javascript" src="../public/bundle.js"></script>
 <script lang="javascript">
-
+    var chineseMode = true;
     let ui = function () {
         let that = {};
         that.reset = function () {
             console.log('reset called');
-            document.getElementById("composing_buffer").innerHTML = "【麥】";
+            document.getElementById("composing_buffer").innerHTML = chineseMode ? "【麥】" : "【英】";
             document.getElementById("candidates").innerHTML = "";
             document.getElementById("tooltip").innerHTML = "";
         };
@@ -76,9 +76,21 @@
 
             {
                 let buffer = state.composingBuffer;
-                let s = "【麥】";
+                let s = chineseMode ? "【麥】" : "【英】";
+                let i = 0;
                 for (let item of buffer) {
-                    s += item.text;
+                    let text = item.text;
+                    for (let c of text) {
+                        if (i == state.cursorIndex) {
+                            s += "|";
+                        }
+                        s += c;
+                        i++;
+                    }
+
+                }
+                if (i == state.cursorIndex) {
+                    s += "|";
                 }
                 document.getElementById("composing_buffer").innerHTML = s;
             }
@@ -101,6 +113,9 @@
                 s += "</tr></table>";
                 document.getElementById("candidates").innerHTML = s;
             }
+            else if (state.tooltip.length) {
+                document.getElementById("tooltip").innerHTML = state.tooltip;
+            }
 
         };
 
@@ -108,14 +123,35 @@
     }();
     const { InputController } = window.mcbopomofo;
     let controller = new InputController(ui);
+    let shiftState = false;
+
+    document.getElementById("text_area").addEventListener('keyup', (event) => {
+        console.log("keyup:" + event.key);
+        if (event.key == "Shift" && shiftState) {
+            shiftState = false;
+            chineseMode = !chineseMode;
+            controller.reset();
+            return;
+        }
+    });
 
     document.getElementById("text_area").addEventListener('keydown', (event) => {
-        console.log(event);
+        console.log("keydown:" + event.key);
+        if (event.key == "Shift") {
+            shiftState = true;
+        } else {
+            shiftState = false;
+        }
+
+        if (!chineseMode) {
+            return;
+        }
+
         let accepted = controller.keyEvent(event);
         if (accepted) {
             event.preventDefault();
         }
-    })
+    });
 
     document.getElementById("text_area").focus();
 

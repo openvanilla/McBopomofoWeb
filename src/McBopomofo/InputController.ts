@@ -142,6 +142,11 @@ export class InputController {
 
   deactivate(): void {}
 
+  reset(): void {
+    this.keyHandler_.reset();
+    this.enterNewState(new Empty());
+  }
+
   keyEvent(event: KeyboardEvent): boolean {
     if (event.isComposing) return false;
     if (event.metaKey) return false;
