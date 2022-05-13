@@ -41,6 +41,10 @@ class InputUIController {
     this.ui.reset();
   }
 
+  resetComposingBuffer(): void {
+    this.composingBuffer = [];
+  }
+
   commitString(text: string): void {
     this.ui.commitString(text);
   }
@@ -128,7 +132,7 @@ export class InputController {
   })();
   private candidateController_: CandidateController = new CandidateController();
   private ui_: InputUIController;
-  private candidateKeys_ = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
+  private candidateKeys_ = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
 
   constructor(ui: InputUI) {
     this.ui_ = new InputUIController(ui);
@@ -247,7 +251,7 @@ export class InputController {
   }
 
   updatePreedit(state: NotEmpty) {
-    this.ui_.reset();
+    this.ui_.resetComposingBuffer();
     if (state instanceof Marking) {
       this.ui_.append(new ComposingBufferText(state.head));
       this.ui_.append(

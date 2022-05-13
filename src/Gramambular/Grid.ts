@@ -63,6 +63,7 @@ export class Grid {
   }
 
   nodesEndingAt(location: number): NodeAnchor[] {
+    console.log("nodesEndingAt " + location);
     let result: NodeAnchor[] = [];
 
     if (this.spans_.length > 0 && location <= this.spans_.length) {
@@ -86,13 +87,15 @@ export class Grid {
   }
 
   nodesCrossingOrEndingAt(location: number): NodeAnchor[] {
+    console.log("nodesCrossingOrEndingAt " + location);
+
     let result: NodeAnchor[] = [];
 
-    if (this.spans_.length > 0 && location < this.spans_.length) {
+    if (this.spans_.length > 0 && location <= this.spans_.length) {
       for (let i = 0; i < location; i++) {
         let span = this.spans_[i];
         if (i + span.maximumLength >= location) {
-          for (let j = 1, m = span.maximumLength; j < m; j++) {
+          for (let j = 1, m = span.maximumLength; j <= m; j++) {
             if (i + j < location) {
               continue;
             }

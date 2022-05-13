@@ -39,6 +39,8 @@ const kLetterPrefix = "_letter_";
 
 const kMinValidMarkingReadingCount = 2;
 const kMaxValidMarkingReadingCount = 6;
+const kUserOverrideModelCapacity = 500;
+const kObservedOverrideHalfLife = 5400.0; // 1.5 hr.
 
 const kComposingBufferSize: number = 10;
 // Unigram whose score is below this shouldn't be put into user override model.
@@ -119,7 +121,10 @@ export class KeyHandler {
   private reading_: BopomofoReadingBuffer;
   private builder_: BlockReadingBuilder;
   private walkedNodes_: NodeAnchor[] = [];
-  private userOverrideModel_: UserOverrideModel | undefined;
+  private userOverrideModel_: UserOverrideModel = new UserOverrideModel(
+    kUserOverrideModelCapacity,
+    kObservedOverrideHalfLife
+  );
 
   constructor(languageModel: LanguageModel) {
     this.languageModel_ = languageModel;

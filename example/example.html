@@ -41,12 +41,35 @@
             let state = JSON.parse(string);
             console.log('update called ' + string);
             console.log('update called ' + state);
-            let buffer = state.composingBuffer;
-            let s = "";
-            for (let item of buffer) {
-                s += item.text;
+
+            {
+                let buffer = state.composingBuffer;
+                let s = "";
+                for (let item of buffer) {
+                    s += item.text;
+                }
+                document.getElementById("composing_buffer").innerHTML = s;
             }
-            document.getElementById("composing_buffer").innerHTML = s;
+
+            if (state.candidates.length) {
+                let s = "<table><tr>"
+                for (let candidate of state.candidates) {
+                    s += "<td>";
+                    if (candidate.selected) s += "<b>";
+                    s += candidate.keyCap;
+                    if (candidate.selected) s += "</b>";
+                    s += "</td>";
+                    s += "<td>";
+                    if (candidate.selected) s += "<b>";
+                    s += candidate.candidate;
+                    if (candidate.selected) s += "</b>";
+                    s += "</td>";
+                    if (candidate.selected) s += "</b>";
+                }
+                s += "</tr></table>";
+                document.getElementById("candidates").innerHTML = s;
+            }
+
         };
 
         return that;
