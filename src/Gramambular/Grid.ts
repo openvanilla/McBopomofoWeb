@@ -51,7 +51,7 @@ export class Grid {
     console.log("shrinkGridByOneAtLocation " + location);
     console.log("this.spans " + this.spans_);
     if (location >= this.spans_.length) return;
-    delete this.spans_[location];
+    this.spans_.splice(location, 1);
     console.log("this.spans " + this.spans_);
     for (let i = 0; i < location; i++) {
       this.spans_[i].removeNodeOfLengthGreaterThan(location - i);

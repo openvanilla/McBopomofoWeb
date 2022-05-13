@@ -49,7 +49,7 @@ export class BlockReadingBuilder {
 
   deleteReadingBeforeCursor(): boolean {
     if (this.cursorIndex_ === 0) return false;
-    delete this.readings_[this.cursorIndex_ - 1];
+    this.readings_.splice(this.cursorIndex_ - 1, 1);
     this.cursorIndex_--;
     this.grid_.shrinkGridByOneAtLocation(this.cursorIndex_);
     this.build();
@@ -58,7 +58,7 @@ export class BlockReadingBuilder {
 
   deleteReadingAfterCursor(): boolean {
     if (this.cursorIndex_ === this.readings_.length) return false;
-    delete this.readings_[this.cursorIndex_];
+    this.readings_.splice(this.cursorIndex_, 1);
     this.build();
     return true;
   }
@@ -71,7 +71,7 @@ export class BlockReadingBuilder {
       if (this.cursorIndex_ > 0) {
         this.cursorIndex_--;
       }
-      delete this.readings[0];
+      this.readings_.splice(0, 1);
       this.grid_.shrinkGridByOneAtLocation(0);
       this.build();
     }

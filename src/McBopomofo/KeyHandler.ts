@@ -376,7 +376,7 @@ export class KeyHandler {
       }
 
       // Upper case letters.
-      if (simpleAscii >= "A" && simpleAscii <= "Z") {
+      if (simpleAscii.length == 1 && simpleAscii >= "A" && simpleAscii <= "Z") {
         if (this.putLowercaseLettersToComposingBuffer_) {
           unigram = kLetterPrefix + chrStr;
 
