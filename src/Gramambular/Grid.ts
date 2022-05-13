@@ -5,14 +5,10 @@ import { NodeAnchor } from "./NodeAnchor";
 export class Grid {
   private spans_: Span[] = [];
 
-  constructor() {
-    this.spans_ = [];
-  }
-
   clear = () => (this.spans_ = []);
 
   insertNode(node: Node, location: number, spanningLength: number): void {
-    if (location > this.spans_.length) {
+    if (location >= this.spans_.length) {
       let diff = location - this.spans_.length + 1;
       for (let i = 0; i < diff; i++) {
         this.spans_.push(new Span());
@@ -26,10 +22,17 @@ export class Grid {
     spanningLength: number,
     key: string
   ): boolean {
-    if (location > this.spans_.length) return false;
+    if (location > this.spans_.length) {
+      return false;
+    }
     let span = this.spans_[location];
+    if (span === undefined) {
+      return false;
+    }
     let n = span.nodeOfLength(spanningLength);
-    if (n === undefined) return false;
+    if (n === undefined) {
+      return false;
+    }
     return key === n.key;
   }
 
@@ -45,8 +48,11 @@ export class Grid {
   }
 
   shrinkGridByOneAtLocation(location: number): void {
+    console.log("shrinkGridByOneAtLocation " + location);
+    console.log("this.spans " + this.spans_);
     if (location >= this.spans_.length) return;
     delete this.spans_[location];
+    console.log("this.spans " + this.spans_);
     for (let i = 0; i < location; i++) {
       this.spans_[i].removeNodeOfLengthGreaterThan(location - i);
     }
@@ -62,9 +68,10 @@ export class Grid {
     if (this.spans_.length > 0 && location <= this.spans_.length) {
       for (let i = 0; i < location; i++) {
         let span = this.spans_[i];
+        // if (span === undefined) continue;
 
         if (i + span.maximumLength >= location) {
-          let node = span?.nodeOfLength(location - i);
+          let node = span.nodeOfLength(location - i);
           if (node != undefined) {
             let na = new NodeAnchor();
             na.node = node;
@@ -83,7 +90,7 @@ export class Grid {
 
     if (this.spans_.length > 0 && location < this.spans_.length) {
       for (let i = 0; i < location; i++) {
-        let span = this.spans_[i] ?? new Span();
+        let span = this.spans_[i];
         if (i + span.maximumLength >= location) {
           for (let j = 1, m = span.maximumLength; j < m; j++) {
             if (i + j < location) {

@@ -4,6 +4,14 @@ export class Span {
   protected lengthNodeMap_: Map<string, Node> = new Map();
   protected maximumLength_: number = 0;
 
+  toString(): string {
+    let s = "";
+    for (let x of this.lengthNodeMap_) {
+      s += x[0] + "=" + x[1];
+    }
+    return "[Span (" + s + ")]";
+  }
+
   clear(): void {
     this.lengthNodeMap_.clear();
     this.maximumLength_ = 0;

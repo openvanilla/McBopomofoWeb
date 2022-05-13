@@ -139,7 +139,13 @@ export class KeyHandler {
     // From Key's definition, if shiftPressed is true, it can't be a simple key
     // that can be represented by ASCII.
     let simpleAscii = key.ascii;
-
+    if (
+      simpleAscii == "Shift" ||
+      simpleAscii == "Meta" ||
+      simpleAscii == "Alt"
+    ) {
+      return false;
+    }
     // See if it's valid BPMF reading.
     let keyConsumedByReading = false;
     if (this.reading_.isValidKey(simpleAscii)) {
@@ -158,10 +164,6 @@ export class KeyHandler {
     let shouldComposeReading =
       (this.reading_.hasToneMarker && !this.reading_.hasToneMarkerOnly) ||
       (!this.reading_.isEmpty && key.name == KeyName.SPACE);
-
-    console.log("this.reading_.isEmpty" + this.reading_.isEmpty);
-    console.log("simpleAscii is space..." + (key.name == KeyName.SPACE));
-    console.log("shouldComposeReading...." + shouldComposeReading);
 
     if (shouldComposeReading) {
       let syllable = this.reading_.syllable.composedString;

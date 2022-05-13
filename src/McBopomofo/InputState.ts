@@ -6,7 +6,11 @@ export interface InputState {}
 // effect with the previous state. For example, if the previous state is
 // Inputting, and an implementation enters Empty, the implementation may commit
 // whatever is in Inputting to the input method context.
-export class Empty implements InputState {}
+export class Empty implements InputState {
+  toString(): string {
+    return "Empty";
+  }
+}
 
 // Empty state with no consideration for any previous state.
 //
@@ -15,7 +19,11 @@ export class Empty implements InputState {}
 // implementation must continue to enter Empty after this, so that no use sites
 // of the state machine need to check for both Empty and EmptyIgnoringPrevious
 // states.
-export class EmptyIgnoringPrevious implements InputState {}
+export class EmptyIgnoringPrevious implements InputState {
+  toString(): string {
+    return "EmptyIgnoringPrevious";
+  }
+}
 
 // Committing text.
 export class Committing implements InputState {
@@ -26,6 +34,10 @@ export class Committing implements InputState {
 
   constructor(text: string) {
     this.text_ = text;
+  }
+
+  toString(): string {
+    return "Committing " + this.text;
   }
 }
 
@@ -51,6 +63,10 @@ export class NotEmpty implements InputState {
     this.cursorIndex_ = index;
     this.tooltip_ = tooltipText;
   }
+
+  toString(): string {
+    return "NotEmpty";
+  }
 }
 
 // Inputting state with an optional field to commit evicted ("popped") segments
@@ -60,6 +76,10 @@ export class Inputting extends NotEmpty {
 
   constructor(buf: string, index: number, tooltipText: string = "") {
     super(buf, index, tooltipText);
+  }
+
+  toString(): string {
+    return "Inputting " + this.composingBuffer + " tooltip:" + this.tooltip;
   }
 }
 
@@ -73,6 +93,10 @@ export class ChoosingCandidate extends NotEmpty {
   constructor(buf: string, index: number, cs: string[]) {
     super(buf, index);
     this.candidates_ = cs;
+  }
+
+  toString(): string {
+    return "ChoosingCandidate " + this.candidates;
   }
 }
 
@@ -92,6 +116,10 @@ export class Marking extends NotEmpty {
   private tail_: string;
   private reading_: string;
   private acceptable_: boolean;
+
+  toString(): string {
+    return "Marking " + this.markStartGridCursorIndex_ + "" + this.cursorIndex;
+  }
 
   get markStartGridCursorIndex(): number {
     return this.markStartGridCursorIndex_;

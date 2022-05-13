@@ -143,6 +143,7 @@ export class InputController {
     if (event.metaKey) return false;
     let key = KeyFromKeyboardEvent(event);
     if (this.state_ instanceof ChoosingCandidate) {
+      this.ui_.reset();
       this.handleCandidateKeyEvent(key);
       this.updatePreedit(this.state_);
       return true;
@@ -209,6 +210,7 @@ export class InputController {
   }
 
   private enterNewState(state: InputState): void {
+    console.log("enterNewState " + state.toString());
     let prev = this.state_;
     if (state instanceof Empty) {
       this.handleEmpty(prev, state);
@@ -245,6 +247,7 @@ export class InputController {
   }
 
   updatePreedit(state: NotEmpty) {
+    this.ui_.reset();
     if (state instanceof Marking) {
       this.ui_.append(new ComposingBufferText(state.head));
       this.ui_.append(

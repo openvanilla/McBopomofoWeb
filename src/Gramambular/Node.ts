@@ -1,11 +1,8 @@
 import { Bigram } from "./Bigram";
 import { KeyValuePair } from "./KeyValuePair";
-import { LanguageModel } from "./LanguageModel";
 import { Unigram } from "./Unigram";
 
 export class Node {
-  private LM_?: LanguageModel;
-
   private key_: string;
   private score_: number = 0.0;
 
@@ -32,14 +29,13 @@ export class Node {
       this.valueUnigramIndexMap_.set(unigram.keyValue.value, i);
       this.candidates_.push(unigram.keyValue);
     }
-
-    bigrams.forEach((bigram) => {
-      let list = this.preceedingGramBigramMap_.get(bigram.preceedingKeyValue);
-      if (list === undefined) list = [];
+    for (let bigram of bigrams) {
+      let list =
+        this.preceedingGramBigramMap_.get(bigram.preceedingKeyValue) ?? [];
 
       list.push(bigram);
       this.preceedingGramBigramMap_.set(bigram.preceedingKeyValue, list);
-    });
+    }
   }
 
   get isCandidateFixed(): boolean {
