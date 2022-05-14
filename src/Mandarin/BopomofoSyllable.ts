@@ -2,11 +2,26 @@ import { BopomofoCharacterMap } from "./BopomofoCharacterMap";
 
 export type Component = number;
 
+class PinyinWrapper {
+  text: string;
+  constructor(text: string) {
+    this.text = text;
+  }
+  substring(arg: number): PinyinWrapper {
+    return new PinyinWrapper(this.text.substring(arg));
+  }
+}
+
 class PinyinParseHelper {
-  static ConsumePrefix(target: string, prefix: string) {
-    if (target.length < prefix.length) return false;
-    if (target.substring(0, prefix.length) === prefix) {
-      target = target.substring(prefix.length, target.length - prefix.length);
+  static ConsumePrefix(wrapper: PinyinWrapper, prefix: string) {
+    let target = wrapper.text;
+    if (target.length < prefix.length) {
+      return false;
+    }
+    if (target.substr(0, prefix.length) === prefix) {
+      target = target.substr(prefix.length, target.length - prefix.length);
+      wrapper.text = target;
+      console.log("true:" + target + ":" + prefix);
       return true;
     }
     return false;
@@ -24,7 +39,7 @@ export class BopomofoSyllable {
     if (str.length === 0) {
       return new BopomofoSyllable();
     }
-    let pinyin: string = str.toLocaleLowerCase();
+    let pinyin: PinyinWrapper = new PinyinWrapper(str.toLocaleLowerCase());
     let firstComponent: Component = 0;
     let secondComponent: Component = 0;
     let thirdComponent: Component = 0;
@@ -60,7 +75,7 @@ export class BopomofoSyllable {
     }
 
     // try the first character
-    let c: string = pinyin.length > 0 ? pinyin.charAt(0) : "";
+    let c: string = pinyin.text.length > 0 ? pinyin.text.charAt(0) : "";
     switch (c) {
       case "b":
         firstComponent = BopomofoSyllable.B;
