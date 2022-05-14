@@ -132,6 +132,12 @@
                     </td>
                 </tr>
                 <tr>
+                    <td class="option_title">ESC 按鍵：</td>
+                    <td>
+                        <input type="checkbox" name="esc_key" id="esc_key">ESC 按鍵清除整個輸入緩衝區
+                    </td>
+                </tr>
+                <tr>
                     <td class="option_title">Shift + 字母：</td>
                     <td>
                         <input type="radio" name="letters" value="uppercase_letters" id="uppercase_letters"
@@ -282,6 +288,11 @@
 
     document.getElementById("after_cursor").onchange = function (event) {
         controller.setSelectPhrase("after_cursor");
+    };
+
+    document.getElementById("esc_key").onchange = function (event) {
+        let checked = document.getElementById("esc_key").checked;
+        controller.setEscClearEntireBuffer(checked);
     };
 
     document.getElementById("uppercase_letters").onchange = function (event) {

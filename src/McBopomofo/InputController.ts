@@ -192,11 +192,13 @@ export class InputController {
       }
       list.push(c);
     }
-    console.log("list" + list);
     if (list.length < 4) return;
     if (list.length > 15) return;
     this.candidateKeys_ = list;
-    console.log("this.candidateKeys_ " + this.candidateKeys_);
+  }
+
+  setEscClearEntireBuffer(flag: boolean) {
+    this.keyHandler_.escKeyClearsEntireComposingBuffer = flag;
   }
 
   keyEvent(event: KeyboardEvent): boolean {
