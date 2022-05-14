@@ -173,6 +173,15 @@ export class InputController {
     this.keyHandler_.selectPhraseAfterCursorAsCandidate = flag;
   }
 
+  setMoveCursorAfterSelection(flag: boolean) {
+    this.keyHandler_.moveCursorAfterSelection = flag;
+  }
+
+  setLetterMode(letterCase: string) {
+    let flag = letterCase === "lower";
+    this.keyHandler_.putLowercaseLettersToComposingBuffer = flag;
+  }
+
   keyEvent(event: KeyboardEvent): boolean {
     if (event.isComposing) return false;
     if (event.metaKey) return false;

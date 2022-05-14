@@ -12,6 +12,11 @@ export class WebLanguageModel implements LanguageModel {
   }
 
   unigramsForKey(key: string): Unigram[] {
+    if (key === " ") {
+      let space = new Unigram(new KeyValuePair(" ", " "));
+      return [space];
+    }
+
     let list = this.map_.get(key);
     if (list === undefined) return [];
     let result: Unigram[] = [];
@@ -23,6 +28,10 @@ export class WebLanguageModel implements LanguageModel {
   }
 
   hasUnigramsForKey(key: string): boolean {
+    if (key === " ") {
+      return true;
+    }
+
     let list = this.map_.get(key);
     if (list === undefined) return false;
     return list.length > 0;
