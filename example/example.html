@@ -28,8 +28,24 @@
             color: #FFF;
         }
 
+        .function table {
+            font-size: 12pt;
+            color: #FFF;
+        }
+
         #candidates {
             margin-top: 10px;
+        }
+
+        .left {
+            width: 70%;
+            float: left;
+        }
+
+        .right {
+            width: 25%;
+            float: right;
+            margin-left: 10px;
         }
     </style>
 </head>
@@ -37,11 +53,38 @@
 <bodY>
     <h1>McBopomofo Example</h1>
     <p>您不需要額外安裝中文輸入法，就可以在以下文字框用線上版小麥注音輸入中文</p>
-    <textarea id="text_area" rows="10" cols="50"></textarea>
-    <div class="function">
-        <div class="composing_buffer" id="composing_buffer">【麥】</div>
-        <div class="candidates" id="candidates"></div>
-        <div class="tooltip" id="tooltip"></div>
+    <div class="left">
+        <textarea id="text_area" rows="10" cols="50"></textarea>
+        <div class="function">
+            <div class="composing_buffer" id="composing_buffer">【麥】</div>
+            <div class="candidates" id="candidates"></div>
+            <div class="tooltip" id="tooltip"></div>
+        </div>
+    </div>
+    <div class="right">
+        <h2>設定</h2>
+        <table>
+            <tr>
+                <td>鍵盤配置：</td>
+                <td>
+                    <select id="layout">
+                        <option value="Standard">標準</option>
+                        <option value="ETen">倚天</option>
+                        <option value="Hsu">許式</option>
+                        <option value="ETen">倚天 26</option>
+                        <option value="HanyuPinyin">漢語拼音</option>
+                        <option value="IBM">IBM</option>
+                    </select>
+                </td>
+            <tr>
+                <td>選字模式：</td>
+                <td>
+                    <input type="radio" name="select_phrase" value="before_cursor" id="before_cursor"
+                        checked="checked"><label for="before_cursor">選擇游標前的字詞</label><br>
+                    <input type="radio" name="select_phrase" value="after_cursor" id="after_cursor"><label
+                        for="after_cursor">選擇游標後的字詞</label>
+                </td>
+        </table>
     </div>
 </bodY>
 
@@ -52,7 +95,6 @@
     let ui = function () {
         let that = {};
         that.reset = function () {
-            console.log('reset called');
             document.getElementById("composing_buffer").innerHTML = chineseMode ? "【麥】" : "【英】";
             document.getElementById("candidates").innerHTML = "";
             document.getElementById("tooltip").innerHTML = "";
@@ -71,9 +113,6 @@
 
         that.update = function (string) {
             let state = JSON.parse(string);
-            console.log('update called ' + string);
-            console.log('update called ' + state);
-
             {
                 let buffer = state.composingBuffer;
                 let s = chineseMode ? "【麥】" : "【英】";
@@ -81,7 +120,7 @@
                 for (let item of buffer) {
                     let text = item.text;
                     for (let c of text) {
-                        if (i == state.cursorIndex) {
+                        if (i === state.cursorIndex) {
                             s += "|";
                         }
                         s += c;
@@ -89,7 +128,7 @@
                     }
 
                 }
-                if (i == state.cursorIndex) {
+                if (i === state.cursorIndex) {
                     s += "|";
                 }
                 document.getElementById("composing_buffer").innerHTML = s;
@@ -126,8 +165,7 @@
     let shiftState = false;
 
     document.getElementById("text_area").addEventListener('keyup', (event) => {
-        console.log("keyup:" + event.key);
-        if (event.key == "Shift" && shiftState) {
+        if (event.key === "Shift" && shiftState) {
             shiftState = false;
             chineseMode = !chineseMode;
             controller.reset();
@@ -136,8 +174,7 @@
     });
 
     document.getElementById("text_area").addEventListener('keydown', (event) => {
-        console.log("keydown:" + event.key);
-        if (event.key == "Shift") {
+        if (event.key === "Shift") {
             shiftState = true;
         } else {
             shiftState = false;
@@ -152,6 +189,20 @@
             event.preventDefault();
         }
     });
+
+
+    document.getElementById("layout").onchange = function (event) {
+        let value = document.getElementById("layout").value;
+        controller.setKeyboardLayout(value);
+    };
+
+    document.getElementById("before_cursor").onchange = function (event) {
+        controller.setSelectPhrase("before_cursor");
+    };
+
+    document.getElementById("after_cursor").onchange = function (event) {
+        controller.setSelectPhrase("after_cursor");
+    };
 
     document.getElementById("text_area").focus();
 

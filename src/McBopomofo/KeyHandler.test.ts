@@ -20,13 +20,13 @@ function handleKeySequence(keyHandler: KeyHandler, keys: Key[]): InputState {
       key,
       currentState,
       (state) => {
-        console.log(state);
+        // console.log(state);
         currentState = state;
       },
       () => {}
     );
   }
-  console.log(currentState);
+  // console.log(currentState);
   return currentState;
 }
 
@@ -48,7 +48,6 @@ describe("Test KeyHandler.test", () => {
       (state) => (stateCallbackCalled = true),
       () => (errorCallbackCalled = true)
     );
-    console.log("stateCallbackCalled" + stateCallbackCalled);
     expect(stateCallbackCalled).toBe(false);
     expect(errorCallbackCalled).toBe(false);
   });

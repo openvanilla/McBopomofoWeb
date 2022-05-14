@@ -570,7 +570,7 @@ export class BopomofoSyllable {
   }
 
   get isEmpty(): boolean {
-    return this.syllable_ == 0;
+    return this.syllable_ === 0;
   }
 
   get hasConsonant(): boolean {

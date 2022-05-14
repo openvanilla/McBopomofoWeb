@@ -1,3 +1,4 @@
+import { BopomofoKeyboardLayout } from "../Mandarin";
 import { Candidate, CandidateController } from "./CandidateController";
 import {
   ChoosingCandidate,
@@ -118,8 +119,6 @@ function KeyFromKeyboardEvent(event: KeyboardEvent) {
       keyName = KeyName.ASCII;
       break;
   }
-  console.log('Key: "' + event.key + '"');
-  console.log('keyName: "' + keyName + '"');
   let key = new Key(event.key, keyName, event.shiftKey, event.ctrlKey);
   return key;
 }
@@ -138,13 +137,40 @@ export class InputController {
     this.ui_ = new InputUIController(ui);
   }
 
-  activate(): void {}
-
-  deactivate(): void {}
-
+  // Resets to empty state.
   reset(): void {
     this.keyHandler_.reset();
     this.enterNewState(new Empty());
+  }
+
+  // Sets keyboard layout.
+  setKeyboardLayout(layout: string) {
+    switch (layout) {
+      case "ETen":
+        this.keyHandler_.keyboardLayout = BopomofoKeyboardLayout.ETenLayout;
+        break;
+      case "Hsu":
+        this.keyHandler_.keyboardLayout = BopomofoKeyboardLayout.HsuLayout;
+        break;
+      case "ETen26":
+        this.keyHandler_.keyboardLayout = BopomofoKeyboardLayout.ETen26Layout;
+        break;
+      case "HanyuPinyin":
+        this.keyHandler_.keyboardLayout =
+          BopomofoKeyboardLayout.HanyuPinyinLayout;
+        break;
+      case "IBM":
+        this.keyHandler_.keyboardLayout = BopomofoKeyboardLayout.IBMLayout;
+        break;
+      default:
+        this.keyHandler_.keyboardLayout = BopomofoKeyboardLayout.StandardLayout;
+        break;
+    }
+  }
+
+  setSelectPhrase(option: string) {
+    let flag: boolean = option === "after_cursor";
+    this.keyHandler_.selectPhraseAfterCursorAsCandidate = flag;
   }
 
   keyEvent(event: KeyboardEvent): boolean {
@@ -219,7 +245,7 @@ export class InputController {
   }
 
   private enterNewState(state: InputState): void {
-    console.log("enterNewState " + state.toString());
+    // console.log("enterNewState " + state.toString());
     let prev = this.state_;
     if (state instanceof Empty) {
       this.handleEmpty(prev, state);

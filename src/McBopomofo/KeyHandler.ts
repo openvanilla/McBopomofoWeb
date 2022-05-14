@@ -145,9 +145,9 @@ export class KeyHandler {
     // that can be represented by ASCII.
     let simpleAscii = key.ascii;
     if (
-      simpleAscii == "Shift" ||
-      simpleAscii == "Meta" ||
-      simpleAscii == "Alt"
+      simpleAscii === "Shift" ||
+      simpleAscii === "Meta" ||
+      simpleAscii === "Alt"
     ) {
       return false;
     }
@@ -168,7 +168,7 @@ export class KeyHandler {
     // not empty, and space is pressed.
     let shouldComposeReading =
       (this.reading_.hasToneMarker && !this.reading_.hasToneMarkerOnly) ||
-      (!this.reading_.isEmpty && key.name == KeyName.SPACE);
+      (!this.reading_.isEmpty && key.name === KeyName.SPACE);
 
     if (shouldComposeReading) {
       let syllable = this.reading_.syllable.composedString;
@@ -376,7 +376,11 @@ export class KeyHandler {
       }
 
       // Upper case letters.
-      if (simpleAscii.length == 1 && simpleAscii >= "A" && simpleAscii <= "Z") {
+      if (
+        simpleAscii.length === 1 &&
+        simpleAscii >= "A" &&
+        simpleAscii <= "Z"
+      ) {
         if (this.putLowercaseLettersToComposingBuffer_) {
           unigram = kLetterPrefix + chrStr;
 
