@@ -24,6 +24,8 @@ export class BopomofoReadingBuffer {
     if (this.layout_ === BopomofoKeyboardLayout.HanyuPinyinLayout) {
       this.pinyinMode_ = true;
       this.pinyinSequence_ = "";
+    } else {
+      this.pinyinMode_ = false;
     }
   }
 
