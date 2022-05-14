@@ -26,6 +26,12 @@
             height: 4em;
             background-color: green;
             color: #FFF;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
         }
 
         .function table {
@@ -57,71 +63,100 @@
             text-align: right;
             vertical-align: top;
         }
+
+        .main {
+            max-width: 1320px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cursor {
+            animation: blinker 1s linear infinite;
+        }
+
+        @keyframes blinker {
+            50% {
+                opacity: 0;
+            }
+        }
     </style>
 </head>
 
 <bodY>
-    <p id="loading"><img src="https://cdnjs.cloudflare.com/ajax/libs/galleriffic/2.0.1/css/loader.gif" alt="載入中"
-            height="20" width="20">
-        正在載入小麥注音輸入法，請稍候</p>
-    <div class="left">
-        <textarea id="text_area" rows="10" cols="50"></textarea>
-        <div class="function">
-            <div class="composing_buffer" id="composing_buffer">【麥】</div>
-            <div class="candidates" id="candidates"></div>
+    <div class="main">
+        <p id="loading"><img src="https://cdnjs.cloudflare.com/ajax/libs/galleriffic/2.0.1/css/loader.gif" alt="載入中"
+                height="20" width="20">
+            正在載入小麥注音輸入法，請稍候</p>
+        <div class="left">
+            <textarea id="text_area" rows="10" cols="50"></textarea>
+            <div class="function">
+                <div class="composing_buffer" id="composing_buffer">【麥】</div>
+                <div class="candidates" id="candidates"></div>
 
+            </div>
         </div>
-    </div>
-    <div class="right">
-        <h2>設定</h2>
-        <table>
-            <tr>
-                <td class="option_title">鍵盤配置：</td>
-                <td>
-                    <select id="layout">
-                        <option value="Standard">標準</option>
-                        <option value="ETen">倚天</option>
-                        <option value="Hsu">許式</option>
-                        <option value="ETen">倚天 26</option>
-                        <option value="HanyuPinyin">漢語拼音</option>
-                        <option value="IBM">IBM</option>
-                    </select>
-                </td>
-            <tr>
-                <td class="option_title">選字模式：</td>
-                <td>
-                    <input type="radio" name="select_phrase" value="before_cursor" id="before_cursor"
-                        checked="checked"><label for="before_cursor">選擇游標前的字詞</label><br>
-                    <input type="radio" name="select_phrase" value="after_cursor" id="after_cursor"><label
-                        for="after_cursor">選擇游標後的字詞</label><br>
-                    <input type="checkbox" name="move_cursor" id="move_cursor">選字之後自動移動游標
-                </td>
-            </tr>
-            <tr>
-                <td class="option_title">Shift + 字母：</td>
-                <td>
-                    <input type="radio" name="letters" value="uppercase_letters" id="uppercase_letters"
-                        checked="checked"><label for="uppercase_letters">輸入大寫字母</label><br>
-                    <input type="radio" name="letters" value="lowercase_letters" id="lowercase_letters"><label
-                        for="lowercase_letters">輸入小寫字母</label>
-                </td>
-            </tr>
+        <div class="right">
+            <h2>設定</h2>
+            <table>
+                <tr>
+                    <td class="option_title">鍵盤配置：</td>
+                    <td>
+                        <select id="layout">
+                            <option value="Standard">標準</option>
+                            <option value="ETen">倚天</option>
+                            <option value="Hsu">許式</option>
+                            <option value="ETen">倚天 26</option>
+                            <option value="HanyuPinyin">漢語拼音</option>
+                            <option value="IBM">IBM</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="option_title">選字按鍵：</td>
+                    <td>
+                        <select id="keys">
+                            <option value="123456789">123456789</option>
+                            <option value="asdfghjkl">asdfghjkl</option>
+                            <option value="asdfzxcvb">asdfzxcvb</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="option_title">選字模式：</td>
+                    <td>
+                        <input type="radio" name="select_phrase" value="before_cursor" id="before_cursor"
+                            checked="checked"><label for="before_cursor">選擇游標前的字詞</label><br>
+                        <input type="radio" name="select_phrase" value="after_cursor" id="after_cursor"><label
+                            for="after_cursor">選擇游標後的字詞</label><br>
+                        <input type="checkbox" name="move_cursor" id="move_cursor">選字之後自動移動游標
+                    </td>
+                </tr>
+                <tr>
+                    <td class="option_title">Shift + 字母：</td>
+                    <td>
+                        <input type="radio" name="letters" value="uppercase_letters" id="uppercase_letters"
+                            checked="checked"><label for="uppercase_letters">輸入大寫字母</label><br>
+                        <input type="radio" name="letters" value="lowercase_letters" id="lowercase_letters"><label
+                            for="lowercase_letters">輸入小寫字母</label>
+                    </td>
+                </tr>
 
-        </table>
-        <h2>說明</h2>
-        <p>小麥注音是一套自動選字的注音輸入法，基本操作類似自然、酷音等。您可以在右方的輸入框中直接使用線上版本的小麥注音，無須安裝系統輸入法。使用方式如下</p>
-        <ul>
-            <li>輸入鍵盤按鍵，就會輸入注音或標點符號，在標準鍵盤下：</li>
+            </table>
+            <h2>說明</h2>
+            <p>小麥注音是一套自動選字的注音輸入法，基本操作類似自然、酷音等。您可以在左方的輸入框中直接使用線上版本的小麥注音，無須安裝系統輸入法。使用方式如下</p>
             <ul>
-                <li>Shift + , 輸入逗號</li>
-                <li>Shift + . 輸入句號</li>
-                <li>Shift + / 輸入問號</li>
-            </ul>
+                <li>輸入鍵盤按鍵，就會輸入注音或標點符號，在標準鍵盤下：</li>
+                <ul>
+                    <li>Shift + , 輸入逗號</li>
+                    <li>Shift + . 輸入句號</li>
+                    <li>Shift + / 輸入問號</li>
+                </ul>
 
-            <li>空白鍵選字</li>
-            <li>按下 ` 會出現符號表</li>
-            <li>按一下 Shift 用來切換中英文</li>
-        </ul>
+                <li>空白鍵選字</li>
+                <li>按下 ` 會出現符號表</li>
+                <li>按一下 Shift 用來切換中英文</li>
+            </ul>
+        </div>
     </div>
 </bodY>
 
@@ -129,12 +164,16 @@
 <script lang="javascript" src="../public/bundle.js"></script>
 <script lang="javascript">
     var chineseMode = true;
+    function resetUI() {
+        let s = chineseMode ? "【麥】" : "【英】"
+        s += "<span class='cursor'>|</span>";
+        document.getElementById("composing_buffer").innerHTML = s;
+        document.getElementById("candidates").innerHTML = "";
+    }
+
     let ui = function () {
         let that = {};
-        that.reset = function () {
-            document.getElementById("composing_buffer").innerHTML = chineseMode ? "【麥】" : "【英】";
-            document.getElementById("candidates").innerHTML = "";
-        };
+        that.reset = resetUI;
 
         that.commitString = function (string) {
             var selectionStart = document.getElementById("text_area").selectionStart;
@@ -157,7 +196,7 @@
                     let text = item.text;
                     for (let c of text) {
                         if (i === state.cursorIndex) {
-                            s += "|";
+                            s += "<span class='cursor'>|</span>";
                         }
                         s += c;
                         i++;
@@ -165,7 +204,7 @@
 
                 }
                 if (i === state.cursorIndex) {
-                    s += "|";
+                    s += "<span class='cursor'>|</span>";
                 }
                 document.getElementById("composing_buffer").innerHTML = s;
             }
@@ -231,6 +270,12 @@
         controller.setKeyboardLayout(value);
     };
 
+    document.getElementById("keys").onchange = function (event) {
+        let value = document.getElementById("keys").value;
+        console.log("value " + value);
+        controller.setCandidateKeys(value);
+    };
+
     document.getElementById("before_cursor").onchange = function (event) {
         controller.setSelectPhrase("before_cursor");
     };
@@ -255,6 +300,7 @@
     };
 
     document.getElementById("loading").innerText = "小麥注音輸入法載入完畢！";
+    resetUI();
     document.getElementById("text_area").focus();
 
 </script>

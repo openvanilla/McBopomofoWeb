@@ -182,6 +182,23 @@ export class InputController {
     this.keyHandler_.putLowercaseLettersToComposingBuffer = flag;
   }
 
+  setCandidateKeys(keys: string) {
+    let list: string[] = [];
+    for (let i = 0; i < keys.length; i++) {
+      let c = keys.charAt(i);
+      c = c.toLowerCase();
+      if (list.indexOf(c) >= 0) {
+        continue;
+      }
+      list.push(c);
+    }
+    console.log("list" + list);
+    if (list.length < 4) return;
+    if (list.length > 15) return;
+    this.candidateKeys_ = list;
+    console.log("this.candidateKeys_ " + this.candidateKeys_);
+  }
+
   keyEvent(event: KeyboardEvent): boolean {
     if (event.isComposing) return false;
     if (event.metaKey) return false;
