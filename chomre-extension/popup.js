@@ -1,14 +1,5 @@
 window.onload = () => {
-  let settings = (function () {
-    let that = {};
-    that.layout = "standard";
-    that.candidate_keys = "123456789";
-    that.select_phrase = "before_cursor";
-    that.esc_key_clear_entire_buffer = false;
-    that.move_cursor = false;
-    that.letter_mode = "upper";
-    return that;
-  })();
+  let settings = {};
 
   function applySettings(settings) {
     {
@@ -16,7 +7,6 @@ window.onload = () => {
       let options = select.getElementsByTagName("option");
       for (let option of options) {
         if (option.value === settings.layout) {
-          debug(option.value);
           option.selected = "selected";
           break;
         }
@@ -64,7 +54,7 @@ window.onload = () => {
 
   function saveSettings(settings) {
     chrome.storage.sync.set({ settings: settings }, () => {
-      debug(JSON.stringify(settings));
+      // debug(JSON.stringify(settings));
     });
   }
 
