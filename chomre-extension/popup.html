@@ -6,7 +6,7 @@
     <style>
         body {
             background-color: white;
-            font-size: 10pt;
+            font-size: 9pt;
             font-family: Arial, Helvetica, sans-serif;
 
             -webkit-touch-callout: none;
@@ -15,188 +15,58 @@
             -moz-user-select: none;
             -ms-user-select: none;
             user-select: none;
+            width: 200px;
         }
 
         select {
             width: 180px;
             font-size: 12pt;
         }
-
-        .option_title {
-            text-align: right;
-            vertical-align: top;
-        }
     </style>
+    <script src="popup.js"></script>
 </head>
 
 <body>
-    <h2>小麥注音輸入法設定</h2>
-    <table>
-        <tr>
-            <td class="option_title">鍵盤配置：</td>
-            <td>
-                <select id="layout">
-                    <option value="Standard">標準</option>
-                    <option value="ETen">倚天</option>
-                    <option value="Hsu">許式</option>
-                    <option value="ETen">倚天 26</option>
-                    <option value="HanyuPinyin">漢語拼音</option>
-                    <option value="IBM">IBM</option>
-                </select>
-            </td>
-        </tr>
-        <tr>
-            <td class="option_title">選字按鍵：</td>
-            <td>
-                <select id="keys">
-                    <option value="123456789">123456789</option>
-                    <option value="asdfghjkl">asdfghjkl</option>
-                    <option value="asdfzxcvb">asdfzxcvb</option>
-                </select>
-            </td>
-        </tr>
-        <tr>
-            <td class="option_title">選字模式：</td>
-            <td>
-                <input type="radio" name="select_phrase" value="before_cursor" id="before_cursor"
-                    checked="checked"><label for="before_cursor">選擇游標前的字詞</label><br>
-                <input type="radio" name="select_phrase" value="after_cursor" id="after_cursor"><label
-                    for="after_cursor">選擇游標後的字詞</label><br>
-                <input type="checkbox" name="move_cursor" id="move_cursor"><label for="move_cursor">選字之後自動移動游標</label>
-            </td>
-        </tr>
-        <tr>
-            <td class="option_title">ESC 按鍵：</td>
-            <td>
-                <input type="checkbox" name="esc_key" id="esc_key"><label for="esc_key">ESC
-                    按鍵清除整個輸入緩衝區</label>
-            </td>
-        </tr>
-        <tr>
-            <td class="option_title">Shift + 字母：</td>
-            <td>
-                <input type="radio" name="letters" value="uppercase_letters" id="uppercase_letters"
-                    checked="checked"><label for="uppercase_letters">輸入大寫字母</label><br>
-                <input type="radio" name="letters" value="lowercase_letters" id="lowercase_letters"><label
-                    for="lowercase_letters">輸入小寫字母</label>
-            </td>
-        </tr>
-    </table>
+    <div id="debug"></div>
+    <h2>小麥注音設定</h2>
+    <p>鍵盤配置：</p>
+    <p>
+        <select id="layout">
+            <option value="Standard">標準</option>
+            <option value="ETen">倚天</option>
+            <option value="Hsu">許式</option>
+            <option value="ETen">倚天 26</option>
+            <option value="HanyuPinyin">漢語拼音</option>
+            <option value="IBM">IBM</option>
+        </select>
+    </p>
+    <p>選字按鍵：</p>
+    <p>
+        <select id="keys">
+            <option value="123456789">123456789</option>
+            <option value="asdfghjkl">asdfghjkl</option>
+            <option value="asdfzxcvb">asdfzxcvb</option>
+        </select>
+    </p>
+    <p>選字模式：</p>
+    <p>
+        <input type="radio" name="select_phrase" value="before_cursor" id="before_cursor" checked="checked"><label
+            for="before_cursor">選擇游標前的字詞</label><br>
+        <input type="radio" name="select_phrase" value="after_cursor" id="after_cursor"><label
+            for="after_cursor">選擇游標後的字詞</label><br>
+        <input type="checkbox" name="move_cursor" id="move_cursor"><label for="move_cursor">選字之後自動移動游標</label>
+    </p>
+    <p>ESC 按鍵：</p>
+    <p>
+        <input type="checkbox" name="esc_key" id="esc_key"><label for="esc_key">清除整個輸入緩衝區</label>
+    </p>
+    <p>Shift + 字母按鍵：</p>
+    <p>
+        <input type="radio" name="letters" value="uppercase_letters" id="uppercase_letters" checked="checked"><label
+            for="uppercase_letters">輸入大寫字母</label><br>
+        <input type="radio" name="letters" value="lowercase_letters" id="lowercase_letters"><label
+            for="lowercase_letters">輸入小寫字母</label>
+    </p>
 </body>
-
-<script>
-
-    chrome.storage.sync.get("layout", (value) => {
-        let select = document.getElementById("layout");
-        let options = select.getElementsByTagName("option");
-        for (let option of options) {
-            if (option.value === value) {
-                option.selected = "selected";
-                break;
-            }
-        }
-    });
-
-    chrome.storage.sync.get("candidate_keys", (value) => {
-        let select = document.getElementById("keys");
-        let options = select.getElementsByTagName("option");
-        let found = false;
-        for (let option of options) {
-            if (option.value === value) {
-                option.selected = "selected";
-                found = true;
-                break;
-            }
-        }
-
-        if (!found) {
-            chrome.storage.sync.set({
-                "candidate_keys": "123456789"
-            }, () => {
-                options[0].selected = "selected";
-            });
-        }
-    });
-
-    chrome.storage.sync.get("select_phrase", (value) => {
-        if (value === "before_cursor") {
-            document.getElementById("before_cursor").checked = true;
-            document.getElementById("after_cursor").checked = false;
-        }
-        else if (value === "after_cursor") {
-            document.getElementById("before_cursor").checked = false;
-            document.getElementById("after_cursor").checked = true;
-        }
-    });
-
-    chrome.storage.sync.get("esc_key", (value) => {
-        document.getElementById("esc_key").checked = value;
-    });
-
-    chrome.storage.sync.get("letter_mode", (value) => {
-        if (value === "upper") {
-            document.getElementById("uppercase_letters").checked = true;
-            document.getElementById("lowercase_letters").checked = false;
-        }
-        else if (value === "lower") {
-            document.getElementById("uppercase_letters").checked = false;
-            document.getElementById("lowercase_letters").checked = true;
-        }
-    });
-
-
-    document.getElementById("layout").onchange = (event) => {
-        let value = document.getElementById("layout").value;
-        chrome.storage.sync.set({ "layout": value }, () => {
-            console.log("new keyboard layout is " + value);
-        });
-    };
-
-    document.getElementById("keys").onchange = (event) => {
-        let value = document.getElementById("keys").value;
-        chrome.storage.sync.set({ "candidate_keys": value }, () => {
-            console.log("new candidate keys are " + value);
-        });
-    };
-
-    document.getElementById("before_cursor").onchange = (event) => {
-        chrome.storage.sync.set({ "select_phrase": "before_cursor" }, () => {
-            console.log("new select phrase key is " + "before_cursor");
-        });
-    };
-
-    document.getElementById("after_cursor").onchange = (event) => {
-        chrome.storage.sync.set({ "select_phrase": "after_cursor" }, () => {
-            console.log("new select phrase key is " + "after_cursor");
-        });
-    };
-
-    document.getElementById("esc_key").onchange = (event) => {
-        let checked = document.getElementById("esc_key").checked;
-        chrome.storage.sync.set({ "esc_key_clear_entire_buffer": checked }, () => {
-            console.log("esc_key_clear_entire_buffer is " + checked);
-        });
-    };
-
-    document.getElementById("uppercase_letters").onchange = (event) => {
-        chrome.storage.sync.set({ "letter_mode": "upper" }, () => {
-            console.log("letter_mode is " + "upper");
-        });
-    };
-
-    document.getElementById("lowercase_letters").onchange = (event) => {
-        chrome.storage.sync.set({ "letter_mode": "lower" }, () => {
-            console.log("letter_mode is " + "lower");
-        });
-    };
-
-    document.getElementById("move_cursor").onchange = (event) => {
-        let checked = document.getElementById("move_cursor").checked;
-        chrome.storage.sync.set({ "move_cursor": checked }, () => {
-            console.log("move_cursor is " + checked);
-        });
-    };
-
-</script>
 
 </html>

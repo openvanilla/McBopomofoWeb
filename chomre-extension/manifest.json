@@ -7,7 +7,18 @@
     "service_worker": "background.js",
     "type": "module"
   },
-  "permissions": ["storage"],
+  "content_scripts": [ {
+    "all_frames": true,
+    "js": [ "content.js" ],
+    "css": [ "content.css" ],
+    "matches": [ "http://*/*", "https://*/*" ]
+  } ],
+  "permissions": [
+    "http://*/*",
+    "https://*/*",
+    "tabs",
+    "storage"
+  ],
   "action": {
     "default_popup": "popup.html"
   }
