@@ -10,6 +10,10 @@
             margin: 20px;
         }
 
+        #edit_area {
+            height: 70%;
+        }
+
         textarea {
             background-color: gray;
             font-size: 14pt;
@@ -17,7 +21,7 @@
             border: 0;
             padding: 10px;
             width: 100%;
-            height: 60%;
+            height: calc(100% - 4em);
         }
 
         textarea:focus {
@@ -92,11 +96,12 @@
                 height="20" width="20">
             正在載入小麥注音輸入法，請稍候</p>
         <div class="left">
-            <textarea id="text_area" rows="10" cols="50"></textarea>
-            <div class="function">
-                <div class="composing_buffer" id="composing_buffer">【麥】</div>
-                <div class="candidates" id="candidates"></div>
-
+            <div id="edit_area">
+                <textarea id="text_area" rows="10" cols="50"></textarea>
+                <div class="function">
+                    <div class="composing_buffer" id="composing_buffer">【麥】</div>
+                    <div class="candidates" id="candidates"></div>
+                </div>
             </div>
         </div>
         <div class="right">
@@ -139,7 +144,8 @@
                 <tr>
                     <td class="option_title">ESC 按鍵：</td>
                     <td>
-                        <input type="checkbox" name="esc_key" id="esc_key"><label for="esc_key">ESC 按鍵清除整個輸入緩衝區</label>
+                        <input type="checkbox" name="esc_key" id="esc_key"><label for="esc_key">ESC
+                            按鍵清除整個輸入緩衝區</label>
                     </td>
                 </tr>
                 <tr>
@@ -151,7 +157,12 @@
                             for="lowercase_letters">輸入小寫字母</label>
                     </td>
                 </tr>
-
+                <tr>
+                    <td class="option_title">其他：</td>
+                    <td>
+                        <a href="#" id="fullscreen">全螢幕編輯</a>
+                    </td>
+                </tr>
             </table>
             <h2>說明</h2>
             <p>小麥注音是一套自動選字的注音輸入法，基本操作類似自然、酷音等。您可以在左方的輸入框中直接使用線上版本的小麥注音，無須安裝系統輸入法。使用方式如下</p>
@@ -321,6 +332,21 @@
         controller.setMoveCursorAfterSelection(checked);
         document.getElementById("text_area").focus();
     };
+
+    document.getElementById("fullscreen").onclick = function (event) {
+        let elem = document.getElementById("edit_area");
+        if (elem.requestFullscreen) {
+            elem.requestFullscreen();
+        } else if (elem.msRequestFullscreen) {
+            elem.msRequestFullscreen();
+        } else if (elem.mozRequestFullScreen) {
+            elem.mozRequestFullScreen();
+        } else if (elem.webkitRequestFullscreen) {
+            elem.webkitRequestFullscreen();
+        }
+        document.getElementById("text_area").focus();
+        return false;
+    }
 
     document.getElementById("loading").innerText = "小麥注音輸入法載入完畢！";
     resetUI();
