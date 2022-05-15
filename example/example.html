@@ -11,13 +11,17 @@
         }
 
         textarea {
-            background-color: blue;
+            background-color: gray;
             font-size: 14pt;
             color: #FFF;
             border: 0;
             padding: 10px;
             width: 100%;
             height: 60%;
+        }
+
+        textarea:focus {
+            background-color: blue;
         }
 
         .function {
@@ -128,13 +132,14 @@
                             checked="checked"><label for="before_cursor">選擇游標前的字詞</label><br>
                         <input type="radio" name="select_phrase" value="after_cursor" id="after_cursor"><label
                             for="after_cursor">選擇游標後的字詞</label><br>
-                        <input type="checkbox" name="move_cursor" id="move_cursor">選字之後自動移動游標
+                        <input type="checkbox" name="move_cursor" id="move_cursor"><label
+                            for="move_cursor">選字之後自動移動游標</label>
                     </td>
                 </tr>
                 <tr>
                     <td class="option_title">ESC 按鍵：</td>
                     <td>
-                        <input type="checkbox" name="esc_key" id="esc_key">ESC 按鍵清除整個輸入緩衝區
+                        <input type="checkbox" name="esc_key" id="esc_key"><label for="esc_key">ESC 按鍵清除整個輸入緩衝區</label>
                     </td>
                 </tr>
                 <tr>
@@ -274,33 +279,39 @@
     document.getElementById("layout").onchange = function (event) {
         let value = document.getElementById("layout").value;
         controller.setKeyboardLayout(value);
+        document.getElementById("text_area").focus();
     };
 
     document.getElementById("keys").onchange = function (event) {
         let value = document.getElementById("keys").value;
-        console.log("value " + value);
         controller.setCandidateKeys(value);
+        document.getElementById("text_area").focus();
     };
 
     document.getElementById("before_cursor").onchange = function (event) {
         controller.setSelectPhrase("before_cursor");
+        document.getElementById("text_area").focus();
     };
 
     document.getElementById("after_cursor").onchange = function (event) {
         controller.setSelectPhrase("after_cursor");
+        document.getElementById("text_area").focus();
     };
 
     document.getElementById("esc_key").onchange = function (event) {
         let checked = document.getElementById("esc_key").checked;
         controller.setEscClearEntireBuffer(checked);
+        document.getElementById("text_area").focus();
     };
 
     document.getElementById("uppercase_letters").onchange = function (event) {
         controller.setLetterMode("upper");
+        document.getElementById("text_area").focus();
     };
 
     document.getElementById("lowercase_letters").onchange = function (event) {
         controller.setLetterMode("lower");
+        document.getElementById("text_area").focus();
     };
 
     document.getElementById("move_cursor").onchange = function (event) {
@@ -308,6 +319,7 @@
         console.log("checked");
         console.log(checked);
         controller.setMoveCursorAfterSelection(checked);
+        document.getElementById("text_area").focus();
     };
 
     document.getElementById("loading").innerText = "小麥注音輸入法載入完畢！";
