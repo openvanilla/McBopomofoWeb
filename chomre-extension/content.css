@@ -1,11 +1,11 @@
 #mcbpmf {
-  width: 40%;
+  width: 400px;
   height: 4em;
   color: #333;
   background-color: #fefefe;
   position: fixed;
   bottom: 20px;
-  left: 30%;
+  left: calc((100% - 400px) / 2);
   z-index: 9999;
   font-size: 12pt;
   padding: 4px 10px 4px 10px;
