@@ -1,37 +1,52 @@
-// import mcbopomofoweb from "./bundls.js";
-
 window.onload = function () {
   const { InputController } = window.mcbopomofo;
-  let controller = new InputController({});
+  let ui = (function () {
+    let that = {};
+    that.uiInfo = "";
+    that.text = "";
+
+    that.reset = function () {
+      console.log("ui reset called");
+      that.uiInfo = "";
+      that.text = "reset called";
+    };
+    that.commitString = function (string) {
+      console.log("ui commitString called");
+      this.text = string;
+      that.text = "commitString called";
+    };
+    that.update = function (string) {
+      console.log("ui update called");
+      that.uiInfo = string;
+      that.text = "update called";
+    };
+    return that;
+  })();
+
+  let controller = new InputController(ui);
 
   chrome.runtime.onMessage.addListener(function (
     request,
     sender,
     sendResponse
   ) {
-    console.log(
-      sender.tab
-        ? "from a content script:" + sender.tab.url
-        : "from the extension"
-    );
-
-    if (request.command === "set_ui") {
-      controller = new InputController(request.ui);
-      sendResponse({ msg: "set_ui called. controller:" + controller });
-    } else if (request.command === "set_ui") {
-      if (controller == null) {
-        sendResponse({ msg: "NO controller" });
-        return;
-      }
+    if (request.command === "reset") {
       controller.reset();
-      sendResponse({ msg: "reset called" });
+      let uiState = JSON.stringify(ui);
+      console.log("reset");
+      let msg = { msg: "reset called", ui: uiState };
+      console.log(msg);
+      sendResponse(msg);
     } else if (request.command === "send_key_event") {
-      if (controller == null) {
-        sendResponse({ msg: "NO controller" });
-        return;
-      }
-      let accepted = controller.keyEvent(request.key);
-      sendResponse({ accepted: accepted, key: "key is:" + request.key });
+      console.log("send_key_event");
+      let key = JSON.parse(request.key);
+      console.log("key");
+      console.log(key);
+      let accepted = controller.keyEvent(key);
+      let uiState = JSON.stringify(ui);
+      let msg = { accepted: accepted, key: request.key, ui: uiState };
+      console.log(msg);
+      sendResponse(msg);
     } else {
       sendResponse({});
     }

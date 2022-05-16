@@ -26,6 +26,10 @@ window.createMcBopomofoUI = function (element) {
     return document.getElementById("mcbpmf_candidates");
   };
 
+  that.reset = function () {
+    console.log("reset called");
+  };
+
   that.commitString = function (string) {
     console.log("commitString called");
     if (
@@ -97,9 +101,19 @@ window.mcbpmf_KeyUp = function (event) {
 window.mcbpmf_Keydown = async function (event) {
   console.log("keydown");
   console.log("keydown 1");
+  let o = {};
+  o.key = event.key;
+  o.code = event.code;
+  o.altKey = event.altKey;
+  o.ctrlKey = event.ctrlKey;
+  o.shiftKey = event.shiftKey;
+  o.metaKey = event.metaKey;
+  let key = JSON.stringify(o);
+
   let promise = new Promise((resolve, reject) => {
+    console.log(key);
     chrome.runtime.sendMessage(
-      { command: "send_key_event", key: event },
+      { command: "send_key_event", key: key },
       function (response) {
         console.log("response comes");
         console.log(response);
@@ -149,14 +163,6 @@ document.addEventListener("focusin", function (e) {
   window.mcBopomofoUI.inputPanel().hidden = false;
   newElement.addEventListener("keyup", mcbpmf_KeyUp);
   newElement.addEventListener("keydown", mcbpmf_Keydown);
-
-  console.log("call set_ui " + window.mcBopomofoUI);
-  chrome.runtime.sendMessage(
-    { command: "set_ui", ui: window.mcBopomofoUI },
-    function (response) {
-      console.log(response);
-    }
-  );
 
   console.log("call reset");
   chrome.runtime.sendMessage({ command: "reset" }, function (response) {
