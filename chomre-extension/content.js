@@ -27,6 +27,7 @@ window.createMcBopomofoUI = function (element) {
   };
 
   that.commitString = function (string) {
+    console.log("commitString called");
     if (
       that.element.nodeName === "TEXTAREA" ||
       that.element.nodeName === "INPUT"
@@ -43,6 +44,7 @@ window.createMcBopomofoUI = function (element) {
   };
 
   that.update = function (string) {
+    console.log("update called");
     let state = JSON.parse(string);
     {
       let buffer = state.composingBuffer;
