@@ -1,14 +1,10 @@
-import { Bigram, KeyValuePair, LanguageModel, Unigram } from "../Gramambular";
+import { KeyValuePair, LanguageModel, Unigram } from "../Gramambular";
 
 export class WebLanguageModel implements LanguageModel {
   private map_: Map<string, [string, number][]>;
 
   constructor(map: Map<string, [string, number][]>) {
     this.map_ = map;
-  }
-
-  bigramsForKey(preceedingKey: string, key: string): Bigram[] {
-    return [];
   }
 
   unigramsForKey(key: string): Unigram[] {

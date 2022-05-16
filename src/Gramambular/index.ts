@@ -1,4 +1,3 @@
-export { Bigram } from "./Bigram";
 export { BlockReadingBuilder } from "./BlockReadingBuilder";
 export { Grid } from "./Grid";
 export { KeyValuePair } from "./KeyValuePair";

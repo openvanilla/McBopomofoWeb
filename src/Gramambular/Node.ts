@@ -1,4 +1,3 @@
-import { Bigram } from "./Bigram";
 import { KeyValuePair } from "./KeyValuePair";
 import { Unigram } from "./Unigram";
 
@@ -9,12 +8,9 @@ export class Node {
   private unigrams_: Unigram[];
   private candidates_: KeyValuePair[] = [];
   private valueUnigramIndexMap_: Map<string, number> = new Map();
-  private preceedingGramBigramMap_: Map<KeyValuePair, Bigram[]> = new Map();
-
-  private candidateFixed_: boolean = false;
   private selectedUnigramIndex_: number = 0;
 
-  constructor(key: string, unigrams: Unigram[], bigrams: Bigram[]) {
+  constructor(key: string, unigrams: Unigram[]) {
     this.key_ = key;
 
     let sortedUnigrams = unigrams.sort((a, b) => b.score - a.score);
@@ -29,37 +25,24 @@ export class Node {
       this.valueUnigramIndexMap_.set(unigram.keyValue.value, i);
       this.candidates_.push(unigram.keyValue);
     }
-    for (let bigram of bigrams) {
-      let list =
-        this.preceedingGramBigramMap_.get(bigram.preceedingKeyValue) ?? [];
-
-      list.push(bigram);
-      this.preceedingGramBigramMap_.set(bigram.preceedingKeyValue, list);
-    }
-  }
-
-  get isCandidateFixed(): boolean {
-    return this.candidateFixed_;
   }
 
   get candidates(): KeyValuePair[] {
     return this.candidates_;
   }
 
-  selectCandidateAtIndex(index: number, fix: boolean = false): void {
+  selectCandidateAtIndex(index: number): void {
     if (index >= this.unigrams_.length) {
       this.selectedUnigramIndex_ = 0;
     } else {
       this.selectedUnigramIndex_ = index;
     }
 
-    this.candidateFixed_ = fix;
     this.score_ = 99;
   }
 
   resetCandidate(): void {
     this.selectedUnigramIndex_ = 0;
-    this.candidateFixed_ = false;
     if (this.unigrams_.length > 0) {
       this.score_ = this.unigrams_[0].score;
     }
@@ -72,7 +55,6 @@ export class Node {
       this.selectedUnigramIndex_ = index;
     }
 
-    this.candidateFixed_ = false;
     this.score_ = score;
   }
 
