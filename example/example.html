@@ -42,13 +42,12 @@
             user-select: none;
         }
 
-        .function table {
-            font-size: 12pt;
+        .function table td {
+            font-size: 12pt !important;
             color: #FFF;
         }
 
         #candidates {
-            font-size: 12pt;
             margin-top: 10px;
         }
 
@@ -80,6 +79,28 @@
 
         .cursor {
             animation: blinker 1s linear infinite;
+        }
+
+        .marking {
+            text-decoration: underline;
+        }
+
+        .highlighted_candidate {
+            background-color: white;
+            color: green;
+            font-weight: bold;
+        }
+
+        .keyCap {
+            padding: 4px 10px 4px 10px;
+            display: inline-block;
+            font-size: 10pt;
+        }
+
+        .candidate {
+            padding: 4px 10px 4px 0px;
+            display: inline-block;
+            font-size: 15pt;
         }
 
         @keyframes blinker {
@@ -215,6 +236,10 @@
                 let s = chineseMode ? "【麥】" : "【英】";
                 let i = 0;
                 for (let item of buffer) {
+                    console.log(item);
+                    if (item.style === "highlighted") {
+                        s += "<span class=\"marking\">";
+                    }
                     let text = item.text;
                     for (let c of text) {
                         if (i === state.cursorIndex) {
@@ -223,7 +248,9 @@
                         s += c;
                         i++;
                     }
-
+                    if (item.style === "highlighted") {
+                        s += "</span>";
+                    }
                 }
                 if (i === state.cursorIndex) {
                     s += "<span class='cursor'>|</span>";
@@ -235,21 +262,21 @@
                 let s = "<table><tr>"
                 for (let candidate of state.candidates) {
                     s += "<td>";
-                    if (candidate.selected) s += "<b>";
+                    if (candidate.selected) s += "<span class=\"highlighted_candidate\"> ";
+                    s += "<span class=\"keycap\">";
                     s += candidate.keyCap;
-                    if (candidate.selected) s += "</b>";
-                    s += "</td>";
-                    s += "<td>";
-                    if (candidate.selected) s += "<b>";
+                    s += "</span>"
+                    s += "<span class=\"candidiate\">";
                     s += candidate.candidate;
-                    if (candidate.selected) s += "</b>";
+                    s += "</span>"
+                    if (candidate.selected) s += "</span>";
                     s += "</td>";
-                    if (candidate.selected) s += "</b>";
                 }
                 s += "</tr></table>";
                 document.getElementById("candidates").innerHTML = s;
+            } else if (state.tooltip.length) {
+                document.getElementById("candidates").innerHTML = state.tooltip;
             }
-
         };
 
         return that;
@@ -346,6 +373,10 @@
         }
         document.getElementById("text_area").focus();
         return false;
+    }
+
+    document.getElementById("text_area").onblur = function () {
+        controller.reset();
     }
 
     document.getElementById("loading").innerText = "小麥注音輸入法載入完畢！";
