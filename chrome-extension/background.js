@@ -8,6 +8,7 @@ window.onload = function () {
     that.reset = function () {
       console.log("ui reset called");
       that.uiInfo = "";
+      that.text = "";
     };
     that.commitString = function (string) {
       console.log("ui commitString called");
@@ -28,7 +29,10 @@ window.onload = function () {
     sendResponse
   ) {
     if (request.command === "load_config") {
+      chrome.storage.sync.get("settings", (value) => {});
+      sendResponse({});
     } else if (request.command === "reset") {
+      ui.reset();
       controller.reset();
       let uiState = JSON.stringify(ui);
       // console.log("reset");
@@ -36,10 +40,8 @@ window.onload = function () {
       // console.log(msg);
       sendResponse(msg);
     } else if (request.command === "send_key_event") {
-      // console.log("send_key_event");
+      ui.reset();
       let key = JSON.parse(request.key);
-      // console.log("key");
-      // console.log(key);
       let accepted = controller.keyEvent(key);
       let uiState = JSON.stringify(ui);
       let msg = { accepted: accepted, key: request.key, ui: uiState };

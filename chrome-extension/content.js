@@ -1,7 +1,7 @@
 let inputArea = document.createElement("div");
 inputArea.innerHTML =
   '<div id="mcbpmf">' +
-  '<div name="mcbpmf_composing_buffer" id="mcbpmf_composing_buffer"></div>' +
+  '<div name="mcbpmf_composing_buffer" id="mcbpmf_composing_buffer">【麥】</div>' +
   '<div name="mcbpmf_candidates" id="mcbpmf_candidates"></div>' +
   '<div name="mcbpmf_debug" id="mcbpmf_debug"></div>' +
   "</div>";
@@ -15,6 +15,10 @@ window.createMcBopomofoUI = function (element) {
 
   that.reset = function () {
     console.log("reset called");
+    document.getElementById("mcbpmf_candidates").innerHTML = "";
+    let s = that.chineseMode ? "【麥】" : "【英】";
+    s += "<span class='cursor'>|</span>";
+    document.getElementById("mcbpmf_composing_buffer").innerHTML = s;
   };
 
   that.commitString = function (string) {
@@ -26,9 +30,19 @@ window.createMcBopomofoUI = function (element) {
       var selectionStart = that.element.selectionStart;
       var selectionStop = that.element.selectionStop;
       var text = that.element.value;
+      console.log("selectionStart: " + selectionStart);
+      console.log("selectionStop: " + selectionStop);
+      if (selectionStop == undefined) {
+        selectionStop = selectionStart;
+      }
+      console.log("selectionStop: " + selectionStop);
+      console.log("current text: " + text);
+      console.log("string: " + string);
       var head = text.substring(0, selectionStart);
       var tail = text.substring(selectionStop);
-      that.element.value = head + string + tail;
+      var composed = head + string + tail;
+      that.element.value = composed;
+      console.log("composed text: " + composed);
       let start = selectionStart + string.length;
       that.element.setSelectionRange(start, start);
     }
@@ -75,61 +89,92 @@ window.createMcBopomofoUI = function (element) {
       }
       s += "</tr></table>";
       document.getElementById("mcbpmf_candidates").innerHTML = s;
+    } else {
+      document.getElementById("mcbpmf_candidates").innerHTML = "";
     }
   };
 
   return that;
 };
 
-window.mcbpmf_KeyUp = function (event) {
-  console.log("keyup");
-  console.log(event);
+var lastKeyAccepted = false;
+let shiftState = false;
+
+window.mcbpmf_UpdateUI = function (ui) {
+  let uiState = JSON.parse(ui);
+  if (window.mcBopomofoUI != undefined) {
+    if (uiState.uiInfo.length > 0) {
+      window.mcBopomofoUI.update(uiState.uiInfo);
+    } else {
+      window.mcBopomofoUI.reset();
+    }
+    if (uiState.text.length > 0) {
+      window.mcBopomofoUI.commitString(uiState.text);
+    }
+  }
 };
 
-window.mcbpmf_Keydown = async function (event) {
-  console.log("keydown");
-  console.log("keydown 1");
+window.mcbpmf_KeyUp = function () {
+  if (event.key === "Shift" && shiftState) {
+    shiftState = false;
+    window.mcBopomofoUI.chineseMode = !window.mcBopomofoUI.chineseMode;
+    chrome.runtime.sendMessage({ command: "reset" }, function (response) {
+      window.mcbpmf_UpdateUI(response.ui);
+    });
+  }
+};
+
+window.mcbpmf_KeyPress = function (event) {
+  console.log("mcbpmf_KeyPress 1 " + lastKeyAccepted);
+
+  if (!window.mcBopomofoUI.chineseMode) {
+    return;
+  }
+
+  if (lastKeyAccepted) {
+    event.preventDefault();
+  } else if (event.key.length == 1) {
+    event.preventDefault();
+  }
+};
+
+window.mcbpmf_Keydown = function (event) {
+  console.log("mcbpmf_Keydown start");
+  console.log(event);
+  shiftState = event.key === "Shift";
+
+  if (!window.mcBopomofoUI.chineseMode) {
+    return;
+  }
+
+  event.preventDefault();
+
   let o = {};
+  o.isTrusted = true;
   o.key = event.key;
   o.code = event.code;
   o.altKey = event.altKey;
   o.ctrlKey = event.ctrlKey;
+  o.which = event.which;
   o.shiftKey = event.shiftKey;
   o.metaKey = event.metaKey;
+  o.keyCode = event.keyCode;
+  o.charCode = event.charCode;
+
   let key = JSON.stringify(o);
-  let accepted = false;
 
-  let promise = new Promise((resolve, reject) => {
-    console.log(key);
-    chrome.runtime.sendMessage(
-      { command: "send_key_event", key: key },
-      function (response) {
-        console.log(response);
-        console.log("keydown 2");
-        accepted = response.accepted;
-        console.log("keydown 2 accepted " + accepted);
-        uiState = JSON.parse(response.ui);
-        console.log("keydown 2 uiState " + uiState);
-        if (window.mcBopomofoUI != undefined) {
-          if (uiState.uiInfo.length > 0) {
-            window.mcBopomofoUI.update(uiState.uiInfo);
-          } else {
-            window.mcBopomofoUI.reset();
-          }
+  chrome.runtime.sendMessage(
+    { command: "send_key_event", key: key },
+    function (response) {
+      console.log(response);
+      lastKeyAccepted = response.accepted;
+      window.mcbpmf_UpdateUI(response.ui);
+      resolve();
+    }
+  );
 
-          if (uiState.text.length > 0) {
-            window.mcBopomofoUI.commitString(uiState.text);
-          }
-        }
-        resolve();
-      }
-    );
-  });
-  await promise;
-  console.log("keydown 3");
-  if (accepted) {
-    event.preventDefault();
-  }
+  console.log("lastKeyAccepted a2 " + lastKeyAccepted);
+  console.log("mcbpmf_Keydown end");
 };
 
 document.addEventListener("focusout", function (e) {
@@ -141,6 +186,7 @@ document.addEventListener("focusin", function (e) {
   if (window.mcBopomofoUI != undefined) {
     let element = window.mcBopomofoUI.element;
     element.removeEventListener("keyup", mcbpmf_KeyUp);
+    element.removeEventListener("keypress", mcbpmf_KeyPress);
     element.removeEventListener("keydown", mcbpmf_Keydown);
   }
 
@@ -167,13 +213,15 @@ document.addEventListener("focusin", function (e) {
   window.mcBopomofoUI = createMcBopomofoUI(newElement);
   document.getElementById("mcbpmf").hidden = false;
   newElement.addEventListener("keyup", mcbpmf_KeyUp);
+  newElement.addEventListener("keypress", mcbpmf_KeyPress);
   newElement.addEventListener("keydown", mcbpmf_Keydown);
 
   console.log("call reset");
-  chrome.runtime.sendMessage({ command: "reset" }, function (response) {
+  chrome.runtime.sendMessage({ command: "load_config" }, function (response) {
     console.log(response);
   });
 
-  document.getElementById("mcbpmf_candidates").innerText =
-    e.srcElement.nodeName.toString();
+  chrome.runtime.sendMessage({ command: "reset" }, function (response) {
+    console.log(response);
+  });
 });

@@ -269,12 +269,7 @@
 
     document.getElementById("text_area").addEventListener('keydown', (event) => {
         console.log(event);
-
-        if (event.key === "Shift") {
-            shiftState = true;
-        } else {
-            shiftState = false;
-        }
+        shiftState = event.key === "Shift";
 
         if (!chineseMode) {
             return;
