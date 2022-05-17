@@ -10,21 +10,8 @@ document.getElementById("mcbpmf").hidden = true;
 
 window.createMcBopomofoUI = function (element) {
   let that = {};
-
   that.chineseMode = true;
   that.element = element;
-
-  that.inputPanel = function () {
-    return document.getElementById("mcbpmf");
-  };
-
-  that.composingBuffer = function () {
-    return document.getElementById("mcbpmf_composing_buffer");
-  };
-
-  that.candidatesPanel = function () {
-    return document.getElementById("mcbpmf_candidates");
-  };
 
   that.reset = function () {
     console.log("reset called");
@@ -38,7 +25,7 @@ window.createMcBopomofoUI = function (element) {
     ) {
       var selectionStart = that.element.selectionStart;
       var selectionStop = that.element.selectionStop;
-      var text = document.that.element.value;
+      var text = that.element.value;
       var head = text.substring(0, selectionStart);
       var tail = text.substring(selectionStop);
       that.element.value = head + string + tail;
@@ -48,8 +35,9 @@ window.createMcBopomofoUI = function (element) {
   };
 
   that.update = function (string) {
-    console.log("update called");
+    console.log("update called" + string);
     let state = JSON.parse(string);
+    console.log("update called" + state);
     {
       let buffer = state.composingBuffer;
       let s = that.chineseMode ? "【麥】" : "【英】";
@@ -67,7 +55,7 @@ window.createMcBopomofoUI = function (element) {
       if (i === state.cursorIndex) {
         s += "<span class='cursor'>|</span>";
       }
-      composingBuffer().innerHTML = s;
+      document.getElementById("mcbpmf_composing_buffer").innerHTML = s;
     }
 
     if (state.candidates.length) {
@@ -86,7 +74,7 @@ window.createMcBopomofoUI = function (element) {
         if (candidate.selected) s += "</b>";
       }
       s += "</tr></table>";
-      candidatesPanel().innerHTML = s;
+      document.getElementById("mcbpmf_candidates").innerHTML = s;
     }
   };
 
@@ -109,22 +97,39 @@ window.mcbpmf_Keydown = async function (event) {
   o.shiftKey = event.shiftKey;
   o.metaKey = event.metaKey;
   let key = JSON.stringify(o);
+  let accepted = false;
 
   let promise = new Promise((resolve, reject) => {
     console.log(key);
     chrome.runtime.sendMessage(
       { command: "send_key_event", key: key },
       function (response) {
-        console.log("response comes");
         console.log(response);
         console.log("keydown 2");
-        event.preventDefault();
+        accepted = response.accepted;
+        console.log("keydown 2 accepted " + accepted);
+        uiState = JSON.parse(response.ui);
+        console.log("keydown 2 uiState " + uiState);
+        if (window.mcBopomofoUI != undefined) {
+          if (uiState.uiInfo.length > 0) {
+            window.mcBopomofoUI.update(uiState.uiInfo);
+          } else {
+            window.mcBopomofoUI.reset();
+          }
+
+          if (uiState.text.length > 0) {
+            window.mcBopomofoUI.commitString(uiState.text);
+          }
+        }
         resolve();
       }
     );
   });
   await promise;
   console.log("keydown 3");
+  if (accepted) {
+    event.preventDefault();
+  }
 };
 
 document.addEventListener("focusout", function (e) {
@@ -160,7 +165,7 @@ document.addEventListener("focusin", function (e) {
   }
 
   window.mcBopomofoUI = createMcBopomofoUI(newElement);
-  window.mcBopomofoUI.inputPanel().hidden = false;
+  document.getElementById("mcbpmf").hidden = false;
   newElement.addEventListener("keyup", mcbpmf_KeyUp);
   newElement.addEventListener("keydown", mcbpmf_Keydown);
 

@@ -15,11 +15,9 @@ window.onload = () => {
     {
       let select = document.getElementById("keys");
       let options = select.getElementsByTagName("option");
-      let found = false;
       for (let option of options) {
         if (option.value === settings.candidate_keys) {
           option.selected = "selected";
-          found = true;
           break;
         }
       }
@@ -60,7 +58,10 @@ window.onload = () => {
 
   chrome.storage.sync.get("settings", (value) => {
     settings = value.settings;
-    applySettings(value.settings);
+    if (settings == undefined) {
+      settings = {};
+    }
+    applySettings(settings);
   });
 
   document.getElementById("layout").onchange = (event) => {

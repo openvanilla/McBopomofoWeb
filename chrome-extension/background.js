@@ -8,17 +8,14 @@ window.onload = function () {
     that.reset = function () {
       console.log("ui reset called");
       that.uiInfo = "";
-      that.text = "reset called";
     };
     that.commitString = function (string) {
       console.log("ui commitString called");
       this.text = string;
-      that.text = "commitString called";
     };
     that.update = function (string) {
       console.log("ui update called");
       that.uiInfo = string;
-      that.text = "update called";
     };
     return that;
   })();
@@ -30,18 +27,19 @@ window.onload = function () {
     sender,
     sendResponse
   ) {
-    if (request.command === "reset") {
+    if (request.command === "load_config") {
+    } else if (request.command === "reset") {
       controller.reset();
       let uiState = JSON.stringify(ui);
-      console.log("reset");
+      // console.log("reset");
       let msg = { msg: "reset called", ui: uiState };
-      console.log(msg);
+      // console.log(msg);
       sendResponse(msg);
     } else if (request.command === "send_key_event") {
-      console.log("send_key_event");
+      // console.log("send_key_event");
       let key = JSON.parse(request.key);
-      console.log("key");
-      console.log(key);
+      // console.log("key");
+      // console.log(key);
       let accepted = controller.keyEvent(key);
       let uiState = JSON.stringify(ui);
       let msg = { accepted: accepted, key: request.key, ui: uiState };
