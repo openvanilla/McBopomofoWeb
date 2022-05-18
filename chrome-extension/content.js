@@ -45,6 +45,30 @@ window.createMcBopomofoUI = function (element) {
       console.log("composed text: " + composed);
       let start = selectionStart + string.length;
       that.element.setSelectionRange(start, start);
+    } else {
+      var sel, range;
+      var w = function () {
+        if (that.element.nodeName === "IFRAME") {
+          return that.element.window;
+        }
+        return window;
+      };
+
+      if (window.getSelection) {
+        sel = window.getSelection();
+        if (sel.getRangeAt && sel.rangeCount) {
+          range = sel.getRangeAt(0);
+          range.deleteContents();
+          let node = document.createTextNode(string);
+          range.insertNode(node);
+          range.setStart(node, node.length);
+          range.collapse(true);
+          sel.removeAllRanges();
+          sel.addRange(range);
+        }
+      } else if (document.selection && document.selection.createRange) {
+        document.selection.createRange().text = string;
+      }
     }
   };
 
@@ -185,16 +209,33 @@ document.addEventListener("focusout", function (e) {
 document.addEventListener("focusin", function (e) {
   if (window.mcBopomofoUI != undefined) {
     let element = window.mcBopomofoUI.element;
-    element.removeEventListener("keyup", mcbpmf_KeyUp);
-    element.removeEventListener("keypress", mcbpmf_KeyPress);
-    element.removeEventListener("keydown", mcbpmf_Keydown);
+    if (element.nodeName === "IFRAME") {
+      newElement.contentWindow.document.removeEventListener(
+        "keyup",
+        mcbpmf_KeyUp
+      );
+      newElement.contentWindow.document.removeEventListener(
+        "keypress",
+        mcbpmf_KeyPress
+      );
+      newElement.contentWindow.document.removeEventListener(
+        "keydown",
+        mcbpmf_Keydown
+      );
+    } else {
+      element.removeEventListener("keyup", mcbpmf_KeyUp);
+      element.removeEventListener("keypress", mcbpmf_KeyPress);
+      element.removeEventListener("keydown", mcbpmf_Keydown);
+    }
   }
 
   console.log(e.target);
   let nodeName = e.target.nodeName;
 
   let newElement;
-  if (nodeName === "TEXTAREA") {
+  if (nodeName === "IFRAME") {
+    newElement = e.target;
+  } else if (nodeName === "TEXTAREA") {
     newElement = e.target;
   } else if (nodeName === "DIV") {
     newElement = e.target;
@@ -212,9 +253,21 @@ document.addEventListener("focusin", function (e) {
 
   window.mcBopomofoUI = createMcBopomofoUI(newElement);
   document.getElementById("mcbpmf").hidden = false;
-  newElement.addEventListener("keyup", mcbpmf_KeyUp);
-  newElement.addEventListener("keypress", mcbpmf_KeyPress);
-  newElement.addEventListener("keydown", mcbpmf_Keydown);
+  if (nodeName === "IFRAME") {
+    newElement.contentWindow.document.addEventListener("keyup", mcbpmf_KeyUp);
+    newElement.contentWindow.document.addEventListener(
+      "keypress",
+      mcbpmf_KeyPress
+    );
+    newElement.contentWindow.document.addEventListener(
+      "keydown",
+      mcbpmf_Keydown
+    );
+  } else {
+    newElement.addEventListener("keyup", mcbpmf_KeyUp);
+    newElement.addEventListener("keypress", mcbpmf_KeyPress);
+    newElement.addEventListener("keydown", mcbpmf_Keydown);
+  }
 
   console.log("call reset");
   chrome.runtime.sendMessage({ command: "load_config" }, function (response) {
