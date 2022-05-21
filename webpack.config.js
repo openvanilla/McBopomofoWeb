@@ -14,12 +14,11 @@ module.exports = {
   resolve: {
     extensions: [".ts", ".js"],
   },
-  devtool: "eval-source-map",
-  target: 'web',
+  target: "web",
   output: {
     filename: "bundle.js",
-    library: 'mcbopomofo',
-    libraryTarget: 'umd',
+    library: "mcbopomofo",
+    libraryTarget: "umd",
     path: path.resolve(__dirname, "public"),
   },
 };
