@@ -8,6 +8,36 @@ export class Walker {
     this.grid_ = grid;
   }
 
+  dumpPaths(location: number, accumulatedScore: number = 0): NodeAnchor[][] {
+    if (!location || location > this.grid_.width) {
+      return [];
+    }
+    let paths: NodeAnchor[][] = [];
+    let nodes = this.grid_.nodesEndingAt(location);
+
+    nodes.forEach((node) => {
+      if (node.node === undefined) {
+        return;
+      }
+      node.accumulatedScore = accumulatedScore + node.node.score;
+      let result = this.dumpPaths(
+        location - node.spanningLength,
+        node.accumulatedScore
+      );
+      if (result.length > 0) {
+        for (let path of result) {
+          path.splice(0, 0, node);
+          paths.push(path);
+        }
+      } else {
+        let path = [node];
+        paths.push(path);
+      }
+    });
+
+    return paths;
+  }
+
   reverseWalk(location: number, accumulatedScore: number = 0): NodeAnchor[] {
     if (!location || location > this.grid_.width) {
       return [];

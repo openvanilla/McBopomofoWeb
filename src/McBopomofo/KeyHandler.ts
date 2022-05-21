@@ -821,4 +821,15 @@ export class KeyHandler {
 
     this.walkedNodes_ = nodes;
   }
+
+  dumpPaths(): NodeAnchor[][] {
+    let walker = new Walker(this.builder_.grid);
+
+    let paths = walker.dumpPaths(this.builder_.grid.width);
+    let result: NodeAnchor[][] = [];
+    for (let path of paths) {
+      result.push(path.reverse());
+    }
+    return result;
+  }
 }

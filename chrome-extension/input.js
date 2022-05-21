@@ -15,7 +15,7 @@ window.mcbopomofoUI = (function (element) {
     console.log("commitString called");
     let doc = document;
     if (that.element.nodeName === "IFRAME") {
-      doc = newElement.contentWindow.document;
+      doc = that.element.contentWindow.document;
     }
 
     if (doc.queryCommandSupported) {
