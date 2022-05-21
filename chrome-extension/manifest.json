@@ -3,16 +3,16 @@
   "description": "在瀏覽器當中使用的小麥注音輸入法",
   "version": "1.0",
   "manifest_version": 2,
-  "background": {
-    "persistent": false,
-    "page":  "background.html"
-  },
   "content_scripts": [ {
     "all_frames": true,
     "js": [ "content.js" ],
     "css": [ "content.css" ],
     "matches": [ "http://*/*", "https://*/*" ]
   } ],
+  "web_accessible_resources": [
+      "bundle.js",
+      "input.js"
+  ],
   "options_page": "options.html",
   "permissions": [
     "background",
