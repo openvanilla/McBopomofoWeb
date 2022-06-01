@@ -1,5 +1,6 @@
 var mcInputController = null;
 var mcContext = null;
+var settings = null;
 
 window.onload = function () {
   const { InputController } = window.mcbopomofo;
@@ -115,10 +116,26 @@ window.onload = function () {
     mcInputController = new InputController(makeUI(engineID));
     mcEngineID = engineID;
     var menus = [
-      { id: "mcbopomofo-options", label: "Options", style: "check" },
-      { id: "mcbopomofo-separator", style: "separator" },
+      { id: "mcbopomofo-options", label: "McBopomofo Options", style: "check" },
+      // { id: "mcbopomofo-separator", style: "separator" },
     ];
     chrome.input.ime.setMenuItems({ engineID: engineID, items: menus });
+
+    chrome.storage.sync.get("settings", (value) => {
+      settings = value.settings;
+      if (settings == undefined) {
+        settings = {};
+      }
+
+      mcInputController.setKeyboardLayout(settings.layout);
+      mcInputController.setSelectPhrase(settings.select_phrase);
+      mcInputController.setCandidateKeys(settings.candidate_keys);
+      mcInputController.setEscClearEntireBuffer(
+        settings.esc_key_clear_entire_buffer
+      );
+      mcInputController.setMoveCursorAfterSelection(settings.move_cursor);
+      mcInputController.setLetterMode(settings.letter_mode);
+    });
   });
 
   chrome.input.ime.onFocus.addListener(function (context) {
