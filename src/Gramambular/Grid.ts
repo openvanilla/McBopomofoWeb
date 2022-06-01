@@ -59,24 +59,25 @@ export class Grid {
     return this.spans_.length;
   }
 
-  nodesEndingAt(location: number): NodeAnchor[] {
+  nodesAt(location: number): NodeAnchor[] {
     let result: NodeAnchor[] = [];
+    let spanSize = this.spans_.length;
 
-    if (this.spans_.length > 0 && location <= this.spans_.length) {
-      for (let i = 0; i < location; i++) {
-        let span = this.spans_[i];
-        if (i + span.maximumLength >= location) {
-          let node = span.nodeOfLength(location - i);
-          if (node != undefined) {
-            let na = new NodeAnchor();
-            na.node = node;
-            na.location = i;
-            na.spanningLength = location - i;
-            result.push(na);
-          }
+    if (this.spans_.length && location < spanSize) {
+      let span = this.spans_[location];
+
+      for (let i = 1; i <= 6; i++) {
+        let np = span.nodeOfLength(i);
+        if (np != null) {
+          let na = new NodeAnchor();
+          na.node = np;
+          na.location = location;
+          na.spanningLength = i;
+          result.push(na);
         }
       }
     }
+
     return result;
   }
 
@@ -108,22 +109,60 @@ export class Grid {
     return result;
   }
 
+  nodesInRange(begin: number, end: number) {
+    let result: NodeAnchor[] = [];
+    if (this.spans_.length && end <= this.spans_.length) {
+      for (let i = 0; i < end; i++) {
+        let span = this.spans_[i];
+
+        if (i + span.maximumLength > begin) {
+          for (let j = 1, m = span.maximumLength; j <= m; j++) {
+            if (i + j <= begin) {
+              continue;
+            }
+
+            let np = span.nodeOfLength(j);
+            if (np) {
+              let na = new NodeAnchor();
+              na.node = np;
+              na.location = i;
+              na.spanningLength = j;
+              result.push(na);
+            }
+          }
+        }
+      }
+    }
+
+    return result;
+  }
+
   fixNodeSelectedCandidate(location: number, value: string): NodeAnchor {
     let nodes = this.nodesCrossingOrEndingAt(location);
     let node = new NodeAnchor();
+    let selectedIndex = 0;
+
     for (let n = 0; n < nodes.length; n++) {
       let nodeAnchor = nodes[n];
       let candidates = nodeAnchor.node?.candidates ?? [];
-      nodeAnchor.node?.resetCandidate();
 
       for (let i = 0, c = candidates.length; i < c; ++i) {
         if (candidates[i].value === value) {
-          nodeAnchor.node?.selectCandidateAtIndex(i);
+          selectedIndex = i;
           node = nodeAnchor;
           break;
         }
       }
     }
+    if (node.node == undefined) {
+      return node;
+    }
+
+    nodes = this.nodesInRange(location - node.spanningLength, location);
+    for (let nodeAnchor of nodes) {
+      nodeAnchor.node?.resetCandidate();
+    }
+    node.node?.selectCandidateAtIndex(selectedIndex);
     return node;
   }
 
@@ -133,17 +172,31 @@ export class Grid {
     overridingScore: number
   ) {
     let nodes = this.nodesCrossingOrEndingAt(location);
+    let node = new NodeAnchor();
+    let selectedIndex = 0;
+
     for (let n = 0; n < nodes.length; n++) {
       let nodeAnchor = nodes[n];
       let candidates = nodeAnchor.node?.candidates ?? [];
-      nodeAnchor.node?.resetCandidate();
 
       for (let i = 0, c = candidates.length; i < c; ++i) {
         if (candidates[i].value === value) {
-          nodeAnchor.node?.selectFloatingCandidateAtIndex(i, overridingScore);
+          node = nodeAnchor;
+          selectedIndex = i;
           break;
         }
       }
     }
+
+    if (node.node == undefined) {
+      return node;
+    }
+
+    nodes = this.nodesInRange(location - node.spanningLength, location);
+    for (let nodeAnchor of nodes) {
+      nodeAnchor.node?.resetCandidate();
+    }
+    node.node?.selectFloatingCandidateAtIndex(selectedIndex, overridingScore);
+    return node;
   }
 }

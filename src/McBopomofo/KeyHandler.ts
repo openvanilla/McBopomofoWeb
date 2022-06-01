@@ -18,6 +18,7 @@ import {
 
 import * as _ from "lodash";
 import { Key, KeyName } from "./Key";
+import { kSelectedCandidateScore } from "../Gramambular/Node";
 
 export class ComposedString {
   head: string = "";
@@ -42,7 +43,9 @@ const kMaxValidMarkingReadingCount = 6;
 const kUserOverrideModelCapacity = 500;
 const kObservedOverrideHalfLife = 5400.0; // 1.5 hr.
 
-const kComposingBufferSize: number = 10;
+const kComposingBufferSize: number = 20;
+const kMaxComposingBufferSize: number = 100;
+const kMaxComposingBufferNeedsToWalkSize: number = 10;
 // Unigram whose score is below this shouldn't be put into user override model.
 const kNoOverrideThreshold: number = -8.0;
 const kEpsilon = 0.000001;
@@ -772,7 +775,31 @@ export class KeyHandler {
     }
 
     this.walk();
+    this.fixNodesIfRequired();
     return evictedText;
+  }
+
+  fixNodesIfRequired() {
+    let width = this.builder_.grid.width;
+    if (width > kMaxComposingBufferNeedsToWalkSize) {
+      let index = 0;
+      for (let node of this.walkedNodes_) {
+        if (index >= width - kMaxComposingBufferNeedsToWalkSize) {
+          break;
+        }
+        if (node.node == undefined) {
+          continue;
+        }
+        if (node.node.score < kSelectedCandidateScore) {
+          let candidate = node.node.currentKeyValue.value;
+          this.builder_.grid.fixNodeSelectedCandidate(
+            index + node.spanningLength,
+            candidate
+          );
+        }
+        index += node.spanningLength;
+      }
+    }
   }
 
   pinNode(candidate: string): void {
@@ -815,9 +842,8 @@ export class KeyHandler {
     // the Viterbi algorithm implemented in the Gramambular library.
     let walker = new Walker(this.builder_.grid);
 
-    // the reverse walk traces the trellis from the end
-    // then we reverse the nodes so that we get the forward-walked nodes
-    let nodes = walker.reverseWalk(this.builder_.grid.width).reverse();
+    // the walker traces the trellis from the end
+    let nodes = walker.walk(0);
 
     this.walkedNodes_ = nodes;
   }

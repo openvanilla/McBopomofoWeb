@@ -1,6 +1,8 @@
 import { KeyValuePair } from "./KeyValuePair";
 import { Unigram } from "./Unigram";
 
+export const kSelectedCandidateScore: number = 99;
+
 export class Node {
   private key_: string;
   private score_: number = 0.0;
@@ -38,7 +40,7 @@ export class Node {
       this.selectedUnigramIndex_ = index;
     }
 
-    this.score_ = 99;
+    this.score_ = kSelectedCandidateScore;
   }
 
   resetCandidate(): void {
