@@ -1,0 +1,26 @@
+{
+  "name": "McBopomofo Input Method",
+  "version": "0.1.0",
+  "manifest_version": 2,
+  "description": "McBopomofo for ChromeOS",
+  "background": {
+    "persistent": false,
+    "page":  "background.html"
+  },
+  "options_page": "options.html",
+  "input_components": [
+    {
+      "name": "McBopomofo",
+      "type": "ime",
+      "id": "org.openvanilla.mcbopomofo.us",
+      "description": "McBopomofo",
+      "language": "zh-TW",
+      "layouts": ["us"]
+    }
+  ],
+  "permissions": [
+    "input",
+    "background",
+    "storage"
+  ]
+}
