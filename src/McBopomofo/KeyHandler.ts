@@ -3,6 +3,7 @@ import {
   BlockReadingBuilder,
   NodeAnchor,
   Walker,
+  kSelectedCandidateScore,
 } from "../Gramambular";
 import { BopomofoKeyboardLayout, BopomofoReadingBuffer } from "../Mandarin";
 import { UserOverrideModel } from "./UserOverrideModel";
@@ -18,7 +19,6 @@ import {
 
 import * as _ from "lodash";
 import { Key, KeyName } from "./Key";
-import { kSelectedCandidateScore } from "../Gramambular/Node";
 
 export class ComposedString {
   head: string = "";
@@ -45,6 +45,7 @@ const kObservedOverrideHalfLife = 5400.0; // 1.5 hr.
 
 const kComposingBufferSize: number = 20;
 const kMaxComposingBufferSize: number = 100;
+const kMinComposingBufferSize: number = 4;
 const kMaxComposingBufferNeedsToWalkSize: number = 10;
 // Unigram whose score is below this shouldn't be put into user override model.
 const kNoOverrideThreshold: number = -8.0;
@@ -118,6 +119,20 @@ export class KeyHandler {
   }
   public set keyboardLayout(value: BopomofoKeyboardLayout) {
     this.reading_.keyboardLayout = value;
+  }
+
+  private composingBufferSize_: number = kComposingBufferSize;
+  public get composingBufferSize(): number {
+    return this.composingBufferSize_;
+  }
+  public set composingBufferSize(value: number) {
+    if (value > kMaxComposingBufferSize) {
+      value = kMaxComposingBufferSize;
+    }
+    if (value < kMinComposingBufferSize) {
+      value = kMinComposingBufferSize;
+    }
+    this.composingBufferSize_ = value;
   }
 
   private languageModel_: LanguageModel;
@@ -766,7 +781,7 @@ export class KeyHandler {
     let evictedText: string = "";
 
     if (
-      this.builder_.grid.width > kComposingBufferSize &&
+      this.builder_.grid.width > this.composingBufferSize &&
       this.walkedNodes_.length != 0
     ) {
       let anchor = this.walkedNodes_[0];
