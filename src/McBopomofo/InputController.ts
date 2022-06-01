@@ -132,6 +132,7 @@ export class InputController {
   private candidateController_: CandidateController = new CandidateController();
   private ui_: InputUIController;
   private candidateKeys_ = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
+  private useVerticalCandidates_ = false;
 
   constructor(ui: InputUI) {
     this.ui_ = new InputUIController(ui);
@@ -201,6 +202,10 @@ export class InputController {
     this.keyHandler_.escKeyClearsEntireComposingBuffer = flag;
   }
 
+  setUserVerticalCandidates(flag: boolean) {
+    this.useVerticalCandidates_ = flag;
+  }
+
   keyEvent(event: KeyboardEvent): boolean {
     if (event.isComposing) return false;
     if (event.metaKey) return false;
@@ -256,17 +261,33 @@ export class InputController {
         this.candidateController_.goToFirst();
       }
     } else if (key.name === KeyName.LEFT) {
-      this.candidateController_.goToPreviousItem();
+      if (this.useVerticalCandidates_) {
+        this.candidateController_.goToPreviousPage();
+      } else {
+        this.candidateController_.goToPreviousItem();
+      }
     } else if (key.name === KeyName.RIGHT) {
-      this.candidateController_.goToNextItem();
+      if (this.useVerticalCandidates_) {
+        this.candidateController_.goToNextPage();
+      } else {
+        this.candidateController_.goToNextItem();
+      }
     } else if (key.name === KeyName.HOME) {
       this.candidateController_.goToFirst();
     } else if (key.name === KeyName.END) {
       this.candidateController_.goToLast();
     } else if (key.name === KeyName.UP) {
-      this.candidateController_.goToPreviousPage();
+      if (this.useVerticalCandidates_) {
+        this.candidateController_.goToPreviousItem();
+      } else {
+        this.candidateController_.goToPreviousPage();
+      }
     } else if (key.name === KeyName.DOWN) {
-      this.candidateController_.goToNextPage();
+      if (this.useVerticalCandidates_) {
+        this.candidateController_.goToNextItem();
+      } else {
+        this.candidateController_.goToNextPage();
+      }
     }
     let result = this.candidateController_.getCurrentPage();
     this.ui_.setCandidates(result);
