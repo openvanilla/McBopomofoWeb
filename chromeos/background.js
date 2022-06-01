@@ -122,7 +122,6 @@ window.onload = function () {
         label: chrome.i18n.getMessage("menuOptions"),
         style: "check",
       },
-      { id: "mcbopomofo-separator", style: "separator" },
       {
         id: "mcbopomofo-homepage",
         label: chrome.i18n.getMessage("homepage"),
@@ -153,6 +152,15 @@ window.onload = function () {
 
   chrome.input.ime.onKeyEvent.addListener(function (engineID, keyData) {
     if (keyData.type != "keydown") {
+      return false;
+    }
+
+    if (
+      keyData.altKey ||
+      keyData.ctrlKey ||
+      keyData.altgrKey ||
+      keyData.capsLock
+    ) {
       return false;
     }
 

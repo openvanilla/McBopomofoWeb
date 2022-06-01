@@ -1,19 +1,31 @@
-# 小麥注音輸入法網頁版本
+# 使用網頁技術打造的小麥注音輸入法
 
-本專案嘗試使用網頁相關技術實作小麥注音輸入法，目的是打造一套可以直接在瀏覽器當中的輸入法，讓使用者在無法安裝輸入法的狀況下，只要有瀏覽器，就可以使用注音輸入法輸入中文。
+本專案嘗試使用 JavaScript/TypeScript 與網頁相關技術實作小麥注音輸入法，在專案目錄下提供
+
+- src：使用 TypeScript 寫成的小麥輸入法核心
+- example：範例網頁
+- chromeos：ChromeOS 下的輸入法
 
 ## 編譯方式
 
-如果使用 npm。
+如果使用 npm，請輸入以下指令：
 
 ```sh
 npm install
 npm run build
 ```
 
-接著可以參考 example 目錄下，如何在 HTML 中匯入編譯好的 JavaScript
+在 public 目錄下，會產生一個叫做 bundle.js 的檔案，可以將這個檔案複製到 example 與 chromeos 目錄下。
 
-## 介紹
+## 範例網頁
 
-我們基本上將原本小麥注音中使用 C++ 寫成的引擎，使用 TypeScript 改寫，之後使用 webpack 編譯成一個 JavaScript library。接著，便可以在網頁中，使用這個選字引擎。
+直接用瀏覽器打開 example/index.html ，就可以看到網頁版本的小麥輸入法功能展示。
 
+### ChromeOS 版本
+
+想要測試 ChromeOS 版本，可以參考以下步驟
+
+- 如前述，用 npm run build 編譯出 bundle.js
+- 把 bundle.js 搬到 `chromeos` 目錄下
+- 把整個 chromeos 目錄搬到 Google Drive，然後同步到你的 Chromebook 上
+- 在 Chromebook 上，輸入 `chrome://extensions`，選擇 "load unpacked"，選擇 Google Drive 上的 `chromeos` 目錄
