@@ -100,6 +100,20 @@ export class Walker {
       }
     }
 
-    return [];
+    if (!paths.length) {
+      return [];
+    }
+
+    let result = paths[0];
+    for (let path of paths) {
+      if (
+        path[path.length - 1].accumulatedScore >
+        result[result.length - 1].accumulatedScore
+      ) {
+        result = path;
+      }
+    }
+
+    return result;
   }
 }
