@@ -1,5 +1,6 @@
 import { join } from "path";
 import { Grid } from "./Grid";
+import { kSelectedCandidateScore } from "./Node";
 import { NodeAnchor } from "./NodeAnchor";
 
 const kDroppedPathScore = 999;
@@ -8,6 +9,39 @@ export class Walker {
 
   constructor(grid: Grid) {
     this.grid_ = grid;
+  }
+
+  dumpPaths(
+    location: number = 0,
+    accumulatedScore: number = 0
+  ): NodeAnchor[][] {
+    if (!location || location > this.grid_.width) {
+      return [];
+    }
+    let paths: NodeAnchor[][] = [];
+    let nodes = this.grid_.nodesEndingAt(location);
+
+    nodes.forEach((node) => {
+      if (node.node === undefined) {
+        return;
+      }
+      node.accumulatedScore = accumulatedScore + node.node.score;
+      let result = this.dumpPaths(
+        location - node.spanningLength,
+        node.accumulatedScore
+      );
+      if (result.length > 0) {
+        for (let path of result) {
+          path.splice(0, 0, node);
+          paths.push(path);
+        }
+      } else {
+        let path = [node];
+        paths.push(path);
+      }
+    });
+
+    return paths;
   }
 
   walk(
@@ -20,9 +54,12 @@ export class Walker {
       return [];
     }
     let paths: NodeAnchor[][] = [];
+
     let nodes = this.grid_.nodesAt(location);
     nodes.sort((a, b) => (b.node?.score ?? 0) - (a.node?.score ?? 0));
-    if (nodes[0].node?.score ?? 0 >= 99) {
+
+    let score = nodes[0].node?.score ?? 0;
+    if (score >= kSelectedCandidateScore) {
       let node = nodes[0];
       node.accumulatedScore = accumulatedScore + (node.node?.score ?? 0);
       let path = this.walk(
@@ -32,15 +69,15 @@ export class Walker {
       path.splice(0, 0, node);
       paths.push(path);
     } else if (longPhrases.length > 0) {
-      var path: NodeAnchor[] = [];
       for (let node of nodes) {
-        if (node.node == undefined) {
+        if (node.node === undefined) {
           continue;
         }
+        var path: NodeAnchor[] = [];
         let joinedValue = joinedPhrase + node.node?.currentKeyValue.value;
         if (longPhrases.includes(joinedValue)) {
           node.accumulatedScore = kDroppedPathScore;
-          path.splice(0, 0, node);
+          path.push(node);
           paths.push(path);
           continue;
         }
@@ -68,35 +105,36 @@ export class Walker {
       let newLongPhrases = [];
       nodes.forEach((node) => {
         let value = node.node?.currentKeyValue.value ?? "";
-        if (value.length >= 3) {
+        if (node.spanningLength >= 2) {
           newLongPhrases.push(value);
         }
       });
       longPhrases.sort((a, b) => b.length - a.length);
-      var path: NodeAnchor[] = [];
+
       for (let node of nodes) {
-        if (node.node == undefined) {
+        if (node.node === undefined) {
           continue;
         }
         node.accumulatedScore = accumulatedScore + node.node?.score ?? 0;
-
         if (node.spanningLength > 1) {
-          path = this.walk(
+          let path = this.walk(
             location + node.spanningLength,
             node.accumulatedScore,
             "",
             []
           );
+          path.splice(0, 0, node);
+          paths.push(path);
         } else {
-          path = this.walk(
+          let path = this.walk(
             location + 1,
             node.accumulatedScore,
             node.node.currentKeyValue.value,
             longPhrases
           );
+          path.splice(0, 0, node);
+          paths.push(path);
         }
-        path.splice(0, 0, node);
-        paths.push(path);
       }
     }
 
@@ -113,7 +151,6 @@ export class Walker {
         result = path;
       }
     }
-
     return result;
   }
 }

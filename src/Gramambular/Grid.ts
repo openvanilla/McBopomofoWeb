@@ -81,6 +81,27 @@ export class Grid {
     return result;
   }
 
+  nodesEndingAt(location: number): NodeAnchor[] {
+    let result: NodeAnchor[] = [];
+
+    if (this.spans_.length > 0 && location <= this.spans_.length) {
+      for (let i = 0; i < location; i++) {
+        let span = this.spans_[i];
+        if (i + span.maximumLength >= location) {
+          let node = span.nodeOfLength(location - i);
+          if (node != undefined) {
+            let na = new NodeAnchor();
+            na.node = node;
+            na.location = i;
+            na.spanningLength = location - i;
+            result.push(na);
+          }
+        }
+      }
+    }
+    return result;
+  }
+
   nodesCrossingOrEndingAt(location: number): NodeAnchor[] {
     let result: NodeAnchor[] = [];
 
@@ -154,7 +175,7 @@ export class Grid {
         }
       }
     }
-    if (node.node == undefined) {
+    if (node.node === undefined) {
       return node;
     }
 
@@ -188,7 +209,7 @@ export class Grid {
       }
     }
 
-    if (node.node == undefined) {
+    if (node.node === undefined) {
       return node;
     }
 

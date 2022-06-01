@@ -348,4 +348,32 @@ export class InputController {
     this.updatePreedit(state);
     this.ui_.update();
   }
+
+  dumpPaths() {
+    let result = this.keyHandler_.dumpPaths();
+    result.sort((a, b) => {
+      return b[0].accumulatedScore - a[0].accumulatedScore;
+    });
+    let s = "<ul>";
+    for (let path of result) {
+      s += "<li>";
+      let score = path[0].accumulatedScore;
+      s += "[" + score + "] ";
+      let nodes = path.map((e) => {
+        return (
+          "<span>" +
+          e.node!.currentKeyValue.value +
+          "</span>" +
+          "(" +
+          e.node!.score +
+          ")"
+        );
+      });
+      let line = nodes.join(" -> ");
+      s += line;
+      s += "</li>";
+    }
+    s += "</ul>";
+    return s;
+  }
 }
