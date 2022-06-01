@@ -1,8 +1,9 @@
 {
-  "name": "McBopomofo Input Method",
+  "name": "__MSG_manifestName__",
   "version": "0.1.0",
   "manifest_version": 2,
-  "description": "McBopomofo for ChromeOS",
+  "description": "__MSG_manifestDesc__",
+  "default_locale": "en",
   "background": {
     "persistent": false,
     "page":  "background.html"

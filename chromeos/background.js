@@ -117,11 +117,23 @@ window.onload = function () {
     mcInputController.setUserVerticalCandidates(true);
     mcEngineID = engineID;
     var menus = [
-      { id: "mcbopomofo-options", label: "McBopomofo Options", style: "check" },
-      // { id: "mcbopomofo-separator", style: "separator" },
+      {
+        id: "mcbopomofo-options",
+        label: chrome.i18n.getMessage("menuOptions"),
+        style: "check",
+      },
+      { id: "mcbopomofo-separator", style: "separator" },
+      {
+        id: "mcbopomofo-homepage",
+        label: chrome.i18n.getMessage("homepage"),
+        style: "check",
+      },
     ];
     chrome.input.ime.setMenuItems({ engineID: engineID, items: menus });
+  });
 
+  chrome.input.ime.onFocus.addListener(function (context) {
+    mcContext = context;
     chrome.storage.sync.get("settings", (value) => {
       settings = value.settings;
       if (settings == undefined) {
@@ -139,10 +151,6 @@ window.onload = function () {
     });
   });
 
-  chrome.input.ime.onFocus.addListener(function (context) {
-    mcContext = context;
-  });
-
   chrome.input.ime.onKeyEvent.addListener(function (engineID, keyData) {
     if (keyData.type != "keydown") {
       return false;
@@ -154,6 +162,10 @@ window.onload = function () {
   chrome.input.ime.onMenuItemActivated.addListener(function (engineID, name) {
     if (name == "mcbopomofo-options") {
       window.open(chrome.extension.getURL("options.html"));
+      return;
+    }
+    if (name == "mcbopomofo-homepage") {
+      window.open("https://mcbopomofo.openvanilla.org/");
       return;
     }
   });

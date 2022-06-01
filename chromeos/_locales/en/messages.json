@@ -1,0 +1,6 @@
+{
+  "manifestName": { "message": "McBopomofo" },
+  "manifestDesc": { "message": "McBopomofo for ChromeOS" },
+  "menuOptions":  { "message": "Options" }, 
+  "homepage":  { "message": "Homepage" }
+}

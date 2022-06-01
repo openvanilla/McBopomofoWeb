@@ -1,0 +1,6 @@
+{
+  "manifestName": { "message": "小麥注音" },
+  "manifestDesc": { "message": "小麥注音 ChromeOS 版" },
+  "menuOptions":  { "message": "偏好設定" }, 
+  "homepage":  { "message": "專案首頁" }
+}
