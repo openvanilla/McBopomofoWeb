@@ -221,6 +221,8 @@ export class KeyHandler {
         );
       }
 
+      this.fixNodesIfRequired();
+
       let inputtingState = this.buildInputtingState();
       inputtingState.evictedText = evictedText;
       stateCallback(inputtingState);
@@ -790,7 +792,6 @@ export class KeyHandler {
     }
 
     this.walk();
-    this.fixNodesIfRequired();
     return evictedText;
   }
 

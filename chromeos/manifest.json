@@ -10,12 +10,20 @@
   "options_page": "options.html",
   "input_components": [
     {
-      "name": "McBopomofo",
+      "name": "McBopomofo (US Keyboard)",
       "type": "ime",
       "id": "org.openvanilla.mcbopomofo.us",
       "description": "McBopomofo",
       "language": "zh-TW",
       "layouts": ["us"]
+    },
+    {
+      "name": "McBopomofo (Dvorak)",
+      "type": "ime",
+      "id": "org.openvanilla.mcbopomofo.us-dvorak",
+      "description": "McBopomofo",
+      "language": "zh-TW",
+      "layouts": ["us-dvorak"]
     }
   ],
   "permissions": [

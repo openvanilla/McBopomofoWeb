@@ -28,7 +28,7 @@ class KeyObservationPair {
   }
 }
 
-const DecayThreshould: number = 1.0 / 1048576.0;
+const DecayThreshold: number = 1.0 / 1048576.0;
 
 function Score(
   eventCount: number,
@@ -38,7 +38,7 @@ function Score(
   lambda: number
 ): number {
   let decay = (timestamp - eventTimestamp) * lambda;
-  if (decay < DecayThreshould) {
+  if (decay < DecayThreshold) {
     return 0.0;
   }
 

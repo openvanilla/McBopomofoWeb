@@ -114,6 +114,7 @@ window.onload = function () {
 
   chrome.input.ime.onActivate.addListener(function (engineID) {
     mcInputController = new InputController(makeUI(engineID));
+    mcInputController.setUserVerticalCandidates(true);
     mcEngineID = engineID;
     var menus = [
       { id: "mcbopomofo-options", label: "McBopomofo Options", style: "check" },
