@@ -1,6 +1,9 @@
 {
   "manifestName": { "message": "McBopomofo" },
   "manifestDesc": { "message": "McBopomofo for ChromeOS" },
-  "menuOptions":  { "message": "Options" }, 
-  "homepage":  { "message": "Homepage" }
+  "imeUS": { "message": "McBopomofo (US Keyboard)" },
+  "imeDvorak": { "message": "McBopomofo (Dvorak Keyboard)" },
+  "menuOptions": { "message": "Options" },
+  "optionsPage": { "message": "options.html" },
+  "homepage": { "message": "Homepage" }
 }

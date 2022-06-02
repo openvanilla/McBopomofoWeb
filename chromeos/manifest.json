@@ -6,12 +6,12 @@
   "default_locale": "en",
   "background": {
     "persistent": false,
-    "page":  "background.html"
+    "page": "background.html"
   },
   "options_page": "options.html",
   "input_components": [
     {
-      "name": "McBopomofo (US Keyboard)",
+      "name": "__MSG_imeUS__",
       "type": "ime",
       "id": "org.openvanilla.mcbopomofo.us",
       "description": "McBopomofo",
@@ -19,7 +19,7 @@
       "layouts": ["us"]
     },
     {
-      "name": "McBopomofo (Dvorak)",
+      "name": "__MSG_imeDvorak__",
       "type": "ime",
       "id": "org.openvanilla.mcbopomofo.us-dvorak",
       "description": "McBopomofo",
@@ -27,9 +27,5 @@
       "layouts": ["us-dvorak"]
     }
   ],
-  "permissions": [
-    "input",
-    "background",
-    "storage"
-  ]
+  "permissions": ["input", "background", "storage"]
 }

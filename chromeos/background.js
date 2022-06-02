@@ -169,7 +169,8 @@ window.onload = function () {
 
   chrome.input.ime.onMenuItemActivated.addListener(function (engineID, name) {
     if (name == "mcbopomofo-options") {
-      window.open(chrome.extension.getURL("options.html"));
+      let page = chrome.i18n.getMessage("optionsPage");
+      window.open(chrome.extension.getURL(page));
       return;
     }
     if (name == "mcbopomofo-homepage") {
