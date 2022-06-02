@@ -19,6 +19,7 @@ import {
 
 import * as _ from "lodash";
 import { Key, KeyName } from "./Key";
+import { WebLanguageModel } from "./WebLanguageModel";
 
 export class ComposedString {
   head: string = "";
@@ -324,9 +325,12 @@ export class KeyHandler {
       if (state instanceof Marking) {
         let marking = state as Marking;
         if (marking.acceptable) {
-          // TODO: Add phrase here.
-          // this.userPhraseAdder_.addUserPhrase(marking.reading, marking.markedText);
-          // onAddNewPhrase_(marking.markedText);
+          if (this.languageModel_ instanceof WebLanguageModel) {
+            this.languageModel_.userPhrases.addUserPhrases(
+              marking.reading,
+              marking.markedText
+            );
+          }
           stateCallback(this.buildInputtingState());
         } else {
           errorCallback();

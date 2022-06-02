@@ -20,7 +20,7 @@ import {
 import { Key, KeyName } from "./Key";
 import { KeyHandler } from "./KeyHandler";
 import { webData } from "./WebData";
-import { WebLanguageModel } from "./WebLanguageModel";
+import { UserPhrases, WebLanguageModel } from "./WebLanguageModel";
 
 class InputUIController {
   private ui: InputUI;
@@ -125,10 +125,8 @@ function KeyFromKeyboardEvent(event: KeyboardEvent) {
 
 export class InputController {
   private state_: InputState = new Empty();
-  private keyHandler_: KeyHandler = (function () {
-    let lm = new WebLanguageModel(webData);
-    return new KeyHandler(lm);
-  })();
+  private lm_: WebLanguageModel;
+  private keyHandler_: KeyHandler;
   private candidateController_: CandidateController = new CandidateController();
   private ui_: InputUIController;
   private candidateKeys_ = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
@@ -136,6 +134,8 @@ export class InputController {
 
   constructor(ui: InputUI) {
     this.ui_ = new InputUIController(ui);
+    this.lm_ = new WebLanguageModel(webData);
+    this.keyHandler_ = new KeyHandler(this.lm_);
   }
 
   // Resets to empty state.
@@ -208,6 +208,14 @@ export class InputController {
 
   setComposingBufferSize(size: number) {
     this.keyHandler_.composingBufferSize = size;
+  }
+
+  setUserPhrases(map: Map<string, string[]>): void {
+    this.lm_.userPhrases.setUserPhrases(map);
+  }
+
+  setOnPhraseChange(callback: (map: Map<string, string[]>) => void): void {
+    this.lm_.userPhrases.setOnPhraseChange(callback);
   }
 
   keyEvent(event: KeyboardEvent): boolean {

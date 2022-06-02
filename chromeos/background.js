@@ -129,6 +129,19 @@ window.onload = function () {
       },
     ];
     chrome.input.ime.setMenuItems({ engineID: engineID, items: menus });
+
+    chrome.storage.sync.get("user_phrase", (value) => {
+      if (value !== undefined) {
+        let map = JSON.parse(value);
+        if (map) {
+          mcInputController.setUserPhrases(map);
+        }
+      }
+      mcInputController.setOnPhraseChange((map) => {
+        let s = JSON.stringify(map);
+        chrome.storage.sync.set("user_phrase", s);
+      });
+    });
   });
 
   chrome.input.ime.onFocus.addListener(function (context) {
