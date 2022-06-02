@@ -20,7 +20,7 @@ import {
 import { Key, KeyName } from "./Key";
 import { KeyHandler } from "./KeyHandler";
 import { webData } from "./WebData";
-import { UserPhrases, WebLanguageModel } from "./WebLanguageModel";
+import { WebLanguageModel } from "./WebLanguageModel";
 
 class InputUIController {
   private ui: InputUI;
@@ -123,6 +123,10 @@ function KeyFromKeyboardEvent(event: KeyboardEvent) {
   return key;
 }
 
+/**
+ * The major class that receives the keyboard events and stores the input method
+ * state. It is also the only class exported from the module.
+ */
 export class InputController {
   private state_: InputState = new Empty();
   private lm_: WebLanguageModel;
@@ -138,13 +142,22 @@ export class InputController {
     this.keyHandler_ = new KeyHandler(this.lm_);
   }
 
-  // Resets to empty state.
+  /** Resets to empty state. */
   reset(): void {
     this.keyHandler_.reset();
     this.enterNewState(new Empty());
   }
 
-  // Sets keyboard layout.
+  /**
+   * Sets keyboard layout.
+   * @param layout Keyboard layout. It could be:
+   * - "Standard"
+   * - "ETen"
+   * - "Hsu"
+   * - "ETen26"
+   * - "HanyuPinyin"
+   * - "IBM"
+   */
   setKeyboardLayout(layout: string) {
     switch (layout) {
       case "ETen":
@@ -169,20 +182,38 @@ export class InputController {
     }
   }
 
+  /**
+   * Sets if we should select the candidate before the cursor or after the
+   * cursor.
+   * @param option "after_cursor" or "before_cursor".
+   * */
   setSelectPhrase(option: string) {
     let flag: boolean = option === "after_cursor";
     this.keyHandler_.selectPhraseAfterCursorAsCandidate = flag;
   }
 
+  /**
+   * Sets if the input method should move cursor after selecting a candidate.
+   * @param flag To enable the function or not.
+   */
   setMoveCursorAfterSelection(flag: boolean) {
     this.keyHandler_.moveCursorAfterSelection = flag;
   }
 
+  /**
+   * Ser if the input method should input uppercase or lowercase letters when
+   * users type shift and letter keys.
+   * @param letterCase "lower" or "upper".
+   */
   setLetterMode(letterCase: string) {
     let flag = letterCase === "lower";
     this.keyHandler_.putLowercaseLettersToComposingBuffer = flag;
   }
 
+  /**
+   * Sets the candidate keys
+   * @param keys The candidate keys.
+   */
   setCandidateKeys(keys: string) {
     let list: string[] = [];
     for (let i = 0; i < keys.length; i++) {
@@ -202,6 +233,10 @@ export class InputController {
     this.keyHandler_.escKeyClearsEntireComposingBuffer = flag;
   }
 
+  /**
+   * Sets if we want to use vertical or horizontal candidate window.
+   * @param flag Use the vertical candidate window.
+   */
   setUserVerticalCandidates(flag: boolean) {
     this.useVerticalCandidates_ = flag;
   }
@@ -210,14 +245,27 @@ export class InputController {
     this.keyHandler_.composingBufferSize = size;
   }
 
+  /**
+   * Sets the user phrases to the language model.
+   * @param map The map of user phrases.
+   */
   setUserPhrases(map: Map<string, string[]>): void {
     this.lm_.userPhrases.setUserPhrases(map);
   }
 
+  /**
+   * Sets the callback function when the user phrase model is changed.
+   * @param callback The callback function.
+   */
   setOnPhraseChange(callback: (map: Map<string, string[]>) => void): void {
     this.lm_.userPhrases.setOnPhraseChange(callback);
   }
 
+  /**
+   * Handles the passed keyboard events.
+   * @param event The keyboard event.
+   * @returns If the key is handled.
+   */
   keyEvent(event: KeyboardEvent): boolean {
     if (event.isComposing) return false;
     if (event.metaKey) return false;

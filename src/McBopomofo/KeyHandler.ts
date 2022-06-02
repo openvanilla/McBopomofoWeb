@@ -459,7 +459,7 @@ export class KeyHandler {
     this.walkedNodes_ = [];
   }
 
-  getComposedString(builderCursor: number): ComposedString {
+  private getComposedString(builderCursor: number): ComposedString {
     // To construct an Inputting state, we need to first retrieve the entire
     // composing buffer from the current grid, then split the composed string into
     // head and tail, so that we can insert the current reading (if not-empty)
@@ -530,7 +530,7 @@ export class KeyHandler {
     return new ComposedString(head, tail, tooltip);
   }
 
-  handleCursorKeys(
+  private handleCursorKeys(
     key: Key,
     state: InputState,
     stateCallback: (state: InputState) => void,
@@ -593,7 +593,7 @@ export class KeyHandler {
     return true;
   }
 
-  handleDeleteKeys(
+  private handleDeleteKeys(
     key: Key,
     state: InputState,
     stateCallback: (state: InputState) => void,
@@ -642,7 +642,7 @@ export class KeyHandler {
     return true;
   }
 
-  handlePunctuation(
+  private handlePunctuation(
     punctuationUnigramKey: string,
     stateCallback: (state: InputState) => void,
     errorCallback: () => void
@@ -666,7 +666,9 @@ export class KeyHandler {
     return true;
   }
 
-  buildChoosingCandidateState(nonEmptyState: NotEmpty): ChoosingCandidate {
+  private buildChoosingCandidateState(
+    nonEmptyState: NotEmpty
+  ): ChoosingCandidate {
     let anchoredNodes = this.builder_.grid.nodesCrossingOrEndingAt(
       this.actualCandidateCursorIndex
     );
@@ -694,7 +696,7 @@ export class KeyHandler {
     );
   }
 
-  buildInputtingState(): Inputting {
+  private buildInputtingState(): Inputting {
     let composedString = this.getComposedString(this.builder_.cursorIndex);
 
     let head = composedString.head;
@@ -706,7 +708,7 @@ export class KeyHandler {
     return new Inputting(composingBuffer, cursorIndex, composedString.tooltip);
   }
 
-  buildMarkingState(beginCursorIndex: number): Marking {
+  private buildMarkingState(beginCursorIndex: number): Marking {
     // We simply build two composed strings and use the delta between the shorter
     // and the longer one as the marked text.
     let from = this.getComposedString(beginCursorIndex);
@@ -761,7 +763,7 @@ export class KeyHandler {
     );
   }
 
-  get actualCandidateCursorIndex(): number {
+  private get actualCandidateCursorIndex(): number {
     let cursorIndex = this.builder_.cursorIndex;
     if (this.selectPhraseAfterCursorAsCandidate_) {
       if (cursorIndex < this.builder_.length) {
@@ -799,7 +801,7 @@ export class KeyHandler {
     return evictedText;
   }
 
-  fixNodesIfRequired() {
+  private fixNodesIfRequired() {
     let width = this.builder_.grid.width;
     if (width > kMaxComposingBufferNeedsToWalkSize) {
       let index = 0;
@@ -822,7 +824,7 @@ export class KeyHandler {
     }
   }
 
-  pinNode(candidate: string): void {
+  private pinNode(candidate: string): void {
     let cursorIndex: number = this.actualCandidateCursorIndex;
     let selectedNode = this.builder_.grid.fixNodeSelectedCandidate(
       cursorIndex,

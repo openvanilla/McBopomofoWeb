@@ -1,31 +1,35 @@
 export interface InputState {}
 
-// Empty state, the ground state of a state machine.
-//
-// When a state machine implementation enters this state, it may produce a side
-// effect with the previous state. For example, if the previous state is
-// Inputting, and an implementation enters Empty, the implementation may commit
-// whatever is in Inputting to the input method context.
+/**
+ * Empty state, the ground state of a state machine.
+ *
+ * When a state machine implementation enters this state, it may produce a side
+ * effect with the previous state. For example, if the previous state is
+ * Inputting, and an implementation enters Empty, the implementation may commit
+ * whatever is in Inputting to the input method context.
+ */
 export class Empty implements InputState {
   toString(): string {
     return "Empty";
   }
 }
 
-// Empty state with no consideration for any previous state.
-//
-// When a state machine implementation enters this state, it must not produce
-// any side effect. In other words, any previous state is discarded. An
-// implementation must continue to enter Empty after this, so that no use sites
-// of the state machine need to check for both Empty and EmptyIgnoringPrevious
-// states.
+/**
+ * Empty state with no consideration for any previous state.
+ *
+ * When a state machine implementation enters this state, it must not produce
+ * any side effect. In other words, any previous state is discarded. An
+ * implementation must continue to enter Empty after this, so that no use sites
+ * of the state machine need to check for both Empty and EmptyIgnoringPrevious
+ * states.
+ */
 export class EmptyIgnoringPrevious implements InputState {
   toString(): string {
     return "EmptyIgnoringPrevious";
   }
 }
 
-// Committing text.
+/**  Committing text. */
 export class Committing implements InputState {
   private text_: string;
   get text(): string {
@@ -41,8 +45,10 @@ export class Committing implements InputState {
   }
 }
 
-// NotEmpty state that has a non-empty composing buffer ("preedit" in some IME
-// frameworks).
+/**
+ * NotEmpty state that has a non-empty composing buffer ("preedit" in some IME
+ * frameworks).
+ */
 export class NotEmpty implements InputState {
   private composingBuffer_: string;
   private cursorIndex_: number;
@@ -69,8 +75,10 @@ export class NotEmpty implements InputState {
   }
 }
 
-// Inputting state with an optional field to commit evicted ("popped") segments
-// in the composing buffer.
+/**
+ * Inputting state with an optional field to commit evicted ("popped") segments
+ * in the composing buffer.
+ */
 export class Inputting extends NotEmpty {
   evictedText: string = "";
 
@@ -83,7 +91,7 @@ export class Inputting extends NotEmpty {
   }
 }
 
-// Candidate selecting state with a non-empty composing buffer.
+/** Candidate selecting state with a non-empty composing buffer. */
 export class ChoosingCandidate extends NotEmpty {
   private candidates_: string[];
   get candidates(): string[] {
@@ -100,15 +108,17 @@ export class ChoosingCandidate extends NotEmpty {
   }
 }
 
-// Represents the Marking state where the user uses Shift-Left/Shift-Right to
-// mark a phrase to be added to their custom phrases. A Marking state still has
-// a composingBuffer, and the invariant is that composingBuffer = head +
-// markedText + tail. Unlike cursorIndex, which is UTF-8 based,
-// markStartGridCursorIndex is in the same unit that a Gramambular's grid
-// builder uses. In other words, markStratGridCursorIndex is the beginning
-// position of the reading cursor. This makes it easy for a key handler to know
-// where the marked range is when combined with the grid builder's (reading)
-// cursor index.
+/**
+ * Represents the Marking state where the user uses Shift-Left/Shift-Right to
+ * mark a phrase to be added to their custom phrases. A Marking state still has
+ * a composingBuffer, and the invariant is that composingBuffer = head +
+ * markedText + tail. Unlike cursorIndex, which is UTF-8 based,
+ * markStartGridCursorIndex is in the same unit that a Gramambular's grid
+ * builder uses. In other words, markStartGridCursorIndex is the beginning
+ * position of the reading cursor. This makes it easy for a key handler to know
+ * where the marked range is when combined with the grid builder's (reading)
+ * cursor index.
+ */
 export class Marking extends NotEmpty {
   private markStartGridCursorIndex_: number;
   private head_: string;

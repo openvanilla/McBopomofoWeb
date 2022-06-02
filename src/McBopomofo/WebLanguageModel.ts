@@ -1,5 +1,8 @@
 import { KeyValuePair, LanguageModel, Unigram } from "../Gramambular";
 
+/**
+ * The model for user phrases.
+ */
 export class UserPhrases implements LanguageModel {
   private map_: Map<string, string[]> = new Map();
   private onPhraseChange: (map: Map<string, string[]>) => void = () => {};
@@ -47,6 +50,9 @@ export class UserPhrases implements LanguageModel {
   }
 }
 
+/**
+ * The main language model.
+ */
 export class WebLanguageModel implements LanguageModel {
   private map_: Map<string, [string, number][]>;
   private userPhrases_: UserPhrases = new UserPhrases();
@@ -64,13 +70,24 @@ export class WebLanguageModel implements LanguageModel {
       return [space];
     }
 
-    let result: Unigram[] = this.userPhrases.unigramsForKey(key);
+    let result: Unigram[] = [];
+    let usedValues: string[] = [];
+    let userPhrases = this.userPhrases.unigramsForKey(key);
+    for (let phrase of userPhrases) {
+      if (!usedValues.includes(phrase.keyValue.value)) {
+        result.push(phrase);
+      }
+      usedValues.push(phrase.keyValue.value);
+    }
 
     let list = this.map_.get(key);
     if (list != undefined) {
       for (let item of list) {
-        let g = new Unigram(new KeyValuePair(key, item[0]), item[1]);
-        result.push(g);
+        if (!usedValues.includes(item[0])) {
+          let g = new Unigram(new KeyValuePair(key, item[0]), item[1]);
+          result.push(g);
+        }
+        usedValues.push(item[0]);
       }
     }
     return result;

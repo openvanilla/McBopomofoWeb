@@ -130,7 +130,7 @@ export class Grid {
     return result;
   }
 
-  nodesInRange(begin: number, end: number) {
+  private nodesInRange(begin: number, end: number) {
     let result: NodeAnchor[] = [];
     if (this.spans_.length && end <= this.spans_.length) {
       for (let i = 0; i < end; i++) {
