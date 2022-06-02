@@ -299,6 +299,11 @@ export class KeyHandler {
       return true;
     }
 
+    // Tab key.
+    if (key.name === KeyName.TAB) {
+      return this.handleTabKey(key, state, stateCallback, errorCallback);
+    }
+
     // Cursor keys.
     if (key.isCursorKeys) {
       return this.handleCursorKeys(key, state, stateCallback, errorCallback);
@@ -528,6 +533,90 @@ export class KeyHandler {
     let head = composed.substring(0, composedCursor);
     let tail = composed.substring(composedCursor, composed.length);
     return new ComposedString(head, tail, tooltip);
+  }
+
+  private handleTabKey(
+    key: Key,
+    state: InputState,
+    stateCallback: (state: InputState) => void,
+    errorCallback: () => void
+  ): boolean {
+    if (state instanceof Inputting == false) {
+      errorCallback();
+      return true;
+    }
+
+    let inputting: Inputting = state as Inputting;
+
+    if (!this.reading_.isEmpty) {
+      errorCallback();
+      return true;
+    }
+
+    let candidates = this.buildChoosingCandidateState(inputting).candidates;
+    if (!candidates.length) {
+      errorCallback();
+      return true;
+    }
+
+    let cursorIndex = this.actualCandidateCursorIndex;
+    let length = 0;
+    let currentNode = new NodeAnchor();
+
+    for (let node of this.walkedNodes_) {
+      length += node.spanningLength;
+      if (length >= cursorIndex) {
+        currentNode = node;
+        break;
+      }
+    }
+
+    let currentValue = currentNode.node?.currentKeyValue.value;
+    let currentIndex = 0;
+    let score = currentNode.node?.score ?? 0;
+    if (score < kSelectedCandidateScore) {
+      // Once the user never select a candidate for the node, we start from the
+      // first candidate, so the user has a chance to use the unigram with two or
+      // more characters when type the tab key for the first time.
+      //
+      // In other words, if a user type two BPMF readings, but the score of seeing
+      // them as two unigrams is higher than a phrase with two characters, the
+      // user can just use the longer phrase by typing the tab key.
+      if (candidates[0] === currentValue) {
+        // If the first candidate is the value of the current node, we use next
+        // one.
+        if (key.shiftPressed) {
+          currentIndex = candidates.length - 1;
+        } else {
+          currentIndex = 1;
+        }
+      }
+    } else {
+      for (let candidate of candidates) {
+        if (candidate == currentNode.node?.currentKeyValue.value) {
+          if (key.shiftPressed) {
+            currentIndex == 0
+              ? (currentIndex = candidates.length - 1)
+              : currentIndex--;
+          } else {
+            currentIndex++;
+          }
+          break;
+        }
+        currentIndex++;
+      }
+    }
+
+    if (currentIndex >= candidates.length) {
+      currentIndex = 0;
+    }
+
+    this.pinNode(
+      candidates[currentIndex],
+      /*useMoveCursorAfterSelectionSetting=*/ false
+    );
+    stateCallback(this.buildInputtingState());
+    return true;
   }
 
   private handleCursorKeys(
@@ -824,7 +913,10 @@ export class KeyHandler {
     }
   }
 
-  private pinNode(candidate: string): void {
+  private pinNode(
+    candidate: string,
+    useMoveCursorAfterSelectionSetting: boolean = true
+  ): void {
     let cursorIndex: number = this.actualCandidateCursorIndex;
     let selectedNode = this.builder_.grid.fixNodeSelectedCandidate(
       cursorIndex,
@@ -844,7 +936,7 @@ export class KeyHandler {
 
     this.walk();
 
-    if (this.moveCursorAfterSelection_) {
+    if (useMoveCursorAfterSelectionSetting && this.moveCursorAfterSelection_) {
       let nextPosition = 0;
       for (let node of this.walkedNodes_) {
         if (nextPosition >= cursorIndex) {

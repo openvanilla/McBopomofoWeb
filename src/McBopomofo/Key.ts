@@ -11,6 +11,7 @@ export enum KeyName {
   ESC = "ESC",
   SPACE = "SPACE",
   DELETE = "DELETE",
+  TAB = "TAB",
   UNKNOWN = "UNKNOWN",
 }
 

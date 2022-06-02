@@ -114,7 +114,9 @@ function KeyFromKeyboardEvent(event: KeyboardEvent) {
     case "Space":
       keyName = KeyName.SPACE;
       break;
-
+    case "Tab":
+      keyName = KeyName.TAB;
+      break;
     default:
       keyName = KeyName.ASCII;
       break;

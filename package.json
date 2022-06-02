@@ -19,7 +19,7 @@
   "scripts": {
     "ts-build": "tsc",
     "ts-build:watch": "tsc -w",
-    "build": "webpack --mode production",
+    "build": "webpack --mode production; cp public/bundle.js example/bundle.js; cp public/bundle.js chromeos/bundle.js",
     "build:dev": "webpack --mode development",
     "build:watch": "webpack --mode development --watch"
   },

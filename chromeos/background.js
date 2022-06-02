@@ -148,7 +148,7 @@ window.onload = function () {
     mcContext = context;
     chrome.storage.sync.get("settings", (value) => {
       settings = value.settings;
-      if (settings == undefined) {
+      if (settings === undefined) {
         settings = {};
       }
 
@@ -181,12 +181,12 @@ window.onload = function () {
   });
 
   chrome.input.ime.onMenuItemActivated.addListener(function (engineID, name) {
-    if (name == "mcbopomofo-options") {
+    if (name === "mcbopomofo-options") {
       let page = chrome.i18n.getMessage("optionsPage");
       window.open(chrome.extension.getURL(page));
       return;
     }
-    if (name == "mcbopomofo-homepage") {
+    if (name === "mcbopomofo-homepage") {
       window.open("https://mcbopomofo.openvanilla.org/");
       return;
     }
