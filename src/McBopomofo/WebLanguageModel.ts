@@ -8,6 +8,9 @@ export class UserPhrases implements LanguageModel {
   private onPhraseChange: (map: Map<string, string[]>) => void = () => {};
 
   setUserPhrases(map: Map<string, string[]>): void {
+    if (map === null || map === undefined) {
+      return;
+    }
     this.map_ = map;
   }
 

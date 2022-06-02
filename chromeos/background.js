@@ -132,14 +132,16 @@ window.onload = function () {
 
     chrome.storage.sync.get("user_phrase", (value) => {
       if (value !== undefined) {
-        let map = JSON.parse(value);
-        if (map) {
-          mcInputController.setUserPhrases(map);
+        let obj = JSON.parse(value);
+        if (obj) {
+          let userPhrases = new Map(Object.entries(obj));
+          mcInputController.setUserPhrases(userPhrases);
         }
       }
-      mcInputController.setOnPhraseChange((map) => {
-        let s = JSON.stringify(map);
-        chrome.storage.sync.set("user_phrase", s);
+      mcInputController.setOnPhraseChange((userPhrases) => {
+        const obj = Object.fromEntries(userPhrases);
+        let jsonString = JSON.stringify(obj);
+        chrome.storage.sync.set("user_phrase", jsonString);
       });
     });
   });

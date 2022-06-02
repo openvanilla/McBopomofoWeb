@@ -202,6 +202,7 @@
                     <td>
                         <a href="#" id="fullscreen">全螢幕編輯</a><br />
                         <a href="#" id="dump_score">印出決策樹</a><br />
+                        <a href="#" id="dump_user_phrases">印出使用者詞彙</a><br />
                     </td>
                 </tr>
             </table>
@@ -300,8 +301,48 @@
 
         return that;
     }();
+
     const { InputController } = window.mcbopomofo;
     let controller = new InputController(ui);
+
+    function loadUserPhrases() {
+        let result = window.localStorage.getItem('user_phrases');
+        let obj = JSON.parse(result);
+        if (result !== undefined && result !== null) {
+            let userPhrases = new Map(Object.entries(obj));
+            controller.setUserPhrases(userPhrases);
+        } else {
+            controller.setUserPhrases(new Map());
+        }
+    }
+
+    function saveUserPhrases(userPhrases) {
+        const obj = Object.fromEntries(userPhrases);
+        let s = JSON.stringify(obj);
+        window.localStorage.setItem('user_phrases', s);
+    }
+
+    function dumpUserPhrases() {
+        let result = window.localStorage.getItem('user_phrases');
+        let map = JSON.parse(result);
+        let s = '';
+        if (map) {
+            console.log('has key');
+            for (let key in map) {
+                console.log('key:' + key);
+                let phrases = map[key];
+                console.log('phrases:' + phrases);
+                for (let phrase of phrases) {
+                    s += phrase + ' ' + key + '\n';
+                }
+            }
+        }
+        return s;
+    }
+
+    loadUserPhrases();
+    controller.setOnPhraseChange(saveUserPhrases);
+
     let shiftState = false;
 
     document.getElementById("text_area").addEventListener('keyup', (event) => {
@@ -402,6 +443,15 @@
         document.getElementById("text_area").focus();
         return false;
     }
+
+    document.getElementById("dump_user_phrases").onclick = function (event) {
+        let s = dumpUserPhrases();
+        console.log(s);
+        document.getElementById("dump_area").innerHTML = "<pre>" + s + "</pre>";
+        document.getElementById("text_area").focus();
+        return false;
+    }
+
 
     document.getElementById("text_area").onblur = function () {
         // controller.reset();
