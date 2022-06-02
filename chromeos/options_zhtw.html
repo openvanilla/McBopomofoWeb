@@ -43,7 +43,7 @@
                     <option value="Standard">標準</option>
                     <option value="ETen">倚天</option>
                     <option value="Hsu">許式</option>
-                    <option value="ETen">倚天 26</option>
+                    <option value="ETen26">倚天 26</option>
                     <option value="HanyuPinyin">漢語拼音</option>
                     <option value="IBM">IBM</option>
                 </select>
@@ -82,6 +82,14 @@
                     checked="checked"><label for="uppercase_letters">輸入大寫字母</label><br>
                 <input type="radio" name="letters" value="lowercase_letters" id="lowercase_letters"><label
                     for="lowercase_letters">輸入小寫字母</label>
+            </td>
+        </tr>
+        <tr>
+            <td class="option_title">輸入緩衝區：</td>
+            <td>
+                <input type="number" min="4" max="100" name="composing_buffer_size" value="10"
+                    id="composing_buffer_size">
+                (4-100)
             </td>
         </tr>
     </table>

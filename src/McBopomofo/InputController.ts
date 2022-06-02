@@ -206,6 +206,10 @@ export class InputController {
     this.useVerticalCandidates_ = flag;
   }
 
+  setComposingBufferSize(size: number) {
+    this.keyHandler_.composingBufferSize = size;
+  }
+
   keyEvent(event: KeyboardEvent): boolean {
     if (event.isComposing) return false;
     if (event.metaKey) return false;

@@ -48,6 +48,14 @@ window.onload = () => {
         document.getElementById("lowercase_letters").checked = true;
       }
     }
+
+    {
+      let value = settings.composing_buffer_size;
+      if (value === undefined) value = 10;
+      if (value < 4) value = 4;
+      if (value > 100) value = 100;
+      document.getElementById("composing_buffer_size").value = value;
+    }
   }
 
   function saveSettings(settings) {
@@ -105,6 +113,22 @@ window.onload = () => {
   document.getElementById("move_cursor").onchange = (event) => {
     let checked = document.getElementById("move_cursor").checked;
     settings.move_cursor = checked;
+    saveSettings(settings);
+  };
+
+  document.getElementById("composing_buffer_size").onchange = function (event) {
+    let value = document.getElementById("composing_buffer_size").value;
+    let size = parseInt(value);
+    if (isNaN(size)) {
+      return;
+    }
+    if (size < 4) {
+      size = 4;
+    }
+    if (size > 100) {
+      size = 100;
+    }
+    settings.composing_buffer_size = size;
     saveSettings(settings);
   };
 };

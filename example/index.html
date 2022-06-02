@@ -191,6 +191,13 @@
                     </td>
                 </tr>
                 <tr>
+                    <td class="option_title">輸入緩衝區：</td>
+                    <td>
+                        <input type="number" min="4" max="100" name="composing_buffer_size" value="10"
+                            id="composing_buffer_size"> (4-100)
+                    </td>
+                </tr>
+                <tr>
                     <td class="option_title">其他：</td>
                     <td>
                         <a href="#" id="fullscreen">全螢幕編輯</a><br />
@@ -361,6 +368,16 @@
     document.getElementById("move_cursor").onchange = function (event) {
         let checked = document.getElementById("move_cursor").checked;
         controller.setMoveCursorAfterSelection(checked);
+        document.getElementById("text_area").focus();
+    };
+
+    document.getElementById("composing_buffer_size").onchange = function (event) {
+        let value = document.getElementById("composing_buffer_size").value;
+        let size = parseInt(value);
+        if (isNaN(size)) { return; }
+        if (size < 4) { size = 4; }
+        if (size > 100) { size = 100; }
+        controller.setComposingBufferSize(value);
         document.getElementById("text_area").focus();
     };
 
