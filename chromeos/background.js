@@ -2,14 +2,14 @@ var mcInputController = null;
 var mcContext = null;
 var settings = null;
 
-window.onload = function () {
+window.onload = () => {
   const { InputController } = window.mcbopomofo;
 
   function makeUI(engineID) {
     let that = {};
     that.engineID = engineID;
 
-    that.reset = function () {
+    that.reset = () => {
       chrome.input.ime.clearComposition({ contextID: mcContext.contextID });
       chrome.input.ime.setCandidateWindowProperties({
         engineID: that.engineID,
@@ -19,14 +19,14 @@ window.onload = function () {
       });
     };
 
-    that.commitString = function (string) {
+    that.commitString = (string) => {
       chrome.input.ime.commitText({
         contextID: mcContext.contextID,
         text: string,
       });
     };
 
-    that.update = function (string) {
+    that.update = (string) => {
       let state = JSON.parse(string);
       let buffer = state.composingBuffer;
       let candidates = state.candidates;
@@ -112,7 +112,7 @@ window.onload = function () {
     return that;
   }
 
-  chrome.input.ime.onActivate.addListener(function (engineID) {
+  chrome.input.ime.onActivate.addListener((engineID) => {
     mcInputController = new InputController(makeUI(engineID));
     mcInputController.setUserVerticalCandidates(true);
     mcEngineID = engineID;
@@ -146,7 +146,15 @@ window.onload = function () {
     });
   });
 
-  chrome.input.ime.onFocus.addListener(function (context) {
+  chrome.input.ime.onBlur.addListener((context) => {
+    mcInputController.reset();
+  });
+
+  chrome.input.ime.onReset.addListener((context) => {
+    mcInputController.reset();
+  });
+
+  chrome.input.ime.onFocus.addListener((context) => {
     mcContext = context;
     chrome.storage.sync.get("settings", (value) => {
       settings = value.settings;
@@ -165,7 +173,7 @@ window.onload = function () {
     });
   });
 
-  chrome.input.ime.onKeyEvent.addListener(function (engineID, keyData) {
+  chrome.input.ime.onKeyEvent.addListener((engineID, keyData) => {
     if (keyData.type != "keydown") {
       return false;
     }
@@ -182,7 +190,7 @@ window.onload = function () {
     return mcInputController.keyEvent(keyData);
   });
 
-  chrome.input.ime.onMenuItemActivated.addListener(function (engineID, name) {
+  chrome.input.ime.onMenuItemActivated.addListener((engineID, name) => {
     if (name === "mcbopomofo-options") {
       let page = chrome.i18n.getMessage("optionsPage");
       window.open(chrome.extension.getURL(page));

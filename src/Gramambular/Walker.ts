@@ -1,9 +1,10 @@
-import { join } from "path";
 import { Grid } from "./Grid";
 import { kSelectedCandidateScore } from "./Node";
 import { NodeAnchor } from "./NodeAnchor";
 
 const kDroppedPathScore = 999;
+
+/**  Gets the path with the highest score in the grid. */
 export class Walker {
   private grid_: Grid;
 
@@ -44,6 +45,16 @@ export class Walker {
     return paths;
   }
 
+  /**
+   * Gets the path with the highest score in the grid.
+   *
+   * @param location The location to start to walk the grid.
+   * @param accumulatedScore The accumulated score of the path.
+   * @param joinedPhrase The joined phrase by several nodes with spanning length
+   * as 1 in the path.
+   * @param longPhrases The long phrases from a node.
+   * @returns A path composed by NodeAnchor objects.
+   */
   walk(
     location: number,
     accumulatedScore: number = 0,
