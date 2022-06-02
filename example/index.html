@@ -307,13 +307,15 @@
 
     function loadUserPhrases() {
         let result = window.localStorage.getItem('user_phrases');
-        let obj = JSON.parse(result);
-        if (result !== undefined && result !== null) {
-            let userPhrases = new Map(Object.entries(obj));
-            controller.setUserPhrases(userPhrases);
-        } else {
-            controller.setUserPhrases(new Map());
-        }
+        try {
+            let obj = JSON.parse(result);
+            if (result !== undefined && result !== null) {
+                let userPhrases = new Map(Object.entries(obj));
+                controller.setUserPhrases(userPhrases);
+            } else {
+                controller.setUserPhrases(new Map());
+            }
+        } catch (e) { }
     }
 
     function saveUserPhrases(userPhrases) {

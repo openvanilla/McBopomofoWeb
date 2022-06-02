@@ -117,6 +117,12 @@ function KeyFromKeyboardEvent(event: KeyboardEvent) {
     case "Tab":
       keyName = KeyName.TAB;
       break;
+    case "PageUp":
+      keyName = KeyName.PAGE_UP;
+      break;
+    case "PageDown":
+      keyName = KeyName.PAGE_DOWN;
+      break;
     default:
       keyName = KeyName.ASCII;
       break;
@@ -217,6 +223,9 @@ export class InputController {
    * @param keys The candidate keys.
    */
   setCandidateKeys(keys: string) {
+    if (keys == undefined) {
+      keys = "123456789";
+    }
     let list: string[] = [];
     for (let i = 0; i < keys.length; i++) {
       let c = keys.charAt(i);
@@ -350,7 +359,12 @@ export class InputController {
       } else {
         this.candidateController_.goToNextPage();
       }
+    } else if (key.name === KeyName.PAGE_UP) {
+      this.candidateController_.goToPreviousPage();
+    } else if (key.name === KeyName.PAGE_DOWN) {
+      this.candidateController_.goToNextPage();
     }
+
     let result = this.candidateController_.getCurrentPage();
     this.ui_.setCandidates(result);
   }

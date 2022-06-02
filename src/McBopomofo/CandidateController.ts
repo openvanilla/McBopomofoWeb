@@ -36,10 +36,11 @@ export class CandidateController {
   }
 
   get currentPageIndex(): number {
-    return Math.floor(this.currentSelectedIndex_ / this.keyCaps_.length) + 1;
+    return Math.floor(this.currentSelectedIndex_ / this.keyCaps_.length);
   }
+
   get totalPageCount(): number {
-    return Math.ceil(this.candidates_.length / this.keyCaps_.length) + 1;
+    return Math.ceil(this.candidates_.length / this.keyCaps_.length);
   }
 
   update(candidates: string[], keyCaps: string[]) {

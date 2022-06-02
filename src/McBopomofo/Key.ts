@@ -12,6 +12,8 @@ export enum KeyName {
   SPACE = "SPACE",
   DELETE = "DELETE",
   TAB = "TAB",
+  PAGE_UP = "PAGE_UP",
+  PAGE_DOWN = "PAGE_DOWN",
   UNKNOWN = "UNKNOWN",
 }
 

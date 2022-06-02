@@ -130,19 +130,30 @@ window.onload = () => {
     ];
     chrome.input.ime.setMenuItems({ engineID: engineID, items: menus });
 
+    console.log("load user phrase");
     chrome.storage.sync.get("user_phrase", (value) => {
-      if (value !== undefined) {
-        let obj = JSON.parse(value);
-        if (obj) {
-          let userPhrases = new Map(Object.entries(obj));
-          mcInputController.setUserPhrases(userPhrases);
+      let jsonString = value.user_phrase;
+
+      if (jsonString !== undefined) {
+        try {
+          let obj = JSON.parse(jsonString);
+          if (obj) {
+            let userPhrases = new Map(Object.entries(obj));
+            mcInputController.setUserPhrases(userPhrases);
+          }
+        } catch (e) {
+          console.log("failed to parse user_phrase:" + e);
         }
+      } else {
+        console.log("user_phrase is null");
       }
-      mcInputController.setOnPhraseChange((userPhrases) => {
-        const obj = Object.fromEntries(userPhrases);
-        let jsonString = JSON.stringify(obj);
-        chrome.storage.sync.set("user_phrase", jsonString);
-      });
+    });
+
+    mcInputController.setOnPhraseChange((userPhrases) => {
+      const obj = Object.fromEntries(userPhrases);
+      let jsonString = JSON.stringify(obj);
+      chrome.storage.sync.set({ user_phrase: jsonString });
+      console.log("write user_phrase done");
     });
   });
 
@@ -164,6 +175,10 @@ window.onload = () => {
 
       mcInputController.setKeyboardLayout(settings.layout);
       mcInputController.setSelectPhrase(settings.select_phrase);
+      let keys = settings.candidate_keys;
+      if (keys == undefined) {
+        keys = "123456789";
+      }
       mcInputController.setCandidateKeys(settings.candidate_keys);
       mcInputController.setEscClearEntireBuffer(
         settings.esc_key_clear_entire_buffer
