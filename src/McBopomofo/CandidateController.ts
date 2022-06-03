@@ -119,4 +119,15 @@ export class CandidateController {
     current += 1;
     this.currentSelectedIndex_ = current * this.keyCaps_.length;
   }
+
+  goToNextPageButFistWhenAtEnd(): void {
+    let current = Math.floor(this.currentSelectedIndex_ / this.keyCaps_.length);
+    let last = Math.floor(this.candidates_.length / this.keyCaps_.length);
+    if (current === last) {
+      this.currentSelectedIndex_ = 0;
+      return;
+    }
+    current += 1;
+    this.currentSelectedIndex_ = current * this.keyCaps_.length;
+  }
 }

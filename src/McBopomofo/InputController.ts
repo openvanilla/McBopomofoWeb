@@ -348,13 +348,7 @@ export class InputController {
     }
 
     if (key.name === KeyName.SPACE) {
-      let current = this.candidateController_.currentPageIndex;
-      let total = this.candidateController_.totalPageCount;
-      if (current < total) {
-        this.candidateController_.goToNextPage();
-      } else {
-        this.candidateController_.goToFirst();
-      }
+      this.candidateController_.goToNextPageButFistWhenAtEnd();
     } else if (key.name === KeyName.LEFT) {
       if (this.useVerticalCandidates_) {
         this.candidateController_.goToPreviousPage();

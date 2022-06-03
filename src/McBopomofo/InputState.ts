@@ -1,10 +1,16 @@
 /**
+ * @file
+ * The states for the input method module.
+ *
  * @license
  * Copyright (c) 2022 and onwards The McBopomofo Authors.
  * This code is released under the MIT license.
  * SPDX-License-Identifier: MIT
  */
 
+/**
+ * The interface for all of the states.
+ */
 export interface InputState {}
 
 /**
@@ -36,9 +42,10 @@ export class EmptyIgnoringPrevious implements InputState {
   }
 }
 
-/**  Committing text. */
+/**  The state for committing text into the desired application. */
 export class Committing implements InputState {
   private text_: string;
+  /** The text to commit. */
   get text(): string {
     return this.text_;
   }
@@ -61,12 +68,17 @@ export class NotEmpty implements InputState {
   private cursorIndex_: number;
   private tooltip_: string;
 
+  /** The composing buffer. */
   get composingBuffer(): string {
     return this.composingBuffer_;
   }
+
+  /** The cursor index. */
   get cursorIndex(): number {
     return this.cursorIndex_;
   }
+
+  /** The tooltip. */
   get tooltip(): string {
     return this.tooltip_;
   }
@@ -101,6 +113,8 @@ export class Inputting extends NotEmpty {
 /** Candidate selecting state with a non-empty composing buffer. */
 export class ChoosingCandidate extends NotEmpty {
   private candidates_: string[];
+
+  /** The candidates. */
   get candidates(): string[] {
     return this.candidates_;
   }
