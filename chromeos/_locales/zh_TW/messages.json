@@ -4,8 +4,9 @@
   "imeUS": { "message": "小麥注音 (美式鍵盤)" },
   "imeDvorak": { "message": "小麥注音 (Dvorak 鍵盤)" },
   "menuOptions": { "message": "偏好設定" },
-  "menuUserPhrases": {"message": "使用者詞彙"},
+  "menuUserPhrases": { "message": "使用者詞彙" },
   "optionsPage": { "message": "options_zhtw.html" },
   "userPhrasesPage": { "message": "user_phrase_zhtw.html" },
-  "homepage": { "message": "專案首頁" }
+  "homepage": { "message": "專案首頁" },
+  "tooltip": { "message": "提示" }
 }

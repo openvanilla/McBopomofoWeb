@@ -14,6 +14,8 @@ window.onload = () => {
       chrome.input.ime.setCandidateWindowProperties({
         engineID: that.engineID,
         properties: {
+          auxiliaryText: "",
+          auxiliaryTextVisible: false,
           visible: false,
         },
       });
@@ -86,6 +88,8 @@ window.onload = () => {
         chrome.input.ime.setCandidateWindowProperties({
           engineID: that.engineID,
           properties: {
+            auxiliaryText: "",
+            auxiliaryTextVisible: false,
             visible: true,
             cursorVisible: true,
             vertical: true,
@@ -102,10 +106,37 @@ window.onload = () => {
           contextID: mcContext.contextID,
           candidateID: selectedIndex,
         });
+      } else if (state.tooltip.length) {
+        // Use the candidate window to tooltips.
+        chrome.input.ime.setCandidateWindowProperties({
+          engineID: that.engineID,
+          properties: {
+            auxiliaryText: state.tooltip,
+            auxiliaryTextVisible: true,
+            visible: true,
+            cursorVisible: false,
+            windowPosition: "composition",
+            pageSize: 1, // pageSize has to be at least 1 otherwise ChromeOS crashes.
+          },
+        });
+
+        chrome.input.ime.setCandidates({
+          contextID: mcContext.contextID,
+          candidates: [
+            {
+              candidate: "",
+              annotation: "",
+              id: 0,
+              label: " ",
+            },
+          ],
+        });
       } else {
         chrome.input.ime.setCandidateWindowProperties({
           engineID: that.engineID,
           properties: {
+            auxiliaryText: "",
+            auxiliaryTextVisible: false,
             visible: false,
           },
         });
