@@ -23,10 +23,10 @@ import {
   Marking,
   NotEmpty,
 } from "./InputState";
-
-import * as _ from "lodash";
 import { Key, KeyName } from "./Key";
+import { LocalizedStrings } from "./LocalizedStrings";
 import { WebLanguageModel } from "./WebLanguageModel";
+import * as _ from "lodash";
 
 export class ComposedString {
   head: string = "";
@@ -90,6 +90,14 @@ function FindHighestScore(nodeAnchors: NodeAnchor[], epsilon: number): number {
 }
 
 export class KeyHandler {
+  private localizedStrings_: LocalizedStrings = new LocalizedStrings();
+  public get languageCode(): string {
+    return this.localizedStrings_.languageCode;
+  }
+  public set languageCode(value: string) {
+    this.localizedStrings_.languageCode = value;
+  }
+
   private selectPhraseAfterCursorAsCandidate_: boolean = false;
   public get selectPhraseAfterCursorAsCandidate(): boolean {
     return this.selectPhraseAfterCursorAsCandidate_;
@@ -528,12 +536,10 @@ export class KeyHandler {
         // already caught up.
         let prevReading = this.builder_.readings[builderCursor - 1];
         let nextReading = this.builder_.readings[builderCursor];
-        tooltip =
-          "Cursor is between syllables " +
-          prevReading +
-          " and " +
-          nextReading +
-          ".";
+        tooltip = this.localizedStrings_.cursorIsBetweenSyllables(
+          prevReading,
+          nextReading
+        );
       }
     }
 
@@ -834,17 +840,25 @@ export class KeyHandler {
     let status = "";
     // Validate the marking.
     if (readings.length < kMinValidMarkingReadingCount) {
-      status = kMinValidMarkingReadingCount + " syllables required.";
+      status = this.localizedStrings_.syllablesRequired(
+        kMinValidMarkingReadingCount
+      );
     } else if (readings.length > kMaxValidMarkingReadingCount) {
-      status = kMaxValidMarkingReadingCount + " syllables maximum.";
-      // } else if (MarkedPhraseExists(languageModel_.get(), readingValue, marked)) {
-      //   status = localizedStrings_.phraseAlreadyExists();
+      status = this.localizedStrings_.syllableMaximum(
+        kMaxValidMarkingReadingCount
+      );
+    } else if (MarkedPhraseExists(this.languageModel_, readingValue, marked)) {
+      status = this.localizedStrings_.phraseAlreadyExists();
     } else {
-      status = "press Enter to add the phrase.";
+      status = this.localizedStrings_.pressEnterToAddThePhrase();
       isValid = true;
     }
 
-    let tooltip = "Marked: " + marked + ", syllables: " + readingUiText + ", ";
+    let tooltip = this.localizedStrings_.markedWithSyllablesAndStatus(
+      marked,
+      readingUiText,
+      status
+    );
 
     return new Marking(
       composed,
@@ -979,4 +993,18 @@ export class KeyHandler {
     }
     return result;
   }
+}
+
+function MarkedPhraseExists(
+  languageModel_: LanguageModel,
+  readingValue: string,
+  marked: string
+) {
+  let phrases = languageModel_.unigramsForKey(readingValue);
+  for (let unigram of phrases) {
+    if (unigram.keyValue.value == marked) {
+      return true;
+    }
+  }
+  return false;
 }

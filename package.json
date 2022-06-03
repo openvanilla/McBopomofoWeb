@@ -14,8 +14,7 @@
   },
   "name": "mcbopomofoweb",
   "version": "0.1.0",
-  "description": "McBopomofo",
-  "main": "index.js",
+  "description": "McBopomofo input method built with TypeScript and other Web technologies",
   "scripts": {
     "ts-build": "tsc",
     "ts-build:watch": "tsc -w",
@@ -26,14 +25,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/zonble/McBopomofoWeb.git"
+    "url": "git+https://github.com/openvanilla/McBopomofoWeb.git"
   },
-  "author": "Weizhong Yang",
-  "license": "ISC",
+  "author": "The McBopomofo Authors",
+  "license": "MIT",
   "bugs": {
-    "url": "https://github.com/zonble/McBopomofoWeb/issues"
+    "url": "https://github.com/openvanilla/McBopomofoWeb/issues"
   },
-  "homepage": "https://github.com/zonble/McBopomofoWeb#readme",
+  "homepage": "https://github.com/openvanilla/McBopomofoWeb#readme",
   "dependencies": {
     "lodash": "^4.17.21"
   }

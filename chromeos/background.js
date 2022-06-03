@@ -124,7 +124,7 @@ window.onload = () => {
           contextID: mcContext.contextID,
           candidates: [
             {
-              candidate: "",
+              candidate: chrome.i18n.getMessage("tooltip"),
               annotation: "",
               id: 0,
               label: " ",
@@ -165,7 +165,17 @@ window.onload = () => {
 
   chrome.input.ime.onActivate.addListener((engineID) => {
     mcInputController = new InputController(makeUI(engineID));
+
+    /// The horizontal candidate windows on ChromeOS is actually broken so we
+    /// use the vertical one only.
     mcInputController.setUserVerticalCandidates(true);
+
+    // Changes language needs to restarts ChromeOS login session so it won't
+    // change until user logs in again. So, we can just set language code once
+    // at the start.
+    let languageCode = chrome.i18n.getUILanguage();
+    mcInputController.setLanguageCode(languageCode);
+
     mcEngineID = engineID;
     var menus = [
       {

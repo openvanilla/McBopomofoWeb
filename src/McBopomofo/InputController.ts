@@ -164,6 +164,14 @@ export class InputController {
   }
 
   /**
+   * The language code for localized messages.
+   * @param languageCode The language code.
+   */
+  public setLanguageCode(languageCode: string) {
+    this.keyHandler_.languageCode = languageCode;
+  }
+
+  /**
    * Sets keyboard layout.
    * @param layout Keyboard layout. It could be:
    * - "Standard"
