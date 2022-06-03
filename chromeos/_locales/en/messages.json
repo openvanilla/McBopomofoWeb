@@ -4,6 +4,8 @@
   "imeUS": { "message": "McBopomofo (US Keyboard)" },
   "imeDvorak": { "message": "McBopomofo (Dvorak Keyboard)" },
   "menuOptions": { "message": "Options" },
+  "menuUserPhrases": {"message": "User Phrases"},
   "optionsPage": { "message": "options.html" },
+  "userPhrasesPage": { "message": "user_phrase.html" },
   "homepage": { "message": "Homepage" }
 }

@@ -514,8 +514,6 @@ export class KeyHandler {
       // readings (syllables) even if the cursor is not in the middle of a
       // composed string due to its being shorter than the number of readings.
       if (u32Value.length < spanningLength) {
-        console.log("actualString.length?" + actualString.length);
-        console.log("spanningLength" + spanningLength);
         // builderCursor is guaranteed to be > 0. If it was 0, we wouldn't even
         // reach here due to runningCursor having already "caught up" with
         // builderCursor. It is also guaranteed to be less than the size of the

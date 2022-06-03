@@ -82,7 +82,7 @@ window.onload = () => {
           item.label = candidate.keyCap;
           chromeCandidates.push(item);
         }
-        console.log(chromeCandidates);
+
         chrome.input.ime.setCandidateWindowProperties({
           engineID: that.engineID,
           properties: {
@@ -92,10 +92,12 @@ window.onload = () => {
             pageSize: candidates.length,
           },
         });
+
         chrome.input.ime.setCandidates({
           contextID: mcContext.contextID,
           candidates: chromeCandidates,
         });
+
         chrome.input.ime.setCursorPosition({
           contextID: mcContext.contextID,
           candidateID: selectedIndex,
@@ -112,25 +114,7 @@ window.onload = () => {
     return that;
   }
 
-  chrome.input.ime.onActivate.addListener((engineID) => {
-    mcInputController = new InputController(makeUI(engineID));
-    mcInputController.setUserVerticalCandidates(true);
-    mcEngineID = engineID;
-    var menus = [
-      {
-        id: "mcbopomofo-options",
-        label: chrome.i18n.getMessage("menuOptions"),
-        style: "check",
-      },
-      {
-        id: "mcbopomofo-homepage",
-        label: chrome.i18n.getMessage("homepage"),
-        style: "check",
-      },
-    ];
-    chrome.input.ime.setMenuItems({ engineID: engineID, items: menus });
-
-    console.log("load user phrase");
+  function loadUserPhrases() {
     chrome.storage.sync.get("user_phrase", (value) => {
       let jsonString = value.user_phrase;
 
@@ -144,16 +128,40 @@ window.onload = () => {
         } catch (e) {
           console.log("failed to parse user_phrase:" + e);
         }
-      } else {
-        console.log("user_phrase is null");
       }
     });
+  }
+
+  chrome.input.ime.onActivate.addListener((engineID) => {
+    mcInputController = new InputController(makeUI(engineID));
+    mcInputController.setUserVerticalCandidates(true);
+    mcEngineID = engineID;
+    var menus = [
+      {
+        id: "mcbopomofo-options",
+        label: chrome.i18n.getMessage("menuOptions"),
+        style: "check",
+      },
+      {
+        id: "mcbopomofo-user-phrase",
+        label: chrome.i18n.getMessage("menuUserPhrases"),
+        style: "check",
+      },
+      {
+        id: "mcbopomofo-homepage",
+        label: chrome.i18n.getMessage("homepage"),
+        style: "check",
+      },
+    ];
+    chrome.input.ime.setMenuItems({ engineID: engineID, items: menus });
+
+    console.log("load user phrase");
+    loadUserPhrases();
 
     mcInputController.setOnPhraseChange((userPhrases) => {
       const obj = Object.fromEntries(userPhrases);
       let jsonString = JSON.stringify(obj);
       chrome.storage.sync.set({ user_phrase: jsonString });
-      console.log("write user_phrase done");
     });
   });
 
@@ -211,9 +219,32 @@ window.onload = () => {
       window.open(chrome.extension.getURL(page));
       return;
     }
+
+    if (name === "mcbopomofo-user-phrase") {
+      let page = chrome.i18n.getMessage("userPhrasesPage");
+      window.open(chrome.extension.getURL(page));
+      return;
+    }
+
     if (name === "mcbopomofo-homepage") {
       window.open("https://mcbopomofo.openvanilla.org/");
       return;
+    }
+  });
+
+  chrome.runtime.onMessage.addListener(function (
+    request,
+    sender,
+    sendResponse
+  ) {
+    console.log(
+      sender.tab
+        ? "from a content script:" + sender.tab.url
+        : "from the extension"
+    );
+    if (request.command === "reload_user_phrase") {
+      loadUserPhrases();
+      sendResponse({ status: "ok" });
     }
   });
 };

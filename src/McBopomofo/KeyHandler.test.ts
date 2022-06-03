@@ -20,13 +20,11 @@ function handleKeySequence(keyHandler: KeyHandler, keys: Key[]): InputState {
       key,
       currentState,
       (state) => {
-        // console.log(state);
         currentState = state;
       },
       () => {}
     );
   }
-  // console.log(currentState);
   return currentState;
 }
 

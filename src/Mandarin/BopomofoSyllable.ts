@@ -21,7 +21,6 @@ class PinyinParseHelper {
     if (target.substr(0, prefix.length) === prefix) {
       target = target.substr(prefix.length, target.length - prefix.length);
       wrapper.text = target;
-      console.log("true:" + target + ":" + prefix);
       return true;
     }
     return false;

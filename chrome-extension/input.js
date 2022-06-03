@@ -4,7 +4,6 @@ window.mcbopomofoUI = (function (element) {
   that.element = element;
 
   that.reset = function () {
-    console.log("reset called");
     document.getElementById("mcbpmf_candidates").innerHTML = "";
     let s = that.chineseMode ? "【麥】" : "【英】";
     s += "<span class='cursor'>|</span>";
@@ -12,21 +11,17 @@ window.mcbopomofoUI = (function (element) {
   };
 
   that.commitString = function (string) {
-    console.log("commitString called");
     let doc = document;
     if (that.element.nodeName === "IFRAME") {
       doc = that.element.contentWindow.document;
     }
 
     if (doc.queryCommandSupported) {
-      console.log("Has queryCommandSupported");
       if (doc.queryCommandSupported("insertText")) {
-        console.log("Has insertText");
         doc.execCommand("insertText", false, string);
         return;
       }
       if (doc.queryCommandSupported("insertHTML")) {
-        console.log("Has insertHTML");
         string = string
           .replace(/&/g, "&amp;")
           .replace(/</g, "&lt;")
@@ -52,7 +47,6 @@ window.mcbopomofoUI = (function (element) {
       var tail = text.substring(selectionStop);
       var composed = head + string + tail;
       that.element.value = composed;
-      console.log("composed text: " + composed);
       let start = selectionStart + string.length;
       that.element.setSelectionRange(start, start);
     } else {
@@ -164,9 +158,6 @@ window.mcbpmf_Keydown = function (event) {
   if (window.mcbopomofoUI.element === undefined) {
     return;
   }
-  console.log("mcbpmf_Keydown start");
-  console.log(event);
-  console.log(event.location);
 
   shiftState = event.key === "Shift";
 
@@ -183,13 +174,11 @@ window.mcbpmf_Keydown = function (event) {
 };
 
 document.addEventListener("focusout", function (e) {
-  console.log("focusout");
   window.mcbopomofoUI.element = null;
   document.getElementById("mcbpmf").hidden = true;
 });
 
 document.addEventListener("focusin", function (e) {
-  console.log(e.target);
   let newElement;
   let nodeName = e.target.nodeName;
   if (nodeName === "DIV" || nodeName === "TEXTAREA" || nodeName === "CANVAS") {
