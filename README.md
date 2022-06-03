@@ -29,3 +29,7 @@ npm run build
 - 把 bundle.js 搬到 `chromeos` 目錄下
 - 把整個 chromeos 目錄搬到 Google Drive，然後同步到你的 Chromebook 上
 - 在 Chromebook 上，輸入 `chrome://extensions`，選擇 "load unpacked"，選擇 Google Drive 上的 `chromeos` 目錄
+
+## 感謝
+
+特別感謝 William Wang 的技術支援。
