@@ -1,6 +1,6 @@
 var mcInputController = null;
 var mcContext = null;
-var settings = null;
+var settings = {};
 
 window.onload = () => {
   const { InputController } = window.mcbopomofo;
@@ -163,21 +163,38 @@ window.onload = () => {
     });
   }
 
-  chrome.input.ime.onActivate.addListener((engineID) => {
-    mcInputController = new InputController(makeUI(engineID));
+  function loadSettings() {
+    chrome.storage.sync.get("settings", (value) => {
+      settings = value.settings;
+      if (settings === undefined) {
+        settings = {};
+      }
+      mcInputController.setChineseConversionEnabled(
+        settings.chineseConversion === true
+      );
+      mcInputController.setKeyboardLayout(settings.layout);
+      mcInputController.setSelectPhrase(settings.select_phrase);
+      let keys = settings.candidate_keys;
+      if (keys == undefined) {
+        keys = "123456789";
+      }
+      mcInputController.setCandidateKeys(settings.candidate_keys);
+      mcInputController.setEscClearEntireBuffer(
+        settings.esc_key_clear_entire_buffer
+      );
+      mcInputController.setMoveCursorAfterSelection(settings.move_cursor);
+      mcInputController.setLetterMode(settings.letter_mode);
+    });
+  }
 
-    /// The horizontal candidate windows on ChromeOS is actually broken so we
-    /// use the vertical one only.
-    mcInputController.setUserVerticalCandidates(true);
-
-    // Changes language needs to restarts ChromeOS login session so it won't
-    // change until user logs in again. So, we can just set language code once
-    // at the start.
-    let languageCode = chrome.i18n.getUILanguage();
-    mcInputController.setLanguageCode(languageCode);
-
-    mcEngineID = engineID;
+  function updateMenu() {
     var menus = [
+      {
+        id: "mcbopomofo-chinese-conversion",
+        label: chrome.i18n.getMessage("menuChineseConversion"),
+        style: "check",
+        checked: settings.chineseConversion === true,
+      },
       {
         id: "mcbopomofo-options",
         label: chrome.i18n.getMessage("menuOptions"),
@@ -194,9 +211,25 @@ window.onload = () => {
         style: "check",
       },
     ];
-    chrome.input.ime.setMenuItems({ engineID: engineID, items: menus });
+    chrome.input.ime.setMenuItems({ engineID: mcEngineID, items: menus });
+  }
 
-    console.log("load user phrase");
+  chrome.input.ime.onActivate.addListener((engineID) => {
+    mcInputController = new InputController(makeUI(engineID));
+
+    /// The horizontal candidate windows on ChromeOS is actually broken so we
+    /// use the vertical one only.
+    mcInputController.setUserVerticalCandidates(true);
+
+    // Changes language needs to restarts ChromeOS login session so it won't
+    // change until user logs in again. So, we can just set language code once
+    // at the start.
+    let languageCode = chrome.i18n.getUILanguage();
+    mcInputController.setLanguageCode(languageCode);
+
+    mcEngineID = engineID;
+    loadSettings();
+    updateMenu();
     loadUserPhrases();
 
     mcInputController.setOnPhraseChange((userPhrases) => {
@@ -216,25 +249,7 @@ window.onload = () => {
 
   chrome.input.ime.onFocus.addListener((context) => {
     mcContext = context;
-    chrome.storage.sync.get("settings", (value) => {
-      settings = value.settings;
-      if (settings === undefined) {
-        settings = {};
-      }
-
-      mcInputController.setKeyboardLayout(settings.layout);
-      mcInputController.setSelectPhrase(settings.select_phrase);
-      let keys = settings.candidate_keys;
-      if (keys == undefined) {
-        keys = "123456789";
-      }
-      mcInputController.setCandidateKeys(settings.candidate_keys);
-      mcInputController.setEscClearEntireBuffer(
-        settings.esc_key_clear_entire_buffer
-      );
-      mcInputController.setMoveCursorAfterSelection(settings.move_cursor);
-      mcInputController.setLetterMode(settings.letter_mode);
-    });
+    loadSettings();
   });
 
   chrome.input.ime.onKeyEvent.addListener((engineID, keyData) => {
@@ -250,11 +265,21 @@ window.onload = () => {
     ) {
       return false;
     }
-
     return mcInputController.keyEvent(keyData);
   });
 
   chrome.input.ime.onMenuItemActivated.addListener((engineID, name) => {
+    if (name === "mcbopomofo-chinese-conversion") {
+      var checked = settings.chineseConversion;
+      checked = !checked;
+      settings.chineseConversion = checked;
+      chrome.storage.sync.set({ settings: settings }, () => {
+        loadSettings();
+        updateMenu();
+      });
+      return;
+    }
+
     if (name === "mcbopomofo-options") {
       let page = chrome.i18n.getMessage("optionsPage");
       window.open(chrome.extension.getURL(page));

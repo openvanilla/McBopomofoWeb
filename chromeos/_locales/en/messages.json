@@ -3,6 +3,7 @@
   "manifestDesc": { "message": "McBopomofo for ChromeOS" },
   "imeUS": { "message": "McBopomofo (US Keyboard)" },
   "imeDvorak": { "message": "McBopomofo (Dvorak Keyboard)" },
+  "menuChineseConversion": { "message": "Input Simplified Chinese" },
   "menuOptions": { "message": "Options" },
   "menuUserPhrases": { "message": "User Phrases" },
   "optionsPage": { "message": "options.html" },

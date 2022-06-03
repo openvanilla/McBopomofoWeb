@@ -3,6 +3,7 @@
   "manifestDesc": { "message": "小麥注音 ChromeOS 版" },
   "imeUS": { "message": "小麥注音 (美式鍵盤)" },
   "imeDvorak": { "message": "小麥注音 (Dvorak 鍵盤)" },
+  "menuChineseConversion": { "message": "輸入簡體中文" },
   "menuOptions": { "message": "偏好設定" },
   "menuUserPhrases": { "message": "使用者詞彙" },
   "optionsPage": { "message": "options_zhtw.html" },
