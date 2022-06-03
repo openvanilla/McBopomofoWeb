@@ -1,3 +1,10 @@
+/**
+ * @license
+ * Copyright (c) 2022 and onwards The McBopomofo Authors.
+ * This code is released under the MIT license.
+ * SPDX-License-Identifier: MIT
+ */
+
 import { BopomofoKeyboardLayout } from "../Mandarin";
 import { Candidate, CandidateController } from "./CandidateController";
 import {
@@ -151,7 +158,7 @@ export class InputController {
   }
 
   /** Resets to empty state. */
-  reset(): void {
+  public reset(): void {
     this.keyHandler_.reset();
     this.enterNewState(new Empty());
   }
@@ -166,7 +173,7 @@ export class InputController {
    * - "HanyuPinyin"
    * - "IBM"
    */
-  setKeyboardLayout(layout: string) {
+  public setKeyboardLayout(layout: string) {
     switch (layout) {
       case "ETen":
         this.keyHandler_.keyboardLayout = BopomofoKeyboardLayout.ETenLayout;
@@ -195,7 +202,7 @@ export class InputController {
    * cursor.
    * @param option "after_cursor" or "before_cursor".
    * */
-  setSelectPhrase(option: string) {
+  public setSelectPhrase(option: string) {
     let flag: boolean = option === "after_cursor";
     this.keyHandler_.selectPhraseAfterCursorAsCandidate = flag;
   }
@@ -204,7 +211,7 @@ export class InputController {
    * Sets if the input method should move cursor after selecting a candidate.
    * @param flag To enable the function or not.
    */
-  setMoveCursorAfterSelection(flag: boolean) {
+  public setMoveCursorAfterSelection(flag: boolean) {
     this.keyHandler_.moveCursorAfterSelection = flag;
   }
 
@@ -213,7 +220,7 @@ export class InputController {
    * users type shift and letter keys.
    * @param letterCase "lower" or "upper".
    */
-  setLetterMode(letterCase: string) {
+  public setLetterMode(letterCase: string) {
     let flag = letterCase === "lower";
     this.keyHandler_.putLowercaseLettersToComposingBuffer = flag;
   }
@@ -222,7 +229,7 @@ export class InputController {
    * Sets the candidate keys
    * @param keys The candidate keys.
    */
-  setCandidateKeys(keys: string) {
+  public setCandidateKeys(keys: string) {
     if (keys == undefined) {
       keys = "123456789";
     }
@@ -240,7 +247,11 @@ export class InputController {
     this.candidateKeys_ = list;
   }
 
-  setEscClearEntireBuffer(flag: boolean) {
+  /**
+   * Sets if the ESC key should clear the entire composing buffer.
+   * @param flag If the ESC key should clear the entire composing buffer.
+   */
+  public setEscClearEntireBuffer(flag: boolean) {
     this.keyHandler_.escKeyClearsEntireComposingBuffer = flag;
   }
 
@@ -248,10 +259,15 @@ export class InputController {
    * Sets if we want to use vertical or horizontal candidate window.
    * @param flag Use the vertical candidate window.
    */
-  setUserVerticalCandidates(flag: boolean) {
+  public setUserVerticalCandidates(flag: boolean) {
     this.useVerticalCandidates_ = flag;
   }
 
+  /**
+   * Sets the size of the composing buffer.
+
+   * @param size The size of the composing buffer.
+   */
   setComposingBufferSize(size: number) {
     this.keyHandler_.composingBufferSize = size;
   }
@@ -296,7 +312,7 @@ export class InputController {
     return accepted;
   }
 
-  handleCandidateKeyEvent(key: Key) {
+  private handleCandidateKeyEvent(key: Key) {
     let selected = this.candidateController_.selectedCandidateWithKey(
       key.ascii
     );
@@ -388,25 +404,28 @@ export class InputController {
     this.state_ = state;
   }
 
-  handleEmpty(prev: InputState, state: Empty) {
+  private handleEmpty(prev: InputState, state: Empty) {
     this.ui_.reset();
     if (prev instanceof NotEmpty) {
       this.ui_.commitString(prev.composingBuffer);
     }
   }
 
-  handleEmptyIgnoringPrevious(prev: InputState, state: EmptyIgnoringPrevious) {
+  private handleEmptyIgnoringPrevious(
+    prev: InputState,
+    state: EmptyIgnoringPrevious
+  ) {
     this.ui_.reset();
   }
 
-  handleCommitting(prev: InputState, state: Committing) {
+  private handleCommitting(prev: InputState, state: Committing) {
     this.ui_.reset();
     if (state.text.length > 0) {
       this.ui_.commitString(state.text);
     }
   }
 
-  updatePreedit(state: NotEmpty) {
+  private updatePreedit(state: NotEmpty) {
     this.ui_.resetComposingBuffer();
     if (state instanceof Marking) {
       this.ui_.append(new ComposingBufferText(state.head));
@@ -425,7 +444,7 @@ export class InputController {
     this.ui_.update();
   }
 
-  handleInputting(prev: InputState, state: Inputting) {
+  private handleInputting(prev: InputState, state: Inputting) {
     this.ui_.reset();
     if (state.evictedText.length > 0) {
       this.ui_.commitString(state.evictedText);
@@ -433,7 +452,7 @@ export class InputController {
     this.updatePreedit(state);
   }
 
-  handleChoosingCandidate(prev: InputState, state: ChoosingCandidate) {
+  private handleChoosingCandidate(prev: InputState, state: ChoosingCandidate) {
     this.candidateController_.update(state.candidates, this.candidateKeys_);
     let result = this.candidateController_.getCurrentPage();
     this.ui_.setCandidates(result);
@@ -441,7 +460,7 @@ export class InputController {
     this.ui_.update();
   }
 
-  handleMarking(prev: InputState, state: Marking) {
+  private handleMarking(prev: InputState, state: Marking) {
     this.updatePreedit(state);
     this.ui_.update();
   }

@@ -1,3 +1,10 @@
+/**
+ * @license
+ * Copyright (c) 2022 and onwards The McBopomofo Authors.
+ * This code is released under the MIT license.
+ * SPDX-License-Identifier: MIT
+ */
+
 import { Grid } from "./Grid";
 import { LanguageModel } from "./LanguageModel";
 import { Node } from "./Node";

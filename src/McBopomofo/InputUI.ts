@@ -1,3 +1,10 @@
+/**
+ * @license
+ * Copyright (c) 2022 and onwards The McBopomofo Authors.
+ * This code is released under the MIT license.
+ * SPDX-License-Identifier: MIT
+ */
+
 import { Candidate } from "./CandidateController";
 
 export enum ComposingBufferTextStyle {
@@ -18,10 +25,20 @@ export class ComposingBufferText {
   }
 }
 
+/**
+ * A data transfer object for the UI state.
+ */
 export class InputUIState {
+  /** Represents the composing buffer.   */
   composingBuffer: ComposingBufferText[];
+
+  /** The index of the cursor in the composing buffer. */
   cursorIndex: number;
+
+  /** The current page of the candidates. */
   candidates: Candidate[];
+
+  /** The tooltip. */
   tooltip: string;
 
   constructor(
@@ -37,8 +54,29 @@ export class InputUIState {
   }
 }
 
+/**
+ * A interface to let the input method module to talk to an input method
+ * framework or a specific UI framework.
+ */
 export interface InputUI {
+  /**
+   * Called when the input method module wants to reset the composing buffer and
+   * the candidate window.
+   */
   reset(): void;
+
+  /**
+   * Called when the input method module wants to insert text into the current
+   * application..
+   */
   commitString(text: string): void;
+
+  /**
+   * Called when the input method module wants to update the composing buffer
+   * and the candidate window.
+   *
+   * @param state The JSON encoded string of the UI state including the
+   * composing buffer and the candidate window. See also {@link InputUIState}.
+   */
   update(state: string): void;
 }
