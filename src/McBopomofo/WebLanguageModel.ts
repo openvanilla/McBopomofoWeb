@@ -66,8 +66,17 @@ export class UserPhrases implements LanguageModel {
 export class WebLanguageModel implements LanguageModel {
   private map_: Map<string, [string, number][]>;
   private userPhrases_: UserPhrases = new UserPhrases();
+
+  /** The user phrase language model. */
   public get userPhrases(): UserPhrases {
     return this.userPhrases_;
+  }
+
+  private converter_?: (input: string) => string | undefined;
+
+  /** Sets the string converter. */
+  setConverter(converter?: (input: string) => string | undefined): void {
+    this.converter_ = converter;
   }
 
   constructor(map: Map<string, [string, number][]>) {
@@ -84,6 +93,11 @@ export class WebLanguageModel implements LanguageModel {
     let usedValues: string[] = [];
     let userPhrases = this.userPhrases.unigramsForKey(key);
     for (let phrase of userPhrases) {
+      if (this.converter_ != null) {
+        let converted =
+          this.converter_(phrase.keyValue.value) ?? phrase.keyValue.value;
+        phrase = new Unigram(new KeyValuePair(key, converted), phrase.score);
+      }
       if (!usedValues.includes(phrase.keyValue.value)) {
         result.push(phrase);
       }
@@ -93,11 +107,16 @@ export class WebLanguageModel implements LanguageModel {
     let list = this.map_.get(key);
     if (list != undefined) {
       for (let item of list) {
-        if (!usedValues.includes(item[0])) {
-          let g = new Unigram(new KeyValuePair(key, item[0]), item[1]);
+        let value = item[0];
+        let score = item[1];
+        if (this.converter_ != null) {
+          value = this.converter_(value) ?? value;
+        }
+        if (!usedValues.includes(value)) {
+          let g = new Unigram(new KeyValuePair(key, value), score);
           result.push(g);
         }
-        usedValues.push(item[0]);
+        usedValues.push(value);
       }
     }
     return result;

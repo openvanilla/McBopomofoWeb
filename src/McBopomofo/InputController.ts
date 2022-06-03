@@ -29,6 +29,8 @@ import { KeyHandler } from "./KeyHandler";
 import { webData } from "./WebData";
 import { WebLanguageModel } from "./WebLanguageModel";
 
+const ChineseConvert = require("chinese_convert");
+
 class InputUIController {
   private ui: InputUI;
   private cursorIndex: number = 0;
@@ -294,6 +296,17 @@ export class InputController {
    */
   setOnPhraseChange(callback: (map: Map<string, string[]>) => void): void {
     this.lm_.userPhrases.setOnPhraseChange(callback);
+  }
+
+  /** Sets Chinese conversion on or off. */
+  setChineseConversionEnabled(flag: boolean) {
+    (this.lm_ as WebLanguageModel).setConverter(
+      flag
+        ? (input) => {
+            return ChineseConvert.tw2cn(input);
+          }
+        : undefined
+    );
   }
 
   /**

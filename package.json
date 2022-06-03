@@ -34,6 +34,7 @@
   },
   "homepage": "https://github.com/openvanilla/McBopomofoWeb#readme",
   "dependencies": {
+    "chinese_convert": "^1.0.8",
     "lodash": "^4.17.21"
   }
 }

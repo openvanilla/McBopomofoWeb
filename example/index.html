@@ -141,6 +141,15 @@
             <h2>設定</h2>
             <table>
                 <tr>
+                    <td class="option_title">簡繁轉換：</td>
+                    <td>
+                        <input type="radio" name="chinese_convert" value="trad" id="chinese_convert_trad"
+                            checked="checked"><label for="chinese_convert_trad">繁體中文</label><br>
+                        <input type="radio" name="chinese_convert" value="simp" id="chinese_convert_simp"><label
+                            for="chinese_convert_simp">簡體中文</label>
+                    </td>
+                </tr>
+                <tr>
                     <td class="option_title">鍵盤配置：</td>
                     <td>
                         <select id="layout">
@@ -366,6 +375,18 @@
         }
     });
 
+
+    document.getElementById("chinese_convert_trad").onchange = function (event) {
+        console.log("chinese_convert_trad");
+        controller.setChineseConversionEnabled(false);
+        document.getElementById("text_area").focus();
+    };
+
+    document.getElementById("chinese_convert_simp").onchange = function (event) {
+        console.log("chinese_convert_simp");
+        controller.setChineseConversionEnabled(true);
+        document.getElementById("text_area").focus();
+    };
 
     document.getElementById("layout").onchange = function (event) {
         let value = document.getElementById("layout").value;
