@@ -25,7 +25,7 @@ export class UserPhrases implements LanguageModel {
     this.onPhraseChange = callback;
   }
 
-  addUserPhrases(key: string, phrase: string): void {
+  addUserPhrase(key: string, phrase: string): void {
     let list = this.map_.get(key);
     if (list != undefined) {
       if (list.includes(phrase)) {
@@ -67,16 +67,38 @@ export class WebLanguageModel implements LanguageModel {
   private map_: Map<string, [string, number][]>;
   private userPhrases_: UserPhrases = new UserPhrases();
 
-  /** The user phrase language model. */
-  public get userPhrases(): UserPhrases {
-    return this.userPhrases_;
-  }
-
   private converter_?: (input: string) => string | undefined;
-
   /** Sets the string converter. */
   setConverter(converter?: (input: string) => string | undefined): void {
     this.converter_ = converter;
+  }
+
+  private addUserPhraseConverter?: (input: string) => string | undefined;
+  /** Sets the string converter. */
+  setAddUserPhraseConverter(
+    converter?: (input: string) => string | undefined
+  ): void {
+    this.addUserPhraseConverter = converter;
+  }
+
+  setUserPhrases(map: Map<string, string[]>): void {
+    this.userPhrases_.setUserPhrases(map);
+  }
+
+  setOnPhraseChange(callback: (map: Map<string, string[]>) => void): void {
+    this.userPhrases_.setOnPhraseChange(callback);
+  }
+
+  /**
+   * Adds user phrases.
+   * @param key The key.
+   * @param phrase The phrase.
+   */
+  addUserPhrase(key: string, phrase: string): void {
+    if (this.addUserPhraseConverter != undefined) {
+      phrase = this.addUserPhraseConverter(phrase) ?? phrase;
+    }
+    this.userPhrases_.addUserPhrase(key, phrase);
   }
 
   constructor(map: Map<string, [string, number][]>) {
@@ -91,7 +113,7 @@ export class WebLanguageModel implements LanguageModel {
 
     let result: Unigram[] = [];
     let usedValues: string[] = [];
-    let userPhrases = this.userPhrases.unigramsForKey(key);
+    let userPhrases = this.userPhrases_.unigramsForKey(key);
     for (let phrase of userPhrases) {
       if (this.converter_ != null) {
         let converted =

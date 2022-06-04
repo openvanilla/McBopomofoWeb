@@ -292,7 +292,7 @@ export class InputController {
    * @param map The map of user phrases.
    */
   setUserPhrases(map: Map<string, string[]>): void {
-    this.lm_.userPhrases.setUserPhrases(map);
+    this.lm_.setUserPhrases(map);
   }
 
   /**
@@ -300,15 +300,24 @@ export class InputController {
    * @param callback The callback function.
    */
   setOnPhraseChange(callback: (map: Map<string, string[]>) => void): void {
-    this.lm_.userPhrases.setOnPhraseChange(callback);
+    this.lm_.setOnPhraseChange(callback);
   }
 
+  private chineseConversionEnabled = false;
   /** Sets Chinese conversion on or off. */
   setChineseConversionEnabled(flag: boolean) {
+    this.chineseConversionEnabled = flag;
     (this.lm_ as WebLanguageModel).setConverter(
       flag
         ? (input) => {
             return ChineseConvert.tw2cn(input);
+          }
+        : undefined
+    );
+    (this.lm_ as WebLanguageModel).setAddUserPhraseConverter(
+      flag
+        ? (input) => {
+            return ChineseConvert.cn2tw(input);
           }
         : undefined
     );

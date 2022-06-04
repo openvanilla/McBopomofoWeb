@@ -10,15 +10,19 @@ window.onload = () => {
     that.engineID = engineID;
 
     that.reset = () => {
-      chrome.input.ime.clearComposition({ contextID: mcContext.contextID });
-      chrome.input.ime.setCandidateWindowProperties({
-        engineID: that.engineID,
-        properties: {
-          auxiliaryText: "",
-          auxiliaryTextVisible: false,
-          visible: false,
-        },
-      });
+      try {
+        // The context might be destroyed by the time we reset it, so we use a
+        // try/catch block here.
+        chrome.input.ime.clearComposition({ contextID: mcContext.contextID });
+        chrome.input.ime.setCandidateWindowProperties({
+          engineID: that.engineID,
+          properties: {
+            auxiliaryText: "",
+            auxiliaryTextVisible: false,
+            visible: false,
+          },
+        });
+      } catch (e) {}
     };
 
     that.commitString = (string) => {
@@ -323,12 +327,6 @@ window.onload = () => {
     sender,
     sendResponse
   ) {
-    // console.log(
-    //   sender.tab
-    //     ? "from a content script:" + sender.tab.url
-    //     : "from the extension"
-    // );
-
     // Reloads the user phrases by the message sent from "user_phrase.html".
     if (request.command === "reload_user_phrase") {
       loadUserPhrases();
@@ -337,8 +335,6 @@ window.onload = () => {
   });
 
   chrome.commands.onCommand.addListener((command) => {
-    // if (mcEngineID === undefined) return;
-
     if (command === "toggle-chinese-convert") {
       toggleChineseConversion();
     }

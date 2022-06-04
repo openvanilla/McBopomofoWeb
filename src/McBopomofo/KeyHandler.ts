@@ -346,7 +346,7 @@ export class KeyHandler {
         let marking = state as Marking;
         if (marking.acceptable) {
           if (this.languageModel_ instanceof WebLanguageModel) {
-            this.languageModel_.userPhrases.addUserPhrases(
+            (this.languageModel_ as WebLanguageModel).addUserPhrase(
               marking.reading,
               marking.markedText
             );
