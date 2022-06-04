@@ -9,5 +9,30 @@
   "optionsPage": { "message": "options.html" },
   "userPhrasesPage": { "message": "user_phrase.html" },
   "homepage": { "message": "Homepage" },
-  "tooltip": { "message": "tooltip" }
+  "tooltip": { "message": "tooltip" },
+  "optionTitle": { "message": "McBompofo Options" },
+  "optionKeyboardLayout": { "message": "Keyboard Layout:" },
+  "optionKeyboardLayoutStandard": { "message": "Standard" },
+  "optionKeyboardLayoutEten": { "message": "ETen" },
+  "optionKeyboardLayoutHsu": { "message": "Hsu" },
+  "optionKeyboardLayoutEten26": { "message": "ETen26" },
+  "optionKeyboardLayoutHanyuPinyin": { "message": "Hanyu Pinyin" },
+  "optionKeyboardLayoutIBM": { "message": "IBM" },
+  "optionCandidateKeys": { "message": "Candidate Keys:" },
+  "optionSelectCandidate": { "message": "Select Candidate:" },
+  "optionSelectCandidateBeforeCursor": {
+    "message": "Before the Cursor (like Hanin)"
+  },
+  "optionSelectCandidateAfterCursor": {
+    "message": "After the Cursor (like MS IME)"
+  },
+  "optionSelectCandidateMoveCursor": {
+    "message": "Move the cursor after selecting a candidate"
+  },
+  "optionEscKeyTitle": { "message": "ESC Key:" },
+  "optionEscKeyLabel": { "message": "ESC Key clears entire composing buffer" },
+  "optionShiftLetterTitle": { "message": "Shift + Letter Keys:" },
+  "optionShiftLetterUppercase": { "message": "Input uppercase letters" },
+  "optionShiftLetterLowercase": { "message": "Input lowercase letters" },
+  "optionComposingBufferSizeTitle": { "message": "Composing Buffer Size:" }
 }

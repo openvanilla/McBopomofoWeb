@@ -14,23 +14,23 @@
 </head>
 
 <body>
-    <h1>McBopomofo Options</h1>
+    <h1 id="options_title">McBopomofo Options</h1>
     <table>
         <tr>
-            <td class="option_title">Keyboard Layout:</td>
+            <td class="option_title" id="keyboard_layout">Keyboard Layout:</td>
             <td>
                 <select id="layout">
-                    <option value="Standard">Standard</option>
-                    <option value="ETen">ETen</option>
-                    <option value="Hsu">Hsu</option>
-                    <option value="ETen26">ETen 26</option>
-                    <option value="HanyuPinyin">Hanyu Pinyin</option>
-                    <option value="IBM">IBM</option>
+                    <option id="keyboard_layout_standard" value="Standard">Standard</option>
+                    <option id="keyboard_layout_eten" value="ETen">ETen</option>
+                    <option id="keyboard_layout_hsu" value="Hsu">Hsu</option>
+                    <option id="keyboard_layout_eten26" value="ETen26">ETen 26</option>
+                    <option id="keyboard_layout_hanyupinyin" value="HanyuPinyin">Hanyu Pinyin</option>
+                    <option id="keyboard_layout_ibm" value="IBM">IBM</option>
                 </select>
             </td>
         </tr>
         <tr>
-            <td class="option_title">Candidate Keys:</td>
+            <td class="option_title" id="candidate_keys">Candidate Keys:</td>
             <td>
                 <select id="keys">
                     <option value="123456789">123456789</option>
@@ -40,34 +40,37 @@
             </td>
         </tr>
         <tr>
-            <td class="option_title">Select The Candidate:</td>
+            <td class="option_title" id="select_candidate">Select The Candidate:</td>
             <td>
                 <input type="radio" name="select_phrase" value="before_cursor" id="before_cursor"
-                    checked="checked"><label for="before_cursor">Before the cursor</label><br>
+                    checked="checked"><label for="before_cursor" id="select_candidate_before_cursor">Before the
+                    cursor</label><br>
                 <input type="radio" name="select_phrase" value="after_cursor" id="after_cursor"><label
-                    for="after_cursor">After the cursor</label><br>
-                <input type="checkbox" name="move_cursor" id="move_cursor"><label for="move_cursor">Move the cursor
+                    for="after_cursor" id="select_candidate_after_cursor">After the cursor</label><br>
+                <input type="checkbox" name="move_cursor" id="move_cursor"><label for="move_cursor"
+                    id="select_candidate_move_cursor">Move the cursor
                     after selecting the candidate</label>
             </td>
         </tr>
         <tr>
-            <td class="option_title">ESC Key:</td>
+            <td class="option_title" id="esc_key_title">ESC Key:</td>
             <td>
-                <input type="checkbox" name="esc_key" id="esc_key"><label for="esc_key">ESC Key clears entire
-                    composing buffer</label>
+                <input type="checkbox" name="esc_key" id="esc_key"><label for="esc_key" id="esc_key_label">ESC Key
+                    clears entire composing buffer</label>
             </td>
         </tr>
         <tr>
-            <td class="option_title">Shift + Letter Keys:</td>
+            <td class="option_title" id="shift_letter_title">Shift + Letter Keys:</td>
             <td>
-                <input type="radio" name="letters" value="uppercase_letters" id="uppercase_letters"
-                    checked="checked"><label for="uppercase_letters">Input Uppercase Letters</label><br>
-                <input type="radio" name="letters" value="lowercase_letters" id="lowercase_letters"><label
-                    for="lowercase_letters">Input Lowercase Letters</label>
+                <input type="radio" name="letters" value="uppercase_letters" id="uppercase_letters" checked="checked">
+                <label for="uppercase_letters" id="shift_letter_uppercase">Input Uppercase
+                    Letters</label><br>
+                <input type="radio" name="letters" value="lowercase_letters" id="lowercase_letters">
+                <label for="lowercase_letters" id="shift_letter_lowercase">Input Lowercase Letters</label>
             </td>
         </tr>
         <tr>
-            <td class="option_title">Composing Buffer:</td>
+            <td class="option_title" id="composing_buffer_size_title">Composing Buffer:</td>
             <td>
                 <input type="number" min="4" max="100" name="composing_buffer_size" value="10"
                     id="composing_buffer_size">

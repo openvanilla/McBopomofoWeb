@@ -281,7 +281,7 @@ window.onload = () => {
     }
 
     if (name === "mcbopomofo-options") {
-      let page = chrome.i18n.getMessage("optionsPage");
+      let page = "options.html";
       window.open(chrome.extension.getURL(page));
       return;
     }

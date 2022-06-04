@@ -4,10 +4,32 @@
   "imeUS": { "message": "小麥注音 (美式鍵盤)" },
   "imeDvorak": { "message": "小麥注音 (Dvorak 鍵盤)" },
   "menuChineseConversion": { "message": "輸入簡體中文" },
-  "menuOptions": { "message": "偏好設定" },
+  "menuOptions": { "message": "選項" },
   "menuUserPhrases": { "message": "使用者詞彙" },
-  "optionsPage": { "message": "options_zhtw.html" },
   "userPhrasesPage": { "message": "user_phrase_zhtw.html" },
   "homepage": { "message": "專案首頁" },
-  "tooltip": { "message": "提示" }
+  "tooltip": { "message": "提示" },
+  "optionTitle": { "message": "小麥注音選項" },
+  "optionKeyboardLayout": { "message": "鍵盤配置：" },
+  "optionKeyboardLayoutStandard": { "message": "標準" },
+  "optionKeyboardLayoutEten": { "message": "倚天" },
+  "optionKeyboardLayoutHsu": { "message": "許式" },
+  "optionKeyboardLayoutEten26": { "message": "倚天 26 鍵" },
+  "optionKeyboardLayoutHanyuPinyin": { "message": "漢語拼音" },
+  "optionKeyboardLayoutIBM": { "message": "IBM" },
+  "optionCandidateKeys": { "message": "選字按鍵：" },
+  "optionSelectCandidate": { "message": "選擇候選字：" },
+  "optionSelectCandidateBeforeCursor": {
+    "message": "游標之前（類似漢音輸入法）"
+  },
+  "optionSelectCandidateAfterCursor": {
+    "message": "游標之後（類似微軟新注音輸入法）"
+  },
+  "optionSelectCandidateMoveCursor": { "message": "選字之後自動移動游標位置" },
+  "optionEscKeyTitle": { "message": "ESC 按鍵：" },
+  "optionEscKeyLabel": { "message": "ESC 按鍵會清除整個輸入緩衝區的內容" },
+  "optionShiftLetterTitle": { "message": "Shift + 字母按鍵：" },
+  "optionShiftLetterUppercase": { "message": "輸入大寫字母" },
+  "optionShiftLetterLowercase": { "message": "輸入小寫字母" },
+  "optionComposingBufferSizeTitle": { "message": "輸入緩衝區大小：" }
 }

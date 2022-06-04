@@ -131,4 +131,52 @@ window.onload = () => {
     settings.composing_buffer_size = size;
     saveSettings(settings);
   };
+
+  window.document.title = chrome.i18n.getMessage("optionTitle");
+  document.getElementById("options_title").innerText =
+    chrome.i18n.getMessage("optionTitle");
+  document.getElementById("keyboard_layout").innerText = chrome.i18n.getMessage(
+    "optionKeyboardLayout"
+  );
+  document.getElementById("keyboard_layout_standard").innerText =
+    chrome.i18n.getMessage("optionKeyboardLayoutStandard");
+  document.getElementById("keyboard_layout_eten").innerText =
+    chrome.i18n.getMessage("optionKeyboardLayoutEten");
+  document.getElementById("keyboard_layout_hsu").innerText =
+    chrome.i18n.getMessage("optionKeyboardLayoutHsu");
+  document.getElementById("keyboard_layout_eten26").innerText =
+    chrome.i18n.getMessage("optionKeyboardLayoutEten26");
+  document.getElementById("keyboard_layout_hanyupinyin").innerText =
+    chrome.i18n.getMessage("optionKeyboardLayoutHanyuPinyin");
+  document.getElementById("keyboard_layout_ibm").innerText =
+    chrome.i18n.getMessage("optionKeyboardLayoutIBM");
+
+  document.getElementById("candidate_keys").innerText = chrome.i18n.getMessage(
+    "optionCandidateKeys"
+  );
+
+  document.getElementById("select_candidate").innerText =
+    chrome.i18n.getMessage("optionSelectCandidate");
+
+  document.getElementById("select_candidate_before_cursor").innerText =
+    chrome.i18n.getMessage("optionSelectCandidateBeforeCursor");
+  document.getElementById("select_candidate_after_cursor").innerText =
+    chrome.i18n.getMessage("optionSelectCandidateAfterCursor");
+  document.getElementById("select_candidate_move_cursor").innerText =
+    chrome.i18n.getMessage("optionSelectCandidateMoveCursor");
+
+  document.getElementById("esc_key_title").innerText =
+    chrome.i18n.getMessage("optionEscKeyTitle");
+  document.getElementById("esc_key_label").innerText =
+    chrome.i18n.getMessage("optionEscKeyLabel");
+
+  document.getElementById("shift_letter_title").innerText =
+    chrome.i18n.getMessage("optionShiftLetterTitle");
+  document.getElementById("shift_letter_uppercase").innerText =
+    chrome.i18n.getMessage("optionShiftLetterUppercase");
+  document.getElementById("shift_letter_lowercase").innerText =
+    chrome.i18n.getMessage("optionShiftLetterLowercase");
+
+  document.getElementById("composing_buffer_size_title").innerText =
+    chrome.i18n.getMessage("optionComposingBufferSizeTitle");
 };
