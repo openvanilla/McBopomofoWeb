@@ -7,8 +7,6 @@
   "menuChineseConversion": { "message": "Input Simplified Chinese" },
   "menuOptions": { "message": "Options" },
   "menuUserPhrases": { "message": "User Phrases" },
-  "optionsPage": { "message": "options.html" },
-  "userPhrasesPage": { "message": "user_phrase.html" },
   "homepage": { "message": "Homepage" },
   "tooltip": { "message": "tooltip" },
   "optionTitle": { "message": "McBompofo Options" },

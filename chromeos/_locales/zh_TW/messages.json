@@ -7,7 +7,6 @@
   "menuChineseConversion": { "message": "輸入簡體中文" },
   "menuOptions": { "message": "選項" },
   "menuUserPhrases": { "message": "使用者詞彙" },
-  "userPhrasesPage": { "message": "user_phrase_zhtw.html" },
   "homepage": { "message": "專案首頁" },
   "tooltip": { "message": "提示" },
   "optionTitle": { "message": "小麥注音選項" },
