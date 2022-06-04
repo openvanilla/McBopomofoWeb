@@ -165,6 +165,11 @@ export class InputController {
     this.enterNewState(new EmptyIgnoringPrevious());
   }
 
+  /** Sets the UI component. */
+  public setUI(ui: InputUI) {
+    this.ui_ = new InputUIController(ui);
+  }
+
   /**
    * The language code for localized messages.
    * @param languageCode The language code.

@@ -238,20 +238,22 @@ window.onload = () => {
     });
   }
 
+  // Create a new input controller.
+  mcInputController = new InputController(makeUI(0));
+
+  // The horizontal candidate windows on ChromeOS is actually broken so we
+  // use the vertical one only.
+  mcInputController.setUserVerticalCandidates(true);
+
+  // Changes language needs to restarts ChromeOS login session so it won't
+  // change until user logs in again. So, we can just set language code once
+  // at the start.
+  let languageCode = chrome.i18n.getUILanguage();
+  mcInputController.setLanguageCode(languageCode);
+
   chrome.input.ime.onActivate.addListener((engineID) => {
-    mcInputController = new InputController(makeUI(engineID));
-
-    /// The horizontal candidate windows on ChromeOS is actually broken so we
-    /// use the vertical one only.
-    mcInputController.setUserVerticalCandidates(true);
-
-    // Changes language needs to restarts ChromeOS login session so it won't
-    // change until user logs in again. So, we can just set language code once
-    // at the start.
-    let languageCode = chrome.i18n.getUILanguage();
-    mcInputController.setLanguageCode(languageCode);
-
     mcEngineID = engineID;
+    mcInputController.setUI(makeUI(engineID));
     loadSettings();
     updateMenu();
     loadUserPhrases();
