@@ -220,7 +220,7 @@ window.onload = () => {
     checked = !checked;
     settings.chineseConversion = checked;
 
-    chrome.notifications.create("mcbopomofo-chinese-conversion", {
+    chrome.notifications.create("mcbopomofo-chinese-conversion" + Date.now(), {
       title: chrome.i18n.getMessage(
         checked ? "chineseConversionOn" : "chineseConversionOff"
       ),
