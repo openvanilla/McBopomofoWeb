@@ -116,7 +116,7 @@ window.onload = () => {
     saveSettings(settings);
   };
 
-  document.getElementById("composing_buffer_size").onchange = function (event) {
+  document.getElementById("composing_buffer_size").onchange = (event) => {
     let value = document.getElementById("composing_buffer_size").value;
     let size = parseInt(value);
     if (isNaN(size)) {
@@ -130,6 +130,12 @@ window.onload = () => {
     }
     settings.composing_buffer_size = size;
     saveSettings(settings);
+  };
+
+  document.getElementById("others_manage_user_phrases").onclick = (event) => {
+    let page = "user_phrase.html";
+    window.open(chrome.extension.getURL(page));
+    return false;
   };
 
   window.document.title = chrome.i18n.getMessage("optionTitle");
@@ -179,4 +185,9 @@ window.onload = () => {
 
   document.getElementById("composing_buffer_size_title").innerText =
     chrome.i18n.getMessage("optionComposingBufferSizeTitle");
+
+  document.getElementById("others_title").innerText =
+    chrome.i18n.getMessage("optionOthersTitle");
+  document.getElementById("others_manage_user_phrases").innerText =
+    chrome.i18n.getMessage("optionOtherManageUserPhrases");
 };

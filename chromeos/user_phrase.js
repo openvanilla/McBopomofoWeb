@@ -71,6 +71,15 @@ window.onload = () => {
     );
   };
 
+  window.document.title = chrome.i18n.getMessage("userPhrasesPageTitle");
+  document.getElementById("user_phrases_title").innerText =
+    chrome.i18n.getMessage("userPhrasesPageTitle");
+
+  document.getElementById("reload").innerText =
+    chrome.i18n.getMessage("btnReload");
+
+  document.getElementById("save").innerText = chrome.i18n.getMessage("btnSave");
+
   load();
   document.getElementById("text_area").focus();
 };

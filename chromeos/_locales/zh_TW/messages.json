@@ -1,6 +1,7 @@
 {
   "manifestName": { "message": "小麥注音" },
   "manifestDesc": { "message": "小麥注音 ChromeOS 版" },
+  "commandToggleChineseConvert": { "message": "切換是否使用簡繁轉換" },
   "imeUS": { "message": "小麥注音 (美式鍵盤)" },
   "imeDvorak": { "message": "小麥注音 (Dvorak 鍵盤)" },
   "menuChineseConversion": { "message": "輸入簡體中文" },
@@ -31,5 +32,13 @@
   "optionShiftLetterTitle": { "message": "Shift + 字母按鍵：" },
   "optionShiftLetterUppercase": { "message": "輸入大寫字母" },
   "optionShiftLetterLowercase": { "message": "輸入小寫字母" },
-  "optionComposingBufferSizeTitle": { "message": "輸入緩衝區大小：" }
+  "optionComposingBufferSizeTitle": { "message": "輸入緩衝區大小：" },
+  "optionOthersTitle": { "message": "其他：" },
+  "optionOtherManageUserPhrases": { "message": "管理使用者詞彙" },
+  "optionOtherManageKeyboardShortcuts": {
+    "message": "管理鍵盤快速鍵"
+  },
+  "userPhrasesPageTitle": { "message": "小麥注音使用者詞彙" },
+  "btnReload": { "message": "重新載入" },
+  "btnSave": { "message": "儲存" }
 }

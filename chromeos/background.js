@@ -214,6 +214,16 @@ window.onload = () => {
     chrome.input.ime.setMenuItems({ engineID: mcEngineID, items: menus });
   }
 
+  function toggleChineseConversion() {
+    var checked = settings.chineseConversion;
+    checked = !checked;
+    settings.chineseConversion = checked;
+    chrome.storage.sync.set({ settings: settings }, () => {
+      loadSettings();
+      updateMenu();
+    });
+  }
+
   chrome.input.ime.onActivate.addListener((engineID) => {
     mcInputController = new InputController(makeUI(engineID));
 
@@ -270,13 +280,7 @@ window.onload = () => {
 
   chrome.input.ime.onMenuItemActivated.addListener((engineID, name) => {
     if (name === "mcbopomofo-chinese-conversion") {
-      var checked = settings.chineseConversion;
-      checked = !checked;
-      settings.chineseConversion = checked;
-      chrome.storage.sync.set({ settings: settings }, () => {
-        loadSettings();
-        updateMenu();
-      });
+      toggleChineseConversion();
       return;
     }
 
@@ -287,7 +291,7 @@ window.onload = () => {
     }
 
     if (name === "mcbopomofo-user-phrase") {
-      let page = chrome.i18n.getMessage("userPhrasesPage");
+      let page = "user_phrase.html";
       window.open(chrome.extension.getURL(page));
       return;
     }
@@ -303,11 +307,13 @@ window.onload = () => {
     sender,
     sendResponse
   ) {
-    console.log(
-      sender.tab
-        ? "from a content script:" + sender.tab.url
-        : "from the extension"
-    );
+    // console.log(
+    //   sender.tab
+    //     ? "from a content script:" + sender.tab.url
+    //     : "from the extension"
+    // );
+
+    // Reloads the user phrases by the message sent from "user_phrase.html".
     if (request.command === "reload_user_phrase") {
       loadUserPhrases();
       sendResponse({ status: "ok" });

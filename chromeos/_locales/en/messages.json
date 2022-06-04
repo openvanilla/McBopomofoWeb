@@ -1,6 +1,7 @@
 {
   "manifestName": { "message": "McBopomofo" },
   "manifestDesc": { "message": "McBopomofo for ChromeOS" },
+  "commandToggleChineseConvert": { "message": "Toggle Chinese Conversion" },
   "imeUS": { "message": "McBopomofo (US Keyboard)" },
   "imeDvorak": { "message": "McBopomofo (Dvorak Keyboard)" },
   "menuChineseConversion": { "message": "Input Simplified Chinese" },
@@ -34,5 +35,13 @@
   "optionShiftLetterTitle": { "message": "Shift + Letter Keys:" },
   "optionShiftLetterUppercase": { "message": "Input uppercase letters" },
   "optionShiftLetterLowercase": { "message": "Input lowercase letters" },
-  "optionComposingBufferSizeTitle": { "message": "Composing Buffer Size:" }
+  "optionComposingBufferSizeTitle": { "message": "Composing Buffer Size:" },
+  "optionOthersTitle": { "message": "Others:" },
+  "optionOtherManageUserPhrases": { "message": "Manage User Phrases" },
+  "optionOtherManageKeyboardShortcuts": {
+    "message": "Manage Keyboard Shortcuts"
+  },
+  "userPhrasesPageTitle": { "message": "McBopomofo User Phrases" },
+  "btnReload": { "message": "Reload" },
+  "btnSave": { "message": "Save" }
 }
