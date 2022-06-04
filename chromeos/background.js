@@ -188,6 +188,7 @@ window.onload = () => {
   }
 
   function updateMenu() {
+    if (mcEngineID === undefined) return;
     var menus = [
       {
         id: "mcbopomofo-chinese-conversion",
@@ -218,7 +219,20 @@ window.onload = () => {
     var checked = settings.chineseConversion;
     checked = !checked;
     settings.chineseConversion = checked;
+
+    chrome.notifications.create("mcbopomofo-chinese-conversion", {
+      title: chrome.i18n.getMessage(
+        checked ? "chineseConversionOn" : "chineseConversionOff"
+      ),
+      message: chrome.i18n.getMessage("messageFromMcBopomofo"),
+      type: "basic",
+      iconUrl: "icons/icon48.png",
+    });
+
     chrome.storage.sync.set({ settings: settings }, () => {
+      if (mcEngineID === undefined) return;
+      if (mcContext === undefined) return;
+
       loadSettings();
       updateMenu();
     });
@@ -286,13 +300,13 @@ window.onload = () => {
 
     if (name === "mcbopomofo-options") {
       let page = "options.html";
-      window.open(chrome.extension.getURL(page));
+      window.open(chrome.extension.getURL(page), "mc_option");
       return;
     }
 
     if (name === "mcbopomofo-user-phrase") {
       let page = "user_phrase.html";
-      window.open(chrome.extension.getURL(page));
+      window.open(chrome.extension.getURL(page), "mc_user_phrase");
       return;
     }
 
@@ -317,6 +331,14 @@ window.onload = () => {
     if (request.command === "reload_user_phrase") {
       loadUserPhrases();
       sendResponse({ status: "ok" });
+    }
+  });
+
+  chrome.commands.onCommand.addListener((command) => {
+    // if (mcEngineID === undefined) return;
+
+    if (command === "toggle-chinese-convert") {
+      toggleChineseConversion();
     }
   });
 };

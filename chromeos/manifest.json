@@ -33,10 +33,10 @@
       "layouts": ["us-dvorak"]
     }
   ],
-  "permissions": ["input", "background", "storage"],
+  "permissions": ["input", "background", "storage", "notifications"],
   "commands": {
     "toggle-chinese-convert": {
-      "suggested_key": "Ctrl+Shift+G",
+      "suggested_key": "Alt+Shift+G",
       "description": "__MSG_commandToggleChineseConvert__"
     }
   }

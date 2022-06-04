@@ -134,7 +134,7 @@ window.onload = () => {
 
   document.getElementById("others_manage_user_phrases").onclick = (event) => {
     let page = "user_phrase.html";
-    window.open(chrome.extension.getURL(page));
+    window.open(chrome.extension.getURL(page), "mc_user_phrase");
     return false;
   };
 

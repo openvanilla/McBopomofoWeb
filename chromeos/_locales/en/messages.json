@@ -41,5 +41,8 @@
   },
   "userPhrasesPageTitle": { "message": "McBopomofo User Phrases" },
   "btnReload": { "message": "Reload" },
-  "btnSave": { "message": "Save" }
+  "btnSave": { "message": "Save" },
+  "chineseConversionOn": { "message": "Chinese conversion is now on." },
+  "chineseConversionOff": { "message": "Chinese conversion is now off." },
+  "messageFromMcBopomofo": { "message": "Message from McBopomofo." }
 }

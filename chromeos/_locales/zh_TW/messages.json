@@ -39,5 +39,8 @@
   },
   "userPhrasesPageTitle": { "message": "小麥注音使用者詞彙" },
   "btnReload": { "message": "重新載入" },
-  "btnSave": { "message": "儲存" }
+  "btnSave": { "message": "儲存" },
+  "chineseConversionOn": { "message": "簡繁轉換已開啟" },
+  "chineseConversionOff": { "message": "簡繁轉換已關閉" },
+  "messageFromMcBopomofo": { "message": "來自小麥注音的通知訊息" }
 }
