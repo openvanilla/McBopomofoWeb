@@ -133,8 +133,23 @@ window.onload = () => {
   };
 
   document.getElementById("others_manage_user_phrases").onclick = (event) => {
+    function tryOpen(url) {
+      chrome.tabs.query({ url: url }).then((tabs) => {
+        if (tabs.length == 0) {
+          chrome.tabs.create({ active: true, url: url });
+          return;
+        }
+        let tabId = tabs[0].id;
+        if (tabId === undefined) {
+          chrome.tabs.create({ active: true, url: url });
+        } else {
+          chrome.tabs.update(tabId, { selected: true });
+        }
+      });
+    }
     let page = "user_phrase.html";
-    window.open(chrome.extension.getURL(page), "mc_user_phrase");
+    let url = chrome.runtime.getURL(page);
+    tryOpen(url);
     return false;
   };
 

@@ -1,3 +1,4 @@
+import { last } from "lodash";
 import { InputController } from "./McBopomofo/InputController";
 import { Key, KeyName } from "./McBopomofo/Key";
 
@@ -13,6 +14,16 @@ var defaultSettings = {
   letter_mode: "upper",
 };
 var settings = defaultSettings;
+var lang = "en";
+chrome.i18n.getAcceptLanguages((langs) => {
+  if (langs.length) {
+    lang = langs[0];
+  }
+});
+
+function myLocalizedString(en: string, zh: string): string {
+  return lang == "zh-TW" ? zh : en;
+}
 
 function makeUI() {
   return {
@@ -142,7 +153,8 @@ function makeUI() {
           contextID: mcContext.contextID,
           candidates: [
             {
-              candidate: chrome.i18n.getMessage("tooltip"),
+              candidate: myLocalizedString("Tooltip", "提示"),
+              // chrome.i18n.getMessage("tooltip"),
               annotation: "",
               id: 0,
               label: " ",
@@ -210,23 +222,27 @@ function updateMenu() {
   var menus = [
     {
       id: "mcbopomofo-chinese-conversion",
-      label: chrome.i18n.getMessage("menuChineseConversion"),
+      label: myLocalizedString("Input Simplified Chinese", "輸入簡體中文"),
+      // chrome.i18n.getMessage("menuChineseConversion"),
       style: "check",
       checked: settings.chineseConversion === true,
     },
     {
       id: "mcbopomofo-options",
-      label: chrome.i18n.getMessage("menuOptions"),
+      label: myLocalizedString("Options", "選項"),
+      // chrome.i18n.getMessage("menuOptions"),
       style: "check",
     },
     {
       id: "mcbopomofo-user-phrase",
-      label: chrome.i18n.getMessage("menuUserPhrases"),
+      label: myLocalizedString("User Phrases", "使用者詞彙"),
+      // chrome.i18n.getMessage("menuUserPhrases"),
       style: "check",
     },
     {
       id: "mcbopomofo-homepage",
-      label: chrome.i18n.getMessage("homepage"),
+      label: myLocalizedString("Homepage", "專案首頁"),
+      //  chrome.i18n.getMessage("homepage"),
       style: "check",
     },
   ];
@@ -239,10 +255,15 @@ function toggleChineseConversion() {
   settings.chineseConversion = checked;
 
   chrome.notifications.create("mcbopomofo-chinese-conversion" + Date.now(), {
-    title: chrome.i18n.getMessage(
-      checked ? "chineseConversionOn" : "chineseConversionOff"
-    ),
-    message: chrome.i18n.getMessage("messageFromMcBopomofo"),
+    title: checked
+      ? myLocalizedString("Chinese Conversion On", "簡繁轉換已開啟")
+      : myLocalizedString("Chinese Conversion Off", "簡繁轉換已關閉"),
+
+    //  chrome.i18n.getMessage(
+    //   checked ? "chineseConversionOn" : "chineseConversionOff"
+    // ),
+    message: "",
+    //  chrome.i18n.getMessage("messageFromMcBopomofo"),
     type: "basic",
     iconUrl: "icons/icon48.png",
   });
@@ -326,20 +347,35 @@ chrome.input.ime.onMenuItemActivated.addListener((engineID, name) => {
     return;
   }
 
+  function tryOpen(url: string) {
+    chrome.tabs.query({ url: url }).then((tabs) => {
+      if (tabs.length == 0) {
+        chrome.tabs.create({ active: true, url: url });
+        return;
+      }
+      let tabId = tabs[0].id;
+      if (tabId === undefined) {
+        chrome.tabs.create({ active: true, url: url });
+      } else {
+        chrome.tabs.update(tabId, { selected: true });
+      }
+    });
+  }
+
   if (name === "mcbopomofo-options") {
     let page = "options.html";
-    window.open(chrome.extension.getURL(page), "mc_option");
+    tryOpen(chrome.runtime.getURL(page));
     return;
   }
 
   if (name === "mcbopomofo-user-phrase") {
     let page = "user_phrase.html";
-    window.open(chrome.extension.getURL(page), "mc_user_phrase");
+    tryOpen(chrome.runtime.getURL(page));
     return;
   }
 
   if (name === "mcbopomofo-homepage") {
-    window.open("https://mcbopomofo.openvanilla.org/");
+    tryOpen("https://mcbopomofo.openvanilla.org/");
     return;
   }
 });

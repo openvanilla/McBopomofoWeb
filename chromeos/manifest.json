@@ -1,6 +1,6 @@
 {
   "name": "__MSG_manifestName__",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "manifest_version": 3,
   "description": "__MSG_manifestDesc__",
   "default_locale": "en",
@@ -33,7 +33,7 @@
       "layouts": ["us-dvorak"]
     }
   ],
-  "permissions": ["input", "background", "storage", "notifications"],
+  "permissions": ["input", "background", "storage", "notifications", "tabs"],
   "commands": {
     "toggle-chinese-convert": {
       "suggested_key": "Alt+Shift+G",
