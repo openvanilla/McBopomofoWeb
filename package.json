@@ -1,5 +1,6 @@
 {
   "devDependencies": {
+    "@types/chrome": "^0.0.188",
     "@types/jest": "^27.5.1",
     "@types/lodash": "^4.14.182",
     "@types/node": "^17.0.32",
@@ -18,7 +19,8 @@
   "scripts": {
     "ts-build": "tsc",
     "ts-build:watch": "tsc -w",
-    "build": "webpack --mode production; cp public/bundle.js example/bundle.js; cp public/bundle.js chromeos/bundle.js",
+    "build": "webpack --mode production",
+    "build:chromeos": "webpack --mode production --config webpack.config.chomeext.js",
     "build:dev": "webpack --mode development",
     "build:watch": "webpack --mode development --watch",
     "test": "./node_modules/jest/bin/jest.js"

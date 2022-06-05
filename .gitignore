@@ -3,3 +3,6 @@ node_modules
 dist
 public
 bundle.js
+*.pem
+*.zip
+*.LICENSE.txt

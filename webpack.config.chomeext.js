@@ -1,7 +1,7 @@
 const path = require("path");
 
 module.exports = {
-  entry: "./src/index.ts",
+  entry: "./src/chomeos_ime.ts",
   module: {
     rules: [
       {
@@ -14,11 +14,8 @@ module.exports = {
   resolve: {
     extensions: [".ts", ".js"],
   },
-  target: "web",
   output: {
     filename: "bundle.js",
-    library: "mcbopomofo",
-    libraryTarget: "umd",
-    path: path.resolve(__dirname, "example"),
+    path: path.resolve(__dirname, "chromeos"),
   },
 };

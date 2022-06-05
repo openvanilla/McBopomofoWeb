@@ -1,12 +1,12 @@
 {
   "name": "__MSG_manifestName__",
   "version": "1.0.0",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "description": "__MSG_manifestDesc__",
   "default_locale": "en",
   "background": {
-    "persistent": false,
-    "page": "background.html"
+    "service_worker": "bundle.js",
+    "type": "module"
   },
   "options_page": "options.html",
   "icons": {

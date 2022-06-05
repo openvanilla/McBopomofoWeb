@@ -87,59 +87,6 @@ class InputUIController {
   }
 }
 
-function KeyFromKeyboardEvent(event: KeyboardEvent) {
-  let keyName = KeyName.UNKNOWN;
-  switch (event.code) {
-    case "ArrowLeft":
-      keyName = KeyName.LEFT;
-      break;
-    case "ArrowRight":
-      keyName = KeyName.RIGHT;
-      break;
-    case "ArrowUp":
-      keyName = KeyName.UP;
-      break;
-    case "ArrowDown":
-      keyName = KeyName.DOWN;
-      break;
-    case "Home":
-      keyName = KeyName.HOME;
-      break;
-    case "End":
-      keyName = KeyName.END;
-      break;
-    case "Backspace":
-      keyName = KeyName.BACKSPACE;
-      break;
-    case "Delete":
-      keyName = KeyName.DELETE;
-      break;
-    case "Enter":
-      keyName = KeyName.RETURN;
-      break;
-    case "Escape":
-      keyName = KeyName.ESC;
-      break;
-    case "Space":
-      keyName = KeyName.SPACE;
-      break;
-    case "Tab":
-      keyName = KeyName.TAB;
-      break;
-    case "PageUp":
-      keyName = KeyName.PAGE_UP;
-      break;
-    case "PageDown":
-      keyName = KeyName.PAGE_DOWN;
-      break;
-    default:
-      keyName = KeyName.ASCII;
-      break;
-  }
-  let key = new Key(event.key, keyName, event.shiftKey, event.ctrlKey);
-  return key;
-}
-
 /**
  * The major class that receives the keyboard events and stores the input method
  * state. It is also the only class exported from the module.
@@ -329,9 +276,11 @@ export class InputController {
    * @returns If the key is handled.
    */
   keyEvent(event: KeyboardEvent): boolean {
-    if (event.isComposing) return false;
-    if (event.metaKey) return false;
     let key = KeyFromKeyboardEvent(event);
+    return this.mcbopomofoKeyEvent(key);
+  }
+
+  mcbopomofoKeyEvent(key: Key): boolean {
     if (this.state_ instanceof ChoosingCandidate) {
       this.ui_.reset();
       this.handleCandidateKeyEvent(key);
@@ -521,4 +470,57 @@ export class InputController {
     s += "</ul>";
     return s;
   }
+}
+
+function KeyFromKeyboardEvent(event: KeyboardEvent) {
+  let keyName = KeyName.UNKNOWN;
+  switch (event.code) {
+    case "ArrowLeft":
+      keyName = KeyName.LEFT;
+      break;
+    case "ArrowRight":
+      keyName = KeyName.RIGHT;
+      break;
+    case "ArrowUp":
+      keyName = KeyName.UP;
+      break;
+    case "ArrowDown":
+      keyName = KeyName.DOWN;
+      break;
+    case "Home":
+      keyName = KeyName.HOME;
+      break;
+    case "End":
+      keyName = KeyName.END;
+      break;
+    case "Backspace":
+      keyName = KeyName.BACKSPACE;
+      break;
+    case "Delete":
+      keyName = KeyName.DELETE;
+      break;
+    case "Enter":
+      keyName = KeyName.RETURN;
+      break;
+    case "Escape":
+      keyName = KeyName.ESC;
+      break;
+    case "Space":
+      keyName = KeyName.SPACE;
+      break;
+    case "Tab":
+      keyName = KeyName.TAB;
+      break;
+    case "PageUp":
+      keyName = KeyName.PAGE_UP;
+      break;
+    case "PageDown":
+      keyName = KeyName.PAGE_DOWN;
+      break;
+    default:
+      keyName = KeyName.ASCII;
+      break;
+  }
+  let key = new Key(event.key, keyName, event.shiftKey, event.ctrlKey);
+  return key;
 }
