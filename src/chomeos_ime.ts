@@ -266,8 +266,16 @@ mcInputController.setUserVerticalCandidates(true);
 // Changes language needs to restarts ChromeOS login session so it won't
 // change until user logs in again. So, we can just set language code once
 // at the start.
-let languageCode = chrome.i18n.getUILanguage();
-mcInputController.setLanguageCode(languageCode);
+
+// chrome.i18n.getUILanguage() doe not work in service worker. See https://groups.google.com/a/chromium.org/g/chromium-extensions/c/dG6JeZGkN5w
+// let languageCode = chrome.i18n.getUILanguage();
+chrome.i18n.getAcceptLanguages((langs) => {
+  if (!langs.length) {
+    mcInputController.setLanguageCode("en");
+    return;
+  }
+  mcInputController.setLanguageCode(langs[0]);
+});
 
 chrome.input.ime.onActivate.addListener((engineID) => {
   mcEngineID = engineID;

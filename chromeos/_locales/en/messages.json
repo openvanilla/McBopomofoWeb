@@ -1,4 +1,5 @@
 {
+  "languageCode": {"message": "en"},
   "manifestName": { "message": "McBopomofo" },
   "manifestDesc": { "message": "McBopomofo for ChromeOS" },
   "commandToggleChineseConvert": { "message": "Toggle Chinese Conversion" },

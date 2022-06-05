@@ -1,4 +1,5 @@
 {
+  "languageCode": {"message": "zh-TW"},
   "manifestName": { "message": "小麥注音" },
   "manifestDesc": { "message": "小麥注音 ChromeOS 版" },
   "commandToggleChineseConvert": { "message": "切換是否使用簡繁轉換" },
