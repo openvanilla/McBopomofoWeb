@@ -384,7 +384,7 @@ export class BopomofoKeyboardLayout {
       ["u", [BopomofoSyllable.UE]],
       ["a", [BopomofoSyllable.A]],
       ["o", [BopomofoSyllable.O]],
-      ["r", [BopomofoSyllable.ERR]],
+      ["r", [BopomofoSyllable.ER]],
       ["w", [BopomofoSyllable.E]],
       ["i", [BopomofoSyllable.AI]],
       ["q", [BopomofoSyllable.EI]],
