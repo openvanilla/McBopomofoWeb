@@ -165,7 +165,7 @@ export class BopomofoKeyboardLayout {
       }
 
       // the nasty issue of only one char in the buffer
-      if (i === 0 && i + 1 === sequence.length - 1) {
+      if (i === 0 && i + 1 === sequence.length) {
         if (head.hasVowel || follow.hasToneMarker || head.belongsToZCSRClass) {
           syllable.addEqual(head);
         } else {
