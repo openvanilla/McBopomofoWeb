@@ -13,9 +13,10 @@
 ```sh
 npm install
 npm run build
+npm run build:chromeos
 ```
 
-在 public 目錄下，會產生一個叫做 bundle.js 的檔案，可以將這個檔案複製到 example 與 chromeos 目錄下。
+這個指令會在 example 與 chomeos 目錄下，分別建立 bundle.js 檔案。
 
 ## 範例網頁
 
@@ -25,11 +26,14 @@ npm run build
 
 想要測試 ChromeOS 版本，可以參考以下步驟
 
-- 如前述，用 npm run build 編譯出 bundle.js
-- 把 bundle.js 搬到 `chromeos` 目錄下
+- 先根據之前的指令，編譯出 chomeos 目錄下的 bundle.js。
 - 把整個 chromeos 目錄搬到 Google Drive，然後同步到你的 Chromebook 上
 - 在 Chromebook 上，輸入 `chrome://extensions`，選擇 "load unpacked"，選擇 Google Drive 上的 `chromeos` 目錄
 
 ## 感謝
 
 特別感謝 William Wang 的技術支援。
+
+```
+
+```
