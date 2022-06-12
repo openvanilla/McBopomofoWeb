@@ -33,7 +33,3 @@ npm run build:chromeos
 ## 感謝
 
 特別感謝 William Wang 的技術支援。
-
-```
-
-```
