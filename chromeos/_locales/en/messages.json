@@ -5,6 +5,7 @@
   "commandToggleChineseConvert": { "message": "Toggle Chinese Conversion" },
   "imeUS": { "message": "McBopomofo (US Keyboard)" },
   "imeDvorak": { "message": "McBopomofo (Dvorak Keyboard)" },
+  "imeColmak": {"message": "McBopomofo (Colmak Keyboard)"} ,
   "menuChineseConversion": { "message": "Input Simplified Chinese" },
   "menuOptions": { "message": "Options" },
   "menuUserPhrases": { "message": "User Phrases" },

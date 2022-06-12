@@ -8,7 +8,6 @@
     "service_worker": "bundle.js",
     "type": "module"
   },
-  "options_page": "options.html",
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
@@ -23,7 +22,8 @@
       "indicator": "\u9EA5",
       "description": "McBopomofo",
       "language": "zh-TW",
-      "layouts": ["us"]
+      "layouts": ["us"],
+      "options_page": "options.html"
     },
     {
       "name": "__MSG_imeDvorak__",
@@ -32,9 +32,21 @@
       "indicator": "\u9EA5",
       "description": "McBopomofo",
       "language": "zh-TW",
-      "layouts": ["us-dvorak"]
+      "layouts": ["us-dvorak"],
+      "options_page": "options.html"
+    },
+    {
+      "name": "__MSG_imeColmak__",
+      "type": "ime",
+      "id": "org.openvanilla.mcbopomofo.us-colemak",
+      "indicator": "\u9EA5",
+      "description": "McBopomofo",
+      "language": "zh-TW",
+      "layouts": ["us-colemak"],
+      "options_page": "options.html"
     }
   ],
+  "options_page": "options.html",
   "permissions": ["input", "background", "storage", "notifications", "tabs"],
   "commands": {
     "toggle-chinese-convert": {
