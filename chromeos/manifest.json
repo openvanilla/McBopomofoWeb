@@ -1,6 +1,6 @@
 {
   "name": "__MSG_manifestName__",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "manifest_version": 3,
   "description": "__MSG_manifestDesc__",
   "default_locale": "en",
@@ -20,6 +20,7 @@
       "name": "__MSG_imeUS__",
       "type": "ime",
       "id": "org.openvanilla.mcbopomofo.us",
+      "indicator": "\u9EA5",
       "description": "McBopomofo",
       "language": "zh-TW",
       "layouts": ["us"]
@@ -28,6 +29,7 @@
       "name": "__MSG_imeDvorak__",
       "type": "ime",
       "id": "org.openvanilla.mcbopomofo.us-dvorak",
+      "indicator": "\u9EA5",
       "description": "McBopomofo",
       "language": "zh-TW",
       "layouts": ["us-dvorak"]

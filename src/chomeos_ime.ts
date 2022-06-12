@@ -2,9 +2,9 @@ import { last } from "lodash";
 import { InputController } from "./McBopomofo/InputController";
 import { Key, KeyName } from "./McBopomofo/Key";
 
-var mcEngineID: string | undefined = undefined;
-var mcContext: chrome.input.ime.InputContext | undefined = undefined;
-var defaultSettings = {
+let mcEngineID: string | undefined = undefined;
+let mcContext: chrome.input.ime.InputContext | undefined = undefined;
+let defaultSettings = {
   layout: "standard",
   select_phrase: "before_cursor",
   candidate_keys: "123456789",
@@ -13,8 +13,8 @@ var defaultSettings = {
   move_cursor: true,
   letter_mode: "upper",
 };
-var settings = defaultSettings;
-var lang = "en";
+let settings = defaultSettings;
+let lang = "en";
 chrome.i18n.getAcceptLanguages((langs) => {
   if (langs.length) {
     lang = langs[0];
@@ -71,14 +71,14 @@ function makeUI() {
         if (item.style === "highlighted") {
           selectionStart = index;
           selectionEnd = index + item.text.length;
-          var segment = {
+          let segment = {
             start: index,
             end: index + item.text.length,
             style: "doubleUnderline",
           };
           segments.push(segment);
         } else {
-          var segment = {
+          let segment = {
             start: index,
             end: index + item.text.length,
             style: "underline",
@@ -105,7 +105,7 @@ function makeUI() {
           if (candidate.selected) {
             selectedIndex = index;
           }
-          var item = {
+          let item = {
             candidate: candidate.candidate,
             annotation: "",
             id: index++,
@@ -219,7 +219,7 @@ function loadSettings() {
 
 function updateMenu() {
   if (mcEngineID === undefined) return;
-  var menus = [
+  let menus = [
     {
       id: "mcbopomofo-chinese-conversion",
       label: myLocalizedString("Input Simplified Chinese", "輸入簡體中文"),
@@ -256,7 +256,7 @@ function updateMenu() {
 }
 
 function toggleChineseConversion() {
-  var checked = settings.chineseConversion;
+  let checked = settings.chineseConversion;
   checked = !checked;
   settings.chineseConversion = checked;
 
@@ -293,16 +293,7 @@ mcInputController.setUserVerticalCandidates(true);
 // Changes language needs to restarts ChromeOS login session so it won't
 // change until user logs in again. So, we can just set language code once
 // at the start.
-
-// chrome.i18n.getUILanguage() doe not work in service worker. See https://groups.google.com/a/chromium.org/g/chromium-extensions/c/dG6JeZGkN5w
-// let languageCode = chrome.i18n.getUILanguage();
-chrome.i18n.getAcceptLanguages((langs) => {
-  if (!langs.length) {
-    mcInputController.setLanguageCode("en");
-    return;
-  }
-  mcInputController.setLanguageCode(langs[0]);
-});
+mcInputController.setLanguageCode(lang);
 
 chrome.input.ime.onActivate.addListener((engineID) => {
   mcEngineID = engineID;
@@ -413,6 +404,50 @@ chrome.commands.onCommand.addListener((command) => {
     toggleChineseConversion();
   }
 });
+
+/// A workaround to prevent Chrome to kill the service worker.
+let lifeline: chrome.runtime.Port | undefined = undefined;
+keepAlive();
+
+chrome.runtime.onConnect.addListener((port) => {
+  if (port.name === "keepAlive") {
+    lifeline = port;
+    setTimeout(keepAliveForced, 295e3); // 5 minutes minus 5 seconds
+    port.onDisconnect.addListener(keepAliveForced);
+  }
+});
+
+function keepAliveForced() {
+  lifeline?.disconnect();
+  lifeline = undefined;
+  keepAlive();
+}
+
+async function keepAlive() {
+  if (lifeline) return;
+  for (const tab of await chrome.tabs.query({ url: "*://*/*" })) {
+    try {
+      let args = {
+        target: { tabId: tab.id ?? 9 },
+        func: () => chrome.runtime.connect({ name: "keepAlive" }),
+      };
+      await chrome.scripting.executeScript(args);
+      chrome.tabs.onUpdated.removeListener(retryOnTabUpdate);
+      return;
+    } catch (e) {}
+  }
+  chrome.tabs.onUpdated.addListener(retryOnTabUpdate);
+}
+
+async function retryOnTabUpdate(
+  tabId: number,
+  info: chrome.tabs.TabChangeInfo,
+  tab: chrome.tabs.Tab
+) {
+  if (info.url && /^(file|https?):/.test(info.url)) {
+    keepAlive();
+  }
+}
 
 function KeyFromKeyboardEvent(event: chrome.input.ime.KeyboardEvent) {
   let keyName = KeyName.UNKNOWN;
