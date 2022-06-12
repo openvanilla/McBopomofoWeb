@@ -240,6 +240,12 @@ function updateMenu() {
       style: "check",
     },
     {
+      id: "mcbopomofo-help",
+      label: myLocalizedString("Help...", "輔助說明…"),
+      // chrome.i18n.getMessage("menuHelp"),
+      style: "check",
+    },
+    {
       id: "mcbopomofo-homepage",
       label: myLocalizedString("Homepage", "專案首頁"),
       //  chrome.i18n.getMessage("homepage"),
@@ -348,17 +354,25 @@ chrome.input.ime.onMenuItemActivated.addListener((engineID, name) => {
   }
 
   function tryOpen(url: string) {
-    chrome.tabs.query({ url: url }).then((tabs) => {
-      if (tabs.length == 0) {
-        chrome.tabs.create({ active: true, url: url });
+    chrome.windows.getCurrent({}, (win) => {
+      if (win === undefined) {
+        chrome.windows.create({ url: url, focused: true });
         return;
       }
-      let tabId = tabs[0].id;
-      if (tabId === undefined) {
-        chrome.tabs.create({ active: true, url: url });
-      } else {
-        chrome.tabs.update(tabId, { selected: true });
-      }
+
+      chrome.tabs.query({ url: url }).then((tabs) => {
+        if (tabs.length == 0) {
+          chrome.tabs.create({ active: true, url: url });
+          return;
+        }
+
+        let tabId = tabs[0].id;
+        if (tabId !== undefined) {
+          //   chrome.tabs.create({ active: true, url: url });
+          // } else {
+          chrome.tabs.update(tabId, { selected: true });
+        }
+      });
     });
   }
 
@@ -370,6 +384,12 @@ chrome.input.ime.onMenuItemActivated.addListener((engineID, name) => {
 
   if (name === "mcbopomofo-user-phrase") {
     let page = "user_phrase.html";
+    tryOpen(chrome.runtime.getURL(page));
+    return;
+  }
+
+  if (name === "mcbopomofo-help") {
+    let page = "help/index.html";
     tryOpen(chrome.runtime.getURL(page));
     return;
   }

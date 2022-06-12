@@ -5,4 +5,5 @@ public
 bundle.js
 *.pem
 *.zip
+*.crx
 *.LICENSE.txt
