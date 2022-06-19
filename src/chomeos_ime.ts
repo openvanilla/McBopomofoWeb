@@ -202,6 +202,13 @@ function loadSettings() {
     if (settings === undefined) {
       settings = defaultSettings;
     }
+    if (
+      settings.shift_key_toggle_alphabet_mode === undefined ||
+      settings.shift_key_toggle_alphabet_mode === null
+    ) {
+      settings.shift_key_toggle_alphabet_mode = true;
+    }
+
     mcInputController.setChineseConversionEnabled(
       settings.chineseConversion === true
     );
@@ -361,9 +368,7 @@ chrome.input.ime.onKeyEvent.addListener((engineID, keyData) => {
     return false;
   }
 
-  let shouldHandleShift =
-    settings.shift_key_toggle_alphabet_mode === true ||
-    settings.shift_key_toggle_alphabet_mode === undefined;
+  let shouldHandleShift = settings.shift_key_toggle_alphabet_mode === true;
 
   if (shouldHandleShift) {
     isShiftHold = keyData.key === "Shift";
