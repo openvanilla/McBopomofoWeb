@@ -9,6 +9,7 @@ let defaultSettings = {
   select_phrase: "before_cursor",
   candidate_keys: "123456789",
   esc_key_clear_entire_buffer: false,
+  shift_key_toggle_alphabet_mode: false,
   chineseConversion: false,
   move_cursor: true,
   letter_mode: "upper",
@@ -20,6 +21,8 @@ chrome.i18n.getAcceptLanguages((langs) => {
     lang = langs[0];
   }
 });
+let isShiftHold = false;
+let isEnglishMode = false;
 
 function myLocalizedString(en: string, zh: string): string {
   return lang == "zh-TW" ? zh : en;
@@ -221,6 +224,14 @@ function updateMenu() {
   if (mcEngineID === undefined) return;
   let menus = [
     {
+      id: "mcbopomofo-toggle-alphabet-mode",
+      label: myLocalizedString("Input Letters", "輸入英文字母"),
+      // chrome.i18n.getMessage("menuChineseConversion"),
+      style: "check",
+      checked: settings.chineseConversion === true,
+    },
+
+    {
       id: "mcbopomofo-chinese-conversion",
       label: myLocalizedString("Input Simplified Chinese", "輸入簡體中文"),
       // chrome.i18n.getMessage("menuChineseConversion"),
@@ -253,6 +264,20 @@ function updateMenu() {
     },
   ];
   chrome.input.ime.setMenuItems({ engineID: mcEngineID, items: menus });
+}
+
+function toggleAlphabetMode() {
+  isEnglishMode = !isEnglishMode;
+
+  chrome.notifications.create("mcbopomofo-alphabet-mode" + Date.now(), {
+    title: isEnglishMode
+      ? myLocalizedString("English Mode", "英文模式")
+      : myLocalizedString("Chinese Mode", "中文模式"),
+
+    message: "",
+    type: "basic",
+    iconUrl: "icons/icon48.png",
+  });
 }
 
 function toggleChineseConversion() {
@@ -322,8 +347,26 @@ chrome.input.ime.onFocus.addListener((context) => {
 });
 
 chrome.input.ime.onKeyEvent.addListener((engineID, keyData) => {
+  if (keyData.type === "keyup") {
+    if (keyData.key === "Shift" && isShiftHold) {
+      isShiftHold = false;
+      toggleAlphabetMode();
+      mcInputController.reset();
+      return;
+    }
+    return false;
+  }
+
   if (keyData.type != "keydown") {
     return false;
+  }
+
+  let shouldHandleShift =
+    settings.shift_key_toggle_alphabet_mode === true ||
+    settings.shift_key_toggle_alphabet_mode === undefined;
+
+  if (shouldHandleShift) {
+    isShiftHold = keyData.key === "Shift";
   }
 
   if (
@@ -334,11 +377,21 @@ chrome.input.ime.onKeyEvent.addListener((engineID, keyData) => {
   ) {
     return false;
   }
+
+  if (isEnglishMode) {
+    return false;
+  }
+
   let keyEvent = KeyFromKeyboardEvent(keyData);
   return mcInputController.mcbopomofoKeyEvent(keyEvent);
 });
 
 chrome.input.ime.onMenuItemActivated.addListener((engineID, name) => {
+  if (name === "mcbopomofo-toggle-alphabet-mode") {
+    toggleAlphabetMode();
+    return;
+  }
+
   if (name === "mcbopomofo-chinese-conversion") {
     toggleChineseConversion();
     return;
@@ -359,8 +412,6 @@ chrome.input.ime.onMenuItemActivated.addListener((engineID, name) => {
 
         let tabId = tabs[0].id;
         if (tabId !== undefined) {
-          //   chrome.tabs.create({ active: true, url: url });
-          // } else {
           chrome.tabs.update(tabId, { selected: true });
         }
       });

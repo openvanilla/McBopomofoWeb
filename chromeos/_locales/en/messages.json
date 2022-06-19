@@ -31,7 +31,9 @@
     "message": "Move the cursor after selecting a candidate"
   },
   "optionEscKeyTitle": { "message": "ESC Key:" },
-  "optionEscKeyLabel": { "message": "ESC Key clears entire composing buffer" },
+  "optionEscKeyLabel": { "message": "ESC key clears entire composing buffer" },
+  "optionShiftKeyTitle": { "message": "Shift Key:" },
+  "optionShiftKeyLabel": { "message": "Shift key toggles English/Chines mode" },
   "optionShiftLetterTitle": { "message": "Shift + Letter Keys:" },
   "optionShiftLetterUppercase": { "message": "Input uppercase letters" },
   "optionShiftLetterLowercase": { "message": "Input lowercase letters" },

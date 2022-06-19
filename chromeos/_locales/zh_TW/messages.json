@@ -30,6 +30,8 @@
   "optionSelectCandidateMoveCursor": { "message": "選字之後自動移動游標位置" },
   "optionEscKeyTitle": { "message": "ESC 按鍵：" },
   "optionEscKeyLabel": { "message": "ESC 按鍵會清除整個輸入緩衝區的內容" },
+  "optionShiftKeyTitle": { "message": "Shift 按鍵:" },
+  "optionShiftKeyLabel": { "message": "使用 Shift 按鍵切換中英文" },
   "optionShiftLetterTitle": { "message": "Shift + 字母按鍵：" },
   "optionShiftLetterUppercase": { "message": "輸入大寫字母" },
   "optionShiftLetterLowercase": { "message": "輸入小寫字母" },

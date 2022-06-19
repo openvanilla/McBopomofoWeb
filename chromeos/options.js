@@ -36,6 +36,13 @@ window.onload = () => {
         settings.esc_key_clear_entire_buffer;
     }
     {
+      let enabled = settings.shift_key_toggle_alphabet_mode;
+      if (enabled === undefined) {
+        enabled = true;
+      }
+      document.getElementById("shift_key").checked = enabled;
+    }
+    {
       document.getElementById("move_cursor").checked = settings.move_cursor;
     }
 
@@ -97,6 +104,12 @@ window.onload = () => {
   document.getElementById("esc_key").onchange = (event) => {
     let checked = document.getElementById("esc_key").checked;
     settings.esc_key_clear_entire_buffer = checked;
+    saveSettings(settings);
+  };
+
+  document.getElementById("shift_key").onchange = (event) => {
+    let checked = document.getElementById("shift_key").checked;
+    settings.shift_key_toggle_alphabet_mode = checked;
     saveSettings(settings);
   };
 
@@ -190,6 +203,13 @@ window.onload = () => {
     chrome.i18n.getMessage("optionEscKeyTitle");
   document.getElementById("esc_key_label").innerText =
     chrome.i18n.getMessage("optionEscKeyLabel");
+
+  document.getElementById("shift_key_title").innerText = chrome.i18n.getMessage(
+    "optionShiftKeyTitle"
+  );
+  document.getElementById("shift_key_label").innerText = chrome.i18n.getMessage(
+    "optionShiftKeyLabel"
+  );
 
   document.getElementById("shift_letter_title").innerText =
     chrome.i18n.getMessage("optionShiftLetterTitle");
