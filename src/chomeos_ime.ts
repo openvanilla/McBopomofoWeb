@@ -9,7 +9,7 @@ let defaultSettings = {
   select_phrase: "before_cursor",
   candidate_keys: "123456789",
   esc_key_clear_entire_buffer: false,
-  shift_key_toggle_alphabet_mode: false,
+  shift_key_toggle_alphabet_mode: true,
   chineseConversion: false,
   move_cursor: true,
   letter_mode: "upper",
