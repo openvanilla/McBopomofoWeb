@@ -341,10 +341,12 @@ chrome.input.ime.onActivate.addListener((engineID) => {
 });
 
 chrome.input.ime.onBlur.addListener((context) => {
+  mcContext = undefined;
   mcInputController.reset();
 });
 
 chrome.input.ime.onReset.addListener((context) => {
+  mcContext = undefined;
   mcInputController.reset();
 });
 

@@ -281,7 +281,7 @@ export class KeyHandler {
     let maybeNotEmptyState = state as NotEmpty;
 
     if (
-      key.name === KeyName.SPACE &&
+      (key.name === KeyName.SPACE || key.name === KeyName.DOWN) &&
       maybeNotEmptyState instanceof NotEmpty &&
       this.reading_.isEmpty
     ) {
