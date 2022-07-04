@@ -345,8 +345,12 @@ chrome.input.ime.onBlur.addListener((context) => {
   mcInputController.reset();
 });
 
-chrome.input.ime.onReset.addListener((context) => {
+chrome.input.ime.onDeactivated.addListener((context) => {
   mcContext = undefined;
+  mcInputController.reset();
+});
+
+chrome.input.ime.onReset.addListener((context) => {
   mcInputController.reset();
 });
 
