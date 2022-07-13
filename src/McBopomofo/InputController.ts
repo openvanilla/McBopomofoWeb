@@ -31,6 +31,9 @@ import { WebLanguageModel } from "./WebLanguageModel";
 
 const ChineseConvert = require("chinese_convert");
 
+/**
+ * The main input UI controller.
+ */
 class InputUIController {
   private ui: InputUI;
   private cursorIndex: number = 0;
@@ -115,6 +118,11 @@ export class InputController {
   /** Sets the UI component. */
   public setUI(ui: InputUI) {
     this.ui_ = new InputUIController(ui);
+  }
+
+  /** Sets if the input controller should use traditional mode or not. */
+  public setTraditionalMode(flag: boolean) {
+    this.keyHandler_.traditionalMode = flag;
   }
 
   /**
@@ -284,7 +292,9 @@ export class InputController {
     if (this.state_ instanceof ChoosingCandidate) {
       this.ui_.reset();
       this.handleCandidateKeyEvent(key);
-      this.updatePreedit(this.state_);
+      if (this.state_ instanceof ChoosingCandidate) {
+        this.updatePreedit(this.state_);
+      }
       return true;
     }
     let accepted = this.keyHandler_.handle(
@@ -310,6 +320,7 @@ export class InputController {
 
     if (key.name === KeyName.RETURN) {
       let current = this.candidateController_.selectedCandidate;
+
       this.keyHandler_.candidateSelected(current, (newState) => {
         this.enterNewState(newState);
       });

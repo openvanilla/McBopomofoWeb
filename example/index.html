@@ -141,6 +141,15 @@
             <h2>設定</h2>
             <table>
                 <tr>
+                    <td class="option_title">模式：</td>
+                    <td>
+                        <input type="radio" name="input_mode" value="mcbopomofo" id="use_mcbopomofo"
+                            checked="checked"><label for="use_mcbotpomofo">小麥注音</label><br>
+                        <input type="radio" name="input_mode" value="plainbopomofo" id="use_plainbopomofo"><label
+                            for="use_plainbopomofo">傳統注音</label>
+                    </td>
+                </tr>
+                <tr>
                     <td class="option_title">簡繁轉換：</td>
                     <td>
                         <input type="radio" name="chinese_convert" value="trad" id="chinese_convert_trad"
@@ -375,6 +384,18 @@
         }
     });
 
+
+    document.getElementById("use_mcbopomofo").onchange = function (event) {
+        console.log("use_mcbopomogo");
+        controller.setTraditionalMode(false)
+        document.getElementById("text_area").focus();
+    };
+
+    document.getElementById("use_plainbopomofo").onchange = function (event) {
+        console.log("use_plainbopomofo");
+        controller.setTraditionalMode(true)
+        document.getElementById("text_area").focus();
+    };
 
     document.getElementById("chinese_convert_trad").onchange = function (event) {
         console.log("chinese_convert_trad");

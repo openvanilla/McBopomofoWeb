@@ -17,6 +17,7 @@ import { UserOverrideModel } from "./UserOverrideModel";
 import {
   ChoosingCandidate,
   Committing,
+  Empty,
   EmptyIgnoringPrevious,
   InputState,
   Inputting,
@@ -151,6 +152,14 @@ export class KeyHandler {
     this.composingBufferSize_ = value;
   }
 
+  private traditionalMode_ = false;
+  public get traditionalMode(): boolean {
+    return this.traditionalMode_;
+  }
+  public set traditionalMode(flag: boolean) {
+    this.traditionalMode_ = flag;
+  }
+
   private languageModel_: LanguageModel;
   private reading_: BopomofoReadingBuffer;
   private builder_: BlockReadingBuilder;
@@ -221,20 +230,22 @@ export class KeyHandler {
       this.builder_.insertReadingAtCursor(syllable);
       let evictedText = this.popEvictedTextAndWalk();
 
-      let overrideValue = this.userOverrideModel_?.suggest(
-        this.walkedNodes_,
-        this.builder_.cursorIndex,
-        new Date().getTime()
-      );
-      if (overrideValue != null && overrideValue?.length != 0) {
-        let cursorIndex = this.actualCandidateCursorIndex;
-        let nodes = this.builder_.grid.nodesCrossingOrEndingAt(cursorIndex);
-        let highestScore = FindHighestScore(nodes, kEpsilon);
-        this.builder_.grid.overrideNodeScoreForSelectedCandidate(
-          cursorIndex,
-          overrideValue,
-          highestScore
+      if (!this.traditionalMode_) {
+        let overrideValue = this.userOverrideModel_?.suggest(
+          this.walkedNodes_,
+          this.builder_.cursorIndex,
+          new Date().getTime()
         );
+        if (overrideValue != null && overrideValue?.length != 0) {
+          let cursorIndex = this.actualCandidateCursorIndex;
+          let nodes = this.builder_.grid.nodesCrossingOrEndingAt(cursorIndex);
+          let highestScore = FindHighestScore(nodes, kEpsilon);
+          this.builder_.grid.overrideNodeScoreForSelectedCandidate(
+            cursorIndex,
+            overrideValue,
+            highestScore
+          );
+        }
       }
 
       this.fixNodesIfRequired();
@@ -242,6 +253,21 @@ export class KeyHandler {
       let inputtingState = this.buildInputtingState();
       inputtingState.evictedText = evictedText;
       stateCallback(inputtingState);
+
+      if (this.traditionalMode_) {
+        let choosingCandidates =
+          this.buildChoosingCandidateState(inputtingState);
+        this.reset();
+        if (choosingCandidates.candidates.length === 1) {
+          let text = choosingCandidates.candidates[0];
+          let committing = new Committing(text);
+          stateCallback(committing);
+          stateCallback(new Empty());
+        } else {
+          stateCallback(choosingCandidates);
+        }
+      }
+
       return true;
     }
 
@@ -465,11 +491,23 @@ export class KeyHandler {
     candidate: string,
     stateCallback: (state: InputState) => void
   ): void {
+    if (this.traditionalMode_) {
+      this.reset();
+      stateCallback(new Committing(candidate));
+      return;
+    }
+
     this.pinNode(candidate);
     stateCallback(this.buildInputtingState());
   }
 
   candidatePanelCancelled(stateCallback: (state: InputState) => void): void {
+    if (this.traditionalMode_) {
+      this.reset();
+      stateCallback(new EmptyIgnoringPrevious());
+      return;
+    }
+
     stateCallback(this.buildInputtingState());
   }
 
@@ -765,6 +803,18 @@ export class KeyHandler {
     let inputtingState = this.buildInputtingState();
     inputtingState.evictedText = evictedText;
     stateCallback(inputtingState);
+
+    if (this.traditionalMode_ && this.reading_.isEmpty) {
+      let candidateState = this.buildChoosingCandidateState(inputtingState);
+      this.reset();
+      if (candidateState.candidates.length === 1) {
+        let text = candidateState.candidates[0];
+        stateCallback(new Committing(text));
+      } else {
+        stateCallback(candidateState);
+      }
+    }
+
     return true;
   }
 
