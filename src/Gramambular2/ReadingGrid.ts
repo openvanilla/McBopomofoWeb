@@ -6,7 +6,6 @@
  */
 
 import { assert } from "console";
-import { isUndefined } from "lodash";
 import { LanguageModel, Unigram } from "./LanguageModel";
 
 /**
@@ -102,8 +101,8 @@ export class ReadingGrid {
     return false;
   }
 
-  static kMaximumSpanLength = 6;
-  static kDefaultSeparator = "-";
+  static kMaximumSpanLength: number = 6;
+  static kDefaultSeparator: string = "-";
 
   /**
    * Find the weightiest path in the grid graph. The path represents the most
@@ -130,7 +129,7 @@ export class ReadingGrid {
       for (let j = 1, maxSpanLen = span.maxLength; j <= maxSpanLen; ++j) {
         let p = span.nodeOf(j);
         if (p != undefined) {
-          vspans[i].push(p);
+          vspans[i].push(new Vertex(p));
           ++vertices;
         }
       }
@@ -461,11 +460,11 @@ export enum OverrideType {
 }
 
 export class Node {
-  reading_: string;
-  spanningLength_: number;
-  unigrams_: Unigram[];
-  overrideType_: OverrideType = OverrideType.kNone;
-  selectedIndex_ = 0;
+  private reading_: string;
+  private spanningLength_: number;
+  private unigrams_: Unigram[];
+  private overrideType_: OverrideType = OverrideType.kNone;
+  private selectedIndex_ = 0;
 
   constructor(reading: string, spanningLength: number, unigrams: Unigram[]) {
     this.reading_ = reading;
@@ -569,13 +568,21 @@ export class WalkResult {
   }
 
   valuesAsStrings(): string[] {
-    // TODO
-    return [];
+    let result: string[] = [];
+
+    for (let node of this.nodes) {
+      result.push(node.value);
+    }
+    return result;
   }
 
   readingsAsStrings(): string[] {
-    // TODO
-    return [];
+    let result: string[] = [];
+
+    for (let node of this.nodes) {
+      result.push(node.reading);
+    }
+    return result;
   }
 }
 
@@ -598,31 +605,62 @@ export class Candidate {
 }
 
 export class Span {
-  nodes_: Node[] = [];
+  nodes_: (Node | undefined)[] = [];
   maxLength_: number = 0;
 
-  get nodes(): Node[] {
-    return this.nodes_;
+  constructor() {
+    this.nodes_.fill(undefined, 0, ReadingGrid.kMaximumSpanLength);
   }
+
   get maxLength(): number {
     return this.maxLength_;
   }
 
   clear() {
-    // TODO
+    this.nodes_.fill(undefined, 0, ReadingGrid.kMaximumSpanLength);
+    this.maxLength_ = 0;
   }
 
   add(node: Node) {
-    // TODO
+    assert(
+      node.spanningLength > 0 &&
+        node.spanningLength <= ReadingGrid.kMaximumSpanLength
+    );
+    this.nodes_[node.spanningLength - 1] = node;
+
+    if (node.spanningLength >= this.maxLength_) {
+      this.maxLength_ = node.spanningLength;
+    }
   }
 
   removeNodesOfOrLongerThan(length: number) {
-    // TODO
+    assert(length > 0 && length <= ReadingGrid.kMaximumSpanLength);
+    for (let i = length - 1; i < ReadingGrid.kMaximumSpanLength; ++i) {
+      this.nodes_[i] = undefined;
+    }
+    this.maxLength_ = 0;
+    if (length == 1) {
+      return;
+    }
+
+    let i = length - 2;
+    while (true) {
+      if (this.nodes_[i] != undefined) {
+        this.maxLength_ = i + 1;
+        return;
+      }
+
+      if (i == 0) {
+        return;
+      }
+
+      --i;
+    }
   }
 
   nodeOf(length: number): Node | undefined {
-    // TODO
-    return undefined;
+    assert(length > 0 && length <= ReadingGrid.kMaximumSpanLength);
+    return this.nodes_[length - 1];
   }
 }
 
