@@ -60,7 +60,7 @@ export class ReadingGrid {
   }
 
   insertReading(reading: string): boolean {
-    if (reading.length == 0 || reading === this.separator_) {
+    if (reading.length === 0 || reading === this.separator_) {
       return false;
     }
     if (!this.lm_.hasUnigrams(reading)) {
@@ -142,7 +142,7 @@ export class ReadingGrid {
     for (let i = 0, vspansLen = vspans.length; i < vspansLen; ++i) {
       for (let v of vspans[i]) {
         let nextVertexPos = i + v.node.spanningLength;
-        if (nextVertexPos == vspansLen) {
+        if (nextVertexPos === vspansLen) {
           v.edges.push(terminal);
           continue;
         }
@@ -193,8 +193,28 @@ export class ReadingGrid {
    * not have to care about this boundary condition.
    */
   candidatesAt(loc: number): Candidate[] {
-    // TODO
-    return [];
+    let result: Candidate[] = [];
+    if (this.readings_.length === 0) {
+      return result;
+    }
+
+    if (loc > this.readings_.length) {
+      return result;
+    }
+
+    let nodes = this.overlappingNodesAt(
+      loc === this.readings_.length ? loc - 1 : loc
+    );
+
+    // Sort nodes by reading length.
+    nodes.sort((n1, n2) => n2.node.spanningLength - n1.node.spanningLength);
+
+    for (let nodeInSpan of nodes) {
+      for (let unigram of nodeInSpan.node.unigrams) {
+        result.push(new Candidate(nodeInSpan.node.reading, unigram.value));
+      }
+    }
+    return result;
   }
 
   /**
@@ -203,65 +223,224 @@ export class ReadingGrid {
    * override. An overridden node would influence the grid walk to favor walking
    * through it.
    */
-  overrideCandidate(
+  overrideCandidate = (
     loc: number,
     candidate: Candidate,
     overrideType: OverrideType = OverrideType.kOverrideValueWithHighScore
-  ): boolean {
-    // TODO
-    return false;
-  }
+  ) =>
+    this.overrideCandidate_(
+      loc,
+      candidate.reading,
+      candidate.value,
+      overrideType
+    );
 
   /**
    * Same as the method above, but since the string candidate value is used, if
    * there are multiple nodes (of different spanning length) that have the same
    * unigram value, it's not guaranteed which node will be selected.
    */
-  overrideCandidateWithString(
+  overrideCandidateWithString = (
     loc: number,
     candidate: string,
     overrideType: OverrideType = OverrideType.kOverrideValueWithHighScore
+  ) => this.overrideCandidate_(loc, undefined, candidate, overrideType);
+
+  private overrideCandidate_(
+    loc: number,
+    reading: string | undefined,
+    value: string,
+    overrideType: OverrideType
   ): boolean {
-    // TODO
-    return false;
+    if (loc > this.readings_.length) {
+      return false;
+    }
+
+    let overlappingNodes = this.overlappingNodesAt(
+      loc === this.readings_.length ? loc - 1 : loc
+    );
+    let overridden: NodeInSpan | undefined = undefined;
+
+    for (let nis of overlappingNodes) {
+      if (reading != undefined && nis.node.reading != reading) {
+        continue;
+      }
+
+      if (nis.node.selectOverrideUnigram(value, overrideType)) {
+        overridden = nis;
+        break;
+      }
+    }
+
+    if (overridden?.node === undefined) {
+      // Nothing gets overridden.
+      return false;
+    }
+
+    for (
+      let i = overridden.spanIndex;
+      i < overridden.spanIndex + overridden.node.spanningLength &&
+      i < this.spans_.length;
+      ++i
+    ) {
+      // We also need to reset *all* nodes that share the same location in the
+      // span. For example, if previously the two walked nodes are "A BC" where
+      // A and BC are two nodes with overrides. The user now chooses "DEF" which
+      // is a node that shares the same span location with "A". The node with BC
+      // will be reset as it's part of the overlapping node, but A is not.
+      let nodes = this.overlappingNodesAt(i);
+      for (let nis of nodes) {
+        if (nis.node != overridden.node) {
+          nis.node.reset();
+        }
+      }
+    }
+    return true;
   }
 
   private expandGridAt(loc: number) {
-    // TODO
+    if (!loc || loc === this.spans_.length) {
+      this.spans_.splice(loc, 0, new Span());
+      return;
+    }
+    this.spans_.splice(loc, 0, new Span());
+    this.removeAffectedNodes(loc);
   }
 
   private shrinkGridAt(loc: number) {
-    // TODO
+    if (loc === this.spans_.length) {
+      return;
+    }
+    this.spans_.splice(loc, 1);
+    this.removeAffectedNodes(loc);
   }
 
   private removeAffectedNodes(loc: number) {
-    // TODO
+    // Because of the expansion, certain spans now have "broken" nodes. We need
+    // to remove those. For example, before:
+    //
+    // Span index 0   1   2   3
+    //                (---)
+    //                (-------)
+    //            (-----------)
+    //
+    // After we've inserted a span at 2:
+    //
+    // Span index 0   1   2   3   4
+    //                (---)
+    //                (----   ----)
+    //            (--------   ----)
+    //
+    // Similarly for shrinkage, before:
+    //
+    // Span index 0   1   2   3
+    //                (---)
+    //                (-------)
+    //            (-----------)
+    //
+    // After we've deleted the span at 2:
+    //
+    // Span index 0   1   2   3   4
+    //                (---)
+    //                XXXXX
+    //            XXXXXXXXX
+    //
+    if (this.spans_.length === 0) {
+      return;
+    }
+    let affectedLength = ReadingGrid.kMaximumSpanLength - 1;
+    let begin = loc <= affectedLength ? 0 : loc - affectedLength;
+    let end = loc >= 1 ? loc - 1 : 0;
+    for (let i = begin; i <= end; ++i) {
+      this.spans_[i].removeNodesOfOrLongerThan(loc - i + 1);
+    }
   }
 
   private insert(loc: number, node: Node) {
-    // TODO
+    assert(loc < this.spans_.length);
+    this.spans_[loc].add(node);
   }
 
   private combineReading(reading: string[]): string {
-    return "";
-    // TODO
+    return reading.join(this.separator_);
   }
 
   private hasNodeAt(loc: number, readingLen: number, reading: string): boolean {
-    // TODO
-    return false;
+    if (loc > this.spans_.length) {
+      return false;
+    }
+    let n = this.spans_[loc].nodeOf(readingLen);
+    if (n === undefined) {
+      return false;
+    }
+    return reading === n.reading;
   }
 
   private update() {
-    // TODO
+    let begin =
+      this.cursor_ <= ReadingGrid.kMaximumSpanLength
+        ? 0
+        : this.cursor_ - ReadingGrid.kMaximumSpanLength;
+    let end = this.cursor_ + ReadingGrid.kMaximumSpanLength;
+    if (end > this.readings_.length) {
+      end = this.readings_.length;
+    }
+    for (let pos = begin; pos < end; pos++) {
+      for (
+        let len = 1;
+        len <= ReadingGrid.kMaximumSpanLength && pos + len <= end;
+        len++
+      ) {
+        let combinedReading = this.combineReading(
+          this.readings_.slice(pos, pos + len)
+        );
+
+        if (!this.hasNodeAt(pos, len, combinedReading)) {
+          let unigrams = this.lm_.getUnigrams(combinedReading);
+          if (unigrams.length === 0) {
+            continue;
+          }
+
+          this.insert(pos, new Node(combinedReading, len, unigrams));
+        }
+      }
+    }
   }
 
   /**
    * Find all nodes that overlap with the location. The return value is a list
    * of nodes along with their starting location in the grid.
    */
-  overlappingNodesAt(loc: number) {
-    return [];
+  overlappingNodesAt(loc: number): NodeInSpan[] {
+    let results: NodeInSpan[] = [];
+
+    if (this.spans_.length === 0 || loc >= this.spans_.length) {
+      return results;
+    }
+
+    // First, get all nodes from the span at location.
+    for (let i = 1, len = this.spans_[loc].maxLength; i <= len; ++i) {
+      let ptr: Node | undefined = this.spans_[loc].nodeOf(i);
+      if (ptr != undefined) {
+        let element = new NodeInSpan(ptr, loc);
+        results.push(element);
+      }
+    }
+
+    let begin = loc - Math.min(loc, ReadingGrid.kMaximumSpanLength - 1);
+    for (let i = begin; i < loc; ++i) {
+      let beginLen = loc - i + 1;
+      let endLen = this.spans_[i].maxLength;
+      for (let j = beginLen; j <= endLen; ++j) {
+        let ptr = this.spans_[i].nodeOf(j);
+        if (ptr != undefined) {
+          let element = new NodeInSpan(ptr, i);
+          results.push(element);
+        }
+      }
+    }
+
+    return results;
   }
 }
 
@@ -286,6 +465,7 @@ export class Node {
   spanningLength_: number;
   unigrams_: Unigram[];
   overrideType_: OverrideType = OverrideType.kNone;
+  selectedIndex_ = 0;
 
   constructor(reading: string, spanningLength: number, unigrams: Unigram[]) {
     this.reading_ = reading;
@@ -306,30 +486,52 @@ export class Node {
   }
 
   get currentUnigram(): Unigram {
-    return new Unigram("", 0);
+    return this.unigrams_.length === 0
+      ? new Unigram("", 0)
+      : this.unigrams_[this.selectedIndex_];
   }
 
   get value(): string {
-    // TODO
-    return "";
+    return this.unigrams_.length === 0
+      ? ""
+      : this.unigrams_[this.selectedIndex_].value;
   }
 
   get score(): number {
-    // TODO
-    return 0;
+    if (this.unigrams_.length === 0) {
+      return 0;
+    }
+
+    switch (this.overrideType_) {
+      case OverrideType.kOverrideValueWithHighScore:
+        return Node.kOverridingScore;
+      case OverrideType.kOverrideValueWithScoreFromTopUnigram:
+        return this.unigrams_[0].score;
+      case OverrideType.kNone:
+      default:
+        return this.unigrams_[this.selectedIndex_].score;
+    }
   }
 
   get isOverridden(): boolean {
-    // TODO
-    return false;
+    return this.overrideType_ != OverrideType.kNone;
   }
 
   reset() {
-    // TODO
+    this.selectedIndex_ = 0;
+    this.overrideType_ = OverrideType.kNone;
   }
 
-  selectOverrideUnigram(value: string, type: OverrideType) {
-    // TODO
+  selectOverrideUnigram(value: string, type: OverrideType): boolean {
+    assert(type != OverrideType.kNone);
+    for (let i = 0; i < this.unigrams_.length; i++) {
+      if (this.unigrams_[i].value === value) {
+        this.selectedIndex_ = i;
+        this.overrideType_ = type;
+        return true;
+      }
+    }
+    return false;
   }
 
   /**
@@ -418,8 +620,9 @@ export class Span {
     // TODO
   }
 
-  nodeOf(length: number) {
+  nodeOf(length: number): Node | undefined {
     // TODO
+    return undefined;
   }
 }
 
