@@ -5,6 +5,8 @@
  * SPDX-License-Identifier: MIT
  */
 
+import { assert } from "console";
+import { isUndefined } from "lodash";
 import { LanguageModel, Unigram } from "./LanguageModel";
 
 /**
@@ -32,11 +34,13 @@ export class ReadingGrid {
   }
 
   clear() {
-    // TODO
+    this.cursor_ = 0;
+    this.readings_ = [];
+    this.spans_ = [];
   }
 
   get length(): number {
-    return 0;
+    return this.readings_.length;
   }
 
   get cursor(): number {
@@ -44,7 +48,7 @@ export class ReadingGrid {
   }
 
   set cursor(cursor: number) {
-    // TODO
+    this.cursor_ = cursor;
   }
 
   get readingSeparator(): string {
@@ -56,7 +60,18 @@ export class ReadingGrid {
   }
 
   insertReading(reading: string): boolean {
-    return false;
+    if (reading.length == 0 || reading === this.separator_) {
+      return false;
+    }
+    if (!this.lm_.hasUnigrams(reading)) {
+      return false;
+    }
+
+    this.readings_.splice(this.cursor_, 0, reading);
+    this.expandGridAt(this.cursor_);
+    this.update();
+    ++this.cursor_;
+    return true;
   }
 
   /**
@@ -64,7 +79,13 @@ export class ReadingGrid {
    * by one.
    */
   deleteReadingBeforeCursor(): boolean {
-    // TODO
+    if (!this.cursor_) {
+      return false;
+    }
+    this.readings_.splice(this.cursor_ - 1, 1);
+    --this.cursor_;
+    this.shrinkGridAt(this.cursor_);
+    this.update();
     return false;
   }
 
@@ -72,16 +93,98 @@ export class ReadingGrid {
    * Delete the reading after the cursor, like Del. Cursor is unmoved.
    */
   deleteReadingAfterCursor(): boolean {
-    // TODO
+    if (this.cursor_ === this.readings_.length) {
+      return false;
+    }
+    this.readings_.splice(this.cursor_, 1);
+    this.shrinkGridAt(this.cursor_);
+    this.update();
     return false;
   }
 
   static kMaximumSpanLength = 6;
   static kDefaultSeparator = "-";
 
+  /**
+   * Find the weightiest path in the grid graph. The path represents the most
+   * likely hidden chain of events from the observations. We use the
+   * DAG-SHORTEST-PATHS algorithm in Cormen et al. 2001 to compute such path.
+   * Instead of computing the path with the shortest distance, though, we
+   * compute the path with the longest distance (so the weightiest), since with
+   * log probability a larger value means a larger probability. The algorithm
+   * runs in O(|V| + |E|) time for G = (V, E) where G is a DAG. This means the
+   * walk is fairly economical even when the grid is large.
+   */
   walk(): WalkResult {
-    // TODO
-    return new WalkResult([], 0, 0, 0);
+    let result = new WalkResult([], 0, 0, 0);
+    if (this.spans_.length === 0) {
+      return result;
+    }
+    let start = GetEpochNowInMicroseconds();
+    let vspans: VertexSpan[] = [];
+    let vertices = 0;
+    let edges = 0;
+
+    for (let i = 0, len = this.spans_.length; i < len; ++i) {
+      let span = this.spans_[i];
+      for (let j = 1, maxSpanLen = span.maxLength; j <= maxSpanLen; ++j) {
+        let p = span.nodeOf(j);
+        if (p != undefined) {
+          vspans[i].push(p);
+          ++vertices;
+        }
+      }
+    }
+
+    result.vertices = vertices;
+    let terminal = new Vertex(new Node("_TERMINAL_", 0, []));
+
+    for (let i = 0, vspansLen = vspans.length; i < vspansLen; ++i) {
+      for (let v of vspans[i]) {
+        let nextVertexPos = i + v.node.spanningLength;
+        if (nextVertexPos == vspansLen) {
+          v.edges.push(terminal);
+          continue;
+        }
+
+        for (let nv of vspans[nextVertexPos]) {
+          v.edges.push(nv);
+          ++edges;
+        }
+      }
+    }
+    result.edges = edges;
+
+    let root = new Vertex(new Node("_ROOT_", 0, []));
+    root.distance = 0;
+    for (let v of vspans[0]) {
+      root.edges.push(v);
+    }
+
+    let ordered = TopologicalSort(root);
+    let reversed = ordered.reverse();
+    for (let u of reversed) {
+      for (let v of u.edges) {
+        Relax(u, v);
+      }
+    }
+
+    let walked: Node[] = [];
+    let totalReadingLen = 0;
+    let it = terminal;
+    while (it.prev != undefined) {
+      walked.push(it.prev.node);
+      it = it.prev;
+      totalReadingLen += it.node.spanningLength;
+    }
+    assert(totalReadingLen === this.readings_.length);
+    assert(walked.length >= 2);
+    walked.slice(0, 1);
+    walked.reverse();
+
+    result.nodes = walked;
+    result.elapsedMicroseconds = GetEpochNowInMicroseconds() - start;
+    return result;
   }
 
   /**
@@ -140,6 +243,7 @@ export class ReadingGrid {
   }
 
   private combineReading(reading: string[]): string {
+    return "";
     // TODO
   }
 
@@ -150,17 +254,6 @@ export class ReadingGrid {
 
   private update() {
     // TODO
-  }
-
-  // Internal implementation of overrideCandidate, with an optional reading.
-  private overrideCandidate(
-    loc: number,
-    reading: string,
-    value: string,
-    overrideType: OverrideType
-  ): boolean {
-    // TODO
-    return false;
   }
 
   /**
@@ -306,6 +399,13 @@ export class Span {
   nodes_: Node[] = [];
   maxLength_: number = 0;
 
+  get nodes(): Node[] {
+    return this.nodes_;
+  }
+  get maxLength(): number {
+    return this.maxLength_;
+  }
+
   clear() {
     // TODO
   }
@@ -346,4 +446,76 @@ export class NodeInSpan {
     this.node = node;
     this.spanIndex = spanIndex;
   }
+}
+
+class Vertex {
+  node: Node;
+  edges: Vertex[] = [];
+  /** Used during topological-sort. */
+  topologicallySorted = false;
+  /**
+   * Used during shortest-path computation. We are actually computing the path
+   * with the *largest* weight, hence distance's initial value being negative
+   * infinity. If we were to compute the *shortest* weight/distance, we would
+   * have initialized this to infinity.
+   */
+  distance: number = Number.MIN_VALUE;
+  prev: Vertex | undefined = undefined;
+
+  constructor(node: Node) {
+    this.node = node;
+  }
+}
+
+/**
+ * Cormen et al. 2001 explains the historical origin of the term "relax."
+ */
+function Relax(u: Vertex, v: Vertex) {
+  // The distance from u to w is simply v's score.
+  let w = v.node.score;
+  // Since we are computing the largest weight, we update v's distance and prev
+  // if the current distance to v is *less* than that of u's plus the distance
+  // to v (which is represented by w).
+  if (v.distance < u.distance + w) {
+    v.distance = u.distance + w;
+    v.prev = u;
+  }
+}
+
+type VertexSpan = Vertex[];
+
+function TopologicalSort(root: Vertex): Vertex[] {
+  class State {
+    v: Vertex;
+    iterIndex: number;
+    constructor(v: Vertex, iterIndex: number = 0) {
+      this.v = v;
+      this.iterIndex = iterIndex;
+    }
+  }
+
+  let result: Vertex[] = [];
+  let stack: State[] = [];
+  stack.push(new State(root));
+
+  while (stack.length > 0) {
+    let state = stack[stack.length - 1];
+    let v = state.v;
+    if (state.iterIndex < state.v.edges.length) {
+      let nv = state.v.edges[state.iterIndex];
+      state.iterIndex++;
+      if (!nv.topologicallySorted) {
+        stack.push(new State(nv));
+        continue;
+      }
+    }
+    v.topologicallySorted = true;
+    result.push(v);
+    stack.pop();
+  }
+  return result;
+}
+
+function GetEpochNowInMicroseconds(): number {
+  return new Date().getTime();
 }

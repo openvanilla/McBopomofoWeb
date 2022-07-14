@@ -13,7 +13,7 @@ export class Unigram {
   public value: string;
   public score: number;
 
-  constructor(value: string, score: number = 0) {
+  constructor(value: string = "", score: number = 0) {
     this.value = value;
     this.score = score;
   }
