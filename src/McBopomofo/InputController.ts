@@ -7,6 +7,7 @@
 
 import { BopomofoKeyboardLayout } from "../Mandarin";
 import { Candidate, CandidateController } from "./CandidateController";
+
 import {
   ChoosingCandidate,
   Committing,
@@ -17,6 +18,7 @@ import {
   Marking,
   NotEmpty,
 } from "./InputState";
+
 import {
   ComposingBufferText,
   ComposingBufferTextStyle,
@@ -291,7 +293,11 @@ export class InputController {
   mcbopomofoKeyEvent(key: Key): boolean {
     if (this.state_ instanceof ChoosingCandidate) {
       this.ui_.reset();
-      this.handleCandidateKeyEvent(key);
+      this.handleCandidateKeyEvent(
+        key,
+        (newState) => this.enterNewState(newState),
+        () => {}
+      );
       if (this.state_ instanceof ChoosingCandidate) {
         this.updatePreedit(this.state_);
       }
@@ -306,7 +312,11 @@ export class InputController {
     return accepted;
   }
 
-  private handleCandidateKeyEvent(key: Key) {
+  private handleCandidateKeyEvent(
+    key: Key,
+    stateCallback: (state: InputState) => void,
+    errorCallback: () => void
+  ) {
     let selected = this.candidateController_.selectedCandidateWithKey(
       key.ascii
     );
@@ -372,6 +382,17 @@ export class InputController {
 
     let result = this.candidateController_.getCurrentPage();
     this.ui_.setCandidates(result);
+
+    if (this.keyHandler_.traditionalMode) {
+      let defaultCandidate =
+        this.candidateController_.getCurrentPage()[0].candidate;
+      this.keyHandler_.handlePunctuationKeyInCandidatePanelForTraditionalMode(
+        key,
+        defaultCandidate,
+        stateCallback,
+        errorCallback
+      );
+    }
   }
 
   private enterNewState(state: InputState): void {

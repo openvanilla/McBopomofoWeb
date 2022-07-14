@@ -421,13 +421,13 @@ export class KeyHandler {
     if (key.ascii != "") {
       let chrStr = key.ascii;
       let unigram = "";
-      if (key.ctrlPressed) {
-        unigram = kCtrlPunctuationKeyPrefix + chrStr;
-        if (this.handlePunctuation(unigram, stateCallback, errorCallback)) {
-          return true;
-        }
-        return false;
-      }
+      // if (key.ctrlPressed) {
+      //   unigram = kCtrlPunctuationKeyPrefix + chrStr;
+      //   if (this.handlePunctuation(unigram, stateCallback, errorCallback)) {
+      //     return true;
+      //   }
+      //   return false;
+      // }
 
       // Bopomofo layout-specific punctuation handling.
       unigram =
@@ -509,6 +509,42 @@ export class KeyHandler {
     }
 
     stateCallback(this.buildInputtingState());
+  }
+
+  handlePunctuationKeyInCandidatePanelForTraditionalMode(
+    key: Key,
+    defaultCandidate: string,
+    stateCallback: (state: InputState) => void,
+    errorCallback: () => void
+  ): boolean {
+    let chrStr: string = key.ascii;
+    let customPunctuation =
+      kPunctuationKeyPrefix +
+      GetKeyboardLayoutName(this.reading_.keyboardLayout) +
+      "_" +
+      chrStr;
+    let punctuation = kPunctuationKeyPrefix + chrStr;
+    let shouldAutoSelectCandidate =
+      this.reading_.isValidKey(chrStr) ||
+      this.languageModel_.hasUnigramsForKey(customPunctuation) ||
+      this.languageModel_.hasUnigramsForKey(punctuation);
+    if (!shouldAutoSelectCandidate) {
+      if (chrStr.length == 1 && chrStr >= "A" && chrStr <= "Z") {
+        let letter = kLetterPrefix + chrStr;
+        if (this.languageModel_.hasUnigramsForKey(letter)) {
+          shouldAutoSelectCandidate = true;
+        }
+      }
+    }
+    if (shouldAutoSelectCandidate) {
+      stateCallback(new Committing(defaultCandidate));
+      this.reset();
+      this.handle(key, new Empty(), stateCallback, errorCallback);
+      return true;
+    }
+
+    errorCallback();
+    return false;
   }
 
   reset(): void {
