@@ -492,12 +492,12 @@ export class BopomofoSyllable {
       middle = "";
       vowel =
         cc === BopomofoSyllable.J ||
-        cc === BopomofoSyllable.Q ||
-        cc === BopomofoSyllable.X
+          cc === BopomofoSyllable.Q ||
+          cc === BopomofoSyllable.X
           ? "iong"
           : !cc && mvc === BopomofoSyllable.U
-          ? "eng"
-          : "ong";
+            ? "eng"
+            : "ong";
     }
 
     // ien, uen, üen -> in, un, ün ; but note "wen", "yin" and "yun"
@@ -584,6 +584,22 @@ export class BopomofoSyllable {
     append(BopomofoSyllable.VowelMask, this);
     append(BopomofoSyllable.ToneMarkerMask, this);
     return str;
+  }
+
+  get absoluteOrder(): number {
+    // turn BPMF syllable into a 4*14*4*22 number
+    return (this.syllable_ & BopomofoSyllable.ConsonantMask) +
+      ((this.syllable_ & BopomofoSyllable.MiddleVowelMask) >> 5) * 22 +
+      ((this.syllable_ & BopomofoSyllable.VowelMask) >> 7) * 22 * 4 +
+      ((this.syllable_ & BopomofoSyllable.ToneMarkerMask) >> 11) * 22 * 4 * 14;
+  }
+
+  get absoluteOrderString(): string {
+    // 5*14*4*22 = 6160, we use a 79*79 encoding to represent that
+    let order = this.absoluteOrder;
+    let low = 48 + (order % 79);
+    let high = 48 + ((order / 79) & 127);
+    return String.fromCharCode(low, high);
   }
 
   clear(): void {
