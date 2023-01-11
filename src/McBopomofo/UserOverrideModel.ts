@@ -44,7 +44,7 @@ function Score(
   timestamp: number,
   lambda: number
 ): number {
-  let decay = (timestamp - eventTimestamp) * lambda;
+  let decay = Math.exp((timestamp - eventTimestamp) * lambda);
   if (decay < DecayThreshold) {
     return 0.0;
   }
