@@ -90,6 +90,10 @@ function FindHighestScore(nodeAnchors: NodeAnchor[], epsilon: number): number {
   return highestScore + epsilon;
 }
 
+function getTimestamp(): number {
+  return new Date().getTime() / 1000;
+}
+
 export class KeyHandler {
   private localizedStrings_: LocalizedStrings = new LocalizedStrings();
   public get languageCode(): string {
@@ -234,7 +238,7 @@ export class KeyHandler {
         let overrideValue = this.userOverrideModel_?.suggest(
           this.walkedNodes_,
           this.builder_.cursorIndex,
-          new Date().getTime()
+          getTimestamp()
         );
         if (overrideValue != null && overrideValue?.length != 0) {
           let cursorIndex = this.actualCandidateCursorIndex;
@@ -1036,7 +1040,7 @@ export class KeyHandler {
           this.walkedNodes_,
           cursorIndex,
           candidate,
-          new Date().getTime()
+          getTimestamp()
         );
       }
     }
