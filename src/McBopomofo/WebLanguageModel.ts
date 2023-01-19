@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { KeyValuePair, LanguageModel, Unigram } from "../Gramambular";
+import { LanguageModel, Unigram } from "../Gramambular2";
 
 /**
  * The model for user phrases.
@@ -41,19 +41,19 @@ export class UserPhrases implements LanguageModel {
     this.onPhraseChange(this.map_);
   }
 
-  unigramsForKey(key: string): Unigram[] {
+  getUnigrams(key: string): Unigram[] {
     let result: Unigram[] = [];
     let list = this.map_.get(key);
     if (list != undefined) {
       for (let item of list) {
-        let g = new Unigram(new KeyValuePair(key, item), 0);
+        let g = new Unigram(item, 0);
         result.push(g);
       }
     }
     return result;
   }
 
-  hasUnigramsForKey(key: string): boolean {
+  hasUnigrams(key: string): boolean {
     let list = this.map_.get(key);
     if (list === undefined) return false;
     return list.length > 0;
@@ -105,25 +105,24 @@ export class WebLanguageModel implements LanguageModel {
     this.map_ = map;
   }
 
-  unigramsForKey(key: string): Unigram[] {
+  getUnigrams(key: string): Unigram[] {
     if (key === " ") {
-      let space = new Unigram(new KeyValuePair(" ", " "));
+      let space = new Unigram(" ");
       return [space];
     }
 
     let result: Unigram[] = [];
     let usedValues: string[] = [];
-    let userPhrases = this.userPhrases_.unigramsForKey(key);
+    let userPhrases = this.userPhrases_.getUnigrams(key);
     for (let phrase of userPhrases) {
       if (this.converter_ != null) {
-        let converted =
-          this.converter_(phrase.keyValue.value) ?? phrase.keyValue.value;
-        phrase = new Unigram(new KeyValuePair(key, converted), phrase.score);
+        let converted = this.converter_(phrase.value) ?? phrase.value;
+        phrase = new Unigram(converted, phrase.score);
       }
-      if (!usedValues.includes(phrase.keyValue.value)) {
+      if (!usedValues.includes(phrase.value)) {
         result.push(phrase);
       }
-      usedValues.push(phrase.keyValue.value);
+      usedValues.push(phrase.value);
     }
 
     let list = this.map_.get(key);
@@ -135,7 +134,7 @@ export class WebLanguageModel implements LanguageModel {
           value = this.converter_(value) ?? value;
         }
         if (!usedValues.includes(value)) {
-          let g = new Unigram(new KeyValuePair(key, value), score);
+          let g = new Unigram(value, score);
           result.push(g);
         }
         usedValues.push(value);
@@ -144,12 +143,12 @@ export class WebLanguageModel implements LanguageModel {
     return result;
   }
 
-  hasUnigramsForKey(key: string): boolean {
+  hasUnigrams(key: string): boolean {
     if (key === " ") {
       return true;
     }
 
-    let result = this.userPhrases_.hasUnigramsForKey(key);
+    let result = this.userPhrases_.hasUnigrams(key);
     if (result) {
       return true;
     }

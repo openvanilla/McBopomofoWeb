@@ -38,6 +38,10 @@ export class ReadingGrid {
     this.spans_ = [];
   }
 
+  get readings(): string[] {
+    return this.readings_;
+  }
+
   get length(): number {
     return this.readings_.length;
   }
@@ -115,7 +119,7 @@ export class ReadingGrid {
    * walk is fairly economical even when the grid is large.
    */
   walk(): WalkResult {
-    let result = new WalkResult([], 0, 0, 0);
+    let result = new WalkResult([], 0, 0, 0, 0);
     if (this.spans_.length === 0) {
       return result;
     }
@@ -181,6 +185,7 @@ export class ReadingGrid {
     walked.slice(0, 1);
     walked.reverse();
 
+    result.totalReadings = totalReadingLen;
     result.nodes = walked;
     result.elapsedMicroseconds = GetEpochNowInMicroseconds() - start;
     return result;
@@ -554,17 +559,20 @@ export class WalkResult {
   vertices: number;
   edges: number;
   elapsedMicroseconds: number;
+  totalReadings: number;
 
   constructor(
     nodes: Node[],
     vertices: number,
     edges: number,
-    elapsedMicroseconds: number
+    elapsedMicroseconds: number,
+    totalReadings: number
   ) {
     this.nodes = nodes;
     this.vertices = vertices;
     this.edges = edges;
     this.elapsedMicroseconds = elapsedMicroseconds;
+    this.totalReadings = totalReadings;
   }
 
   valuesAsStrings(): string[] {
@@ -583,6 +591,29 @@ export class WalkResult {
       result.push(node.reading);
     }
     return result;
+  }
+
+  findNodeAt(cursor: number): Readonly<[Node | undefined, number]> {
+    if (this.nodes.length == 0) {
+      return [undefined, 0];
+    }
+    if (cursor > this.totalReadings) {
+      return [undefined, 0];
+    }
+    if (cursor === 0) {
+      return [this.nodes[0], this.nodes[0].spanningLength];
+    }
+    if (cursor >= this.totalReadings - 1) {
+      return [this.nodes[this.nodes.length - 1], this.totalReadings];
+    }
+    let accumulated = 0;
+    for (let node of this.nodes) {
+      accumulated += node.spanningLength;
+      if (accumulated >= cursor) {
+        return [node, accumulated];
+      }
+    }
+    return [undefined, 0];
   }
 }
 

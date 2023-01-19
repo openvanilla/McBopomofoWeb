@@ -5,13 +5,6 @@
  * SPDX-License-Identifier: MIT
  */
 
-import {
-  LanguageModel,
-  BlockReadingBuilder,
-  NodeAnchor,
-  Walker,
-  kSelectedCandidateScore,
-} from "../Gramambular";
 import { BopomofoKeyboardLayout, BopomofoReadingBuffer } from "../Mandarin";
 import { UserOverrideModel } from "./UserOverrideModel";
 import {
@@ -28,6 +21,12 @@ import { Key, KeyName } from "./Key";
 import { LocalizedStrings } from "./LocalizedStrings";
 import { WebLanguageModel } from "./WebLanguageModel";
 import * as _ from "lodash";
+import {
+  Candidate,
+  LanguageModel,
+  ReadingGrid,
+  WalkResult,
+} from "../Gramambular2";
 
 export class ComposedString {
   head: string = "";
@@ -44,7 +43,6 @@ export class ComposedString {
 const kPunctuationListKey = "`"; // Hit the key to bring up the list.
 const kPunctuationListUnigramKey = "_punctuation_list";
 const kPunctuationKeyPrefix = "_punctuation_";
-const kCtrlPunctuationKeyPrefix = "_ctrl_punctuation_";
 const kLetterPrefix = "_letter_";
 
 const kMinValidMarkingReadingCount = 2;
@@ -52,10 +50,6 @@ const kMaxValidMarkingReadingCount = 6;
 const kUserOverrideModelCapacity = 500;
 const kObservedOverrideHalfLife = 5400.0; // 1.5 hr.
 
-const kComposingBufferSize: number = 20;
-const kMaxComposingBufferSize: number = 100;
-const kMinComposingBufferSize: number = 4;
-const kMaxComposingBufferNeedsToWalkSize: number = 10;
 // Unigram whose score is below this shouldn't be put into user override model.
 const kNoOverrideThreshold: number = -8.0;
 const kEpsilon = 0.000001;
@@ -76,18 +70,8 @@ function GetKeyboardLayoutName(layout: BopomofoKeyboardLayout): string {
   return "Standard";
 }
 
-function FindHighestScore(nodeAnchors: NodeAnchor[], epsilon: number): number {
-  let highestScore = 0.0;
-  for (let anchor of nodeAnchors) {
-    if (anchor.node === undefined) {
-      continue;
-    }
-    let score = anchor.node!.highestUnigramScore;
-    if (score > highestScore) {
-      highestScore = score;
-    }
-  }
-  return highestScore + epsilon;
+function GetEpochNowInSeconds(): number {
+  return new Date().getTime();
 }
 
 export class KeyHandler {
@@ -138,20 +122,6 @@ export class KeyHandler {
     this.reading_.keyboardLayout = value;
   }
 
-  private composingBufferSize_: number = kComposingBufferSize;
-  public get composingBufferSize(): number {
-    return this.composingBufferSize_;
-  }
-  public set composingBufferSize(value: number) {
-    if (value > kMaxComposingBufferSize) {
-      value = kMaxComposingBufferSize;
-    }
-    if (value < kMinComposingBufferSize) {
-      value = kMinComposingBufferSize;
-    }
-    this.composingBufferSize_ = value;
-  }
-
   private traditionalMode_ = false;
   public get traditionalMode(): boolean {
     return this.traditionalMode_;
@@ -161,9 +131,10 @@ export class KeyHandler {
   }
 
   private languageModel_: LanguageModel;
+  private grid_: ReadingGrid;
   private reading_: BopomofoReadingBuffer;
-  private builder_: BlockReadingBuilder;
-  private walkedNodes_: NodeAnchor[] = [];
+  private latestWalk_: WalkResult | undefined;
+
   private userOverrideModel_: UserOverrideModel = new UserOverrideModel(
     kUserOverrideModelCapacity,
     kObservedOverrideHalfLife
@@ -174,8 +145,8 @@ export class KeyHandler {
     this.reading_ = new BopomofoReadingBuffer(
       BopomofoKeyboardLayout.StandardLayout
     );
-    this.builder_ = new BlockReadingBuilder(this.languageModel_);
-    this.builder_.joinSeparator = kJoinSeparator;
+    this.grid_ = new ReadingGrid(this.languageModel_);
+    this.grid_.readingSeparator = kJoinSeparator;
   }
 
   handle(
@@ -217,9 +188,9 @@ export class KeyHandler {
       let syllable = this.reading_.syllable.composedString;
       this.reading_.clear();
 
-      if (!this.languageModel_.hasUnigramsForKey(syllable)) {
+      if (!this.languageModel_.hasUnigrams(syllable)) {
         errorCallback();
-        if (!this.builder_.length) {
+        if (!this.grid_.length) {
           stateCallback(new EmptyIgnoringPrevious());
         } else {
           stateCallback(this.buildInputtingState());
@@ -227,20 +198,20 @@ export class KeyHandler {
         return true;
       }
 
-      this.builder_.insertReadingAtCursor(syllable);
-      let evictedText = this.popEvictedTextAndWalk();
+      this.grid_.insertReading(syllable);
+      this.walk();
 
       if (!this.traditionalMode_) {
         let overrideValue = this.userOverrideModel_?.suggest(
           this.walkedNodes_,
-          this.builder_.cursorIndex,
+          this.grid_.cursor,
           new Date().getTime()
         );
         if (overrideValue != null && overrideValue?.length != 0) {
           let cursorIndex = this.actualCandidateCursorIndex;
-          let nodes = this.builder_.grid.nodesCrossingOrEndingAt(cursorIndex);
+          let nodes = this.grid_.grid.nodesCrossingOrEndingAt(cursorIndex);
           let highestScore = FindHighestScore(nodes, kEpsilon);
-          this.builder_.grid.overrideNodeScoreForSelectedCandidate(
+          this.grid_.grid.overrideNodeScoreForSelectedCandidate(
             cursorIndex,
             overrideValue,
             highestScore
@@ -248,10 +219,7 @@ export class KeyHandler {
         }
       }
 
-      this.fixNodesIfRequired();
-
       let inputtingState = this.buildInputtingState();
-      inputtingState.evictedText = evictedText;
       stateCallback(inputtingState);
 
       if (this.traditionalMode_) {
@@ -284,13 +252,11 @@ export class KeyHandler {
     // Shift + Space.
     if (key.name === KeyName.SPACE && key.shiftPressed) {
       if (this.putLowercaseLettersToComposingBuffer_) {
-        this.builder_.insertReadingAtCursor(" ");
-        let evictedText = this.popEvictedTextAndWalk();
+        this.grid_.insertReading(" ");
         let inputtingState = this.buildInputtingState();
-        inputtingState.evictedText = evictedText;
         stateCallback(inputtingState);
       } else {
-        if (this.builder_.length) {
+        if (this.grid_.length) {
           let inputtingState = this.buildInputtingState();
           // Steal the composingBuffer built by the inputting state.
           let committingState = new Committing(inputtingState.composingBuffer);
@@ -329,7 +295,7 @@ export class KeyHandler {
 
       if (!this.reading_.isEmpty) {
         this.reading_.clear();
-        if (!this.builder_.length) {
+        if (!this.grid_.length) {
           stateCallback(new EmptyIgnoringPrevious());
         } else {
           stateCallback(this.buildInputtingState());
@@ -398,15 +364,13 @@ export class KeyHandler {
     // Punctuation key: backtick or grave accent.
     if (
       simpleAscii === kPunctuationListKey &&
-      this.languageModel_.hasUnigramsForKey(kPunctuationListUnigramKey)
+      this.languageModel_.hasUnigrams(kPunctuationListUnigramKey)
     ) {
       if (this.reading_.isEmpty) {
-        this.builder_.insertReadingAtCursor(kPunctuationListUnigramKey);
-
-        let evictedText = this.popEvictedTextAndWalk();
+        this.grid_.insertReading(kPunctuationListUnigramKey);
+        this.walk();
 
         let inputtingState = this.buildInputtingState();
-        inputtingState.evictedText = evictedText;
         let choosingCandidateState =
           this.buildChoosingCandidateState(inputtingState);
         stateCallback(inputtingState);
@@ -421,13 +385,6 @@ export class KeyHandler {
     if (key.ascii != "") {
       let chrStr = key.ascii;
       let unigram = "";
-      // if (key.ctrlPressed) {
-      //   unigram = kCtrlPunctuationKeyPrefix + chrStr;
-      //   if (this.handlePunctuation(unigram, stateCallback, errorCallback)) {
-      //     return true;
-      //   }
-      //   return false;
-      // }
 
       // Bopomofo layout-specific punctuation handling.
       unigram =
@@ -526,12 +483,12 @@ export class KeyHandler {
     let punctuation = kPunctuationKeyPrefix + chrStr;
     let shouldAutoSelectCandidate =
       this.reading_.isValidKey(chrStr) ||
-      this.languageModel_.hasUnigramsForKey(customPunctuation) ||
-      this.languageModel_.hasUnigramsForKey(punctuation);
+      this.languageModel_.hasUnigrams(customPunctuation) ||
+      this.languageModel_.hasUnigrams(punctuation);
     if (!shouldAutoSelectCandidate) {
       if (chrStr.length == 1 && chrStr >= "A" && chrStr <= "Z") {
         let letter = kLetterPrefix + chrStr;
-        if (this.languageModel_.hasUnigramsForKey(letter)) {
+        if (this.languageModel_.hasUnigrams(letter)) {
           shouldAutoSelectCandidate = true;
         }
       }
@@ -549,8 +506,8 @@ export class KeyHandler {
 
   reset(): void {
     this.reading_.clear();
-    this.builder_.clear();
-    this.walkedNodes_ = [];
+    this.grid_.clear();
+    this.latestWalk_ = undefined;
   }
 
   private getComposedString(builderCursor: number): ComposedString {
@@ -572,19 +529,15 @@ export class KeyHandler {
 
     let tooltip = "";
 
-    for (let anchor of this.walkedNodes_) {
-      let node = anchor.node;
-      if (node === undefined) {
-        continue;
-      }
-      let value = node.currentKeyValue.value;
+    for (let node of this.latestWalk_?.nodes ?? []) {
+      let value = node.value;
       composed += value;
 
       // No work if runningCursor has already caught up with builderCursor.
       if (runningCursor === builderCursor) {
         continue;
       }
-      let spanningLength = anchor.spanningLength;
+      let spanningLength = node.spanningLength;
       // Simple case: if the running cursor is behind, add the spanning length.
       if (runningCursor + spanningLength <= builderCursor) {
         composedCursor += value.length;
@@ -608,8 +561,8 @@ export class KeyHandler {
         // builderCursor. It is also guaranteed to be less than the size of the
         // builder's readings for the same reason: runningCursor would have
         // already caught up.
-        let prevReading = this.builder_.readings[builderCursor - 1];
-        let nextReading = this.builder_.readings[builderCursor];
+        let prevReading = this.grid_.readings[builderCursor - 1];
+        let nextReading = this.grid_.readings[builderCursor];
         tooltip = this.localizedStrings_.cursorIsBetweenSyllables(
           prevReading,
           nextReading
@@ -628,6 +581,10 @@ export class KeyHandler {
     stateCallback: (state: InputState) => void,
     errorCallback: () => void
   ): boolean {
+    if (this.reading_.isEmpty && (this.latestWalk_?.nodes ?? []).length == 9) {
+      return false;
+    }
+
     if (state instanceof Inputting == false) {
       errorCallback();
       return true;
@@ -647,29 +604,24 @@ export class KeyHandler {
     }
 
     let cursorIndex = this.actualCandidateCursorIndex;
-    let length = 0;
-    let currentNode = new NodeAnchor();
-
-    for (let node of this.walkedNodes_) {
-      length += node.spanningLength;
-      if (length >= cursorIndex) {
-        currentNode = node;
-        break;
-      }
+    let currentNode = this.latestWalk_?.findNodeAt(cursorIndex);
+    if (currentNode === undefined) {
+      errorCallback();
+      return true;
     }
 
-    let currentValue = currentNode.node?.currentKeyValue.value;
     let currentIndex = 0;
-    let score = currentNode.node?.score ?? 0;
-    if (score < kSelectedCandidateScore) {
-      // Once the user never select a candidate for the node, we start from the
+    if (!currentNode.isOverridden) {
+      // If the user never selects a candidate for the node, we start from the
       // first candidate, so the user has a chance to use the unigram with two or
       // more characters when type the tab key for the first time.
       //
       // In other words, if a user type two BPMF readings, but the score of seeing
       // them as two unigrams is higher than a phrase with two characters, the
       // user can just use the longer phrase by typing the tab key.
-      if (candidates[0] === currentValue) {
+      if (candidates[0] === currentNode.value) {
+        // if (candidates[0].reading == currentNode.reading &&
+        //     candidates[0].value == currentNode.value) {
         // If the first candidate is the value of the current node, we use next
         // one.
         if (key.shiftPressed) {
@@ -680,7 +632,9 @@ export class KeyHandler {
       }
     } else {
       for (let candidate of candidates) {
-        if (candidate == currentNode.node?.currentKeyValue.value) {
+        if (candidate === currentNode.value) {
+          // if (candidate.reading == currentNode->reading() &&
+          //     candidate.value == currentNode->value()) {
           if (key.shiftPressed) {
             currentIndex == 0
               ? (currentIndex = candidates.length - 1)
@@ -719,7 +673,7 @@ export class KeyHandler {
       return false;
     }
 
-    let markBeginCursorIndex = this.builder_.cursorIndex;
+    let markBeginCursorIndex = this.grid_.cursor;
     if (state instanceof Marking) {
       markBeginCursorIndex = (state as Marking).markStartGridCursorIndex;
     }
@@ -733,23 +687,23 @@ export class KeyHandler {
     let isValidMove = false;
     switch (key.name) {
       case KeyName.LEFT:
-        if (this.builder_.cursorIndex > 0) {
-          this.builder_.cursorIndex -= 1;
+        if (this.grid_.cursor > 0) {
+          this.grid_.cursor -= 1;
           isValidMove = true;
         }
         break;
       case KeyName.RIGHT:
-        if (this.builder_.cursorIndex < this.builder_.length) {
-          this.builder_.cursorIndex += 1;
+        if (this.grid_.cursor < this.grid_.length) {
+          this.grid_.cursor += 1;
           isValidMove = true;
         }
         break;
       case KeyName.HOME:
-        this.builder_.cursorIndex = 0;
+        this.grid_.cursor = 0;
         isValidMove = true;
         break;
       case KeyName.END:
-        this.builder_.cursorIndex = this.builder_.length;
+        this.grid_.cursor = this.grid_.length;
         isValidMove = true;
         break;
       default:
@@ -761,7 +715,7 @@ export class KeyHandler {
       errorCallback();
     }
 
-    if (key.shiftPressed && this.builder_.cursorIndex != markBeginCursorIndex) {
+    if (key.shiftPressed && this.grid_.cursor != markBeginCursorIndex) {
       stateCallback(this.buildMarkingState(markBeginCursorIndex));
     } else {
       stateCallback(this.buildInputtingState());
@@ -784,14 +738,14 @@ export class KeyHandler {
     } else if (this.reading_.isEmpty) {
       let isValidDelete = false;
 
-      if (key.name === KeyName.BACKSPACE && this.builder_.cursorIndex > 0) {
-        this.builder_.deleteReadingBeforeCursor();
+      if (key.name === KeyName.BACKSPACE && this.grid_.cursor > 0) {
+        this.grid_.deleteReadingBeforeCursor();
         isValidDelete = true;
       } else if (
         key.name === KeyName.DELETE &&
-        this.builder_.cursorIndex < this.builder_.length
+        this.grid_.cursor < this.grid_.length
       ) {
-        this.builder_.deleteReadingAfterCursor();
+        this.grid_.deleteReadingAfterCursor();
         isValidDelete = true;
       }
       if (!isValidDelete) {
@@ -809,7 +763,7 @@ export class KeyHandler {
       }
     }
 
-    if (this.reading_.isEmpty && this.builder_.length === 0) {
+    if (this.reading_.isEmpty && this.grid_.length === 0) {
       // Cancel the previous input state if everything is empty now.
       stateCallback(new EmptyIgnoringPrevious());
     } else {
@@ -823,7 +777,7 @@ export class KeyHandler {
     stateCallback: (state: InputState) => void,
     errorCallback: () => void
   ): boolean {
-    if (!this.languageModel_.hasUnigramsForKey(punctuationUnigramKey)) {
+    if (!this.languageModel_.hasUnigrams(punctuationUnigramKey)) {
       return false;
     }
 
@@ -833,11 +787,8 @@ export class KeyHandler {
       return true;
     }
 
-    this.builder_.insertReadingAtCursor(punctuationUnigramKey);
-    let evictedText = this.popEvictedTextAndWalk();
-
+    this.grid_.insertReading(punctuationUnigramKey);
     let inputtingState = this.buildInputtingState();
-    inputtingState.evictedText = evictedText;
     stateCallback(inputtingState);
 
     if (this.traditionalMode_ && this.reading_.isEmpty) {
@@ -857,35 +808,22 @@ export class KeyHandler {
   private buildChoosingCandidateState(
     nonEmptyState: NotEmpty
   ): ChoosingCandidate {
-    let anchoredNodes = this.builder_.grid.nodesCrossingOrEndingAt(
-      this.actualCandidateCursorIndex
-    );
-
-    // sort the nodes, so that longer nodes (representing longer phrases) are
-    // placed at the top of the candidate list
-    anchoredNodes.sort((a, b) => {
-      return (b.node?.key.length ?? 0) - (a.node?.key.length ?? 0);
-    });
-
-    let candidates: string[] = [];
-    for (let anchor of anchoredNodes) {
-      let nodeCandidates = anchor.node?.candidates;
-      if (nodeCandidates != undefined) {
-        for (let kv of nodeCandidates) {
-          candidates.push(kv.value);
-        }
-      }
+    let candidates = this.grid_.candidatesAt(this.actualCandidateCursorIndex);
+    let stringArray: string[] = [];
+    for (let candidate of candidates) {
+      stringArray.push(candidate.value);
     }
 
     return new ChoosingCandidate(
       nonEmptyState.composingBuffer,
       nonEmptyState.cursorIndex,
-      candidates
+      // candidates
+      stringArray
     );
   }
 
   private buildInputtingState(): Inputting {
-    let composedString = this.getComposedString(this.builder_.cursorIndex);
+    let composedString = this.getComposedString(this.grid_.cursor);
 
     let head = composedString.head;
     let reading = this.reading_.composedString;
@@ -900,13 +838,13 @@ export class KeyHandler {
     // We simply build two composed strings and use the delta between the shorter
     // and the longer one as the marked text.
     let from = this.getComposedString(beginCursorIndex);
-    let to = this.getComposedString(this.builder_.cursorIndex);
+    let to = this.getComposedString(this.grid_.cursor);
     let composedStringCursorIndex = to.head.length;
     let composed = to.head + to.tail;
     let fromIndex = beginCursorIndex;
-    let toIndex = this.builder_.cursorIndex;
+    let toIndex = this.grid_.cursor;
 
-    if (beginCursorIndex > this.builder_.cursorIndex) {
+    if (beginCursorIndex > this.grid_.cursor) {
       [from, to] = [to, from];
       [fromIndex, toIndex] = [toIndex, fromIndex];
     }
@@ -917,7 +855,7 @@ export class KeyHandler {
     let tail = to.tail;
 
     // Collect the readings.
-    let readings = this.builder_.readings.slice(fromIndex, toIndex);
+    let readings = this.grid_.readings.slice(fromIndex, toIndex);
 
     let readingUiText = _.join(readings, " "); // What the user sees.
     let readingValue = _.join(readings, "-"); // What is used for adding a user phrase.
@@ -960,124 +898,64 @@ export class KeyHandler {
   }
 
   private get actualCandidateCursorIndex(): number {
-    let cursorIndex = this.builder_.cursorIndex;
+    let cursorIndex = this.grid_.cursor;
     if (this.selectPhraseAfterCursorAsCandidate_) {
-      if (cursorIndex < this.builder_.length) {
+      if (cursorIndex < this.grid_.length) {
         ++cursorIndex;
       }
     } else {
       // Cursor must be in the middle or right after a node. So if the cursor is
       // at the beginning, move by one.
-      if (!cursorIndex && this.builder_.length > 0) {
+      if (!cursorIndex && this.grid_.length > 0) {
         ++cursorIndex;
       }
     }
     return cursorIndex;
   }
 
-  private popEvictedTextAndWalk() {
-    // in an ideal world, we can as well let the user type forever, but because
-    // the Viterbi algorithm has a complexity of O(N^2), the walk will become
-    // slower as the number of nodes increase, therefore we need to "pop out"
-    // overflown text -- they usually lose their influence over the whole MLE
-    // anyway -- so that when the user type along, the already composed text at
-    // front will be popped out
-    let evictedText: string = "";
-
-    if (
-      this.builder_.grid.width > this.composingBufferSize &&
-      this.walkedNodes_.length != 0
-    ) {
-      let anchor = this.walkedNodes_[0];
-      evictedText = anchor.node?.currentKeyValue.value ?? "";
-      this.builder_.removeHeadReadings(anchor.spanningLength);
-    }
-
-    this.walk();
-    return evictedText;
-  }
-
-  private fixNodesIfRequired() {
-    let width = this.builder_.grid.width;
-    if (width > kMaxComposingBufferNeedsToWalkSize) {
-      let index = 0;
-      for (let node of this.walkedNodes_) {
-        if (index >= width - kMaxComposingBufferNeedsToWalkSize) {
-          break;
-        }
-        if (node.node == undefined) {
-          continue;
-        }
-        if (node.node.score < kSelectedCandidateScore) {
-          let candidate = node.node.currentKeyValue.value;
-          this.builder_.grid.fixNodeSelectedCandidate(
-            index + node.spanningLength,
-            candidate
-          );
-        }
-        index += node.spanningLength;
-      }
-    }
-  }
-
   private pinNode(
     candidate: string,
+    reading: string,
     useMoveCursorAfterSelectionSetting: boolean = true
   ): void {
-    let cursorIndex: number = this.actualCandidateCursorIndex;
-    let selectedNode = this.builder_.grid.fixNodeSelectedCandidate(
-      cursorIndex,
-      candidate
-    );
-    let score = selectedNode.node?.scoreForCandidate(candidate);
-    if (score != undefined) {
-      if (score > kNoOverrideThreshold) {
-        this.userOverrideModel_!.observe(
-          this.walkedNodes_,
-          cursorIndex,
-          candidate,
-          new Date().getTime()
-        );
-      }
+    let actualCursor = this.actualCandidateCursorIndex;
+    let gridCandidate = new Candidate(reading, candidate);
+    if (!this.grid_.overrideCandidate(actualCursor, gridCandidate)) {
+      return;
     }
 
+    let prevWalk = this.latestWalk_;
     this.walk();
 
+    // Update the user override model if warranted.
+    let latestWalk_ = this.latestWalk_;
+    if (latestWalk_ === undefined) {
+      return;
+    }
+
+    let result = latestWalk_.findNodeAt(actualCursor);
+    let currentNode = result[0];
+    let accumulatedCursor = result[1];
+    if (currentNode === undefined) {
+      return;
+    }
+
+    if (currentNode.currentUnigram.score > kNoOverrideThreshold) {
+      this.userOverrideModel_.observe(
+        prevWalk,
+        this.latestWalk_,
+        actualCursor,
+        GetEpochNowInSeconds()
+      );
+    }
+
     if (useMoveCursorAfterSelectionSetting && this.moveCursorAfterSelection_) {
-      let nextPosition = 0;
-      for (let node of this.walkedNodes_) {
-        if (nextPosition >= cursorIndex) {
-          break;
-        }
-        nextPosition += node.spanningLength;
-      }
-      if (nextPosition <= this.builder_.length) {
-        this.builder_.cursorIndex = nextPosition;
-      }
+      this.grid_.cursor = accumulatedCursor;
     }
   }
 
   private walk() {
-    // retrieve the most likely trellis, i.e. a Maximum Likelihood Estimation of
-    // the best possible Mandarin characters given the input syllables, using
-    // the Viterbi algorithm implemented in the Gramambular library.
-    let walker = new Walker(this.builder_.grid);
-
-    // the walker traces the trellis from the end
-    let nodes = walker.walk(0);
-
-    this.walkedNodes_ = nodes;
-  }
-
-  dumpPaths(): NodeAnchor[][] {
-    let walker = new Walker(this.builder_.grid);
-
-    let paths = walker.dumpPaths(this.builder_.grid.width);
-    let result: NodeAnchor[][] = [];
-    for (let path of paths) {
-      result.push(path.reverse());
-    }
-    return result;
+    this.latestWalk_ = this.grid_.walk();
   }
 }
 
@@ -1086,9 +964,9 @@ function MarkedPhraseExists(
   readingValue: string,
   marked: string
 ) {
-  let phrases = languageModel_.unigramsForKey(readingValue);
+  let phrases = languageModel_.getUnigrams(readingValue);
   for (let unigram of phrases) {
-    if (unigram.keyValue.value == marked) {
+    if (unigram.value === marked) {
       return true;
     }
   }

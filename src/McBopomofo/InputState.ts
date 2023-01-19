@@ -99,8 +99,6 @@ export class NotEmpty implements InputState {
  * in the composing buffer.
  */
 export class Inputting extends NotEmpty {
-  evictedText: string = "";
-
   constructor(buf: string, index: number, tooltipText: string = "") {
     super(buf, index, tooltipText);
   }
