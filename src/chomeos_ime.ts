@@ -1,9 +1,21 @@
+/**
+ * @license
+ * Copyright (c) 2022 and onwards The McBopomofo Authors.
+ * This code is released under the MIT license.
+ * SPDX-License-Identifier: MIT
+ */
+
 import { last } from "lodash";
 import { InputController } from "./McBopomofo/InputController";
 import { Key, KeyName } from "./McBopomofo/Key";
 
+// The ID of the current input engine.
 let mcEngineID: string | undefined = undefined;
+
+// The current input context.
 let mcContext: chrome.input.ime.InputContext | undefined = undefined;
+
+// The default settings.
 let defaultSettings = {
   layout: "standard",
   select_phrase: "before_cursor",
@@ -15,6 +27,7 @@ let defaultSettings = {
   letter_mode: "upper",
 };
 let settings = defaultSettings;
+
 let lang = "en";
 chrome.i18n.getAcceptLanguages((langs) => {
   if (langs.length) {
@@ -22,7 +35,7 @@ chrome.i18n.getAcceptLanguages((langs) => {
   }
 });
 let isShiftHold = false;
-let isEnglishMode = false;
+let isAlphabetMode = false;
 
 function myLocalizedString(en: string, zh: string): string {
   return lang == "zh-TW" ? zh : en;
@@ -274,10 +287,10 @@ function updateMenu() {
 }
 
 function toggleAlphabetMode() {
-  isEnglishMode = !isEnglishMode;
+  isAlphabetMode = !isAlphabetMode;
 
   chrome.notifications.create("mcbopomofo-alphabet-mode" + Date.now(), {
-    title: isEnglishMode
+    title: isAlphabetMode
       ? myLocalizedString("English Mode", "英文模式")
       : myLocalizedString("Chinese Mode", "中文模式"),
 
@@ -356,6 +369,7 @@ function deferredReset() {
   }, 5000);
 }
 
+// Called when the current text input are loses the focus.
 chrome.input.ime.onBlur.addListener((context) => {
   // console.log("onBlur");
   deferredReset();
@@ -366,6 +380,7 @@ chrome.input.ime.onReset.addListener((context) => {
   deferredReset();
 });
 
+// Called when the user switch to another input method.
 chrome.input.ime.onDeactivated.addListener((context) => {
   // console.log("onDeactivated");
   if (deferredResetTimeout != null) {
@@ -376,6 +391,8 @@ chrome.input.ime.onDeactivated.addListener((context) => {
   deferredResetTimeout = null;
 });
 
+// Called when the current text input is focused. We reload the settings this
+// time.
 chrome.input.ime.onFocus.addListener((context) => {
   // console.log("onFocus");
   mcContext = context;
@@ -386,8 +403,13 @@ chrome.input.ime.onFocus.addListener((context) => {
   }
 });
 
+// The main keyboard event handler.
 chrome.input.ime.onKeyEvent.addListener((engineID, keyData) => {
   if (keyData.type === "keyup") {
+    // If we have a shift in a key down event, then a key up event with the
+    // shift key, and there is no other key down event between them, it means it
+    // is a single shift down/up, and we can let some users to use this to
+    // toggle between Bopomofo mode and alphabet mode.
     if (keyData.key === "Shift" && isShiftHold) {
       isShiftHold = false;
       toggleAlphabetMode();
@@ -416,7 +438,7 @@ chrome.input.ime.onKeyEvent.addListener((engineID, keyData) => {
     return false;
   }
 
-  if (isEnglishMode) {
+  if (isAlphabetMode) {
     return false;
   }
 
@@ -494,7 +516,7 @@ chrome.commands.onCommand.addListener((command) => {
   }
 });
 
-/// A workaround to prevent Chrome to kill the service worker.
+// A workaround to prevent Chrome to kill the service worker.
 let lifeline: chrome.runtime.Port | undefined = undefined;
 keepAlive();
 
