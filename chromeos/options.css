@@ -30,3 +30,20 @@ select {
   vertical-align: top;
   text-align: right;
 }
+
+a {
+  color: #0000ee;
+  text-decoration: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #333;
+    color: #eee;
+  }
+
+  a {
+    color: #9999ff;
+    text-decoration: none;
+  }
+}

@@ -46,5 +46,6 @@
   "btnSave": { "message": "儲存" },
   "chineseConversionOn": { "message": "簡繁轉換已開啟" },
   "chineseConversionOff": { "message": "簡繁轉換已關閉" },
-  "messageFromMcBopomofo": { "message": "來自小麥注音的通知訊息" }
+  "messageFromMcBopomofo": { "message": "來自小麥注音的通知訊息" },
+  "others_keyboard_shortcut": {"message": "您也可以在 chrome://extensions/shortcuts 頁面中設置鍵盤快速鍵。"}
 }

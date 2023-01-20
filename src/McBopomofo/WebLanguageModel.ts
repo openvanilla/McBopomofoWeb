@@ -64,7 +64,7 @@ export class UserPhrases implements LanguageModel {
  * The main language model.
  */
 export class WebLanguageModel implements LanguageModel {
-  private map_: Map<string, [string, number][]>;
+  private map_: any;
   private userPhrases_: UserPhrases = new UserPhrases();
 
   private converter_?: (input: string) => string | undefined;
@@ -101,7 +101,7 @@ export class WebLanguageModel implements LanguageModel {
     this.userPhrases_.addUserPhrase(key, phrase);
   }
 
-  constructor(map: Map<string, [string, number][]>) {
+  constructor(map: any) {
     this.map_ = map;
   }
 
@@ -125,11 +125,12 @@ export class WebLanguageModel implements LanguageModel {
       usedValues.push(phrase.value);
     }
 
-    let list = this.map_.get(key);
-    if (list != undefined) {
-      for (let item of list) {
-        let value = item[0];
-        let score = item[1];
+    let actualKey = WebLanguageModel.maybeAbsoluteOrderKey(key);
+    if (actualKey in this.map_) {
+      let values = this.map_[actualKey].split(" ");
+      for (let i = 0; i < values.length; i += 2) {
+        let value: string = values[i];
+        let score: number = parseFloat(values[i + 1]);
         if (this.converter_ != null) {
           value = this.converter_(value) ?? value;
         }
@@ -152,8 +153,29 @@ export class WebLanguageModel implements LanguageModel {
     if (result) {
       return true;
     }
-    let list = this.map_.get(key);
-    if (list === undefined) return false;
-    return list.length > 0;
+    return WebLanguageModel.maybeAbsoluteOrderKey(key) in this.map_;
+  }
+
+  /**
+   * Converts to an absolute-order key if needed.
+   *
+   * @param key a key that KeyHandler uses
+   * @returns an absolute-order key if it's not a punctuation key.
+   */
+  static maybeAbsoluteOrderKey(key: string): string {
+    // We have some keys like "_punctuation_Hsu_-" so we can't simply split by
+    // the hyphen. Replace this an implausible string before we split.
+    let r = key.replace(/_-/g, "_______");
+
+    let elements = r
+      .split("-")
+      .map((s) =>
+        s.startsWith("_")
+          ? s
+          : BopomofoSyllable.FromComposedString(s).absoluteOrderString
+      );
+
+    let actualKey = elements.join("").replace(/_______/g, "_-");
+    return actualKey;
   }
 }

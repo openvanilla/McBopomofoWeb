@@ -74,6 +74,10 @@ function GetEpochNowInSeconds(): number {
   return new Date().getTime();
 }
 
+function getTimestamp(): number {
+  return new Date().getTime() / 1000;
+}
+
 export class KeyHandler {
   private localizedStrings_: LocalizedStrings = new LocalizedStrings();
   public get languageCode(): string {
@@ -204,8 +208,8 @@ export class KeyHandler {
       if (!this.traditionalMode_) {
         let overrideValue = this.userOverrideModel_?.suggest(
           this.walkedNodes_,
-          this.grid_.cursor,
-          new Date().getTime()
+          this.builder_.cursorIndex,
+          getTimestamp()
         );
         if (overrideValue != null && overrideValue?.length != 0) {
           let cursorIndex = this.actualCandidateCursorIndex;

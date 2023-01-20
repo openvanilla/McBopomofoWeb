@@ -20,8 +20,10 @@ function Score(
   timestamp: number,
   lambda: number
 ): number {
-  return 0;
-}
+  let decay = Math.exp((timestamp - eventTimestamp) * lambda);
+  if (decay < kDecayThreshold) {
+    return 0.0;
+  }
 
 function CombineReadingValue(reading: string, value: string) {
   return "(" + reading + "," + value + ")";
