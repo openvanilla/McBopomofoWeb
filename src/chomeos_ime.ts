@@ -297,11 +297,7 @@ function toggleChineseConversion() {
       ? myLocalizedString("Chinese Conversion On", "簡繁轉換已開啟")
       : myLocalizedString("Chinese Conversion Off", "簡繁轉換已關閉"),
 
-    //  chrome.i18n.getMessage(
-    //   checked ? "chineseConversionOn" : "chineseConversionOff"
-    // ),
     message: "",
-    //  chrome.i18n.getMessage("messageFromMcBopomofo"),
     type: "basic",
     iconUrl: "icons/icon48.png",
   });
@@ -340,23 +336,54 @@ chrome.input.ime.onActivate.addListener((engineID) => {
   });
 });
 
-chrome.input.ime.onBlur.addListener((context) => {
-  mcContext = undefined;
-  mcInputController.reset();
-});
+var deferredResetTimeout: NodeJS.Timeout | null = null;
 
-chrome.input.ime.onDeactivated.addListener((context) => {
-  mcContext = undefined;
-  mcInputController.reset();
+// Sometimes onBlur is called unexpectedly. It might be called and then a
+// onFocus comes suddenly when a user is typing contents continuously. Such
+// behaviour causes the input to be interrupted.
+//
+// To prevent the issue, we ignore such event if an onFocus comes very quickly.
+function deferredReset() {
+  if (deferredResetTimeout != null) {
+    clearTimeout(deferredResetTimeout);
+    deferredResetTimeout = null;
+  }
+
+  deferredResetTimeout = setTimeout(function () {
+    mcContext = undefined;
+    mcInputController.reset();
+    deferredResetTimeout = null;
+  }, 5000);
+}
+
+chrome.input.ime.onBlur.addListener((context) => {
+  // console.log("onBlur");
+  deferredReset();
 });
 
 chrome.input.ime.onReset.addListener((context) => {
+  // console.log("onReset");
+  deferredReset();
+});
+
+chrome.input.ime.onDeactivated.addListener((context) => {
+  // console.log("onDeactivated");
+  if (deferredResetTimeout != null) {
+    clearTimeout(deferredResetTimeout);
+  }
+  mcContext = undefined;
   mcInputController.reset();
+  deferredResetTimeout = null;
 });
 
 chrome.input.ime.onFocus.addListener((context) => {
+  // console.log("onFocus");
   mcContext = context;
-  loadSettings();
+  if (deferredResetTimeout != null) {
+    clearTimeout(deferredResetTimeout);
+  } else {
+    loadSettings();
+  }
 });
 
 chrome.input.ime.onKeyEvent.addListener((engineID, keyData) => {
