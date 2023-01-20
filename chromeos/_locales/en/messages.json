@@ -48,5 +48,6 @@
   "btnSave": { "message": "Save" },
   "chineseConversionOn": { "message": "Chinese conversion is now on." },
   "chineseConversionOff": { "message": "Chinese conversion is now off." },
-  "messageFromMcBopomofo": { "message": "Message from McBopomofo." }
+  "messageFromMcBopomofo": { "message": "Message from McBopomofo." },
+  "others_keyboard_shortcut": {"message": "You can also set the keyboard shortcuts by visiting chrome://extensions/shortcuts ."}
 }
