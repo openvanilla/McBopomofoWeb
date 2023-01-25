@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { last } from "lodash";
+// import { last } from "lodash";
 import { InputController } from "./McBopomofo/InputController";
 import { Key, KeyName } from "./McBopomofo/Key";
 

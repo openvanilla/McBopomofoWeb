@@ -25,6 +25,10 @@ function Score(
     return 0.0;
   }
 
+  let prob = eventCount / totalCount;
+  return prob * decay;
+}
+
 function CombineReadingValue(reading: string, value: string) {
   return "(" + reading + "," + value + ")";
 }
@@ -38,6 +42,10 @@ function IsPunctuation(node: Node) {
 // we are using a const_iterator, the "end" here should be a .cbegin() of a
 // vector.
 function FormObservationKey(nodes: Node[], head: number, end: number): string {
+  if (nodes.length == 0) {
+    return "";
+  }
+
   // Using the top unigram from the head node. Recall that this is an
   // observation for *before* the user override, and when we provide
   // a suggestion, this head node is never overridden yet.
@@ -51,8 +59,6 @@ function FormObservationKey(nodes: Node[], head: number, end: number): string {
   // it as if it's like the beginning of the sentence.
   let prevStr = "";
   let prevIsPunctuation = false;
-  if (nodes.length > 1) {
-  }
 
   if (head != end) {
     --head;
@@ -85,11 +91,9 @@ function FormObservationKey(nodes: Node[], head: number, end: number): string {
   }
 
   return anteriorStr + "-" + prevStr + "-" + headStr;
-
-  return "";
 }
 
-class Suggestion {
+export class Suggestion {
   private candidate: string;
   private forceHighScoreOverride = false;
   constructor(candidate: string, forceHighScoreOverride: boolean) {
@@ -112,23 +116,35 @@ class Observation {
     candidate: string,
     timestamp: number,
     forceHighScoreOverride: boolean
-  ) {}
+  ) {
+    this.count++;
+    let o = this.overrides.get(candidate);
+    if (o) {
+      o.timestamp = timestamp;
+      o.count++;
+      o.forceHighScoreOverride = forceHighScoreOverride;
+      this.overrides.set(candidate, o);
+    }
+  }
 }
 
-type KeyObservationPair = [string, Observation];
+class KeyObservationPair {
+  key: string = "";
+  observation: Observation = new Observation();
+}
 
 export class UserOverrideModel {
   m_capacity: number;
   m_decayExponent: number;
   m_lruList: KeyObservationPair[] = [];
-  m_lruMap: Map<string, KeyObservationPair[]> = new Map();
+  m_lruMap: Map<string, KeyObservationPair> = new Map();
 
   constructor(capacity: number, decayConstant: number) {
     this.m_capacity = capacity;
     this.m_decayExponent = Math.log(0.5) / decayConstant;
   }
 
-  observe(
+  public observe(
     walkBeforeUserOverride: WalkResult,
     walkAfterUserOverride: WalkResult,
     cursor: number,
@@ -210,9 +226,7 @@ export class UserOverrideModel {
     let breakingUp =
       currentNode.spanningLength === 1 && prevHeadNode.spanningLength > 1;
 
-    // let nodeIter = breakingUp ? currentNode : prevHeadNode;
     let nodeIndex = breakingUp ? result[1] : actualResult[1];
-    // let endPoint = breakingUp ? walkAfterUserOverride.nodes.begin() : walkBeforeUserOverride.nodes.begin();
     let nodes = breakingUp
       ? walkAfterUserOverride.nodes
       : walkBeforeUserOverride.nodes;
@@ -225,54 +239,91 @@ export class UserOverrideModel {
       forceHighScoreOverride
     );
   }
-private observeInner(key: string,  candidate:string,  timestamp:number,  forceHighScoreOverride: boolean)
-{
-    let mapIter = this.m_lruMap.get(key);
-    if (!mapIter) {
 
-        let observation = new Observation();
-        observation.update(candidate, timestamp, forceHighScoreOverride);
-        let keyValuePair = [key,  observation];
-
-        this.m_lruList.splice(0,0, keyValuePair);
-        auto listIter = m_lruList.begin();
-        auto lruKeyValue = std::pair<std::string,
-            std::list<KeyObservationPair>::iterator>(key, listIter);
-        m_lruMap.insert(lruKeyValue);
-
-        if (m_lruList.size() > m_capacity) {
-            auto lastKeyValuePair = m_lruList.end();
-            --lastKeyValuePair;
-            m_lruMap.erase(lastKeyValuePair->first);
-            m_lruList.pop_back();
-        }
-    } else {
-        auto listIter = mapIter->second;
-        m_lruList.splice(m_lruList.begin(), m_lruList, listIter);
-
-        auto& keyValuePair = *listIter;
-        Observation& observation = keyValuePair.second;
-        observation.update(candidate, timestamp, forceHighScoreOverride);
-    }
-}
-
-
-  suggest(
-    currentWalk: WalkResult,
-    cursor: number,
-    timestamp: number
-  ): Suggestion {
-    return null;
-  }
-
-  observeWithCandidate(
+  private observeInner(
     key: string,
     candidate: string,
     timestamp: number,
-    forceHighScoreOverride: boolean = false
-  ) {}
+    forceHighScoreOverride: boolean
+  ) {
+    let keyObservationPair = this.m_lruMap.get(key);
+    if (!keyObservationPair) {
+      let observation = new Observation();
+      observation.update(candidate, timestamp, forceHighScoreOverride);
+      let keyValuePair = new KeyObservationPair();
+      keyValuePair.key = key;
+      keyValuePair.observation = observation;
 
-  suggestWithKey(key: string, timestamp: number): Suggestion {
-    return null;
+      this.m_lruList.splice(0, 0, keyValuePair);
+      this.m_lruMap.set(key, keyValuePair);
+
+      if (this.m_lruList.length > this.m_capacity) {
+        let lastKeyValuePair = this.m_lruList.pop();
+        if (lastKeyValuePair !== undefined) {
+          this.m_lruMap.delete(lastKeyValuePair.key);
+        }
+      }
+    } else {
+      let index = this.m_lruList.indexOf(keyObservationPair);
+      if (index > -1) {
+        this.m_lruList.splice(index, 1);
+      }
+
+      this.m_lruList.splice(0, 0, keyObservationPair);
+      keyObservationPair.observation.update(
+        candidate,
+        timestamp,
+        forceHighScoreOverride
+      );
+      this.m_lruMap.set(key, keyObservationPair);
+    }
+  }
+
+  public suggest(
+    currentWalk: WalkResult,
+    cursor: number,
+    timestamp: number
+  ): Suggestion | undefined {
+    let result = currentWalk.findNodeAt(cursor);
+    let node = result[0];
+    if (node) {
+      let key = FormObservationKey([node], result[1], 0);
+      return this.suggestInner(key, timestamp);
+    }
+    return undefined;
+  }
+
+  suggestInner(key: string, timestamp: number): Suggestion {
+    let mapIter = this.m_lruMap.get(key);
+    if (!mapIter) {
+      return new Suggestion("", false);
+    }
+    let observation = mapIter.observation;
+    let candidate = "";
+    let forceHighScoreOverride = false;
+    let score = 0;
+    for (let k of observation.overrides.keys()) {
+      let o = observation.overrides.get(k);
+      if (o === undefined) {
+        continue;
+      }
+      let overrideScore = Score(
+        o.count,
+        observation.count,
+        o.timestamp,
+        timestamp,
+        this.m_decayExponent
+      );
+      if (overrideScore == 0.0) {
+        continue;
+      }
+      if (overrideScore > score) {
+        candidate = k;
+        forceHighScoreOverride = o.forceHighScoreOverride;
+        score = overrideScore;
+      }
+    }
+
+    return new Suggestion(candidate, forceHighScoreOverride);
   }
 }
