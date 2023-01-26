@@ -94,8 +94,8 @@ function FormObservationKey(nodes: Node[], head: number, end: number): string {
 }
 
 export class Suggestion {
-  private candidate: string;
-  private forceHighScoreOverride = false;
+  public candidate: string;
+  public forceHighScoreOverride = false;
   constructor(candidate: string, forceHighScoreOverride: boolean) {
     this.candidate = candidate;
     this.forceHighScoreOverride = forceHighScoreOverride;
@@ -145,16 +145,24 @@ export class UserOverrideModel {
   }
 
   public observe(
-    walkBeforeUserOverride: WalkResult,
-    walkAfterUserOverride: WalkResult,
+    walkBeforeUserOverride: WalkResult | undefined,
+    walkAfterUserOverride: WalkResult | undefined,
     cursor: number,
     timestamp: number
   ) {
-    // Sanity check.
+    if (walkBeforeUserOverride === undefined) {
+      return;
+    }
+
+    if (walkAfterUserOverride === undefined) {
+      return;
+    }
+
     if (
       walkBeforeUserOverride.nodes.length === 0 ||
       walkAfterUserOverride.nodes.length === 0
     ) {
+      // Sanity check.
       return;
     }
 

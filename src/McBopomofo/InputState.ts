@@ -8,6 +8,8 @@
  * SPDX-License-Identifier: MIT
  */
 
+import { Candidate } from "../Gramambular2";
+
 /**
  * The interface for all of the states.
  */
@@ -110,14 +112,14 @@ export class Inputting extends NotEmpty {
 
 /** Candidate selecting state with a non-empty composing buffer. */
 export class ChoosingCandidate extends NotEmpty {
-  private candidates_: string[];
+  private candidates_: Candidate[];
 
   /** The candidates. */
-  get candidates(): string[] {
+  get candidates(): Candidate[] {
     return this.candidates_;
   }
 
-  constructor(buf: string, index: number, cs: string[]) {
+  constructor(buf: string, index: number, cs: Candidate[]) {
     super(buf, index);
     this.candidates_ = cs;
   }

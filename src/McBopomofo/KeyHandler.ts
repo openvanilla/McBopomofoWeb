@@ -27,6 +27,7 @@ import {
   ReadingGrid,
   WalkResult,
 } from "../Gramambular2";
+import { OverrideType } from "../Gramambular2/ReadingGrid";
 
 export class ComposedString {
   head: string = "";
@@ -206,32 +207,33 @@ export class KeyHandler {
       this.walk();
 
       if (!this.traditionalMode_) {
-        let overrideValue = this.userOverrideModel_?.suggest(
-          this.walkedNodes_,
-          this.builder_.cursorIndex,
-          getTimestamp()
-        );
-        if (overrideValue != null && overrideValue?.length != 0) {
-          let cursorIndex = this.actualCandidateCursorIndex;
-          let nodes = this.grid_.grid.nodesCrossingOrEndingAt(cursorIndex);
-          let highestScore = FindHighestScore(nodes, kEpsilon);
-          this.grid_.grid.overrideNodeScoreForSelectedCandidate(
-            cursorIndex,
-            overrideValue,
-            highestScore
+        if (this.latestWalk_) {
+          let suggestion = this.userOverrideModel_?.suggest(
+            this.latestWalk_,
+            this.actualCandidateCursorIndex,
+            getTimestamp()
           );
+          if (suggestion) {
+            let type = suggestion.forceHighScoreOverride
+              ? OverrideType.kOverrideValueWithHighScore
+              : OverrideType.kOverrideValueWithScoreFromTopUnigram;
+            this.grid_.overrideCandidateWithString(
+              this.actualCandidateCursorIndex,
+              suggestion.candidate,
+              type
+            );
+            this.walk();
+          }
         }
       }
 
-      let inputtingState = this.buildInputtingState();
-      stateCallback(inputtingState);
-
       if (this.traditionalMode_) {
+        let inputtingState = this.buildInputtingState();
         let choosingCandidates =
           this.buildChoosingCandidateState(inputtingState);
         this.reset();
         if (choosingCandidates.candidates.length === 1) {
-          let text = choosingCandidates.candidates[0];
+          let text = choosingCandidates.candidates[0].value;
           let committing = new Committing(text);
           stateCallback(committing);
           stateCallback(new Empty());
@@ -449,12 +451,12 @@ export class KeyHandler {
   }
 
   candidateSelected(
-    candidate: string,
+    candidate: Candidate,
     stateCallback: (state: InputState) => void
   ): void {
     if (this.traditionalMode_) {
       this.reset();
-      stateCallback(new Committing(candidate));
+      stateCallback(new Committing(candidate.value));
       return;
     }
 
@@ -608,7 +610,13 @@ export class KeyHandler {
     }
 
     let cursorIndex = this.actualCandidateCursorIndex;
-    let currentNode = this.latestWalk_?.findNodeAt(cursorIndex);
+    let result = this.latestWalk_?.findNodeAt(cursorIndex);
+    if (result === undefined) {
+      errorCallback();
+      return true;
+    }
+
+    let currentNode = result[0];
     if (currentNode === undefined) {
       errorCallback();
       return true;
@@ -623,7 +631,10 @@ export class KeyHandler {
       // In other words, if a user type two BPMF readings, but the score of seeing
       // them as two unigrams is higher than a phrase with two characters, the
       // user can just use the longer phrase by typing the tab key.
-      if (candidates[0] === currentNode.value) {
+      if (
+        candidates[0].reading === currentNode.reading &&
+        candidates[0].value === currentNode.value
+      ) {
         // if (candidates[0].reading == currentNode.reading &&
         //     candidates[0].value == currentNode.value) {
         // If the first candidate is the value of the current node, we use next
@@ -636,9 +647,10 @@ export class KeyHandler {
       }
     } else {
       for (let candidate of candidates) {
-        if (candidate === currentNode.value) {
-          // if (candidate.reading == currentNode->reading() &&
-          //     candidate.value == currentNode->value()) {
+        if (
+          candidate.reading === currentNode.reading &&
+          candidate.value === currentNode.value
+        ) {
           if (key.shiftPressed) {
             currentIndex == 0
               ? (currentIndex = candidates.length - 1)
@@ -799,7 +811,7 @@ export class KeyHandler {
       let candidateState = this.buildChoosingCandidateState(inputtingState);
       this.reset();
       if (candidateState.candidates.length === 1) {
-        let text = candidateState.candidates[0];
+        let text = candidateState.candidates[0].value;
         stateCallback(new Committing(text));
       } else {
         stateCallback(candidateState);
@@ -813,16 +825,12 @@ export class KeyHandler {
     nonEmptyState: NotEmpty
   ): ChoosingCandidate {
     let candidates = this.grid_.candidatesAt(this.actualCandidateCursorIndex);
-    let stringArray: string[] = [];
-    for (let candidate of candidates) {
-      stringArray.push(candidate.value);
-    }
 
     return new ChoosingCandidate(
       nonEmptyState.composingBuffer,
       nonEmptyState.cursorIndex,
       // candidates
-      stringArray
+      candidates
     );
   }
 
@@ -918,12 +926,11 @@ export class KeyHandler {
   }
 
   private pinNode(
-    candidate: string,
-    reading: string,
+    candidate: Candidate,
     useMoveCursorAfterSelectionSetting: boolean = true
   ): void {
     let actualCursor = this.actualCandidateCursorIndex;
-    let gridCandidate = new Candidate(reading, candidate);
+    let gridCandidate = new Candidate(candidate.reading, candidate.value);
     if (!this.grid_.overrideCandidate(actualCursor, gridCandidate)) {
       return;
     }
