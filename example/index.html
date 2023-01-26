@@ -208,18 +208,11 @@
                             for="lowercase_letters">輸入小寫字母</label>
                     </td>
                 </tr>
-                <tr>
-                    <td class="option_title">輸入緩衝區：</td>
-                    <td>
-                        <input type="number" min="4" max="100" name="composing_buffer_size" value="10"
-                            id="composing_buffer_size"> (4-100)
-                    </td>
-                </tr>
+
                 <tr>
                     <td class="option_title">其他：</td>
                     <td>
                         <a href="#" id="fullscreen">全螢幕編輯</a><br />
-                        <a href="#" id="dump_score">印出決策樹</a><br />
                         <a href="#" id="dump_user_phrases">印出使用者詞彙</a><br />
                     </td>
                 </tr>
@@ -305,7 +298,7 @@
                     s += candidate.keyCap;
                     s += "</span>"
                     s += "<span class=\"candidiate\">";
-                    s += candidate.candidate;
+                    s += candidate.candidate.value;
                     s += "</span>"
                     if (candidate.selected) s += "</span>";
                     s += "</td>";
@@ -453,16 +446,6 @@
         document.getElementById("text_area").focus();
     };
 
-    document.getElementById("composing_buffer_size").onchange = function (event) {
-        let value = document.getElementById("composing_buffer_size").value;
-        let size = parseInt(value);
-        if (isNaN(size)) { return; }
-        if (size < 4) { size = 4; }
-        if (size > 100) { size = 100; }
-        controller.setComposingBufferSize(value);
-        document.getElementById("text_area").focus();
-    };
-
     document.getElementById("fullscreen").onclick = function (event) {
         let elem = document.getElementById("edit_area");
         if (elem.requestFullscreen) {
@@ -474,13 +457,6 @@
         } else if (elem.webkitRequestFullscreen) {
             elem.webkitRequestFullscreen();
         }
-        document.getElementById("text_area").focus();
-        return false;
-    }
-
-    document.getElementById("dump_score").onclick = function (event) {
-        let result = controller.dumpPaths();
-        document.getElementById("dump_area").innerHTML = result;
         document.getElementById("text_area").focus();
         return false;
     }

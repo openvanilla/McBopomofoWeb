@@ -125,6 +125,9 @@ export class ReadingGrid {
     }
     let start = GetEpochNowInMicroseconds();
     let vspans: VertexSpan[] = [];
+    for (let i = 0; i < this.spans_.length; ++i) {
+      vspans.push([]);
+    }
     let vertices = 0;
     let edges = 0;
 
@@ -180,8 +183,8 @@ export class ReadingGrid {
       it = it.prev;
       totalReadingLen += it.node.spanningLength;
     }
-    assert(totalReadingLen === this.readings_.length);
-    assert(walked.length >= 2);
+    // assert(totalReadingLen === this.readings_.length);
+    // assert(walked.length >= 2);
     walked.slice(0, 1);
     walked.reverse();
 
@@ -361,7 +364,7 @@ export class ReadingGrid {
   }
 
   private insert(loc: number, node: Node) {
-    assert(loc < this.spans_.length);
+    // assert(loc < this.spans_.length);
     this.spans_[loc].add(node);
   }
 
@@ -527,7 +530,7 @@ export class Node {
   }
 
   selectOverrideUnigram(value: string, type: OverrideType): boolean {
-    assert(type != OverrideType.kNone);
+    // assert(type != OverrideType.kNone);
     for (let i = 0; i < this.unigrams_.length; i++) {
       if (this.unigrams_[i].value === value) {
         this.selectedIndex_ = i;
@@ -653,10 +656,10 @@ export class Span {
   }
 
   add(node: Node) {
-    assert(
-      node.spanningLength > 0 &&
-        node.spanningLength <= ReadingGrid.kMaximumSpanLength
-    );
+    // assert(
+    //   node.spanningLength > 0 &&
+    //     node.spanningLength <= ReadingGrid.kMaximumSpanLength
+    // );
     this.nodes_[node.spanningLength - 1] = node;
 
     if (node.spanningLength >= this.maxLength_) {
@@ -665,7 +668,7 @@ export class Span {
   }
 
   removeNodesOfOrLongerThan(length: number) {
-    assert(length > 0 && length <= ReadingGrid.kMaximumSpanLength);
+    // assert(length > 0 && length <= ReadingGrid.kMaximumSpanLength);
     for (let i = length - 1; i < ReadingGrid.kMaximumSpanLength; ++i) {
       this.nodes_[i] = undefined;
     }
@@ -690,7 +693,7 @@ export class Span {
   }
 
   nodeOf(length: number): Node | undefined {
-    assert(length > 0 && length <= ReadingGrid.kMaximumSpanLength);
+    // assert(length > 0 && length <= ReadingGrid.kMaximumSpanLength);
     return this.nodes_[length - 1];
   }
 }

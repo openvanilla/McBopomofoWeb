@@ -14,6 +14,7 @@ module.exports = {
   resolve: {
     extensions: [".ts", ".js"],
   },
+  devtool: "eval-source-map",
   target: "web",
   output: {
     filename: "bundle.js",
