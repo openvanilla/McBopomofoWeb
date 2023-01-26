@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { Candidate } from "./CandidateController";
+import { CandidateWrapper } from "./CandidateController";
 
 export enum ComposingBufferTextStyle {
   Normal = "normal",
@@ -36,7 +36,7 @@ export class InputUIState {
   cursorIndex: number;
 
   /** The current page of the candidates. */
-  candidates: Candidate[];
+  candidates: CandidateWrapper[];
 
   /** The tooltip. */
   tooltip: string;
@@ -44,7 +44,7 @@ export class InputUIState {
   constructor(
     composingBuffer: ComposingBufferText[],
     cursorIndex: number,
-    candidates: Candidate[],
+    candidates: CandidateWrapper[],
     tooltip: string
   ) {
     this.composingBuffer = composingBuffer;

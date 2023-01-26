@@ -5,6 +5,7 @@
  * SPDX-License-Identifier: MIT
  */
 
+import { Candidate } from "../Gramambular2";
 import { CandidateController } from "./CandidateController";
 
 describe("Test CandidateController", () => {
@@ -13,17 +14,17 @@ describe("Test CandidateController", () => {
   beforeEach(() => {
     let keyCaps = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
     let candidates = [
-      "一",
-      "二",
-      "三",
-      "四",
-      "五",
-      "六",
-      "七",
-      "八",
-      "九",
-      "壹",
-      "貳",
+      new Candidate("", "一"),
+      new Candidate("", "二"),
+      new Candidate("", "三"),
+      new Candidate("", "四"),
+      new Candidate("", "五"),
+      new Candidate("", "六"),
+      new Candidate("", "七"),
+      new Candidate("", "八"),
+      new Candidate("", "九"),
+      new Candidate("", "壹"),
+      new Candidate("", "貳"),
     ];
     controller.update(candidates, keyCaps);
   });
@@ -35,10 +36,10 @@ describe("Test CandidateController", () => {
     let candidate1 = result[0];
     let candidate2 = result[1];
     expect(candidate1.keyCap).toBe("1");
-    expect(candidate1.candidate).toBe("一");
+    expect(candidate1.candidate.value).toBe("一");
     expect(candidate1.selected).toBe(false);
     expect(candidate2.keyCap).toBe("2");
-    expect(candidate2.candidate).toBe("二");
+    expect(candidate2.candidate.value).toBe("二");
     expect(candidate2.selected).toBe(true);
   });
 
@@ -50,10 +51,10 @@ describe("Test CandidateController", () => {
     let candidate1 = result[0];
     let candidate2 = result[1];
     expect(candidate1.keyCap).toBe("1");
-    expect(candidate1.candidate).toBe("壹");
+    expect(candidate1.candidate.value).toBe("壹");
     expect(candidate1.selected).toBe(false);
     expect(candidate2.keyCap).toBe("2");
-    expect(candidate2.candidate).toBe("貳");
+    expect(candidate2.candidate.value).toBe("貳");
     expect(candidate2.selected).toBe(true);
   });
 
@@ -66,10 +67,10 @@ describe("Test CandidateController", () => {
     let candidate1 = result[0];
     let candidate2 = result[1];
     expect(candidate1.keyCap).toBe("1");
-    expect(candidate1.candidate).toBe("壹");
+    expect(candidate1.candidate.value).toBe("壹");
     expect(candidate1.selected).toBe(false);
     expect(candidate2.keyCap).toBe("2");
-    expect(candidate2.candidate).toBe("貳");
+    expect(candidate2.candidate.value).toBe("貳");
     expect(candidate2.selected).toBe(true);
   });
 
@@ -81,10 +82,10 @@ describe("Test CandidateController", () => {
     let candidate1 = result[0];
     let candidate2 = result[1];
     expect(candidate1.keyCap).toBe("1");
-    expect(candidate1.candidate).toBe("一");
+    expect(candidate1.candidate.value).toBe("一");
     expect(candidate1.selected).toBe(true);
     expect(candidate2.keyCap).toBe("2");
-    expect(candidate2.candidate).toBe("二");
+    expect(candidate2.candidate.value).toBe("二");
     expect(candidate2.selected).toBe(false);
   });
 
@@ -95,7 +96,7 @@ describe("Test CandidateController", () => {
     expect(result.length).toBe(9);
     let candidate8 = result[8];
     expect(candidate8.keyCap).toBe("9");
-    expect(candidate8.candidate).toBe("九");
+    expect(candidate8.candidate.value).toBe("九");
     expect(candidate8.selected).toBe(true);
   });
 
@@ -106,10 +107,10 @@ describe("Test CandidateController", () => {
     let candidate1 = result[0];
     let candidate2 = result[1];
     expect(candidate1.keyCap).toBe("1");
-    expect(candidate1.candidate).toBe("壹");
+    expect(candidate1.candidate.value).toBe("壹");
     expect(candidate1.selected).toBe(true);
     expect(candidate2.keyCap).toBe("2");
-    expect(candidate2.candidate).toBe("貳");
+    expect(candidate2.candidate.value).toBe("貳");
     expect(candidate2.selected).toBe(false);
   });
 
@@ -121,10 +122,10 @@ describe("Test CandidateController", () => {
     let candidate1 = result[0];
     let candidate2 = result[1];
     expect(candidate1.keyCap).toBe("1");
-    expect(candidate1.candidate).toBe("壹");
+    expect(candidate1.candidate.value).toBe("壹");
     expect(candidate1.selected).toBe(true);
     expect(candidate2.keyCap).toBe("2");
-    expect(candidate2.candidate).toBe("貳");
+    expect(candidate2.candidate.value).toBe("貳");
     expect(candidate2.selected).toBe(false);
   });
 
@@ -136,10 +137,10 @@ describe("Test CandidateController", () => {
     let candidate1 = result[0];
     let candidate2 = result[1];
     expect(candidate1.keyCap).toBe("1");
-    expect(candidate1.candidate).toBe("一");
+    expect(candidate1.candidate.value).toBe("一");
     expect(candidate1.selected).toBe(true);
     expect(candidate2.keyCap).toBe("2");
-    expect(candidate2.candidate).toBe("二");
+    expect(candidate2.candidate.value).toBe("二");
     expect(candidate2.selected).toBe(false);
   });
 
@@ -152,10 +153,10 @@ describe("Test CandidateController", () => {
     let candidate1 = result[0];
     let candidate2 = result[1];
     expect(candidate1.keyCap).toBe("1");
-    expect(candidate1.candidate).toBe("一");
+    expect(candidate1.candidate.value).toBe("一");
     expect(candidate1.selected).toBe(true);
     expect(candidate2.keyCap).toBe("2");
-    expect(candidate2.candidate).toBe("二");
+    expect(candidate2.candidate.value).toBe("二");
     expect(candidate2.selected).toBe(false);
   });
 });

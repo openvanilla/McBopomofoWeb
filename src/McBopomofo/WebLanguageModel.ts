@@ -6,6 +6,7 @@
  */
 
 import { LanguageModel, Unigram } from "../Gramambular2";
+import { BopomofoSyllable } from "../Mandarin/BopomofoSyllable";
 
 /**
  * The model for user phrases.

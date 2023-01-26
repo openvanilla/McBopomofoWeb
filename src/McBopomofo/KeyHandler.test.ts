@@ -36,7 +36,7 @@ function handleKeySequence(keyHandler: KeyHandler, keys: Key[]): InputState {
 }
 
 describe("Test KeyHandler.test", () => {
-  let keyHandler: KeyHandler;
+  let keyHandler: KeyHandler = new KeyHandler(new WebLanguageModel(webData));
   beforeEach(() => {
     let lm = new WebLanguageModel(webData);
     keyHandler = new KeyHandler(lm);

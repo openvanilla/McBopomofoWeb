@@ -6,7 +6,7 @@
  */
 
 import { BopomofoKeyboardLayout } from "../Mandarin";
-import { Candidate, CandidateController } from "./CandidateController";
+import { CandidateWrapper, CandidateController } from "./CandidateController";
 
 import {
   ChoosingCandidate,
@@ -40,7 +40,7 @@ class InputUIController {
   private ui: InputUI;
   private cursorIndex: number = 0;
   private tooltip: string = "";
-  private candidates: Candidate[] = [];
+  private candidates: CandidateWrapper[] = [];
   private composingBuffer: ComposingBufferText[] = [];
 
   constructor(ui: InputUI) {
@@ -72,7 +72,7 @@ class InputUIController {
     this.cursorIndex = index;
   }
 
-  setCandidates(candidates: Candidate[]): void {
+  setCandidates(candidates: CandidateWrapper[]): void {
     this.candidates = candidates;
   }
 
@@ -236,15 +236,6 @@ export class InputController {
   }
 
   /**
-   * Sets the size of the composing buffer.
-
-   * @param size The size of the composing buffer.
-   */
-  setComposingBufferSize(size: number) {
-    this.keyHandler_.composingBufferSize = size;
-  }
-
-  /**
    * Sets the user phrases to the language model.
    * @param map The map of user phrases.
    */
@@ -388,7 +379,7 @@ export class InputController {
         this.candidateController_.getCurrentPage()[0].candidate;
       this.keyHandler_.handlePunctuationKeyInCandidatePanelForTraditionalMode(
         key,
-        defaultCandidate,
+        defaultCandidate.value,
         stateCallback,
         errorCallback
       );
@@ -456,9 +447,6 @@ export class InputController {
 
   private handleInputting(prev: InputState, state: Inputting) {
     this.ui_.reset();
-    if (state.evictedText.length > 0) {
-      this.ui_.commitString(state.evictedText);
-    }
     this.updatePreedit(state);
   }
 
@@ -473,34 +461,6 @@ export class InputController {
   private handleMarking(prev: InputState, state: Marking) {
     this.updatePreedit(state);
     this.ui_.update();
-  }
-
-  dumpPaths() {
-    let result = this.keyHandler_.dumpPaths();
-    result.sort((a, b) => {
-      return b[0].accumulatedScore - a[0].accumulatedScore;
-    });
-    let s = "<ul>";
-    for (let path of result) {
-      s += "<li>";
-      let score = path[0].accumulatedScore;
-      s += "[" + score + "] ";
-      let nodes = path.map((e) => {
-        return (
-          "<span>" +
-          e.node!.currentKeyValue.value +
-          "</span>" +
-          "(" +
-          e.node!.score +
-          ")"
-        );
-      });
-      let line = nodes.join(" -> ");
-      s += line;
-      s += "</li>";
-    }
-    s += "</ul>";
-    return s;
   }
 }
 

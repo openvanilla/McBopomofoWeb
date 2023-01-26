@@ -40,5 +40,8 @@
     "chinese_convert": "^1.0.8",
     "lodash": "^4.17.21",
     "minimatch": ">=5.1.0"
+  },
+  "browser": {
+    "assert": false
   }
 }

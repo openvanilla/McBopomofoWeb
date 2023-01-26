@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { assert } from "console";
+import assert from "assert";
 import { LanguageModel, Unigram } from "./LanguageModel";
 
 /**

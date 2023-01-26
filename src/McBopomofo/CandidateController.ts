@@ -5,12 +5,14 @@
  * SPDX-License-Identifier: MIT
  */
 
-export class Candidate {
+import { Candidate } from "../Gramambular2";
+
+export class CandidateWrapper {
   keyCap: string = "";
-  candidate: string = "";
+  candidate: Candidate = new Candidate("", "");
   selected: boolean = false;
 
-  constructor(keyCap: string, candidate: string, selected: boolean) {
+  constructor(keyCap: string, candidate: Candidate, selected: boolean) {
     this.keyCap = keyCap;
     this.candidate = candidate;
     this.selected = selected;
@@ -18,11 +20,11 @@ export class Candidate {
 }
 
 export class CandidateController {
-  private candidates_: string[] = [];
+  private candidates_: Candidate[] = [];
   private keyCaps_: string[] = [];
   private currentSelectedIndex_: number = 0;
 
-  selectedCandidateWithKey(key: string): string | undefined {
+  selectedCandidateWithKey(key: string): Candidate | undefined {
     let selectedIndex = -1;
     for (let i = 0; i < this.keyCaps_.length; i++) {
       if (this.keyCaps_[i] === key) {
@@ -38,7 +40,7 @@ export class CandidateController {
     return this.candidates_[offset + selectedIndex];
   }
 
-  get selectedCandidate(): string {
+  get selectedCandidate(): Candidate {
     return this.candidates_[this.currentSelectedIndex_];
   }
 
@@ -50,13 +52,13 @@ export class CandidateController {
     return Math.ceil(this.candidates_.length / this.keyCaps_.length);
   }
 
-  update(candidates: string[], keyCaps: string[]) {
+  update(candidates: Candidate[], keyCaps: string[]) {
     this.candidates_ = candidates;
     this.keyCaps_ = keyCaps;
     this.currentSelectedIndex_ = 0;
   }
 
-  getCurrentPage(): Candidate[] {
+  getCurrentPage(): CandidateWrapper[] {
     let startPage = Math.floor(
       this.currentSelectedIndex_ / this.keyCaps_.length
     );
@@ -65,9 +67,9 @@ export class CandidateController {
     var end = Math.min(endPage * this.keyCaps_.length, this.candidates_.length);
     let keyCapIndex = 0;
 
-    var list: Candidate[] = [];
+    var list: CandidateWrapper[] = [];
     for (let i = start; i < end; i++) {
-      let candidate = new Candidate(
+      let candidate = new CandidateWrapper(
         this.keyCaps_[keyCapIndex],
         this.candidates_[i],
         i === this.currentSelectedIndex_
