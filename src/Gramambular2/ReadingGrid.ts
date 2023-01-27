@@ -119,9 +119,8 @@ export class ReadingGrid {
    * walk is fairly economical even when the grid is large.
    */
   walk(): WalkResult {
-    let result = new WalkResult([], 0, 0, 0, 0);
     if (this.spans_.length === 0) {
-      return result;
+      return new WalkResult([], 0, 0, 0, 0);
     }
     let start = GetEpochNowInMicroseconds();
     let vspans: VertexSpan[] = [];
@@ -143,7 +142,6 @@ export class ReadingGrid {
       }
     }
 
-    result.vertices = vertices;
     let terminal = new Vertex(new Node("_TERMINAL_", -99, []));
 
     for (let i = 0, vspansLen = vspans.length; i < vspansLen; ++i) {
@@ -160,7 +158,6 @@ export class ReadingGrid {
         }
       }
     }
-    result.edges = edges;
 
     let root = new Vertex(new Node("_ROOT_", 0, []));
     root.distance = 0;
@@ -176,20 +173,24 @@ export class ReadingGrid {
       }
     }
 
-    let walked: Node[] = [];
+    let walkedNodes: Node[] = [];
     let totalReadingLen = 0;
-    let it = terminal;
-    while (it.prev != undefined) {
-      walked.push(it.prev.node);
-      it = it.prev;
-      totalReadingLen += it.node.spanningLength;
+    let currentVertex = terminal;
+    while (currentVertex.prev != undefined) {
+      walkedNodes.push(currentVertex.prev.node);
+      currentVertex = currentVertex.prev;
+      totalReadingLen += currentVertex.node.spanningLength;
     }
-    walked.pop();
-    walked.reverse();
+    walkedNodes.pop();
+    walkedNodes.reverse();
 
-    result.totalReadings = totalReadingLen;
-    result.nodes = walked;
-    result.elapsedMicroseconds = GetEpochNowInMicroseconds() - start;
+    let result = new WalkResult(
+      walkedNodes,
+      vertices,
+      edges,
+      GetEpochNowInMicroseconds() - start,
+      totalReadingLen
+    );
     return result;
   }
 
@@ -545,11 +546,11 @@ export class Node {
 }
 
 export class WalkResult {
-  nodes: Node[];
-  vertices: number;
-  edges: number;
-  elapsedMicroseconds: number;
-  totalReadings: number;
+  readonly nodes: Node[];
+  readonly vertices: number;
+  readonly edges: number;
+  readonly elapsedMicroseconds: number;
+  readonly totalReadings: number;
 
   constructor(
     nodes: Node[],
@@ -693,8 +694,8 @@ export class ScoreRankedLanguageModel implements LanguageModel {
 }
 
 export class NodeInSpan {
-  node: Node;
-  spanIndex: number;
+  readonly node: Node;
+  readonly spanIndex: number;
 
   constructor(node: Node, spanIndex: number) {
     this.node = node;

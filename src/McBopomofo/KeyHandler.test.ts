@@ -62,7 +62,6 @@ describe("Test KeyHandler.test", () => {
     let state = handleKeySequence(keyHandler, keys);
     expect(state instanceof Inputting).toBe(true);
     let inputting = state as Inputting;
-    console.log(inputting.composingBuffer);
     expect(inputting.composingBuffer).toBe("你");
     expect(inputting.cursorIndex).toBe(1);
   });
@@ -72,7 +71,6 @@ describe("Test KeyHandler.test", () => {
     let state = handleKeySequence(keyHandler, keys);
     expect(state instanceof Inputting).toBe(true);
     let inputting = state as Inputting;
-    console.log(inputting.composingBuffer);
     expect(inputting.composingBuffer).toBe("你好");
     expect(inputting.cursorIndex).toBe(2);
   });

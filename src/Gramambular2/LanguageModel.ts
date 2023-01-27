@@ -10,8 +10,8 @@ export interface LanguageModel {
 }
 
 export class Unigram {
-  public value: string;
-  public score: number;
+  readonly value: string;
+  readonly score: number;
 
   constructor(value: string = "", score: number = 0) {
     this.value = value;
