@@ -584,27 +584,41 @@ export class WalkResult {
     return result;
   }
 
-  findNodeAt(cursor: number): Readonly<[Node | undefined, number]> {
+  findNodeAt(
+    cursor: number
+  ): Readonly<
+    [
+      Node | undefined /* found node */,
+      number /* cursor index */,
+      number | undefined /* node index */
+    ]
+  > {
     if (this.nodes.length == 0) {
-      return [undefined, 0];
+      return [undefined, 0, undefined];
     }
     if (cursor > this.totalReadings) {
-      return [undefined, 0];
+      return [undefined, 0, undefined];
     }
     if (cursor === 0) {
-      return [this.nodes[0], this.nodes[0].spanningLength];
+      return [this.nodes[0], this.nodes[0].spanningLength, 0];
     }
     if (cursor >= this.totalReadings - 1) {
-      return [this.nodes[this.nodes.length - 1], this.totalReadings];
+      return [
+        this.nodes[this.nodes.length - 1],
+        this.totalReadings,
+        this.nodes.length - 1,
+      ];
     }
     let accumulated = 0;
+    let nodeIndex = 0;
     for (let node of this.nodes) {
       accumulated += node.spanningLength;
+      nodeIndex++;
       if (accumulated >= cursor) {
-        return [node, accumulated];
+        return [node, accumulated, nodeIndex];
       }
     }
-    return [undefined, 0];
+    return [undefined, 0, undefined];
   }
 }
 

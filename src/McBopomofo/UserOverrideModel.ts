@@ -49,6 +49,7 @@ function FormObservationKey(nodes: Node[], head: number, end: number): string {
   // Using the top unigram from the head node. Recall that this is an
   // observation for *before* the user override, and when we provide
   // a suggestion, this head node is never overridden yet.
+
   let headStr = CombineReadingValue(
     nodes[head].reading,
     nodes[head].unigrams[0].value
@@ -94,8 +95,9 @@ function FormObservationKey(nodes: Node[], head: number, end: number): string {
 }
 
 export class Suggestion {
-  public candidate: string;
-  public forceHighScoreOverride = false;
+  readonly candidate: string;
+  readonly forceHighScoreOverride;
+
   constructor(candidate: string, forceHighScoreOverride: boolean) {
     this.candidate = candidate;
     this.forceHighScoreOverride = forceHighScoreOverride;
@@ -150,15 +152,9 @@ export class UserOverrideModel {
     cursor: number,
     timestamp: number
   ) {
-    if (walkBeforeUserOverride === undefined) {
-      return;
-    }
-
-    if (walkAfterUserOverride === undefined) {
-      return;
-    }
-
     if (
+      walkBeforeUserOverride === undefined ||
+      walkAfterUserOverride === undefined ||
       walkBeforeUserOverride.nodes.length === 0 ||
       walkAfterUserOverride.nodes.length === 0
     ) {
@@ -177,7 +173,8 @@ export class UserOverrideModel {
     let result = walkAfterUserOverride.findNodeAt(cursor);
     let currentNode = result[0];
     let actualCursor = result[1];
-    if (currentNode === undefined) {
+    let currentNodeIndex = result[2];
+    if (currentNode === undefined || currentNodeIndex === undefined) {
       return;
     }
 
@@ -195,9 +192,10 @@ export class UserOverrideModel {
       return;
     }
     --actualCursor;
-    let actualResult = walkBeforeUserOverride.findNodeAt(actualCursor);
-    let prevHeadNode = actualResult[0];
-    if (prevHeadNode === undefined) {
+    let previousResult = walkBeforeUserOverride.findNodeAt(actualCursor);
+    let prevHeadNode = previousResult[0];
+    let prevIndex = previousResult[2];
+    if (prevHeadNode === undefined || prevIndex === undefined) {
       return;
     }
 
@@ -233,13 +231,13 @@ export class UserOverrideModel {
       currentNode.spanningLength > prevHeadNode.spanningLength;
     let breakingUp =
       currentNode.spanningLength === 1 && prevHeadNode.spanningLength > 1;
-
-    let nodeIndex = breakingUp ? result[1] : actualResult[1];
+    let nodeIndex = breakingUp ? currentNodeIndex : prevIndex;
     let nodes = breakingUp
       ? walkAfterUserOverride.nodes
       : walkBeforeUserOverride.nodes;
 
     let key = FormObservationKey(nodes, nodeIndex, 0);
+    console.log("ob key " + key);
     this.observeInner(
       key,
       currentNode.currentUnigram.value,
@@ -293,9 +291,10 @@ export class UserOverrideModel {
     timestamp: number
   ): Suggestion | undefined {
     let result = currentWalk.findNodeAt(cursor);
-    let node = result[0];
-    if (node) {
-      let key = FormObservationKey([node], result[1], 0);
+    let index = result[2];
+    if (index) {
+      let key = FormObservationKey(currentWalk.nodes, index, 0);
+      console.log("su key " + key);
       return this.suggestInner(key, timestamp);
     }
     return undefined;

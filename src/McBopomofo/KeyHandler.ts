@@ -206,26 +206,26 @@ export class KeyHandler {
       this.grid_.insertReading(syllable);
       this.walk();
 
-      // if (!this.traditionalMode_) {
-      //   if (this.latestWalk_) {
-      //     let suggestion = this.userOverrideModel_?.suggest(
-      //       this.latestWalk_,
-      //       this.actualCandidateCursorIndex,
-      //       getTimestamp()
-      //     );
-      //     if (suggestion) {
-      //       let type = suggestion.forceHighScoreOverride
-      //         ? OverrideType.kOverrideValueWithHighScore
-      //         : OverrideType.kOverrideValueWithScoreFromTopUnigram;
-      //       this.grid_.overrideCandidateWithString(
-      //         this.actualCandidateCursorIndex,
-      //         suggestion.candidate,
-      //         type
-      //       );
-      //       this.walk();
-      //     }
-      //   }
-      // }
+      if (!this.traditionalMode_) {
+        if (this.latestWalk_) {
+          let suggestion = this.userOverrideModel_?.suggest(
+            this.latestWalk_,
+            this.actualCandidateCursorIndex,
+            getTimestamp()
+          );
+          if (suggestion) {
+            let type = suggestion.forceHighScoreOverride
+              ? OverrideType.kOverrideValueWithHighScore
+              : OverrideType.kOverrideValueWithScoreFromTopUnigram;
+            this.grid_.overrideCandidateWithString(
+              this.actualCandidateCursorIndex,
+              suggestion.candidate,
+              type
+            );
+            this.walk();
+          }
+        }
+      }
 
       if (this.traditionalMode_) {
         let inputtingState = this.buildInputtingState();
@@ -915,19 +915,24 @@ export class KeyHandler {
   }
 
   private get actualCandidateCursorIndex(): number {
-    let cursorIndex = this.grid_.cursor;
-    if (this.selectPhraseAfterCursorAsCandidate_) {
-      if (cursorIndex < this.grid_.length) {
-        ++cursorIndex;
-      }
-    } else {
-      // Cursor must be in the middle or right after a node. So if the cursor is
-      // at the beginning, move by one.
-      if (!cursorIndex && this.grid_.length > 0) {
-        ++cursorIndex;
-      }
+    let cursor = this.grid_.cursor;
+
+    // If the cursor is at the end, always return cursor - 1. Even though
+    // ReadingGrid already handles this edge case, we want to use this value
+    // consistently. UserOverrideModel also requires the cursor to be this
+    // correct value.
+    if (cursor === this.grid_.length && cursor > 0) {
+      return cursor - 1;
     }
-    return cursorIndex;
+
+    // ReadingGrid already makes the assumption that the cursor is always *at*
+    // the reading location, and when selectPhraseAfterCursorAsCandidate_ is true
+    // we don't need to do anything. Rather, it's when the flag is false (the
+    // default value), that we want to decrement the cursor by one.
+    if (!this.selectPhraseAfterCursorAsCandidate_ && cursor > 0) {
+      return cursor - 1;
+    }
+    return cursor;
   }
 
   private pinNode(
@@ -956,14 +961,14 @@ export class KeyHandler {
       return;
     }
 
-    // if (currentNode.currentUnigram.score > kNoOverrideThreshold) {
-    //   this.userOverrideModel_.observe(
-    //     prevWalk,
-    //     this.latestWalk_,
-    //     actualCursor,
-    //     GetEpochNowInSeconds()
-    //   );
-    // }
+    if (currentNode.currentUnigram.score > kNoOverrideThreshold) {
+      this.userOverrideModel_.observe(
+        prevWalk,
+        this.latestWalk_,
+        actualCursor,
+        GetEpochNowInSeconds()
+      );
+    }
 
     if (useMoveCursorAfterSelectionSetting && this.moveCursorAfterSelection_) {
       this.grid_.cursor = accumulatedCursor;
