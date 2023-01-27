@@ -112,7 +112,7 @@ class Override {
 
 class Observation {
   count = 0;
-  overrides: Map<string, Override> = new Map();
+  overrides: { [id: string]: Override } = {};
 
   update(
     candidate: string,
@@ -120,13 +120,14 @@ class Observation {
     forceHighScoreOverride: boolean
   ) {
     this.count++;
-    let o = this.overrides.get(candidate);
-    if (o) {
-      o.timestamp = timestamp;
-      o.count++;
-      o.forceHighScoreOverride = forceHighScoreOverride;
-      this.overrides.set(candidate, o);
+    let o = this.overrides[candidate];
+    if (!o) {
+      o = new Override();
     }
+    o.timestamp = timestamp;
+    o.count++;
+    o.forceHighScoreOverride = forceHighScoreOverride;
+    this.overrides[candidate] = o;
   }
 }
 
@@ -139,7 +140,7 @@ export class UserOverrideModel {
   m_capacity: number;
   m_decayExponent: number;
   m_lruList: KeyObservationPair[] = [];
-  m_lruMap: Map<string, KeyObservationPair> = new Map();
+  m_lruMap: { [id: string]: KeyObservationPair } = {};
 
   constructor(capacity: number, decayConstant: number) {
     this.m_capacity = capacity;
@@ -237,7 +238,6 @@ export class UserOverrideModel {
       : walkBeforeUserOverride.nodes;
 
     let key = FormObservationKey(nodes, nodeIndex, 0);
-    console.log("ob key " + key);
     this.observeInner(
       key,
       currentNode.currentUnigram.value,
@@ -252,8 +252,8 @@ export class UserOverrideModel {
     timestamp: number,
     forceHighScoreOverride: boolean
   ) {
-    let keyObservationPair = this.m_lruMap.get(key);
-    if (!keyObservationPair) {
+    let keyObservationPair = this.m_lruMap[key];
+    if (keyObservationPair === undefined) {
       let observation = new Observation();
       observation.update(candidate, timestamp, forceHighScoreOverride);
       let keyValuePair = new KeyObservationPair();
@@ -261,12 +261,12 @@ export class UserOverrideModel {
       keyValuePair.observation = observation;
 
       this.m_lruList.splice(0, 0, keyValuePair);
-      this.m_lruMap.set(key, keyValuePair);
+      this.m_lruMap[key] = keyValuePair;
 
       if (this.m_lruList.length > this.m_capacity) {
         let lastKeyValuePair = this.m_lruList.pop();
         if (lastKeyValuePair !== undefined) {
-          this.m_lruMap.delete(lastKeyValuePair.key);
+          delete this.m_lruMap[lastKeyValuePair.key];
         }
       }
     } else {
@@ -281,7 +281,7 @@ export class UserOverrideModel {
         timestamp,
         forceHighScoreOverride
       );
-      this.m_lruMap.set(key, keyObservationPair);
+      this.m_lruMap[key] = keyObservationPair;
     }
   }
 
@@ -292,16 +292,15 @@ export class UserOverrideModel {
   ): Suggestion | undefined {
     let result = currentWalk.findNodeAt(cursor);
     let index = result[2];
-    if (index) {
+    if (index !== undefined) {
       let key = FormObservationKey(currentWalk.nodes, index, 0);
-      console.log("su key " + key);
       return this.suggestInner(key, timestamp);
     }
     return undefined;
   }
 
   suggestInner(key: string, timestamp: number): Suggestion {
-    let mapIter = this.m_lruMap.get(key);
+    let mapIter = this.m_lruMap[key];
     if (!mapIter) {
       return new Suggestion("", false);
     }
@@ -309,8 +308,8 @@ export class UserOverrideModel {
     let candidate = "";
     let forceHighScoreOverride = false;
     let score = 0;
-    for (let k of observation.overrides.keys()) {
-      let o = observation.overrides.get(k);
+    for (let k in observation.overrides) {
+      let o = observation.overrides[k];
       if (o === undefined) {
         continue;
       }

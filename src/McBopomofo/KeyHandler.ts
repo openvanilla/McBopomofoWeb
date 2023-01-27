@@ -53,7 +53,6 @@ const kObservedOverrideHalfLife = 5400.0; // 1.5 hr.
 
 // Unigram whose score is below this shouldn't be put into user override model.
 const kNoOverrideThreshold: number = -8.0;
-const kEpsilon = 0.000001;
 const kJoinSeparator = "-";
 
 function GetKeyboardLayoutName(layout: BopomofoKeyboardLayout): string {
@@ -69,10 +68,6 @@ function GetKeyboardLayoutName(layout: BopomofoKeyboardLayout): string {
     return "IBM";
   }
   return "Standard";
-}
-
-function GetEpochNowInSeconds(): number {
-  return new Date().getTime();
 }
 
 function getTimestamp(): number {
@@ -213,6 +208,7 @@ export class KeyHandler {
             this.actualCandidateCursorIndex,
             getTimestamp()
           );
+
           if (suggestion) {
             let type = suggestion.forceHighScoreOverride
               ? OverrideType.kOverrideValueWithHighScore
@@ -966,7 +962,7 @@ export class KeyHandler {
         prevWalk,
         this.latestWalk_,
         actualCursor,
-        GetEpochNowInSeconds()
+        getTimestamp()
       );
     }
 
