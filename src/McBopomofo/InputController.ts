@@ -387,7 +387,7 @@ export class InputController {
   }
 
   private enterNewState(state: InputState): void {
-    // console.log("enterNewState " + state.toString());
+
     let prev = this.state_;
     if (state instanceof Empty) {
       this.handleEmpty(prev, state);

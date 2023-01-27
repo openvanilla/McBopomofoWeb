@@ -154,7 +154,6 @@ export class ReadingGrid {
           continue;
         }
 
-        console.log(JSON.stringify(vspans[nextVertexPos]));
         for (let nv of vspans[nextVertexPos]) {
           v.edges.push(nv);
           ++edges;
@@ -191,8 +190,6 @@ export class ReadingGrid {
     result.totalReadings = totalReadingLen;
     result.nodes = walked;
     result.elapsedMicroseconds = GetEpochNowInMicroseconds() - start;
-    console.log("walk result...");
-    console.log(JSON.stringify(result));
     return result;
   }
 

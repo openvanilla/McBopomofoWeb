@@ -204,7 +204,6 @@ export class KeyHandler {
       }
 
       this.grid_.insertReading(syllable);
-      console.log(JSON.stringify(this.grid_.readings));
       this.walk();
 
       // if (!this.traditionalMode_) {
@@ -255,7 +254,6 @@ export class KeyHandler {
     // but does not compose. Only sequences such as "u6", "6u6", "6u3", or "6u "
     // would compose.
     if (keyConsumedByReading) {
-      console.log("keyConsumedByReading");
       stateCallback(this.buildInputtingState());
       return true;
     }
@@ -809,11 +807,11 @@ export class KeyHandler {
     }
 
     this.grid_.insertReading(punctuationUnigramKey);
-    let inputtingState = this.buildInputtingState();
-    stateCallback(inputtingState);
+    this.walk();
 
     if (this.traditionalMode_ && this.reading_.isEmpty) {
-      let candidateState = this.buildChoosingCandidateState(inputtingState);
+      let inputting = this.buildInputtingState();
+      let candidateState = this.buildChoosingCandidateState(inputting);
       this.reset();
       if (candidateState.candidates.length === 1) {
         let text = candidateState.candidates[0].value;
@@ -821,6 +819,8 @@ export class KeyHandler {
       } else {
         stateCallback(candidateState);
       }
+    } else {
+      stateCallback(this.buildInputtingState());
     }
 
     return true;
