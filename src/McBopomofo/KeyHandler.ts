@@ -204,28 +204,29 @@ export class KeyHandler {
       }
 
       this.grid_.insertReading(syllable);
+      console.log(JSON.stringify(this.grid_.readings));
       this.walk();
 
-      if (!this.traditionalMode_) {
-        if (this.latestWalk_) {
-          let suggestion = this.userOverrideModel_?.suggest(
-            this.latestWalk_,
-            this.actualCandidateCursorIndex,
-            getTimestamp()
-          );
-          if (suggestion) {
-            let type = suggestion.forceHighScoreOverride
-              ? OverrideType.kOverrideValueWithHighScore
-              : OverrideType.kOverrideValueWithScoreFromTopUnigram;
-            this.grid_.overrideCandidateWithString(
-              this.actualCandidateCursorIndex,
-              suggestion.candidate,
-              type
-            );
-            this.walk();
-          }
-        }
-      }
+      // if (!this.traditionalMode_) {
+      //   if (this.latestWalk_) {
+      //     let suggestion = this.userOverrideModel_?.suggest(
+      //       this.latestWalk_,
+      //       this.actualCandidateCursorIndex,
+      //       getTimestamp()
+      //     );
+      //     if (suggestion) {
+      //       let type = suggestion.forceHighScoreOverride
+      //         ? OverrideType.kOverrideValueWithHighScore
+      //         : OverrideType.kOverrideValueWithScoreFromTopUnigram;
+      //       this.grid_.overrideCandidateWithString(
+      //         this.actualCandidateCursorIndex,
+      //         suggestion.candidate,
+      //         type
+      //       );
+      //       this.walk();
+      //     }
+      //   }
+      // }
 
       if (this.traditionalMode_) {
         let inputtingState = this.buildInputtingState();
@@ -240,6 +241,9 @@ export class KeyHandler {
         } else {
           stateCallback(choosingCandidates);
         }
+      } else {
+        let inputting = this.buildInputtingState();
+        stateCallback(inputting);
       }
 
       return true;
@@ -251,6 +255,7 @@ export class KeyHandler {
     // but does not compose. Only sequences such as "u6", "6u6", "6u3", or "6u "
     // would compose.
     if (keyConsumedByReading) {
+      console.log("keyConsumedByReading");
       stateCallback(this.buildInputtingState());
       return true;
     }
@@ -951,14 +956,14 @@ export class KeyHandler {
       return;
     }
 
-    if (currentNode.currentUnigram.score > kNoOverrideThreshold) {
-      this.userOverrideModel_.observe(
-        prevWalk,
-        this.latestWalk_,
-        actualCursor,
-        GetEpochNowInSeconds()
-      );
-    }
+    // if (currentNode.currentUnigram.score > kNoOverrideThreshold) {
+    //   this.userOverrideModel_.observe(
+    //     prevWalk,
+    //     this.latestWalk_,
+    //     actualCursor,
+    //     GetEpochNowInSeconds()
+    //   );
+    // }
 
     if (useMoveCursorAfterSelectionSetting && this.moveCursorAfterSelection_) {
       this.grid_.cursor = accumulatedCursor;

@@ -57,11 +57,22 @@ describe("Test KeyHandler.test", () => {
     expect(errorCallbackCalled).toBe(false);
   });
 
+  test("Test su3", () => {
+    let keys = asciiKey(["s", "u", "3"]);
+    let state = handleKeySequence(keyHandler, keys);
+    expect(state instanceof Inputting).toBe(true);
+    let inputting = state as Inputting;
+    console.log(inputting.composingBuffer);
+    expect(inputting.composingBuffer).toBe("你");
+    expect(inputting.cursorIndex).toBe(1);
+  });
+
   test("Test su3cl3", () => {
     let keys = asciiKey(["s", "u", "3", "c", "l", "3"]);
     let state = handleKeySequence(keyHandler, keys);
     expect(state instanceof Inputting).toBe(true);
     let inputting = state as Inputting;
+    console.log(inputting.composingBuffer);
     expect(inputting.composingBuffer).toBe("你好");
     expect(inputting.cursorIndex).toBe(2);
   });

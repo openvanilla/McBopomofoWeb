@@ -46,14 +46,10 @@ export class EmptyIgnoringPrevious implements InputState {
 
 /**  The state for committing text into the desired application. */
 export class Committing implements InputState {
-  private text_: string;
-  /** The text to commit. */
-  get text(): string {
-    return this.text_;
-  }
+  readonly text: string;
 
   constructor(text: string) {
-    this.text_ = text;
+    this.text = text;
   }
 
   toString(): string {
@@ -66,29 +62,14 @@ export class Committing implements InputState {
  * frameworks).
  */
 export class NotEmpty implements InputState {
-  private composingBuffer_: string;
-  private cursorIndex_: number;
-  private tooltip_: string;
-
-  /** The composing buffer. */
-  get composingBuffer(): string {
-    return this.composingBuffer_;
-  }
-
-  /** The cursor index. */
-  get cursorIndex(): number {
-    return this.cursorIndex_;
-  }
-
-  /** The tooltip. */
-  get tooltip(): string {
-    return this.tooltip_;
-  }
+  readonly composingBuffer: string;
+  readonly cursorIndex: number;
+  readonly tooltip: string;
 
   constructor(buf: string, index: number, tooltipText: string = "") {
-    this.composingBuffer_ = buf;
-    this.cursorIndex_ = index;
-    this.tooltip_ = tooltipText;
+    this.composingBuffer = buf;
+    this.cursorIndex = index;
+    this.tooltip = tooltipText;
   }
 
   toString(): string {
@@ -112,16 +93,11 @@ export class Inputting extends NotEmpty {
 
 /** Candidate selecting state with a non-empty composing buffer. */
 export class ChoosingCandidate extends NotEmpty {
-  private candidates_: Candidate[];
-
-  /** The candidates. */
-  get candidates(): Candidate[] {
-    return this.candidates_;
-  }
+  readonly candidates: Candidate[];
 
   constructor(buf: string, index: number, cs: Candidate[]) {
     super(buf, index);
-    this.candidates_ = cs;
+    this.candidates = cs;
   }
 
   toString(): string {
@@ -141,34 +117,15 @@ export class ChoosingCandidate extends NotEmpty {
  * cursor index.
  */
 export class Marking extends NotEmpty {
-  private markStartGridCursorIndex_: number;
-  private head_: string;
-  private markedText_: string;
-  private tail_: string;
-  private reading_: string;
-  private acceptable_: boolean;
+  readonly markStartGridCursorIndex: number;
+  readonly head: string;
+  readonly markedText: string;
+  readonly tail: string;
+  readonly reading: string;
+  readonly acceptable: boolean;
 
   toString(): string {
-    return "Marking " + this.markStartGridCursorIndex_ + "" + this.cursorIndex;
-  }
-
-  get markStartGridCursorIndex(): number {
-    return this.markStartGridCursorIndex_;
-  }
-  get head(): string {
-    return this.head_;
-  }
-  get markedText(): string {
-    return this.markedText_;
-  }
-  get tail(): string {
-    return this.tail_;
-  }
-  get reading(): string {
-    return this.reading_;
-  }
-  get acceptable(): boolean {
-    return this.acceptable_;
+    return "Marking " + this.markStartGridCursorIndex + "" + this.cursorIndex;
   }
 
   constructor(
@@ -183,11 +140,11 @@ export class Marking extends NotEmpty {
     canAccept: boolean
   ) {
     super(buf, index, tooltipText);
-    this.markStartGridCursorIndex_ = startCursorIndexInGrid;
-    this.head_ = headText;
-    this.markedText_ = markedText;
-    this.tail_ = tailText;
-    this.reading_ = readingText;
-    this.acceptable_ = canAccept;
+    this.markStartGridCursorIndex = startCursorIndexInGrid;
+    this.head = headText;
+    this.markedText = markedText;
+    this.tail = tailText;
+    this.reading = readingText;
+    this.acceptable = canAccept;
   }
 }

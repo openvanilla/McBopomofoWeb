@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-import assert from "assert";
+// import assert from "assert";
 import { LanguageModel, Unigram } from "./LanguageModel";
 
 /**
@@ -136,14 +136,15 @@ export class ReadingGrid {
       for (let j = 1, maxSpanLen = span.maxLength; j <= maxSpanLen; ++j) {
         let p = span.nodeOf(j);
         if (p != undefined) {
-          vspans[i].push(new Vertex(p));
+          let v = new Vertex(p);
+          vspans[i].push(v);
           ++vertices;
         }
       }
     }
 
     result.vertices = vertices;
-    let terminal = new Vertex(new Node("_TERMINAL_", 0, []));
+    let terminal = new Vertex(new Node("_TERMINAL_", -99, []));
 
     for (let i = 0, vspansLen = vspans.length; i < vspansLen; ++i) {
       for (let v of vspans[i]) {
@@ -153,6 +154,7 @@ export class ReadingGrid {
           continue;
         }
 
+        console.log(JSON.stringify(vspans[nextVertexPos]));
         for (let nv of vspans[nextVertexPos]) {
           v.edges.push(nv);
           ++edges;
@@ -183,14 +185,14 @@ export class ReadingGrid {
       it = it.prev;
       totalReadingLen += it.node.spanningLength;
     }
-    // assert(totalReadingLen === this.readings_.length);
-    // assert(walked.length >= 2);
-    walked.slice(0, 1);
+    walked.pop();
     walked.reverse();
 
     result.totalReadings = totalReadingLen;
     result.nodes = walked;
     result.elapsedMicroseconds = GetEpochNowInMicroseconds() - start;
+    console.log("walk result...");
+    console.log(JSON.stringify(result));
     return result;
   }
 
@@ -468,44 +470,32 @@ export enum OverrideType {
 }
 
 export class Node {
-  private reading_: string;
-  private spanningLength_: number;
-  private unigrams_: Unigram[];
+  readonly reading: string;
+  readonly spanningLength: number;
+  readonly unigrams: Unigram[];
   private overrideType_: OverrideType = OverrideType.kNone;
   private selectedIndex_ = 0;
 
   constructor(reading: string, spanningLength: number, unigrams: Unigram[]) {
-    this.reading_ = reading;
-    this.spanningLength_ = spanningLength;
-    this.unigrams_ = unigrams;
-  }
-
-  get reading(): string {
-    return this.reading_;
-  }
-
-  get spanningLength(): number {
-    return this.spanningLength_;
-  }
-
-  get unigrams(): Unigram[] {
-    return this.unigrams_;
+    this.reading = reading;
+    this.spanningLength = spanningLength;
+    this.unigrams = unigrams;
   }
 
   get currentUnigram(): Unigram {
-    return this.unigrams_.length === 0
+    return this.unigrams.length === 0
       ? new Unigram("", 0)
-      : this.unigrams_[this.selectedIndex_];
+      : this.unigrams[this.selectedIndex_];
   }
 
   get value(): string {
-    return this.unigrams_.length === 0
+    return this.unigrams.length === 0
       ? ""
-      : this.unigrams_[this.selectedIndex_].value;
+      : this.unigrams[this.selectedIndex_].value;
   }
 
   get score(): number {
-    if (this.unigrams_.length === 0) {
+    if (this.unigrams.length === 0) {
       return 0;
     }
 
@@ -513,10 +503,10 @@ export class Node {
       case OverrideType.kOverrideValueWithHighScore:
         return Node.kOverridingScore;
       case OverrideType.kOverrideValueWithScoreFromTopUnigram:
-        return this.unigrams_[0].score;
+        return this.unigrams[0].score;
       case OverrideType.kNone:
       default:
-        return this.unigrams_[this.selectedIndex_].score;
+        return this.unigrams[this.selectedIndex_].score;
     }
   }
 
@@ -531,8 +521,8 @@ export class Node {
 
   selectOverrideUnigram(value: string, type: OverrideType): boolean {
     // assert(type != OverrideType.kNone);
-    for (let i = 0; i < this.unigrams_.length; i++) {
-      if (this.unigrams_[i].value === value) {
+    for (let i = 0; i < this.unigrams.length; i++) {
+      if (this.unigrams[i].value === value) {
         this.selectedIndex_ = i;
         this.overrideType_ = type;
         return true;
@@ -621,20 +611,12 @@ export class WalkResult {
 }
 
 export class Candidate {
-  private reading_: string;
-  private value_: string;
+  readonly reading: string;
+  readonly value: string;
 
   constructor(reading: string, value: string) {
-    this.reading_ = reading;
-    this.value_ = value;
-  }
-
-  get reading(): string {
-    return this.reading_;
-  }
-
-  get value(): string {
-    return this.value_;
+    this.reading = reading;
+    this.value = value;
   }
 }
 
@@ -734,7 +716,7 @@ class Vertex {
    * infinity. If we were to compute the *shortest* weight/distance, we would
    * have initialized this to infinity.
    */
-  distance: number = Number.MIN_VALUE;
+  distance: number = Number.NEGATIVE_INFINITY;
   prev: Vertex | undefined = undefined;
 
   constructor(node: Node) {
@@ -748,9 +730,11 @@ class Vertex {
 function Relax(u: Vertex, v: Vertex) {
   // The distance from u to w is simply v's score.
   let w = v.node.score;
+
   // Since we are computing the largest weight, we update v's distance and prev
   // if the current distance to v is *less* than that of u's plus the distance
   // to v (which is represented by w).
+
   if (v.distance < u.distance + w) {
     v.distance = u.distance + w;
     v.prev = u;
@@ -759,6 +743,23 @@ function Relax(u: Vertex, v: Vertex) {
 
 type VertexSpan = Vertex[];
 
+// Topological-sorts a DAG that has a single root and returns the vertices in
+// topological order. Here, a non-recursive version is implemented using our own
+// stack and state definitions, so that we are not constrained by the current
+// thread's stack size. This is the equivalent to this recursive version:
+//
+//  void TopologicalSort(Vertex* v) {
+//    for (Vertex* nv : v->edges) {
+//      if (!nv->topologicallySorted) {
+//        dfs(nv, result);
+//      }
+//    }
+//    v->topologicallySorted = true;
+//    result.push_back(v);
+//  }
+//
+// The recursive version is similar to the TOPOLOGICAL-SORT algorithm found in
+// Cormen et al. 2001.
 function TopologicalSort(root: Vertex): Vertex[] {
   class State {
     v: Vertex;

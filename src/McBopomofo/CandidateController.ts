@@ -17,6 +17,14 @@ export class CandidateWrapper {
     this.candidate = candidate;
     this.selected = selected;
   }
+
+  public get reading(): string {
+    return this.candidate.reading;
+  }
+
+  public get value(): string {
+    return this.candidate.value;
+  }
 }
 
 export class CandidateController {
