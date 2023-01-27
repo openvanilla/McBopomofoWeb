@@ -15,7 +15,7 @@
     "minimatch": ">=5.1.0"
   },
   "name": "mcbopomofoweb",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "McBopomofo input method built with TypeScript and other Web technologies",
   "scripts": {
     "ts-build": "tsc",
