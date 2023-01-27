@@ -35,7 +35,6 @@
   "optionShiftLetterTitle": { "message": "Shift + 字母按鍵：" },
   "optionShiftLetterUppercase": { "message": "輸入大寫字母" },
   "optionShiftLetterLowercase": { "message": "輸入小寫字母" },
-  "optionComposingBufferSizeTitle": { "message": "輸入緩衝區大小：" },
   "optionOthersTitle": { "message": "其他：" },
   "optionOtherManageUserPhrases": { "message": "管理使用者詞彙" },
   "optionOtherManageKeyboardShortcuts": {

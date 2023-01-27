@@ -37,7 +37,6 @@
   "optionShiftLetterTitle": { "message": "Shift + Letter Keys:" },
   "optionShiftLetterUppercase": { "message": "Input uppercase letters" },
   "optionShiftLetterLowercase": { "message": "Input lowercase letters" },
-  "optionComposingBufferSizeTitle": { "message": "Composing Buffer Size:" },
   "optionOthersTitle": { "message": "Others:" },
   "optionOtherManageUserPhrases": { "message": "Manage User Phrases" },
   "optionOtherManageKeyboardShortcuts": {
