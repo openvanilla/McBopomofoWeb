@@ -1,11 +1,10 @@
 body {
   font-family: Arial, Helvetica, sans-serif;
   font-size: 14pt;
-  margin: 20px;
 }
 
 #edit_area {
-  height: 70%;
+  height: 85%;
 }
 
 textarea {
@@ -15,7 +14,7 @@ textarea {
   border: 0;
   padding: 10px;
   width: 100%;
-  height: calc(100% - 4em);
+  height: calc(100% - 2em);
   resize: none;
   ime-mode: disabled;
   -webkit-ime-mode: disabled;
@@ -58,11 +57,13 @@ textarea:focus {
 .left {
   width: 70%;
   float: left;
+  height: 100%;
 }
 
 .right {
   width: 28%;
   float: right;
+  height: 100%;
 }
 
 .right p,
@@ -79,6 +80,8 @@ textarea:focus {
   max-width: 1320px;
   margin-left: auto;
   margin-right: auto;
+  /* margin-top: 10px;
+  margin-bottom: 10px; */
 }
 
 .cursor {
@@ -120,4 +123,14 @@ textarea:focus {
 
 #dump_area ul li {
   list-style-type: decimal;
+}
+
+#loading {
+  position: absolute;
+  top: 0;
+  left: 20;
+  color: #fff;
+  background-color: #000;
+  padding: 10px;
+  display: block;
 }
