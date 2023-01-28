@@ -38,14 +38,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - run: npm install      
       - run: npm run build
-      - name: Deploy
-        run: |
-          cd example
-          git init
-          git config user.name  "CI"
-          git config user.email "flutter-ci@github.com"
-          git remote add secure-origin https://${{ secrets.ACCESS_TOKEN }}@github.com/openvanilla/McBopomofoWeb.git
-          git checkout -b gh-pages
-          git add .
-          git commit -m "Updated docs"
-          git push --force secure-origin gh-pages
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: example
