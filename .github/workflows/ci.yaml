@@ -1,19 +1,17 @@
 name: Node.js CI
 
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+# on:
+#   push:
+#     branches: [ main ]
+#   pull_request:
+#     branches: [ main ]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
-        node-version: [12.x, 14.x, 15.x]
+        node-version: [12.x, 14.x, 15.x, 18.x]
 
     steps:
       - uses: actions/checkout@v3
@@ -25,3 +23,29 @@ jobs:
       - run: npm run build
       - run: npm run build:chromeos
       - run: npm run test
+
+  build_publish:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm install      
+      - run: npm run build
+      - name: Deploy
+        run: |
+          cd example
+          git init
+          git config user.name  "CI"
+          git config user.email "flutter-ci@github.com"
+          git remote add secure-origin https://${{ secrets.ACCESS_TOKEN }}@github.com/openvanilla/McBopomofoWeb.git
+          git checkout -b gh-pages
+          git add .
+          git commit -m "Updated docs"
+          git push --force secure-origin gh-pages
