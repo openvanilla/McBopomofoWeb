@@ -1,9 +1,12 @@
 var chineseMode = true;
+var composingBuffer = "";
+
 function resetUI() {
-  let s = chineseMode ? "【麥】" : "【英】";
-  s += "<span class='cursor'>|</span>";
-  document.getElementById("composing_buffer").innerHTML = s;
+  let renderText = chineseMode ? "【麥】" : "【英】";
+  renderText += "<span class='cursor'>|</span>";
+  document.getElementById("composing_buffer").innerHTML = renderText;
   document.getElementById("candidates").innerHTML = "";
+  composingBuffer = "";
 }
 
 let ui = (function () {
@@ -18,34 +21,38 @@ let ui = (function () {
     document.getElementById("text_area").value = head + string + tail;
     let start = selectionStart + string.length;
     document.getElementById("text_area").setSelectionRange(start, start);
+    composingBuffer = "";
   };
 
   that.update = function (string) {
     let state = JSON.parse(string);
     {
       let buffer = state.composingBuffer;
-      let s = chineseMode ? "【麥】" : "【英】";
+      let renderText = chineseMode ? "【麥】" : "【英】";
+      let plainText = "";
       let i = 0;
       for (let item of buffer) {
         if (item.style === "highlighted") {
-          s += '<span class="marking">';
+          renderText += '<span class="marking">';
         }
         let text = item.text;
+        plainText += text;
         for (let c of text) {
           if (i === state.cursorIndex) {
-            s += "<span class='cursor'>|</span>";
+            renderText += "<span class='cursor'>|</span>";
           }
-          s += c;
+          renderText += c;
           i++;
         }
         if (item.style === "highlighted") {
-          s += "</span>";
+          renderText += "</span>";
         }
       }
       if (i === state.cursorIndex) {
-        s += "<span class='cursor'>|</span>";
+        renderText += "<span class='cursor'>|</span>";
       }
-      document.getElementById("composing_buffer").innerHTML = s;
+      document.getElementById("composing_buffer").innerHTML = renderText;
+      composingBuffer = plainText;
     }
 
     if (state.candidates.length) {
@@ -75,42 +82,35 @@ let ui = (function () {
 const { InputController } = window.mcbopomofo;
 let controller = new InputController(ui);
 let defaultSettings = {
-  trad_mode: false, // OK
-  chinese_conversion: false, // OK
-  layout: "standard", // OK
-  candidate_keys: "123456789", //OK
-  select_phrase: "before_cursor", // OK
-  esc_key_clear_entire_buffer: false, // OK
-  //   shift_key_toggle_alphabet_mode: true,
+  trad_mode: false,
+  chinese_conversion: false,
+  layout: "standard",
+  candidate_keys: "123456789",
+  select_phrase: "before_cursor",
+  esc_key_clear_entire_buffer: false,
   move_cursor: true,
   letter_mode: "upper",
 };
 let settings = {};
 
 function loadSettings() {
-  console.log("loadSettings");
   let result = window.localStorage.getItem("user_settings");
   try {
     let obj = JSON.parse(result);
     if (!obj) {
-      console.log("not load..");
       return defaultSettings;
     }
-    console.log("load..");
     return obj;
   } catch (e) {}
   return defaultSettings;
 }
 
 function saveSettings(settings) {
-  console.log("saveSettings");
-  console.log(settings);
   const s = JSON.stringify(settings);
   window.localStorage.setItem("user_settings", s);
 }
 
 function applySettings(settings) {
-  console.log(settings);
   {
     controller.setTraditionalMode(settings.trad_mode);
     if (settings.trad_mode) {
@@ -190,9 +190,7 @@ function applySettings(settings) {
 }
 
 function loadUserPhrases() {
-  console.log("loadUserPhrases");
   let result = window.localStorage.getItem("user_phrases");
-  console.log(result);
   try {
     let obj = JSON.parse(result);
     if (result !== undefined && result !== null) {
@@ -215,11 +213,15 @@ applySettings(settings);
 loadUserPhrases();
 controller.setOnPhraseChange(saveUserPhrases);
 
-let shiftState = false;
+let shiftKeyIsPressed = false;
 
 document.getElementById("text_area").addEventListener("keyup", (event) => {
-  if (event.key === "Shift" && shiftState) {
-    shiftState = false;
+  if (event.key === "Shift" && shiftKeyIsPressed) {
+    shiftKeyIsPressed = false;
+    if (composingBuffer.length > 0) {
+      ui.commitString(composingBuffer);
+      composingBuffer = "";
+    }
     chineseMode = !chineseMode;
     controller.reset();
     return;
@@ -231,7 +233,7 @@ document.getElementById("text_area").addEventListener("keydown", (event) => {
     return;
   }
 
-  shiftState = event.key === "Shift";
+  shiftKeyIsPressed = event.key === "Shift";
   if (!chineseMode) {
     return;
   }
@@ -257,7 +259,6 @@ document.getElementById("use_plainbopomofo").onchange = function (event) {
 };
 
 document.getElementById("chinese_convert_trad").onchange = function (event) {
-  console.log("chinese_convert_trad");
   controller.setChineseConversionEnabled(false);
   settings.chinese_conversion = false;
   saveSettings(settings);
@@ -265,7 +266,6 @@ document.getElementById("chinese_convert_trad").onchange = function (event) {
 };
 
 document.getElementById("chinese_convert_simp").onchange = function (event) {
-  console.log("chinese_convert_simp");
   controller.setChineseConversionEnabled(true);
   settings.chinese_conversion = true;
   saveSettings(settings);
@@ -353,7 +353,7 @@ document.getElementById("text_area").onblur = function () {
 
 document.getElementById("loading").innerText = "載入完畢！";
 setTimeout(function () {
-  document.getElementById("loading").innerText = "";
+  document.getElementById("loading").style.display = "none";
 }, 2000);
 resetUI();
 document.getElementById("text_area").focus();
