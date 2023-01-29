@@ -33,7 +33,7 @@
   "optionEscKeyTitle": { "message": "ESC Key:" },
   "optionEscKeyLabel": { "message": "ESC key clears entire composing buffer" },
   "optionShiftKeyTitle": { "message": "Shift Key:" },
-  "optionShiftKeyLabel": { "message": "Shift key toggles English/Chines mode" },
+  "optionShiftKeyLabel": { "message": "Shift key toggles English/Chinese mode" },
   "optionShiftLetterTitle": { "message": "Shift + Letter Keys:" },
   "optionShiftLetterUppercase": { "message": "Input uppercase letters" },
   "optionShiftLetterLowercase": { "message": "Input lowercase letters" },
