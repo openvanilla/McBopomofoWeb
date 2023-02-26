@@ -41,6 +41,77 @@ function myLocalizedString(en: string, zh: string): string {
   return lang == "zh-TW" ? zh : en;
 }
 
+function syncStore(key: string, objectToStore: any) {
+  var jsonstr = JSON.stringify(objectToStore);
+  var i = 0;
+  var storageObj: { [key: string]: any } = {};
+
+  // split jsonstr into chunks and store them in an object indexed by `key_i`
+  while (jsonstr.length > 0) {
+    var index: string = key + "_" + i++;
+
+    // since the key uses up some per-item quota, see how much is left for the
+    // value also trim off 2 for quotes added by storage-time `stringify`
+    const maxLength =
+      chrome.storage.sync.QUOTA_BYTES_PER_ITEM - index.length - 2;
+    var valueLength = jsonstr.length;
+    if (valueLength > maxLength) {
+      valueLength = maxLength;
+    }
+
+    // trim down segment so it will be small enough even when run through
+    // `JSON.stringify` again at storage time max try is QUOTA_BYTES_PER_ITEM to
+    // avoid infinite loop
+    var segment = jsonstr.substr(0, valueLength);
+    for (let i = 0; i < chrome.storage.sync.QUOTA_BYTES_PER_ITEM; i++) {
+      const jsonLength = JSON.stringify(segment).length;
+      if (jsonLength > maxLength) {
+        segment = jsonstr.substr(0, --valueLength);
+      } else {
+        break;
+      }
+    }
+
+    storageObj[index] = segment;
+    jsonstr = jsonstr.substr(valueLength);
+  }
+}
+
+function syncGet(key: string, callback: (data: any) => void) {
+  chrome.storage.sync.get(key, (data) => {
+    console.log(data[key]);
+    console.log(typeof data[key]);
+    if (
+      data != undefined &&
+      data[key] != undefined &&
+      data[key] != "undefined"
+    ) {
+      const keyArr = new Array();
+      for (let i = 0; i <= data[key].count; i++) {
+        keyArr.push(`${data[key].prefix}${i}`);
+      }
+      chrome.storage.sync.get(keyArr, (items) => {
+        console.log(data);
+        const keys = Object.keys(items);
+        const length = keys.length;
+        let results = "";
+        if (length > 0) {
+          const sepPos = keys[0].lastIndexOf("_");
+          const prefix = keys[0].substring(0, sepPos);
+          for (let x = 0; x < length; x++) {
+            results += items[`${prefix}_${x}`];
+          }
+          callback(JSON.parse(results));
+          return;
+        }
+        callback(undefined);
+      });
+    } else {
+      callback(undefined);
+    }
+  });
+}
+
 function makeUI() {
   return {
     reset: () => {
@@ -192,19 +263,10 @@ function makeUI() {
 }
 
 function loadUserPhrases() {
-  chrome.storage.local.get("user_phrase", (value) => {
-    let jsonString = value.user_phrase;
-
-    if (jsonString !== undefined) {
-      try {
-        let obj = JSON.parse(jsonString);
-        if (obj) {
-          let userPhrases = new Map<string, string[]>(Object.entries(obj));
-          mcInputController.setUserPhrases(userPhrases);
-        }
-      } catch (e) {
-        console.log("failed to parse user_phrase:" + e);
-      }
+  syncGet("user_phrase", (value) => {
+    if (value) {
+      let userPhrases = new Map<string, string[]>(Object.entries(obj));
+      mcInputController.setUserPhrases(userPhrases);
     }
   });
 }
@@ -344,8 +406,7 @@ chrome.input.ime.onActivate.addListener((engineID) => {
 
   mcInputController.setOnPhraseChange((userPhrases) => {
     const obj = Object.fromEntries(userPhrases);
-    let jsonString = JSON.stringify(obj);
-    chrome.storage.local.set({ user_phrase: jsonString });
+    syncStore("user_phrase", obj);
   });
 });
 
