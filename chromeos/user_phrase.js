@@ -34,7 +34,7 @@ window.onload = () => {
   }
 
   function load() {
-    chrome.storage.sync.get(["user_phrase"], (value) => {
+    chrome.storage.local.get(["user_phrase"], (value) => {
       let jsonString = value.user_phrase;
 
       if (jsonString !== undefined) {

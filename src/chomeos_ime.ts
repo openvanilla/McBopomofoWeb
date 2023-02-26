@@ -3,6 +3,7 @@
  * Copyright (c) 2022 and onwards The McBopomofo Authors.
  * This code is released under the MIT license.
  * SPDX-License-Identifier: MIT
+ * The main entrance of the IME for ChromeOS.
  */
 
 import { InputController } from "./McBopomofo/InputController";
@@ -191,7 +192,7 @@ function makeUI() {
 }
 
 function loadUserPhrases() {
-  chrome.storage.sync.get("user_phrase", (value) => {
+  chrome.storage.local.get("user_phrase", (value) => {
     let jsonString = value.user_phrase;
 
     if (jsonString !== undefined) {
@@ -344,7 +345,7 @@ chrome.input.ime.onActivate.addListener((engineID) => {
   mcInputController.setOnPhraseChange((userPhrases) => {
     const obj = Object.fromEntries(userPhrases);
     let jsonString = JSON.stringify(obj);
-    chrome.storage.sync.set({ user_phrase: jsonString });
+    chrome.storage.local.set({ user_phrase: jsonString });
   });
 });
 
