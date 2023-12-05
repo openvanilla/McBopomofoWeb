@@ -8,6 +8,9 @@
 
 import { InputController } from "./McBopomofo/InputController";
 import { Key, KeyName } from "./McBopomofo/Key";
+import { LargeSync } from "./LargeSync/LargeSync";
+
+let largeSync = new LargeSync();
 
 // The ID of the current input engine.
 let mcEngineID: string | undefined = undefined;
@@ -192,7 +195,7 @@ function makeUI() {
 }
 
 function loadUserPhrases() {
-  chrome.storage.local.get("user_phrase", (value) => {
+  largeSync.get(["user_phrase"], (value) => {
     let jsonString = value.user_phrase;
 
     if (jsonString !== undefined) {
@@ -345,7 +348,7 @@ chrome.input.ime.onActivate.addListener((engineID) => {
   mcInputController.setOnPhraseChange((userPhrases) => {
     const obj = Object.fromEntries(userPhrases);
     let jsonString = JSON.stringify(obj);
-    chrome.storage.local.set({ user_phrase: jsonString });
+    largeSync.set({ user_phrase: jsonString }, () => {});
   });
 });
 
