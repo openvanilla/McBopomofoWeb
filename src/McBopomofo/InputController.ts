@@ -42,6 +42,8 @@ class InputUIController {
   private tooltip: string = "";
   private candidates: CandidateWrapper[] = [];
   private composingBuffer: ComposingBufferText[] = [];
+  private candidateTotalPageCount = 0;
+  private candidateCurrentPageIndex = 0;
 
   constructor(ui: InputUI) {
     this.ui = ui;
@@ -76,6 +78,14 @@ class InputUIController {
     this.candidates = candidates;
   }
 
+  setPageIndex(
+    candidateCurrentPageIndex: number,
+    candidateTotalPageCount: number
+  ) {
+    this.candidateCurrentPageIndex = candidateCurrentPageIndex;
+    this.candidateTotalPageCount = candidateTotalPageCount;
+  }
+
   setTooltip(tooltip: string): void {
     this.tooltip = tooltip;
   }
@@ -85,7 +95,9 @@ class InputUIController {
       this.composingBuffer,
       this.cursorIndex,
       this.candidates,
-      this.tooltip
+      this.tooltip,
+      this.candidateTotalPageCount,
+      this.candidateCurrentPageIndex
     );
     let json = JSON.stringify(state);
     this.ui.update(json);
@@ -373,6 +385,9 @@ export class InputController {
 
     let result = this.candidateController_.getCurrentPage();
     this.ui_.setCandidates(result);
+    let totalPageCount = this.candidateController_.totalPageCount;
+    let pageIndex = this.candidateController_.currentPageIndex;
+    this.ui_.setPageIndex(pageIndex + 1, totalPageCount);
 
     if (this.keyHandler_.traditionalMode) {
       let defaultCandidate =
@@ -387,7 +402,6 @@ export class InputController {
   }
 
   private enterNewState(state: InputState): void {
-
     let prev = this.state_;
     if (state instanceof Empty) {
       this.handleEmpty(prev, state);
@@ -454,6 +468,10 @@ export class InputController {
     this.candidateController_.update(state.candidates, this.candidateKeys_);
     let result = this.candidateController_.getCurrentPage();
     this.ui_.setCandidates(result);
+    let totalPageCount = this.candidateController_.totalPageCount;
+    let pageIndex = this.candidateController_.currentPageIndex;
+    this.ui_.setPageIndex(pageIndex + 1, totalPageCount);
+
     this.updatePreedit(state);
     this.ui_.update();
   }

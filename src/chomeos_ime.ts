@@ -129,15 +129,21 @@ function makeUI() {
             annotation: "",
             id: index++,
             label: candidate.keyCap,
+
+            
           };
           chromeCandidates.push(item);
         }
 
+        let candidatePageCount = state.candidatePageCount;
+        let candidatePageIndex = state.candidatePageIndex;
+        let auxiliaryText = candidatePageIndex + "/" + candidatePageCount;
+
         chrome.input.ime.setCandidateWindowProperties({
           engineID: mcEngineID,
           properties: {
-            auxiliaryText: "",
-            auxiliaryTextVisible: false,
+            auxiliaryText: auxiliaryText,
+            auxiliaryTextVisible: true,
             visible: true,
             cursorVisible: true,
             vertical: true,

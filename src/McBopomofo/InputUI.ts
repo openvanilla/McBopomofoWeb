@@ -30,27 +30,37 @@ export class ComposingBufferText {
  */
 export class InputUIState {
   /** Represents the composing buffer.   */
-  composingBuffer: ComposingBufferText[];
+  readonly composingBuffer: ComposingBufferText[];
 
   /** The index of the cursor in the composing buffer. */
-  cursorIndex: number;
+  readonly cursorIndex: number;
 
   /** The current page of the candidates. */
-  candidates: CandidateWrapper[];
+  readonly candidates: CandidateWrapper[];
+
+  /** The total pages of the candidates, */
+  readonly candidatePageCount: number;
+
+  /** The current page index of the candidates, */
+  readonly candidatePageIndex: number;
 
   /** The tooltip. */
-  tooltip: string;
+  readonly tooltip: string;
 
   constructor(
     composingBuffer: ComposingBufferText[],
     cursorIndex: number,
     candidates: CandidateWrapper[],
-    tooltip: string
+    tooltip: string,
+    candidatePageCount: number,
+    candidatePageIndex: number
   ) {
     this.composingBuffer = composingBuffer;
     this.cursorIndex = cursorIndex;
     this.candidates = candidates;
     this.tooltip = tooltip;
+    this.candidatePageCount = candidatePageCount;
+    this.candidatePageIndex = candidatePageIndex;
   }
 }
 
