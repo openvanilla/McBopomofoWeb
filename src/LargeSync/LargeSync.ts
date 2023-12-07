@@ -47,7 +47,7 @@ export class LargeSync {
     inKeys: string[] | undefined = undefined
   ): { [k: string]: any } {
     var keys: string[] = [];
-    if (typeof keys === "undefined") {
+    if (typeof inKeys === "undefined") {
       keys = this.extractKeys(splitObjects);
     } else {
       keys = inKeys as string[];
@@ -97,11 +97,12 @@ export class LargeSync {
   }
 
   getKeys(keys: any): string[] {
-    if (keys instanceof Object) {
-      return Object.keys(keys);
-    }
     if (keys instanceof Array) {
       return keys;
+    }
+
+    if (keys instanceof Object) {
+      return Object.keys(keys);
     }
 
     throw TypeError(

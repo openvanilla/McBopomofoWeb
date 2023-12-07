@@ -34,7 +34,7 @@ window.onload = () => {
   }
 
   function load() {
-    chrome.storage.local.get(["user_phrase"], (value) => {
+    chrome.storage.largeSync.get(["user_phrase"], (value) => {
       let jsonString = value.user_phrase;
 
       if (jsonString !== undefined) {
@@ -60,7 +60,7 @@ window.onload = () => {
     let text = document.getElementById("text_area").value;
     let map = textToMap(text);
     let jsonString = JSON.stringify(map);
-    chrome.storage.sync.set({ user_phrase: jsonString });
+    chrome.storage.largeSync.set({ user_phrase: jsonString });
     console.log("write user_phrase done");
 
     chrome.runtime.sendMessage(
