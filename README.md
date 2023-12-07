@@ -35,6 +35,13 @@ npm run build:chromeos
 - 把整個 chromeos 目錄搬到 Google Drive，然後同步到你的 Chromebook 上
 - 在 Chromebook 上，輸入 `chrome://extensions`，選擇 "load unpacked"，選擇 Google Drive 上的 `chromeos` 目錄
 
+## 第三方套件
+
+本軟體使用了下套件
+
+- [chinese_convert](https://github.com/ccckmit/chinese_convert): 處理簡繁轉換
+- [chrome-storage-largeSync](https://github.com/dtuit/chrome-storage-largeSync): 用來儲存使用者詞庫
+
 ## 社群公約
 
 歡迎小麥注音用戶回報問題與指教，也歡迎大家參與小麥注音開發。
