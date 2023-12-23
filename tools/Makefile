@@ -1,5 +1,5 @@
-encode: encode.cpp Mandarin.h Mandarin.cpp
-	c++ -o $@ $^
+encode: encode.cpp  Mandarin.cpp
+	c++ -o $@ $^ -I./. -std=c++11
 
 clean: encode
 	rm -f encode
