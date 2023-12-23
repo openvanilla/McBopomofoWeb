@@ -7,6 +7,7 @@
 
 import { BopomofoKeyboardLayout } from "../Mandarin";
 import { CandidateWrapper, CandidateController } from "./CandidateController";
+import { inputMacroController } from "./InputMacro";
 
 import {
   ChoosingCandidate,
@@ -121,6 +122,7 @@ export class InputController {
     this.ui_ = new InputUIController(ui);
     this.lm_ = new WebLanguageModel(webData);
     this.keyHandler_ = new KeyHandler(this.lm_);
+    this.lm_.setMacroConverter((input) => inputMacroController.handle(input));
   }
 
   /** Resets to empty state. */

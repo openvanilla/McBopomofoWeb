@@ -68,6 +68,12 @@ export class WebLanguageModel implements LanguageModel {
   private map_: any;
   private userPhrases_: UserPhrases = new UserPhrases();
 
+  private macroConverter_?: (input: string) => string | undefined;
+  /** Sets the string converter. */
+  setMacroConverter(converter?: (input: string) => string | undefined): void {
+    this.macroConverter_ = converter;
+  }
+
   private converter_?: (input: string) => string | undefined;
   /** Sets the string converter. */
   setConverter(converter?: (input: string) => string | undefined): void {
@@ -116,11 +122,15 @@ export class WebLanguageModel implements LanguageModel {
     let usedValues: string[] = [];
     let userPhrases = this.userPhrases_.getUnigrams(key);
     for (let phrase of userPhrases) {
+      if (this.macroConverter_ != null) {
+        let converted = this.macroConverter_(phrase.value) ?? phrase.value;
+        phrase = new Unigram(converted, phrase.score);
+      }
       if (this.converter_ != null) {
         let converted = this.converter_(phrase.value) ?? phrase.value;
         phrase = new Unigram(converted, phrase.score);
       }
-      if (!usedValues.includes(phrase.value)) {
+      if (phrase.value != "" && !usedValues.includes(phrase.value)) {
         result.push(phrase);
       }
       usedValues.push(phrase.value);
@@ -132,10 +142,13 @@ export class WebLanguageModel implements LanguageModel {
       for (let i = 0; i < values.length; i += 2) {
         let value: string = values[i];
         let score: number = parseFloat(values[i + 1]);
+        if (this.macroConverter_ != null) {
+          value = this.macroConverter_(value) ?? value;
+        }
         if (this.converter_ != null) {
           value = this.converter_(value) ?? value;
         }
-        if (!usedValues.includes(value)) {
+        if (value != "" && !usedValues.includes(value)) {
           let g = new Unigram(value, score);
           result.push(g);
         }
