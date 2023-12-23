@@ -1,3 +1,12 @@
+/**
+ * @license
+ * Copyright (c) 2022 and onwards The McBopomofo Authors.
+ * This code is released under the MIT license.
+ * SPDX-License-Identifier: MIT
+ */
+
+import dayjs from "dayjs";
+
 abstract class InputMacro {
   abstract get name(): string;
   abstract get replacement(): string;
@@ -9,7 +18,8 @@ class InputMacroThisYear implements InputMacro {
   }
 
   get replacement() {
-    return "";
+    const day = dayjs();
+    return day.locale("zh-tw").format("YYYY年");
   }
 }
 
@@ -19,10 +29,12 @@ class InputMacroThisYearROC implements InputMacro {
   }
 
   get replacement() {
-    return "";
+    const day = dayjs().subtract(1911, "year");
+    return day.locale("zh-tw").format("民國YYY年");
   }
 }
 
+// note: not supported yet.
 class InputMacroThisYearJapanese implements InputMacro {
   get name() {
     return "MACRO@THIS_YEAR_JAPANESE";
@@ -39,7 +51,8 @@ class InputMacroLastYear implements InputMacro {
   }
 
   get replacement() {
-    return "";
+    const day = dayjs().subtract(1, "year");
+    return day.locale("zh-tw").format("YYYY年");
   }
 }
 
@@ -49,10 +62,12 @@ class InputMacroLastYearROC implements InputMacro {
   }
 
   get replacement() {
-    return "";
+    const day = dayjs().subtract(1, "year").subtract(1911, "year");
+    return day.locale("zh-tw").format("民國YYY年");
   }
 }
 
+// note: not supported yet.
 class InputMacroLastYearJapanese implements InputMacro {
   get name() {
     return "MACRO@LAST_YEAR_JAPANESE";
@@ -69,7 +84,8 @@ class InputMacroNextYear implements InputMacro {
   }
 
   get replacement() {
-    return "";
+    const day = dayjs().add(1, "year");
+    return day.locale("zh-tw").format("YYYY年");
   }
 }
 
@@ -79,10 +95,12 @@ class InputMacroNextYearROC implements InputMacro {
   }
 
   get replacement() {
-    return "";
+    const day = dayjs().add(1, "year").subtract(1911, "year");
+    return day.locale("zh-tw").format("民國YYY年");
   }
 }
 
+// note: not supported yet.
 class InputMacroNextYearJapanese implements InputMacro {
   get name() {
     return "MACRO@NEXT_YEAR_JAPANESE";
@@ -99,7 +117,8 @@ class InputMacroDateTodayShort implements InputMacro {
   }
 
   get replacement() {
-    return "";
+    const day = dayjs();
+    return day.locale("zh-tw").format("L");
   }
 }
 
@@ -109,7 +128,8 @@ class InputMacroDateYesterdayShort implements InputMacro {
   }
 
   get replacement() {
-    return "";
+    const day = dayjs().subtract(1, "day");
+    return day.locale("zh-tw").format("L");
   }
 }
 
@@ -119,7 +139,8 @@ class InputMacroDateTomorrowShort implements InputMacro {
   }
 
   get replacement() {
-    return "";
+    const day = dayjs().add(1, "day");
+    return day.locale("zh-tw").format("L");
   }
 }
 
@@ -129,7 +150,8 @@ class InputMacroDateTodayMedium implements InputMacro {
   }
 
   get replacement() {
-    return "";
+    const day = dayjs();
+    return day.locale("zh-tw").format("LL");
   }
 }
 
@@ -139,7 +161,8 @@ class InputMacroDateYesterdayMedium implements InputMacro {
   }
 
   get replacement() {
-    return "";
+    const day = dayjs().subtract(1, "day");
+    return day.locale("zh-tw").format("LL");
   }
 }
 
@@ -149,7 +172,8 @@ class InputMacroDateTomorrowMedium implements InputMacro {
   }
 
   get replacement() {
-    return "";
+    const day = dayjs().add(1, "day");
+    return day.locale("zh-tw").format("LL");
   }
 }
 
@@ -159,7 +183,8 @@ class InputMacroDateTodayMediumROC implements InputMacro {
   }
 
   get replacement() {
-    return "";
+    const day = dayjs().subtract(1911, "year");
+    return day.locale("zh-tw").format("民國YYY年M月D日");
   }
 }
 
@@ -169,7 +194,8 @@ class InputMacroDateYesterdayMediumROC implements InputMacro {
   }
 
   get replacement() {
-    return "";
+    const day = dayjs().subtract(1, "day").subtract(1911, "year");
+    return day.locale("zh-tw").format("民國YYY年M月D日");
   }
 }
 
@@ -179,10 +205,12 @@ class InputMacroDateTomorrowMediumROC implements InputMacro {
   }
 
   get replacement() {
-    return "";
+    const day = dayjs().add(1, "day").subtract(1911, "year");
+    return day.locale("zh-tw").format("民國YYY年M月D日");
   }
 }
 
+// Note: not supported yet.
 class InputMacroDateTodayMediumChinese implements InputMacro {
   get name() {
     return "MACRO@DATE_TODAY_MEDIUM_CHINESE";
@@ -193,6 +221,7 @@ class InputMacroDateTodayMediumChinese implements InputMacro {
   }
 }
 
+// Note: not supported yet.
 class InputMacroDateYesterdayMediumChinese implements InputMacro {
   get name() {
     return "MACRO@DATE_YESTERDAY_MEDIUM_CHINESE";
@@ -203,6 +232,7 @@ class InputMacroDateYesterdayMediumChinese implements InputMacro {
   }
 }
 
+// Note: not supported yet.
 class InputMacroDateTomorrowMediumChinese implements InputMacro {
   get name() {
     return "MACRO@DATE_TOMORROW_MEDIUM_CHINESE";
@@ -213,6 +243,7 @@ class InputMacroDateTomorrowMediumChinese implements InputMacro {
   }
 }
 
+// Note: not supported yet.
 class InputMacroDateTodayFullJapanese implements InputMacro {
   get name() {
     return "MACRO@DATE_TODAY_FULL_JAPANESE";
@@ -223,6 +254,7 @@ class InputMacroDateTodayFullJapanese implements InputMacro {
   }
 }
 
+// Note: not supported yet.
 class InputMacroDateYesterdayFullJapanese implements InputMacro {
   get name() {
     return "MACRO@DATE_YESTERDAY_FULL_JAPANESE";
@@ -233,6 +265,7 @@ class InputMacroDateYesterdayFullJapanese implements InputMacro {
   }
 }
 
+// Note: not supported yet.
 class InputMacroDateTomorrowFullJapanese implements InputMacro {
   get name() {
     return "MACRO@DATE_TOMORROW_FULL_JAPANESE";
@@ -249,7 +282,8 @@ class InputMacroTimeNowShort implements InputMacro {
   }
 
   get replacement() {
-    return "";
+    const day = dayjs();
+    return day.locale("zh-tw").format("LT");
   }
 }
 
@@ -259,10 +293,12 @@ class InputMacroTimeNowMedium implements InputMacro {
   }
 
   get replacement() {
-    return "";
+    const day = dayjs();
+    return day.locale("zh-tw").format("LTS");
   }
 }
 
+// note: not supported yet.
 class InputMacroTimeZoneStandard implements InputMacro {
   get name() {
     return "MACRO@TIMEZONE_STANDARD";
@@ -273,6 +309,7 @@ class InputMacroTimeZoneStandard implements InputMacro {
   }
 }
 
+// note: not supported yet.
 class InputMacroTimeZoneShortGeneric implements InputMacro {
   get name() {
     return "MACRO@TIMEZONE_GENERIC_SHORT";
@@ -343,9 +380,16 @@ class InputMacroNextYearChineseZodiac implements InputMacro {
   }
 }
 
+/**
+ * Helps to convert the input macros.
+ */
 class InputMacroController {
   private macroMap = new Map<string, InputMacro>();
   constructor() {
+    require("dayjs/locale/zh-tw");
+    var localizedFormat = require("dayjs/plugin/localizedFormat");
+    dayjs.extend(localizedFormat);
+
     let macros: InputMacro[] = [
       new InputMacroThisYear(),
       new InputMacroThisYearROC(),
@@ -387,6 +431,11 @@ class InputMacroController {
     }
   }
 
+  /**
+   * Handles the input text.
+   * @param input The input text.
+   * @returns The converted text.
+   */
   public handle(input: string) {
     let macro = this.macroMap.get(input);
     if (macro) {
@@ -396,4 +445,7 @@ class InputMacroController {
   }
 }
 
+/**
+ * The singleton instance of InputMacroController.
+ */
 export var inputMacroController = new InputMacroController();
