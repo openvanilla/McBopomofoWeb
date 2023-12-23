@@ -29,8 +29,8 @@ class InputMacroThisYearROC implements InputMacro {
   }
 
   get replacement() {
-    const day = dayjs().subtract(1911, "year");
-    return day.locale("zh-tw").format("民國YYY年");
+    const year = dayjs().subtract(1911, "year").year();
+    return "民國" + year + "年";
   }
 }
 
@@ -62,8 +62,8 @@ class InputMacroLastYearROC implements InputMacro {
   }
 
   get replacement() {
-    const day = dayjs().subtract(1, "year").subtract(1911, "year");
-    return day.locale("zh-tw").format("民國YYY年");
+    const year = dayjs().subtract(1, "year").subtract(1911, "year").year();
+    return "民國" + year + "年";
   }
 }
 
@@ -95,8 +95,8 @@ class InputMacroNextYearROC implements InputMacro {
   }
 
   get replacement() {
-    const day = dayjs().add(1, "year").subtract(1911, "year");
-    return day.locale("zh-tw").format("民國YYY年");
+    const year = dayjs().add(1, "year").subtract(1911, "year").year();
+    return "民國" + year + "年";
   }
 }
 
@@ -184,7 +184,7 @@ class InputMacroDateTodayMediumROC implements InputMacro {
 
   get replacement() {
     const day = dayjs().subtract(1911, "year");
-    return day.locale("zh-tw").format("民國YYY年M月D日");
+    return "民國" + day.year() + "年" + day.locale("zh-tw").format("M月D日");
   }
 }
 
@@ -195,7 +195,7 @@ class InputMacroDateYesterdayMediumROC implements InputMacro {
 
   get replacement() {
     const day = dayjs().subtract(1, "day").subtract(1911, "year");
-    return day.locale("zh-tw").format("民國YYY年M月D日");
+    return "民國" + day.year() + "年" + day.locale("zh-tw").format("M月D日");
   }
 }
 
@@ -206,7 +206,7 @@ class InputMacroDateTomorrowMediumROC implements InputMacro {
 
   get replacement() {
     const day = dayjs().add(1, "day").subtract(1911, "year");
-    return day.locale("zh-tw").format("民國YYY年M月D日");
+    return "民國" + day.year() + "年" + day.locale("zh-tw").format("M月D日");
   }
 }
 
@@ -320,13 +320,46 @@ class InputMacroTimeZoneShortGeneric implements InputMacro {
   }
 }
 
+// Ganzhi
+
+function getYearBase(year: number): [number, number] {
+  const base: number = year < 4 ? 60 - ((year * -1 + 2) % 60) : (year - 3) % 60;
+  return [base % 10, base % 12];
+}
+
+function ganzhi(year: number): string {
+  const gan: string[] = [
+    ...["癸", "甲", "乙", "丙", "丁"],
+    ...["戊", "己", "庚", "辛", "壬"],
+  ];
+  const zhi: string[] = [
+    ...["亥", "子", "丑", "寅", "卯", "辰"],
+    ...["巳", "午", "未", "申", "酉", "戌"],
+  ];
+  const [ganBase, zhiBase] = getYearBase(year);
+  return gan[ganBase] + zhi[zhiBase] + "年";
+}
+
+function chineseZodiac(year: number): string {
+  const gan = [
+    ...["水", "木", "木", "火", "火"],
+    ...["土", "土", "金", "金", "水"],
+  ];
+  const zhi = [
+    ...["豬", "鼠", "牛", "虎", "兔", "龍"],
+    ...["蛇", "馬", "羊", "猴", "雞", "狗"],
+  ];
+  const [ganBase, zhiBase] = getYearBase(year);
+  return gan[ganBase] + zhi[zhiBase] + "年";
+}
+
 class InputMacroThisYearGanZhi implements InputMacro {
   get name() {
     return "MACRO@THIS_YEAR_GANZHI";
   }
 
   get replacement() {
-    return "";
+    return ganzhi(dayjs().year());
   }
 }
 
@@ -336,7 +369,7 @@ class InputMacroLastYearGanZhi implements InputMacro {
   }
 
   get replacement() {
-    return "";
+    return ganzhi(dayjs().subtract(1, "year").year());
   }
 }
 
@@ -346,7 +379,7 @@ class InputMacroNextYearGanZhi implements InputMacro {
   }
 
   get replacement() {
-    return "";
+    return ganzhi(dayjs().add(1, "year").year());
   }
 }
 
@@ -356,7 +389,7 @@ class InputMacroThisYearChineseZodiac implements InputMacro {
   }
 
   get replacement() {
-    return "";
+    return chineseZodiac(dayjs().year());
   }
 }
 
@@ -366,7 +399,7 @@ class InputMacroLastYearChineseZodiac implements InputMacro {
   }
 
   get replacement() {
-    return "";
+    return chineseZodiac(dayjs().subtract(1, "year").year());
   }
 }
 
@@ -376,7 +409,7 @@ class InputMacroNextYearChineseZodiac implements InputMacro {
   }
 
   get replacement() {
-    return "";
+    return chineseZodiac(dayjs().subtract(1, "year").year());
   }
 }
 
@@ -390,7 +423,7 @@ class InputMacroController {
     var localizedFormat = require("dayjs/plugin/localizedFormat");
     dayjs.extend(localizedFormat);
 
-    let macros: InputMacro[] = [
+    const macros: InputMacro[] = [
       new InputMacroThisYear(),
       new InputMacroThisYearROC(),
       new InputMacroThisYearJapanese(),
@@ -426,7 +459,7 @@ class InputMacroController {
       new InputMacroLastYearChineseZodiac(),
       new InputMacroNextYearChineseZodiac(),
     ];
-    for (let macro of macros) {
+    for (const macro of macros) {
       this.macroMap.set(macro.name, macro);
     }
   }
@@ -437,7 +470,7 @@ class InputMacroController {
    * @returns The converted text.
    */
   public handle(input: string) {
-    let macro = this.macroMap.get(input);
+    const macro = this.macroMap.get(input);
     if (macro) {
       return macro.replacement;
     }
