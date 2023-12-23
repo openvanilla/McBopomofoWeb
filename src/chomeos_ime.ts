@@ -129,8 +129,6 @@ function makeUI() {
             annotation: "",
             id: index++,
             label: candidate.keyCap,
-
-            
           };
           chromeCandidates.push(item);
         }
