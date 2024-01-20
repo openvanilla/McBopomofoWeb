@@ -12,9 +12,9 @@ abstract class InputMacro {
   abstract get replacement(): string;
 }
 
-class InputMacroThisYear implements InputMacro {
+class InputMacroThisYearPlain implements InputMacro {
   get name() {
-    return "MACRO@THIS_YEAR";
+    return "MACRO@THIS_YEAR_PLAIN";
   }
 
   get replacement() {
@@ -23,7 +23,18 @@ class InputMacroThisYear implements InputMacro {
   }
 }
 
-class InputMacroThisYearROC implements InputMacro {
+class InputMacroThisYearPlainWithEra implements InputMacro {
+  get name() {
+    return "MACRO@THIS_YEAR_PLAIN_WITH_ERA";
+  }
+
+  get replacement() {
+    const day = dayjs();
+    return day.locale("zh-tw").format("西元YYYY年");
+  }
+}
+
+class InputMacroThisYearRoc implements InputMacro {
   get name() {
     return "MACRO@THIS_YEAR_ROC";
   }
@@ -45,9 +56,9 @@ class InputMacroThisYearJapanese implements InputMacro {
   }
 }
 
-class InputMacroLastYear implements InputMacro {
+class InputMacroLastYearPlain implements InputMacro {
   get name() {
-    return "MACRO@LAST_YEAR";
+    return "MACRO@LAST_YEAR_PLAIN";
   }
 
   get replacement() {
@@ -56,7 +67,18 @@ class InputMacroLastYear implements InputMacro {
   }
 }
 
-class InputMacroLastYearROC implements InputMacro {
+class InputMacroLastYearPlainWithEra implements InputMacro {
+  get name() {
+    return "MACRO@LAST_YEAR_PLAIN_WITH_ERA";
+  }
+
+  get replacement() {
+    const day = dayjs().subtract(1, "year");
+    return day.locale("zh-tw").format("西元YYYY年");
+  }
+}
+
+class InputMacroLastYearRoc implements InputMacro {
   get name() {
     return "MACRO@LAST_YEAR_ROC";
   }
@@ -78,9 +100,9 @@ class InputMacroLastYearJapanese implements InputMacro {
   }
 }
 
-class InputMacroNextYear implements InputMacro {
+class InputMacroNextYearPlain implements InputMacro {
   get name() {
-    return "MACRO@NEXT_YEAR";
+    return "MACRO@NEXT_YEAR_PLAIN";
   }
 
   get replacement() {
@@ -89,7 +111,18 @@ class InputMacroNextYear implements InputMacro {
   }
 }
 
-class InputMacroNextYearROC implements InputMacro {
+class InputMacroNextYearPlainWithEra implements InputMacro {
+  get name() {
+    return "MACRO@NEXT_YEAR_PLAIN_WITH_ERA";
+  }
+
+  get replacement() {
+    const day = dayjs().add(1, "year");
+    return day.locale("zh-tw").format("西元YYYY年");
+  }
+}
+
+class InputMacroNextYearRoc implements InputMacro {
   get name() {
     return "MACRO@NEXT_YEAR_ROC";
   }
@@ -177,7 +210,7 @@ class InputMacroDateTomorrowMedium implements InputMacro {
   }
 }
 
-class InputMacroDateTodayMediumROC implements InputMacro {
+class InputMacroDateTodayMediumRoc implements InputMacro {
   get name() {
     return "MACRO@DATE_TODAY_MEDIUM_ROC";
   }
@@ -188,7 +221,7 @@ class InputMacroDateTodayMediumROC implements InputMacro {
   }
 }
 
-class InputMacroDateYesterdayMediumROC implements InputMacro {
+class InputMacroDateYesterdayMediumRoc implements InputMacro {
   get name() {
     return "MACRO@DATE_YESTERDAY_MEDIUM_ROC";
   }
@@ -199,7 +232,7 @@ class InputMacroDateYesterdayMediumROC implements InputMacro {
   }
 }
 
-class InputMacroDateTomorrowMediumROC implements InputMacro {
+class InputMacroDateTomorrowMediumRoc implements InputMacro {
   get name() {
     return "MACRO@DATE_TOMORROW_MEDIUM_ROC";
   }
@@ -214,6 +247,16 @@ class InputMacroDateTomorrowMediumROC implements InputMacro {
 class InputMacroDateTodayMediumChinese implements InputMacro {
   get name() {
     return "MACRO@DATE_TODAY_MEDIUM_CHINESE";
+  }
+
+  get replacement() {
+    return "";
+  }
+}
+
+class InputMacroDateTodayMediumJapanese implements InputMacro {
+  get name() {
+    return "MACRO@DATE_TODAY_MEDIUM_JAPANESE";
   }
 
   get replacement() {
@@ -244,7 +287,7 @@ class InputMacroDateTomorrowMediumChinese implements InputMacro {
 }
 
 // Note: not supported yet.
-class InputMacroDateTodayFullJapanese implements InputMacro {
+class InputMacroDateTomorrowMediumJapanese implements InputMacro {
   get name() {
     return "MACRO@DATE_TODAY_FULL_JAPANESE";
   }
@@ -255,7 +298,7 @@ class InputMacroDateTodayFullJapanese implements InputMacro {
 }
 
 // Note: not supported yet.
-class InputMacroDateYesterdayFullJapanese implements InputMacro {
+class InputMacroDateYesterdayMediumJapanese implements InputMacro {
   get name() {
     return "MACRO@DATE_YESTERDAY_FULL_JAPANESE";
   }
@@ -276,7 +319,7 @@ class InputMacroDateTomorrowFullJapanese implements InputMacro {
   }
 }
 
-class InputMacroTimeNowShort implements InputMacro {
+class InputMacroDateTimeNowShort implements InputMacro {
   get name() {
     return "MACRO@TIME_NOW_SHORT";
   }
@@ -287,7 +330,7 @@ class InputMacroTimeNowShort implements InputMacro {
   }
 }
 
-class InputMacroTimeNowMedium implements InputMacro {
+class InputMacroDateTimeNowMedium implements InputMacro {
   get name() {
     return "MACRO@TIME_NOW_MEDIUM";
   }
@@ -413,6 +456,135 @@ class InputMacroNextYearChineseZodiac implements InputMacro {
   }
 }
 
+class InputMacroWeekdayTodayShort implements InputMacro {
+  get name() {
+    return "MACRO@DATE_TODAY_WEEKDAY_SHORT";
+  }
+
+  get replacement() {
+    const day = dayjs();
+    return day.locale("zh-tw").format("ddd");
+  }
+}
+
+class InputMacroWeekdayToday implements InputMacro {
+  get name() {
+    return "MACRO@DATE_TODAY_WEEKDAY_SHORT";
+  }
+
+  get replacement() {
+    const day = dayjs();
+    return day.locale("zh-tw").format("dddd");
+  }
+}
+
+class InputMacroWeekdayToday2 implements InputMacro {
+  get name() {
+    return "MACRO@DATE_TODAY2_WEEKDAY";
+  }
+
+  get replacement() {
+    return "";
+  }
+}
+
+class InputMacroWeekdayTodayJapanese implements InputMacro {
+  get name() {
+    return "MACRO@DATE_TODAY_WEEKDAY_JAPANESE";
+  }
+
+  get replacement() {
+    const day = dayjs();
+    return day.locale("ja").format("dddd");
+  }
+}
+
+class InputMacroWeekdayYesterdayShort implements InputMacro {
+  get name() {
+    return "MACRO@DATE_YESTERDAY_WEEKDAY_SHORT";
+  }
+
+  get replacement() {
+    const day = dayjs();
+    return day.subtract(1, "day").locale("zh-tw").format("ddd");
+  }
+}
+
+class InputMacroWeekdayYesterday implements InputMacro {
+  get name() {
+    return "MACRO@DATE_YESTERDAY_WEEKDAY";
+  }
+
+  get replacement() {
+    const day = dayjs();
+    return day.subtract(1, "day").locale("zh-tw").format("dddd");
+  }
+}
+
+class InputMacroWeekdayYesterday2 implements InputMacro {
+  get name() {
+    return "MACRO@DATE_YESTERDAY2_WEEKDAY";
+  }
+
+  get replacement() {
+    return "";
+  }
+}
+
+class InputMacroWeekdayYesterdayJapanese implements InputMacro {
+  get name() {
+    return "MACRO@DATE_YESTERDAY_WEEKDAY_JAPANESE";
+  }
+
+  get replacement() {
+    const day = dayjs();
+    return day.subtract(1, "day").locale("ja").format("dddd");
+  }
+}
+
+class InputMacroWeekdayTomorrowShort implements InputMacro {
+  get name() {
+    return "MACRO@DATE_TOMORROW_WEEKDAY";
+  }
+
+  get replacement() {
+    const day = dayjs();
+    return day.add(1, "day").locale("zh-tw").format("ddd");
+  }
+}
+
+class InputMacroWeekdayTomorrow implements InputMacro {
+  get name() {
+    return "MACRO@DATE_TOMORROW2_WEEKDAY";
+  }
+
+  get replacement() {
+    const day = dayjs();
+    return day.add(1, "day").locale("zh-tw").format("dddd");
+  }
+}
+
+class InputMacroWeekdayTomorrow2 implements InputMacro {
+  get name() {
+    return "MACRO@DATE_YESTERDAY2_WEEKDAY";
+  }
+
+  get replacement() {
+    return "";
+  }
+}
+
+class InputMacroWeekdayTomorrowJapanese implements InputMacro {
+  get name() {
+    return "MACRO@DATE_TOMORROW_WEEKDAY_JAPANESE";
+  }
+
+  get replacement() {
+    const day = dayjs();
+    return day.add(1, "day").locale("ja").format("dddd");
+  }
+}
+
 /**
  * Helps to convert the input macros.
  */
@@ -424,32 +596,47 @@ class InputMacroController {
     dayjs.extend(localizedFormat);
 
     const macros: InputMacro[] = [
-      new InputMacroThisYear(),
-      new InputMacroThisYearROC(),
-      new InputMacroThisYearJapanese(),
-      new InputMacroLastYear(),
-      new InputMacroLastYearROC(),
-      new InputMacroLastYearJapanese(),
-      new InputMacroNextYear(),
-      new InputMacroNextYearROC(),
-      new InputMacroNextYearJapanese(),
       new InputMacroDateTodayShort(),
-      new InputMacroDateYesterdayShort(),
-      new InputMacroDateTomorrowShort(),
       new InputMacroDateTodayMedium(),
-      new InputMacroDateYesterdayMedium(),
-      new InputMacroDateTomorrowMedium(),
-      new InputMacroDateTodayMediumROC(),
-      new InputMacroDateYesterdayMediumROC(),
-      new InputMacroDateTomorrowMediumROC(),
+      new InputMacroDateTodayMediumRoc(),
       new InputMacroDateTodayMediumChinese(),
+      new InputMacroDateTodayMediumJapanese(),
+      new InputMacroThisYearPlain(),
+      new InputMacroThisYearPlainWithEra(),
+      new InputMacroThisYearRoc(),
+      new InputMacroThisYearJapanese(),
+      new InputMacroLastYearPlain(),
+      new InputMacroLastYearPlainWithEra(),
+      new InputMacroLastYearRoc(),
+      new InputMacroLastYearJapanese(),
+      new InputMacroNextYearPlain(),
+      new InputMacroNextYearPlainWithEra(),
+      new InputMacroNextYearRoc(),
+      new InputMacroNextYearJapanese(),
+      new InputMacroWeekdayTodayShort(),
+      new InputMacroWeekdayToday(),
+      new InputMacroWeekdayToday2(),
+      new InputMacroWeekdayTodayJapanese(),
+      new InputMacroWeekdayYesterdayShort(),
+      new InputMacroWeekdayYesterday(),
+      new InputMacroWeekdayYesterday2(),
+      new InputMacroWeekdayYesterdayJapanese(),
+      new InputMacroWeekdayTomorrowShort(),
+      new InputMacroWeekdayTomorrow(),
+      new InputMacroWeekdayTomorrow2(),
+      new InputMacroWeekdayTomorrowJapanese(),
+      new InputMacroDateYesterdayShort(),
+      new InputMacroDateYesterdayMedium(),
+      new InputMacroDateYesterdayMediumRoc(),
       new InputMacroDateYesterdayMediumChinese(),
+      new InputMacroDateYesterdayMediumJapanese(),
+      new InputMacroDateTomorrowShort(),
+      new InputMacroDateTomorrowMedium(),
+      new InputMacroDateTomorrowMediumRoc(),
       new InputMacroDateTomorrowMediumChinese(),
-      new InputMacroDateTodayFullJapanese(),
-      new InputMacroDateYesterdayFullJapanese(),
-      new InputMacroDateTomorrowFullJapanese(),
-      new InputMacroTimeNowShort(),
-      new InputMacroTimeNowMedium(),
+      new InputMacroDateTomorrowMediumJapanese(),
+      new InputMacroDateTimeNowShort(),
+      new InputMacroDateTimeNowMedium(),
       new InputMacroTimeZoneStandard(),
       new InputMacroTimeZoneShortGeneric(),
       new InputMacroThisYearGanZhi(),
