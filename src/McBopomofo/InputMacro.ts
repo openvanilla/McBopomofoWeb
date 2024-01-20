@@ -289,7 +289,7 @@ class InputMacroDateTomorrowMediumChinese implements InputMacro {
 // Note: not supported yet.
 class InputMacroDateTomorrowMediumJapanese implements InputMacro {
   get name() {
-    return "MACRO@DATE_TODAY_FULL_JAPANESE";
+    return "MACRO@DATE_TOMORROW_MEDIUM_JAPANESE";
   }
 
   get replacement() {
@@ -300,7 +300,7 @@ class InputMacroDateTomorrowMediumJapanese implements InputMacro {
 // Note: not supported yet.
 class InputMacroDateYesterdayMediumJapanese implements InputMacro {
   get name() {
-    return "MACRO@DATE_YESTERDAY_FULL_JAPANESE";
+    return "MACRO@DATE_YESTERDAY_MEDIUM_JAPANESE";
   }
 
   get replacement() {
@@ -469,7 +469,7 @@ class InputMacroWeekdayTodayShort implements InputMacro {
 
 class InputMacroWeekdayToday implements InputMacro {
   get name() {
-    return "MACRO@DATE_TODAY_WEEKDAY_SHORT";
+    return "MACRO@DATE_TODAY_WEEKDAY";
   }
 
   get replacement() {
@@ -544,7 +544,7 @@ class InputMacroWeekdayYesterdayJapanese implements InputMacro {
 
 class InputMacroWeekdayTomorrowShort implements InputMacro {
   get name() {
-    return "MACRO@DATE_TOMORROW_WEEKDAY";
+    return "MACRO@DATE_TOMORROW_WEEKDAY_SHORT";
   }
 
   get replacement() {
@@ -555,7 +555,7 @@ class InputMacroWeekdayTomorrowShort implements InputMacro {
 
 class InputMacroWeekdayTomorrow implements InputMacro {
   get name() {
-    return "MACRO@DATE_TOMORROW2_WEEKDAY";
+    return "MACRO@DATE_TOMORROW_WEEKDAY";
   }
 
   get replacement() {
@@ -566,7 +566,7 @@ class InputMacroWeekdayTomorrow implements InputMacro {
 
 class InputMacroWeekdayTomorrow2 implements InputMacro {
   get name() {
-    return "MACRO@DATE_YESTERDAY2_WEEKDAY";
+    return "MACRO@DATE_TOMORROW2_WEEKDAY";
   }
 
   get replacement() {
@@ -592,6 +592,7 @@ class InputMacroController {
   private macroMap = new Map<string, InputMacro>();
   constructor() {
     require("dayjs/locale/zh-tw");
+    require("dayjs/locale/ja");
     var localizedFormat = require("dayjs/plugin/localizedFormat");
     dayjs.extend(localizedFormat);
 
