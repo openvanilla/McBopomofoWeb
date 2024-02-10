@@ -16,6 +16,7 @@ import {
   Inputting,
   Marking,
   NotEmpty,
+  SelectingFeature,
 } from "./InputState";
 import { Key, KeyName } from "./Key";
 import { LocalizedStrings } from "./LocalizedStrings";
@@ -165,6 +166,13 @@ export class KeyHandler {
     ) {
       return false;
     }
+
+    if (simpleAscii === "\\") {
+      this.reset();
+      stateCallback(new SelectingFeature());
+      return true;
+    }
+
     // See if it's valid BPMF reading.
     let keyConsumedByReading = false;
     if (this.reading_.isValidKey(simpleAscii)) {

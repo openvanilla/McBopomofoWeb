@@ -5,6 +5,7 @@
  * SPDX-License-Identifier: MIT
  */
 
+import { Candidate } from "../Gramambular2";
 import { BopomofoKeyboardLayout } from "../Mandarin";
 import { CandidateWrapper, CandidateController } from "./CandidateController";
 import { inputMacroController } from "./InputMacro";
@@ -18,6 +19,7 @@ import {
   Inputting,
   Marking,
   NotEmpty,
+  SelectingFeature,
 } from "./InputState";
 
 import {
@@ -296,14 +298,17 @@ export class InputController {
   }
 
   mcbopomofoKeyEvent(key: Key): boolean {
-    if (this.state_ instanceof ChoosingCandidate) {
+    if (
+      this.state_ instanceof ChoosingCandidate ||
+      this.state_ instanceof SelectingFeature
+    ) {
       this.ui_.reset();
       this.handleCandidateKeyEvent(
         key,
         (newState) => this.enterNewState(newState),
         () => {}
       );
-      if (this.state_ instanceof ChoosingCandidate) {
+      if (this.state_ instanceof NotEmpty) {
         this.updatePreedit(this.state_);
       }
       return true;
@@ -327,6 +332,11 @@ export class InputController {
     );
 
     if (selected != undefined) {
+      if (this.state_ instanceof SelectingFeature) {
+        stateCallback(this.state_.features[+selected.reading].nextState());
+        return;
+      }
+
       this.keyHandler_.candidateSelected(selected, (newState) => {
         this.enterNewState(newState);
       });
@@ -335,6 +345,10 @@ export class InputController {
 
     if (key.name === KeyName.RETURN) {
       let current = this.candidateController_.selectedCandidate;
+      if (this.state_ instanceof SelectingFeature) {
+        stateCallback(this.state_.features[+current.reading].nextState());
+        return;
+      }
 
       this.keyHandler_.candidateSelected(current, (newState) => {
         this.enterNewState(newState);
@@ -343,6 +357,9 @@ export class InputController {
     }
 
     if (key.name === KeyName.ESC || key.name === KeyName.BACKSPACE) {
+      if (this.state_ instanceof SelectingFeature) {
+        stateCallback(new EmptyIgnoringPrevious());
+      }
       this.keyHandler_.candidatePanelCancelled((newState) => {
         this.enterNewState(newState);
       });
@@ -417,6 +434,8 @@ export class InputController {
       this.handleChoosingCandidate(prev, state);
     } else if (state instanceof Marking) {
       this.handleMarking(prev, state);
+    } else if (state instanceof SelectingFeature) {
+      this.handleChoosingCandidate(prev, state);
     }
     this.state_ = state;
   }
@@ -466,15 +485,29 @@ export class InputController {
     this.updatePreedit(state);
   }
 
-  private handleChoosingCandidate(prev: InputState, state: ChoosingCandidate) {
-    this.candidateController_.update(state.candidates, this.candidateKeys_);
+  private handleChoosingCandidate(prev: InputState, state: InputState) {
+    let candidates: Candidate[] = [];
+    if (state instanceof ChoosingCandidate) {
+      candidates = state.candidates;
+    } else if (state instanceof SelectingFeature) {
+      let index = 0;
+      for (let item of state.features) {
+        let candidate = new Candidate(index + "", item.name);
+        candidates.push(candidate);
+        index++;
+      }
+    }
+
+    this.candidateController_.update(candidates, this.candidateKeys_);
     let result = this.candidateController_.getCurrentPage();
     this.ui_.setCandidates(result);
     let totalPageCount = this.candidateController_.totalPageCount;
     let pageIndex = this.candidateController_.currentPageIndex;
     this.ui_.setPageIndex(pageIndex + 1, totalPageCount);
 
-    this.updatePreedit(state);
+    if (state instanceof NotEmpty) {
+      this.updatePreedit(state);
+    }
     this.ui_.update();
   }
 

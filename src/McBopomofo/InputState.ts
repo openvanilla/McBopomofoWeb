@@ -148,3 +148,65 @@ export class Marking extends NotEmpty {
     this.acceptable = canAccept;
   }
 }
+
+enum ChineseNumberStyle {
+  lowercase,
+  uppercase,
+  suzhou,
+}
+
+export class ChineseNumber implements InputState {
+  readonly number: string;
+  readonly style: ChineseNumberStyle;
+
+  constructor(number: string, style: ChineseNumberStyle) {
+    this.number = number;
+    this.style = style;
+  }
+
+  get composingBuffer(): string {
+    switch (this.style) {
+      case ChineseNumberStyle.lowercase:
+        return "[中文數字] " + this.number;
+      case ChineseNumberStyle.uppercase:
+        return "[大寫數字] " + this.number;
+      case ChineseNumberStyle.suzhou:
+        return "[蘇州碼] " + this.number;
+      default:
+        break;
+    }
+
+    return "";
+  }
+}
+
+export class Feature {
+  readonly name: string;
+  readonly nextState: () => InputState;
+
+  constructor(name: string, nextState: () => InputState) {
+    this.name = name;
+    this.nextState = nextState;
+  }
+
+  toString(): string {
+    return this.name;
+  }
+}
+
+export class SelectingFeature implements InputState {
+  readonly features: Feature[] = [
+    new Feature(
+      "中文數字",
+      () => new ChineseNumber("", ChineseNumberStyle.lowercase)
+    ),
+    new Feature(
+      "大寫數字",
+      () => new ChineseNumber("", ChineseNumberStyle.uppercase)
+    ),
+    new Feature(
+      "蘇州碼",
+      () => new ChineseNumber("", ChineseNumberStyle.suzhou)
+    ),
+  ];
+}

@@ -18,7 +18,7 @@ export class SuzhouNumbers {
     ["2", "二"],
     ["3", "三"],
   ]);
-  private static placeNames: Array<string> = [
+  private static placeNames: string[] = [
     "",
     "十",
     "百",
