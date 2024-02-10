@@ -38,4 +38,9 @@ describe("Test Chinese Numbers", () => {
     let output = ChineseNumbers.generate("1234", "", Case.uppercase);
     expect(output).toBe("壹仟貳佰參拾肆");
   });
+
+  test("Test Chinese Numbers 5", () => {
+    let output = ChineseNumbers.generate("1234", "11", Case.uppercase);
+    expect(output).toBe("壹仟貳佰參拾肆點壹壹");
+  });
 });

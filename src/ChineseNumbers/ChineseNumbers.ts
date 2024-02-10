@@ -1,6 +1,6 @@
 import {
   TrimZerosAtStart,
-  trimmingZerosAtEnd as TrimZerosAtEnd,
+  TrimZerosAtEnd as TrimZerosAtEnd,
 } from "./StringUtils";
 
 export enum Case {

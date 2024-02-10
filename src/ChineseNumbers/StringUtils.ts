@@ -22,7 +22,7 @@ export function TrimZerosAtStart(string: string): string {
   return output;
 }
 
-export function trimmingZerosAtEnd(string: string): string {
+export function TrimZerosAtEnd(string: string): string {
   let reverse = reverseString(string);
   let trimmed = TrimZerosAtStart(reverse);
   let result = reverseString(trimmed);
