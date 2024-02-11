@@ -64,7 +64,7 @@ let ui = (function () {
         s += candidate.keyCap;
         s += "</span>";
         s += '<span class="candidiate">';
-        s += candidate.candidate.value;
+        s += candidate.candidate.displayedText;
         s += "</span>";
         if (candidate.selected) s += "</span>";
         s += "</td>";
