@@ -171,9 +171,18 @@ export class KeyHandler {
       return false;
     }
 
+    // Jump into the menu to select features
     if (simpleAscii === "\\") {
       this.reset();
-      stateCallback(new SelectingFeature());
+      stateCallback(
+        new SelectingFeature((input) => {
+          let lm = this.languageModel_;
+          if (lm instanceof WebLanguageModel) {
+            return lm.convertMacro(input);
+          }
+          return input;
+        })
+      );
       return true;
     }
 

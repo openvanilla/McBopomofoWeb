@@ -180,6 +180,35 @@ export class ChineseNumber implements InputState {
   }
 }
 
+export class SelectingDateMacro implements InputState {
+  static macros: string[] = [
+    "MACRO@DATE_TODAY_SHORT",
+    "MACRO@DATE_TODAY_MEDIUM",
+    "MACRO@DATE_TODAY_MEDIUM_ROC",
+    "MACRO@DATE_TODAY_MEDIUM_CHINESE",
+    "MACRO@DATE_TODAY_MEDIUM_JAPANESE",
+    "MACRO@THIS_YEAR_PLAIN",
+    "MACRO@THIS_YEAR_PLAIN_WITH_ERA",
+    "MACRO@THIS_YEAR_ROC",
+    "MACRO@THIS_YEAR_JAPANESE",
+    "MACRO@DATE_TODAY_WEEKDAY_SHORT",
+    "MACRO@DATE_TODAY_WEEKDAY",
+    "MACRO@DATE_TODAY2_WEEKDAY",
+    "MACRO@DATE_TODAY_WEEKDAY_JAPANESE",
+    "MACRO@TIME_NOW_SHORT",
+    "MACRO@TIME_NOW_MEDIUM",
+    "MACRO@THIS_YEAR_GANZHI",
+    "MACRO@THIS_YEAR_CHINESE_ZODIAC",
+  ];
+
+  readonly menu: string[] = [];
+  constructor(converter: (input: string) => string) {
+    for (let macro of SelectingDateMacro.macros) {
+      this.menu.push(converter(macro));
+    }
+  }
+}
+
 export class Feature {
   readonly name: string;
   readonly nextState: () => InputState;
@@ -196,6 +225,7 @@ export class Feature {
 
 export class SelectingFeature implements InputState {
   readonly features: Feature[] = [
+    new Feature("日期與時間", () => new SelectingDateMacro(this.converter)),
     new Feature(
       "中文數字",
       () => new ChineseNumber("", ChineseNumberStyle.lowercase)
@@ -209,4 +239,9 @@ export class SelectingFeature implements InputState {
       () => new ChineseNumber("", ChineseNumberStyle.suzhou)
     ),
   ];
+
+  converter: (input: string) => string;
+  constructor(converter: (input: string) => string) {
+    this.converter = converter;
+  }
 }

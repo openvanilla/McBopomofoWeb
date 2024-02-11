@@ -80,6 +80,12 @@ export class WebLanguageModel implements LanguageModel {
     this.converter_ = converter;
   }
 
+  /** Converts a macro. */
+  convertMacro(input: string): string {
+    let result = this.macroConverter_?.(input);
+    return result ?? input;
+  }
+
   private addUserPhraseConverter?: (input: string) => string | undefined;
   /** Sets the string converter. */
   setAddUserPhraseConverter(

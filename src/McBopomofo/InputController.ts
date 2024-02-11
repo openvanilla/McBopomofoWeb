@@ -20,6 +20,7 @@ import {
   Inputting,
   Marking,
   NotEmpty,
+  SelectingDateMacro,
   SelectingFeature,
 } from "./InputState";
 
@@ -301,7 +302,8 @@ export class InputController {
   mcbopomofoKeyEvent(key: Key): boolean {
     if (
       this.state_ instanceof ChoosingCandidate ||
-      this.state_ instanceof SelectingFeature
+      this.state_ instanceof SelectingFeature ||
+      this.state_ instanceof SelectingDateMacro
     ) {
       this.ui_.reset();
       this.handleCandidateKeyEvent(
@@ -340,6 +342,12 @@ export class InputController {
         return;
       }
 
+      if (this.state_ instanceof SelectingDateMacro) {
+        let newState = new Committing(selected.value);
+        stateCallback(newState);
+        return;
+      }
+
       this.keyHandler_.candidateSelected(selected, (newState) => {
         this.enterNewState(newState);
       });
@@ -353,6 +361,12 @@ export class InputController {
         return;
       }
 
+      if (this.state_ instanceof SelectingDateMacro) {
+        let newState = new Committing(current.value);
+        stateCallback(newState);
+        return;
+      }
+
       this.keyHandler_.candidateSelected(current, (newState) => {
         stateCallback(newState);
       });
@@ -360,7 +374,10 @@ export class InputController {
     }
 
     if (key.name === KeyName.ESC || key.name === KeyName.BACKSPACE) {
-      if (this.state_ instanceof SelectingFeature) {
+      if (
+        this.state_ instanceof SelectingFeature ||
+        this.state_ instanceof SelectingDateMacro
+      ) {
         stateCallback(new EmptyIgnoringPrevious());
         return;
       }
@@ -444,6 +461,8 @@ export class InputController {
       this.handleMarking(prev, state);
     } else if (state instanceof SelectingFeature) {
       this.handleChoosingCandidate(prev, state);
+    } else if (state instanceof SelectingDateMacro) {
+      this.handleChoosingCandidate(prev, state);
     } else if (state instanceof ChineseNumber) {
       this.handleChineseNumber(prev, state);
     }
@@ -505,6 +524,11 @@ export class InputController {
         let candidate = new Candidate("", index + "", item.name);
         candidates.push(candidate);
         index++;
+      }
+    } else if (state instanceof SelectingDateMacro) {
+      for (let item of state.menu) {
+        let candidate = new Candidate("", item, item);
+        candidates.push(candidate);
       }
     }
 
