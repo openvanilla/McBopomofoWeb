@@ -14,17 +14,17 @@ describe("Test CandidateController", () => {
   beforeEach(() => {
     let keyCaps = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
     let candidates = [
-      new Candidate("", "一"),
-      new Candidate("", "二"),
-      new Candidate("", "三"),
-      new Candidate("", "四"),
-      new Candidate("", "五"),
-      new Candidate("", "六"),
-      new Candidate("", "七"),
-      new Candidate("", "八"),
-      new Candidate("", "九"),
-      new Candidate("", "壹"),
-      new Candidate("", "貳"),
+      new Candidate("", "一", "一"),
+      new Candidate("", "二", "二"),
+      new Candidate("", "三", "三"),
+      new Candidate("", "四", "四"),
+      new Candidate("", "五", "五"),
+      new Candidate("", "六", "六"),
+      new Candidate("", "七", "七"),
+      new Candidate("", "八", "八"),
+      new Candidate("", "九", "九"),
+      new Candidate("", "壹", "壹"),
+      new Candidate("", "貳", "貳"),
     ];
     controller.update(candidates, keyCaps);
   });

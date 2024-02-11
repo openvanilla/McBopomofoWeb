@@ -11,6 +11,7 @@ import { CandidateWrapper, CandidateController } from "./CandidateController";
 import { inputMacroController } from "./InputMacro";
 
 import {
+  ChineseNumber,
   ChoosingCandidate,
   Committing,
   Empty,
@@ -310,6 +311,8 @@ export class InputController {
       );
       if (this.state_ instanceof NotEmpty) {
         this.updatePreedit(this.state_);
+      } else {
+        this.ui_.update();
       }
       return true;
     }
@@ -333,7 +336,7 @@ export class InputController {
 
     if (selected != undefined) {
       if (this.state_ instanceof SelectingFeature) {
-        stateCallback(this.state_.features[+selected.reading].nextState());
+        stateCallback(this.state_.features[+selected.value].nextState());
         return;
       }
 
@@ -346,12 +349,12 @@ export class InputController {
     if (key.name === KeyName.RETURN) {
       let current = this.candidateController_.selectedCandidate;
       if (this.state_ instanceof SelectingFeature) {
-        stateCallback(this.state_.features[+current.reading].nextState());
+        stateCallback(this.state_.features[+current.value].nextState());
         return;
       }
 
       this.keyHandler_.candidateSelected(current, (newState) => {
-        this.enterNewState(newState);
+        stateCallback(newState);
       });
       return;
     }
@@ -359,9 +362,10 @@ export class InputController {
     if (key.name === KeyName.ESC || key.name === KeyName.BACKSPACE) {
       if (this.state_ instanceof SelectingFeature) {
         stateCallback(new EmptyIgnoringPrevious());
+        return;
       }
       this.keyHandler_.candidatePanelCancelled((newState) => {
-        this.enterNewState(newState);
+        stateCallback(newState);
       });
       return;
     }
@@ -408,6 +412,10 @@ export class InputController {
     let pageIndex = this.candidateController_.currentPageIndex;
     this.ui_.setPageIndex(pageIndex + 1, totalPageCount);
 
+    if (this.state_ instanceof SelectingFeature) {
+      return;
+    }
+
     if (this.keyHandler_.traditionalMode) {
       let defaultCandidate =
         this.candidateController_.getCurrentPage()[0].candidate;
@@ -436,6 +444,8 @@ export class InputController {
       this.handleMarking(prev, state);
     } else if (state instanceof SelectingFeature) {
       this.handleChoosingCandidate(prev, state);
+    } else if (state instanceof ChineseNumber) {
+      this.handleChineseNumber(prev, state);
     }
     this.state_ = state;
   }
@@ -492,7 +502,7 @@ export class InputController {
     } else if (state instanceof SelectingFeature) {
       let index = 0;
       for (let item of state.features) {
-        let candidate = new Candidate(index + "", item.name);
+        let candidate = new Candidate("", index + "", item.name);
         candidates.push(candidate);
         index++;
       }
@@ -507,12 +517,20 @@ export class InputController {
 
     if (state instanceof NotEmpty) {
       this.updatePreedit(state);
+    } else {
+      this.ui_.update();
     }
-    this.ui_.update();
   }
 
   private handleMarking(prev: InputState, state: Marking) {
     this.updatePreedit(state);
+  }
+
+  private handleChineseNumber(prev: InputState, state: ChineseNumber) {
+    this.ui_.reset();
+    let composingBuffer = state.composingBuffer;
+    this.ui_.append(new ComposingBufferText(composingBuffer));
+    this.ui_.setCursorIndex(composingBuffer.length);
     this.ui_.update();
   }
 }

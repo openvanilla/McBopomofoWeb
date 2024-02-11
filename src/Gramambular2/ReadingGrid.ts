@@ -218,7 +218,9 @@ export class ReadingGrid {
 
     for (let nodeInSpan of nodes) {
       for (let unigram of nodeInSpan.node.unigrams) {
-        result.push(new Candidate(nodeInSpan.node.reading, unigram.value));
+        result.push(
+          new Candidate(nodeInSpan.node.reading, unigram.value, unigram.value)
+        );
       }
     }
     return result;
@@ -625,10 +627,12 @@ export class WalkResult {
 export class Candidate {
   readonly reading: string;
   readonly value: string;
+  readonly displayedText: string;
 
-  constructor(reading: string, value: string) {
+  constructor(reading: string, value: string, displayedText: string) {
     this.reading = reading;
     this.value = value;
+    this.displayedText = displayedText;
   }
 }
 

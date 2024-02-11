@@ -125,7 +125,7 @@ function makeUI() {
             selectedIndex = index;
           }
           let item = {
-            candidate: candidate.candidate.value,
+            candidate: candidate.candidate.displayedText,
             annotation: "",
             id: index++,
             label: candidate.keyCap,

@@ -9,7 +9,7 @@ import { Candidate } from "../Gramambular2";
 
 export class CandidateWrapper {
   keyCap: string = "";
-  candidate: Candidate = new Candidate("", "");
+  candidate: Candidate = new Candidate("", "", "");
   selected: boolean = false;
 
   constructor(keyCap: string, candidate: Candidate, selected: boolean) {
@@ -24,6 +24,10 @@ export class CandidateWrapper {
 
   public get value(): string {
     return this.candidate.value;
+  }
+
+  public get displayedText(): string {
+    return this.candidate.displayedText;
   }
 }
 

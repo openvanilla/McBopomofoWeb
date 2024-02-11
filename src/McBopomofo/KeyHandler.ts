@@ -8,6 +8,8 @@
 import { BopomofoKeyboardLayout, BopomofoReadingBuffer } from "../Mandarin";
 import { UserOverrideModel } from "./UserOverrideModel";
 import {
+  ChineseNumber,
+  ChineseNumberStyle,
   ChoosingCandidate,
   Committing,
   Empty,
@@ -29,6 +31,8 @@ import {
   WalkResult,
 } from "../Gramambular2";
 import { OverrideType } from "../Gramambular2/ReadingGrid";
+import { ChineseNumbers, SuzhouNumbers } from "../ChineseNumbers";
+import { Case } from "../ChineseNumbers/ChineseNumbers";
 
 export class ComposedString {
   head: string = "";
@@ -171,6 +175,10 @@ export class KeyHandler {
       this.reset();
       stateCallback(new SelectingFeature());
       return true;
+    }
+
+    if (state instanceof ChineseNumber) {
+      return this.handleChineseNumber(key, state, stateCallback, errorCallback);
     }
 
     // See if it's valid BPMF reading.
@@ -843,6 +851,93 @@ export class KeyHandler {
     );
   }
 
+  private handleChineseNumber(
+    key: Key,
+    state: ChineseNumber,
+    stateCallback: (state: InputState) => void,
+    errorCallback: () => void
+  ): boolean {
+    if (key.name === KeyName.ESC) {
+      stateCallback(new Empty());
+      return true;
+    }
+    if (key.isDeleteKeys) {
+      let number = state.number;
+      if (number.length > 0) {
+        number = number.substring(number.length - 1);
+      } else {
+        errorCallback();
+        return true;
+      }
+      let newState = new ChineseNumber(number, state.style);
+      stateCallback(newState);
+      return true;
+    }
+    if (key.name == KeyName.RETURN) {
+      if (state.number.length === 0) {
+        stateCallback(new Empty());
+        return true;
+      }
+      let components = state.number.split(".");
+      let intPart = "";
+      let decPart = "";
+      if (components.length == 2) {
+        intPart = components[0];
+        decPart = components[1];
+      } else {
+        intPart = state.number;
+      }
+      let commitString = "";
+      switch (state.style) {
+        case ChineseNumberStyle.lowercase:
+          commitString = ChineseNumbers.generate(
+            intPart,
+            decPart,
+            Case.lowercase
+          );
+          break;
+        case ChineseNumberStyle.uppercase:
+          commitString = ChineseNumbers.generate(
+            intPart,
+            decPart,
+            Case.uppercase
+          );
+          break;
+        case ChineseNumberStyle.suzhou:
+          commitString = SuzhouNumbers.generate(intPart, decPart, "單位", true);
+          break;
+      }
+      let newState = new Committing(commitString);
+      stateCallback(newState);
+      return true;
+    }
+    if (key.ascii >= "0" && key.ascii <= "9") {
+      if (state.number.length > 20) {
+        errorCallback();
+        return true;
+      }
+      let number = state.number + key.ascii;
+      let newState = new ChineseNumber(number, state.style);
+      stateCallback(newState);
+    } else if (key.ascii == ".") {
+      if (state.number.indexOf(".") !== -1) {
+        errorCallback();
+        return true;
+      }
+      if (state.number.length == 0 || state.number.length > 20) {
+        errorCallback();
+        return true;
+      }
+      let number = state.number + key.ascii;
+      let newState = new ChineseNumber(number, state.style);
+      stateCallback(newState);
+    } else {
+      errorCallback();
+    }
+
+    return true;
+  }
+
   private buildInputtingState(): Inputting {
     let composedString = this.getComposedString(this.grid_.cursor);
 
@@ -944,7 +1039,11 @@ export class KeyHandler {
     useMoveCursorAfterSelectionSetting: boolean = true
   ): void {
     let actualCursor = this.actualCandidateCursorIndex;
-    let gridCandidate = new Candidate(candidate.reading, candidate.value);
+    let gridCandidate = new Candidate(
+      candidate.reading,
+      candidate.value,
+      candidate.displayedText
+    );
     if (!this.grid_.overrideCandidate(actualCursor, gridCandidate)) {
       return;
     }

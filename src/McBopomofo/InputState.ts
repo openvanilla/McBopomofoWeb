@@ -149,7 +149,7 @@ export class Marking extends NotEmpty {
   }
 }
 
-enum ChineseNumberStyle {
+export enum ChineseNumberStyle {
   lowercase,
   uppercase,
   suzhou,
