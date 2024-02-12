@@ -31,7 +31,7 @@ describe("Test CandidateController", () => {
 
   test("Test next item 1", () => {
     controller.goToNextItem();
-    let result = controller.getCurrentPage();
+    let result = controller.currentPage;
     expect(result.length).toBe(9);
     let candidate1 = result[0];
     let candidate2 = result[1];
@@ -46,7 +46,7 @@ describe("Test CandidateController", () => {
   test("Test next item 2", () => {
     controller.goToNextPage();
     controller.goToNextItem();
-    let result = controller.getCurrentPage();
+    let result = controller.currentPage;
     expect(result.length).toBe(2);
     let candidate1 = result[0];
     let candidate2 = result[1];
@@ -62,7 +62,7 @@ describe("Test CandidateController", () => {
     controller.goToNextPage();
     controller.goToNextItem();
     controller.goToNextItem();
-    let result = controller.getCurrentPage();
+    let result = controller.currentPage;
     expect(result.length).toBe(2);
     let candidate1 = result[0];
     let candidate2 = result[1];
@@ -77,7 +77,7 @@ describe("Test CandidateController", () => {
   test("Test prev item 1", () => {
     controller.goToNextItem();
     controller.goToPreviousItem();
-    let result = controller.getCurrentPage();
+    let result = controller.currentPage;
     expect(result.length).toBe(9);
     let candidate1 = result[0];
     let candidate2 = result[1];
@@ -92,7 +92,7 @@ describe("Test CandidateController", () => {
   test("Test prev item 2", () => {
     controller.goToNextPage();
     controller.goToPreviousItem();
-    let result = controller.getCurrentPage();
+    let result = controller.currentPage;
     expect(result.length).toBe(9);
     let candidate8 = result[8];
     expect(candidate8.keyCap).toBe("9");
@@ -102,7 +102,7 @@ describe("Test CandidateController", () => {
 
   test("Test next page 1", () => {
     controller.goToNextPage();
-    let result = controller.getCurrentPage();
+    let result = controller.currentPage;
     expect(result.length).toBe(2);
     let candidate1 = result[0];
     let candidate2 = result[1];
@@ -117,7 +117,7 @@ describe("Test CandidateController", () => {
   test("Test next page 2", () => {
     controller.goToNextPage();
     controller.goToNextPage();
-    let result = controller.getCurrentPage();
+    let result = controller.currentPage;
     expect(result.length).toBe(2);
     let candidate1 = result[0];
     let candidate2 = result[1];
@@ -132,7 +132,7 @@ describe("Test CandidateController", () => {
   test("Test prev page 1", () => {
     controller.goToNextPage();
     controller.goToPreviousPage();
-    let result = controller.getCurrentPage();
+    let result = controller.currentPage;
     expect(result.length).toBe(9);
     let candidate1 = result[0];
     let candidate2 = result[1];
@@ -148,7 +148,7 @@ describe("Test CandidateController", () => {
     controller.goToNextPage();
     controller.goToPreviousPage();
     controller.goToPreviousPage();
-    let result = controller.getCurrentPage();
+    let result = controller.currentPage;
     expect(result.length).toBe(9);
     let candidate1 = result[0];
     let candidate2 = result[1];

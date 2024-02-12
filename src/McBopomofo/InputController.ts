@@ -21,6 +21,7 @@ import {
   Marking,
   NotEmpty,
   SelectingDateMacro,
+  SelectingDictionary,
   SelectingFeature,
 } from "./InputState";
 
@@ -289,6 +290,11 @@ export class InputController {
     );
   }
 
+  /** Help the controller to open a URL. */
+  setOnOpenUrl(input: ((input: string) => void) | undefined) {
+    this.keyHandler_.onOpenUrl = input;
+  }
+
   /**
    * Handles the passed keyboard events.
    * @param event The keyboard event.
@@ -303,7 +309,8 @@ export class InputController {
     if (
       this.state_ instanceof ChoosingCandidate ||
       this.state_ instanceof SelectingFeature ||
-      this.state_ instanceof SelectingDateMacro
+      this.state_ instanceof SelectingDateMacro ||
+      this.state_ instanceof SelectingDictionary
     ) {
       this.ui_.reset();
       this.handleCandidateKeyEvent(
@@ -332,6 +339,9 @@ export class InputController {
     stateCallback: (state: InputState) => void,
     errorCallback: () => void
   ) {
+    if (key.ascii === "Shift") {
+      return;
+    }
     let selected = this.candidateController_.selectedCandidateWithKey(
       key.ascii
     );
@@ -345,6 +355,17 @@ export class InputController {
       if (this.state_ instanceof SelectingDateMacro) {
         let newState = new Committing(selected.value);
         stateCallback(newState);
+        return;
+      }
+
+      if (this.state_ instanceof SelectingDictionary) {
+        let index = +selected.value;
+        this.keyHandler_.dictionaryServices.lookup(
+          this.state_.selectedPrase,
+          index,
+          this.state_,
+          stateCallback
+        );
         return;
       }
 
@@ -367,13 +388,43 @@ export class InputController {
         return;
       }
 
+      if (this.state_ instanceof SelectingDictionary) {
+        let index = +current.value;
+        this.keyHandler_.dictionaryServices.lookup(
+          this.state_.selectedPrase,
+          index,
+          this.state_,
+          stateCallback
+        );
+        return;
+      }
+
       this.keyHandler_.candidateSelected(current, (newState) => {
         stateCallback(newState);
       });
       return;
     }
+    let isCancelKey =
+      key.name === KeyName.ESC || key.name === KeyName.BACKSPACE;
 
-    if (key.name === KeyName.ESC || key.name === KeyName.BACKSPACE) {
+    if (key.ascii === "?") {
+      if (this.state_ instanceof SelectingDictionary) {
+        isCancelKey == true;
+      } else if (this.state_ instanceof ChoosingCandidate) {
+        let current = this.candidateController_.selectedCandidate;
+        let phrase = current.value;
+        let newState = new SelectingDictionary(
+          this.state_,
+          phrase,
+          this.candidateController_.selectedIndex,
+          this.keyHandler_.dictionaryServices.buildMenu(phrase)
+        );
+        stateCallback(newState);
+        return;
+      }
+    }
+
+    if (isCancelKey) {
       if (
         this.state_ instanceof SelectingFeature ||
         this.state_ instanceof SelectingDateMacro
@@ -381,6 +432,15 @@ export class InputController {
         stateCallback(new EmptyIgnoringPrevious());
         return;
       }
+      if (this.state_ instanceof SelectingDictionary) {
+        let previous = this.state_.previousState;
+        stateCallback(previous);
+        if (previous instanceof ChoosingCandidate) {
+          this.candidateController_.selectedIndex = this.state_.selectedIndex;
+        }
+        return;
+      }
+
       this.keyHandler_.candidatePanelCancelled((newState) => {
         stateCallback(newState);
       });
@@ -423,7 +483,7 @@ export class InputController {
       this.candidateController_.goToNextPage();
     }
 
-    let result = this.candidateController_.getCurrentPage();
+    let result = this.candidateController_.currentPage;
     this.ui_.setCandidates(result);
     let totalPageCount = this.candidateController_.totalPageCount;
     let pageIndex = this.candidateController_.currentPageIndex;
@@ -434,8 +494,7 @@ export class InputController {
     }
 
     if (this.keyHandler_.traditionalMode) {
-      let defaultCandidate =
-        this.candidateController_.getCurrentPage()[0].candidate;
+      let defaultCandidate = this.candidateController_.currentPage[0].candidate;
       this.keyHandler_.handlePunctuationKeyInCandidatePanelForTraditionalMode(
         key,
         defaultCandidate.value,
@@ -462,6 +521,8 @@ export class InputController {
     } else if (state instanceof SelectingFeature) {
       this.handleChoosingCandidate(prev, state);
     } else if (state instanceof SelectingDateMacro) {
+      this.handleChoosingCandidate(prev, state);
+    } else if (state instanceof SelectingDictionary) {
       this.handleChoosingCandidate(prev, state);
     } else if (state instanceof ChineseNumber) {
       this.handleChineseNumber(prev, state);
@@ -530,10 +591,17 @@ export class InputController {
         let candidate = new Candidate("", item, item);
         candidates.push(candidate);
       }
+    } else if (state instanceof SelectingDictionary) {
+      let index = 0;
+      for (let item of state.menu) {
+        let candidate = new Candidate("", index + "", item);
+        candidates.push(candidate);
+        index++;
+      }
     }
 
     this.candidateController_.update(candidates, this.candidateKeys_);
-    let result = this.candidateController_.getCurrentPage();
+    let result = this.candidateController_.currentPage;
     this.ui_.setCandidates(result);
     let totalPageCount = this.candidateController_.totalPageCount;
     let pageIndex = this.candidateController_.currentPageIndex;

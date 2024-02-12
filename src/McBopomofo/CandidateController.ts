@@ -56,6 +56,14 @@ export class CandidateController {
     return this.candidates_[this.currentSelectedIndex_];
   }
 
+  get selectedIndex(): number {
+    return this.currentSelectedIndex_;
+  }
+
+  set selectedIndex(input: number) {
+    this.currentSelectedIndex_ = input;
+  }
+
   get currentPageIndex(): number {
     return Math.floor(this.currentSelectedIndex_ / this.keyCaps_.length);
   }
@@ -70,7 +78,7 @@ export class CandidateController {
     this.currentSelectedIndex_ = 0;
   }
 
-  getCurrentPage(): CandidateWrapper[] {
+  get currentPage(): CandidateWrapper[] {
     let startPage = Math.floor(
       this.currentSelectedIndex_ / this.keyCaps_.length
     );

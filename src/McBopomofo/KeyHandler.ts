@@ -33,6 +33,7 @@ import {
 import { OverrideType } from "../Gramambular2/ReadingGrid";
 import { ChineseNumbers, SuzhouNumbers } from "../ChineseNumbers";
 import { Case } from "../ChineseNumbers/ChineseNumbers";
+import { DictionaryServices } from "./DictionaryServices";
 
 export class ComposedString {
   head: string = "";
@@ -139,6 +140,15 @@ export class KeyHandler {
   private grid_: ReadingGrid;
   private reading_: BopomofoReadingBuffer;
   private latestWalk_: WalkResult | undefined;
+
+  /** The dictionary services. */
+  readonly dictionaryServices: DictionaryServices = new DictionaryServices();
+  public get onOpenUrl(): ((input: string) => void) | undefined {
+    return this.dictionaryServices.onOpenUrl;
+  }
+  public set onOpenUrl(onOpenUrl: ((input: string) => void) | undefined) {
+    this.dictionaryServices.onOpenUrl = onOpenUrl;
+  }
 
   private userOverrideModel_: UserOverrideModel = new UserOverrideModel(
     kUserOverrideModelCapacity,

@@ -81,6 +81,9 @@ let ui = (function () {
 
 const { InputController } = window.mcbopomofo;
 let controller = new InputController(ui);
+controller.setOnOpenUrl(function (url) {
+  window.open(url);
+});
 let defaultSettings = {
   trad_mode: false,
   chinese_conversion: false,

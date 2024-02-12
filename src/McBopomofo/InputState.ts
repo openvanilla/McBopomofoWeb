@@ -149,6 +149,30 @@ export class Marking extends NotEmpty {
   }
 }
 
+export class SelectingDictionary extends NotEmpty {
+  readonly previousState: NotEmpty;
+  readonly selectedPrase: string;
+  readonly selectedIndex: number;
+  readonly menu: string[];
+
+  constructor(
+    previousState: NotEmpty,
+    selectedPrase: string,
+    selectedIndex: number,
+    menu: string[]
+  ) {
+    super(
+      previousState.composingBuffer,
+      previousState.cursorIndex,
+      previousState.tooltip
+    );
+    this.previousState = previousState;
+    this.selectedPrase = selectedPrase;
+    this.selectedIndex = selectedIndex;
+    this.menu = menu;
+  }
+}
+
 export enum ChineseNumberStyle {
   lowercase,
   uppercase,
