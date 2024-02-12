@@ -18,6 +18,7 @@ import {
   Inputting,
   Marking,
   NotEmpty,
+  SelectingDictionary,
   SelectingFeature,
 } from "./InputState";
 import { Key, KeyName } from "./Key";
@@ -398,6 +399,18 @@ export class KeyHandler {
       let committingState = new Committing(inputtingState.composingBuffer);
       stateCallback(committingState);
       this.reset();
+      return true;
+    }
+
+    if (key.ascii === "?" && state instanceof Marking) {
+      let phrase = state.markedText;
+      let newState = new SelectingDictionary(
+        state,
+        phrase,
+        0,
+        this.dictionaryServices.buildMenu(phrase)
+      );
+      stateCallback(newState);
       return true;
     }
 

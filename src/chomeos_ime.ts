@@ -331,8 +331,32 @@ function toggleChineseConversion() {
   });
 }
 
+function tryOpen(url: string) {
+  chrome.windows.getCurrent({}, (win) => {
+    if (win === undefined) {
+      chrome.windows.create({ url: url, focused: true });
+      return;
+    }
+
+    chrome.tabs.query({ url: url }).then((tabs) => {
+      if (tabs.length == 0) {
+        chrome.tabs.create({ active: true, url: url });
+        return;
+      }
+
+      let tabId = tabs[0].id;
+      if (tabId !== undefined) {
+        chrome.tabs.update(tabId, { selected: true });
+      }
+    });
+  });
+}
+
 // Create a new input controller.
 const mcInputController = new InputController(makeUI());
+mcInputController.setOnOpenUrl((input: string) => {
+  tryOpen(input);
+});
 
 // The horizontal candidate windows on ChromeOS is actually broken so we
 // use the vertical one only.
@@ -462,27 +486,6 @@ chrome.input.ime.onMenuItemActivated.addListener((engineID, name) => {
   if (name === "mcbopomofo-chinese-conversion") {
     toggleChineseConversion();
     return;
-  }
-
-  function tryOpen(url: string) {
-    chrome.windows.getCurrent({}, (win) => {
-      if (win === undefined) {
-        chrome.windows.create({ url: url, focused: true });
-        return;
-      }
-
-      chrome.tabs.query({ url: url }).then((tabs) => {
-        if (tabs.length == 0) {
-          chrome.tabs.create({ active: true, url: url });
-          return;
-        }
-
-        let tabId = tabs[0].id;
-        if (tabId !== undefined) {
-          chrome.tabs.update(tabId, { selected: true });
-        }
-      });
-    });
   }
 
   if (name === "mcbopomofo-options") {
