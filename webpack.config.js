@@ -19,6 +19,6 @@ module.exports = {
     filename: "bundle.js",
     library: "mcbopomofo",
     libraryTarget: "umd",
-    path: path.resolve(__dirname, "example"),
+    path: path.resolve(__dirname, "output/example"),
   },
 };
