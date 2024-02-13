@@ -55,35 +55,44 @@ class InputUIController {
     this.ui = ui;
   }
 
+  /**
+   * Resets everything, including the cursor index, tooltips. candidates and so
+   * on.
+   */
   reset(): void {
     this.cursorIndex = 0;
     this.tooltip = "";
     this.candidates = [];
     this.composingBuffer = [];
-
     this.ui.reset();
   }
 
+  /** Resets the composing buffer. */
   resetComposingBuffer(): void {
     this.composingBuffer = [];
   }
 
+  /** Commits the composing buffer to the current app. */
   commitString(text: string): void {
     this.ui.commitString(text);
   }
 
+  /** Appends to existing composing buffer. */
   append(text: ComposingBufferText): void {
     this.composingBuffer.push(text);
   }
 
+  /** Sets the cursor index. */
   setCursorIndex(index: number): void {
     this.cursorIndex = index;
   }
 
+  /** Sets the candidates.  */
   setCandidates(candidates: CandidateWrapper[]): void {
     this.candidates = candidates;
   }
 
+  /** Updates the current candidate page and total page count. */
   setPageIndex(
     candidateCurrentPageIndex: number,
     candidateTotalPageCount: number
@@ -92,10 +101,12 @@ class InputUIController {
     this.candidateTotalPageCount = candidateTotalPageCount;
   }
 
+  /** Sets the tooltip. */
   setTooltip(tooltip: string): void {
     this.tooltip = tooltip;
   }
 
+  /** Updates the UI. */
   update(): void {
     let state = new InputUIState(
       this.composingBuffer,
