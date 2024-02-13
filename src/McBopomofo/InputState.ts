@@ -94,10 +94,17 @@ export class Inputting extends NotEmpty {
 /** Candidate selecting state with a non-empty composing buffer. */
 export class ChoosingCandidate extends NotEmpty {
   readonly candidates: Candidate[];
+  readonly originalCursorIndex: number;
 
-  constructor(buf: string, index: number, cs: Candidate[]) {
+  constructor(
+    buf: string,
+    index: number,
+    cs: Candidate[],
+    originalCursorIndex: number
+  ) {
     super(buf, index);
     this.candidates = cs;
+    this.originalCursorIndex = originalCursorIndex;
   }
 
   toString(): string {

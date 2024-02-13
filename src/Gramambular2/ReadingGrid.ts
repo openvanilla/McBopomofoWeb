@@ -616,7 +616,7 @@ export class WalkResult {
     for (let node of this.nodes) {
       accumulated += node.spanningLength;
       nodeIndex++;
-      if (accumulated >= cursor) {
+      if (accumulated > cursor) {
         return [node, accumulated, nodeIndex];
       }
     }

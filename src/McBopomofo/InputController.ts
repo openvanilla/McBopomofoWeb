@@ -350,6 +350,7 @@ export class InputController {
     stateCallback: (state: InputState) => void,
     errorCallback: () => void
   ) {
+    // Ignores single shift tap.
     if (key.ascii === "Shift") {
       return;
     }
@@ -360,16 +361,10 @@ export class InputController {
     if (selected != undefined) {
       if (this.state_ instanceof SelectingFeature) {
         stateCallback(this.state_.features[+selected.value].nextState());
-        return;
-      }
-
-      if (this.state_ instanceof SelectingDateMacro) {
+      } else if (this.state_ instanceof SelectingDateMacro) {
         let newState = new Committing(selected.value);
         stateCallback(newState);
-        return;
-      }
-
-      if (this.state_ instanceof SelectingDictionary) {
+      } else if (this.state_ instanceof SelectingDictionary) {
         let index = +selected.value;
         this.keyHandler_.dictionaryServices.lookup(
           this.state_.selectedPrase,
@@ -377,12 +372,15 @@ export class InputController {
           this.state_,
           stateCallback
         );
-        return;
+      } else if (this.state_ instanceof ChoosingCandidate) {
+        this.keyHandler_.candidateSelected(
+          selected,
+          this.state_.originalCursorIndex,
+          (newState) => {
+            this.enterNewState(newState);
+          }
+        );
       }
-
-      this.keyHandler_.candidateSelected(selected, (newState) => {
-        this.enterNewState(newState);
-      });
       return;
     }
 
@@ -390,16 +388,10 @@ export class InputController {
       let current = this.candidateController_.selectedCandidate;
       if (this.state_ instanceof SelectingFeature) {
         stateCallback(this.state_.features[+current.value].nextState());
-        return;
-      }
-
-      if (this.state_ instanceof SelectingDateMacro) {
+      } else if (this.state_ instanceof SelectingDateMacro) {
         let newState = new Committing(current.value);
         stateCallback(newState);
-        return;
-      }
-
-      if (this.state_ instanceof SelectingDictionary) {
+      } else if (this.state_ instanceof SelectingDictionary) {
         let index = +current.value;
         this.keyHandler_.dictionaryServices.lookup(
           this.state_.selectedPrase,
@@ -407,13 +399,16 @@ export class InputController {
           this.state_,
           stateCallback
         );
+      } else if (this.state_ instanceof ChoosingCandidate) {
+        this.keyHandler_.candidateSelected(
+          current,
+          this.state_.originalCursorIndex,
+          (newState) => {
+            stateCallback(newState);
+          }
+        );
         return;
       }
-
-      this.keyHandler_.candidateSelected(current, (newState) => {
-        stateCallback(newState);
-      });
-      return;
     }
     let isCancelKey =
       key.name === KeyName.ESC || key.name === KeyName.BACKSPACE;
@@ -441,20 +436,21 @@ export class InputController {
         this.state_ instanceof SelectingDateMacro
       ) {
         stateCallback(new EmptyIgnoringPrevious());
-        return;
-      }
-      if (this.state_ instanceof SelectingDictionary) {
+      } else if (this.state_ instanceof SelectingDictionary) {
         let previous = this.state_.previousState;
         stateCallback(previous);
         if (previous instanceof ChoosingCandidate) {
           this.candidateController_.selectedIndex = this.state_.selectedIndex;
         }
+      } else if (this.state_ instanceof ChoosingCandidate) {
+        this.keyHandler_.candidatePanelCancelled(
+          this.state_.originalCursorIndex,
+          (newState) => {
+            stateCallback(newState);
+          }
+        );
         return;
       }
-
-      this.keyHandler_.candidatePanelCancelled((newState) => {
-        stateCallback(newState);
-      });
       return;
     }
 
@@ -500,7 +496,7 @@ export class InputController {
     let pageIndex = this.candidateController_.currentPageIndex;
     this.ui_.setPageIndex(pageIndex + 1, totalPageCount);
 
-    if (this.state_ instanceof SelectingFeature) {
+    if (!(this.state_ instanceof ChoosingCandidate)) {
       return;
     }
 

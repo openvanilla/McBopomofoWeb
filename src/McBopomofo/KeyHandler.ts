@@ -261,8 +261,10 @@ export class KeyHandler {
 
       if (this.traditionalMode_) {
         let inputtingState = this.buildInputtingState();
-        let choosingCandidates =
-          this.buildChoosingCandidateState(inputtingState);
+        let choosingCandidates = this.buildChoosingCandidateState(
+          inputtingState,
+          0
+        );
         this.reset();
         if (choosingCandidates.candidates.length === 1) {
           let text = choosingCandidates.candidates[0].value;
@@ -318,7 +320,21 @@ export class KeyHandler {
       maybeNotEmptyState instanceof NotEmpty &&
       this.reading_.isEmpty
     ) {
-      stateCallback(this.buildChoosingCandidateState(maybeNotEmptyState));
+      let originalCursorIndex = this.grid_.cursor;
+      if (
+        originalCursorIndex === this.grid_.length &&
+        this.selectPhraseAfterCursorAsCandidate_ &&
+        this.moveCursorAfterSelection_
+      ) {
+        this.grid_.cursor = originalCursorIndex - 1;
+      }
+
+      stateCallback(
+        this.buildChoosingCandidateState(
+          maybeNotEmptyState,
+          originalCursorIndex
+        )
+      );
       return true;
     }
 
@@ -422,11 +438,15 @@ export class KeyHandler {
       if (this.reading_.isEmpty) {
         this.grid_.insertReading(kPunctuationListUnigramKey);
         this.walk();
-
+        let originalCursorIndex = this.grid_.cursor;
+        if (this.selectPhraseAfterCursorAsCandidate_) {
+          this.grid_.cursor = originalCursorIndex - 1;
+        }
         let inputtingState = this.buildInputtingState();
-        let choosingCandidateState =
-          this.buildChoosingCandidateState(inputtingState);
-        stateCallback(inputtingState);
+        let choosingCandidateState = this.buildChoosingCandidateState(
+          inputtingState,
+          originalCursorIndex
+        );
         stateCallback(choosingCandidateState);
       } else {
         // Punctuation ignored if a bopomofo reading is active..
@@ -499,6 +519,7 @@ export class KeyHandler {
 
   candidateSelected(
     candidate: Candidate,
+    originalCursorIndex: number,
     stateCallback: (state: InputState) => void
   ): void {
     if (this.traditionalMode_) {
@@ -507,17 +528,20 @@ export class KeyHandler {
       return;
     }
 
-    this.pinNode(candidate);
+    this.pinNode(candidate, originalCursorIndex);
     stateCallback(this.buildInputtingState());
   }
 
-  candidatePanelCancelled(stateCallback: (state: InputState) => void): void {
+  candidatePanelCancelled(
+    originalCursorIndex: number,
+    stateCallback: (state: InputState) => void
+  ): void {
     if (this.traditionalMode_) {
       this.reset();
       stateCallback(new EmptyIgnoringPrevious());
       return;
     }
-
+    this.grid_.cursor = originalCursorIndex;
     stateCallback(this.buildInputtingState());
   }
 
@@ -650,7 +674,7 @@ export class KeyHandler {
       return true;
     }
 
-    let candidates = this.buildChoosingCandidateState(inputting).candidates;
+    let candidates = this.buildChoosingCandidateState(inputting, 0).candidates;
     if (!candidates.length) {
       errorCallback();
       return true;
@@ -717,6 +741,7 @@ export class KeyHandler {
 
     this.pinNode(
       candidates[currentIndex],
+      this.grid_.cursor,
       /*useMoveCursorAfterSelectionSetting=*/ false
     );
     stateCallback(this.buildInputtingState());
@@ -855,7 +880,7 @@ export class KeyHandler {
 
     if (this.traditionalMode_ && this.reading_.isEmpty) {
       let inputting = this.buildInputtingState();
-      let candidateState = this.buildChoosingCandidateState(inputting);
+      let candidateState = this.buildChoosingCandidateState(inputting, 0);
       this.reset();
       if (candidateState.candidates.length === 1) {
         let text = candidateState.candidates[0].value;
@@ -871,15 +896,17 @@ export class KeyHandler {
   }
 
   private buildChoosingCandidateState(
-    nonEmptyState: NotEmpty
+    nonEmptyState: NotEmpty,
+    originalCursorIndex: number
   ): ChoosingCandidate {
     let candidates = this.grid_.candidatesAt(this.actualCandidateCursorIndex);
+    let cursorIndex = this.grid_.cursor;
 
     return new ChoosingCandidate(
       nonEmptyState.composingBuffer,
-      nonEmptyState.cursorIndex,
-      // candidates
-      candidates
+      cursorIndex,
+      candidates,
+      originalCursorIndex
     );
   }
 
@@ -1068,6 +1095,7 @@ export class KeyHandler {
 
   private pinNode(
     candidate: Candidate,
+    originalCursorIndex: number,
     useMoveCursorAfterSelectionSetting: boolean = true
   ): void {
     let actualCursor = this.actualCandidateCursorIndex;
@@ -1107,6 +1135,8 @@ export class KeyHandler {
 
     if (useMoveCursorAfterSelectionSetting && this.moveCursorAfterSelection_) {
       this.grid_.cursor = accumulatedCursor;
+    } else {
+      this.grid_.cursor = originalCursorIndex;
     }
   }
 
