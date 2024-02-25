@@ -1,7 +1,7 @@
 const path = require("path");
 
 module.exports = {
-  entry: "./src/chromeos_ime.ts",
+  entry: "./src/pime.ts",
   module: {
     rules: [
       {
@@ -9,7 +9,7 @@ module.exports = {
         include: [path.resolve(__dirname, "src")],
         exclude: [
           path.resolve(__dirname, "src/index.ts"),
-          path.resolve(__dirname, "src/pime.ts"),
+          path.resolve(__dirname, "src/chromeos_ime.ts"),
         ],
         use: "ts-loader",
       },
