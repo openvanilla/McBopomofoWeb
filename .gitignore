@@ -7,3 +7,4 @@ bundle.js
 *.zip
 *.crx
 *.LICENSE.txt
+output/pime/index.js

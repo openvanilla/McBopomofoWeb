@@ -19,7 +19,7 @@ module.exports = {
     extensions: [".ts", ".js"],
   },
   output: {
-    filename: "bundle.js",
-    path: path.resolve(__dirname, "output/chromeos"),
+    filename: "inddex.js",
+    path: path.resolve(__dirname, "output/pime"),
   },
 };

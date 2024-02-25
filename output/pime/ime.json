@@ -1,0 +1,11 @@
+{
+  "name": "小麥注音",
+  "version": "0.1",
+  "guid": "{5340c1d9-706e-4b6b-b022-2e763fa5f674}",
+  "locale": "zh-Hant-TW",
+  "fallbackLocale": "zh-TW",
+  "icon": "icon.ico",
+  "win8_icon": "",
+  "moduleName": "index",
+  "serviceName": ""
+}

@@ -11,7 +11,171 @@
 // };
 // let settings = defaultSettings;
 
+// Note: events
+// onActivate
+// onDeactivate
+// filterKeyDown
+// onKeyDown
+// filterKeyUp
+// onKeyUp
+// onPreservedKey
+// onCommand
+// onMenu
+// onCompartmentChanged
+// onKeyboardStatusChanged
+// onCompositionTerminated
+// init
+
+import { InputController } from "./McBopomofo/InputController";
+import { InputUI } from "./McBopomofo/InputUI";
+
+class PimeMcBopomofo {
+  mcInputController: InputController;
+
+  constructor() {
+    this.mcInputController = new InputController(this.makeUI());
+  }
+
+  makeUI() {
+    let that = {
+      uiState: {},
+      reset: () => {},
+      commitString(text: string) {},
+      update(stateString: string) {},
+    };
+    that.uiState = {
+      action: "",
+      compositionString: "",
+      compositionCursor: 0,
+      showCandidates: false,
+      candidateList: [],
+      candidateCursor: 0,
+    };
+
+    that.reset = () => {
+      that.uiState = {
+        compositionString: "",
+        compositionCursor: 0,
+        showCandidates: false,
+        candidateList: [],
+        candidateCursor: 0,
+      };
+    };
+
+    that.commitString = (text) => {
+      that.uiState = {
+        commitSting: text,
+        compositionString: "",
+        compositionCursor: 0,
+        showCandidates: false,
+        candidateList: [],
+        candidateCursor: 0,
+      };
+    };
+
+    that.update = (stateString) => {
+      let state = JSON.parse(stateString);
+      let buffer = state.composingBuffer;
+      let candidates = state.candidates;
+      let selectedIndex = 0;
+      let index = 0;
+      let candidateList = [];
+      for (let candidate of state.candidates) {
+        if (candidate.selected) {
+          selectedIndex = index;
+        }
+        candidateList.push(candidate.candidate.displayedText);
+        index++;
+      }
+
+      that.uiState = {
+        compositionString: buffer,
+        compositionCursor: state.cursorIndex,
+        showCandidates: candidates.length > 0,
+        candidateList: candidateList,
+        candidateCursor: selectedIndex,
+      };
+    };
+
+    return that;
+  }
+
+  defaultActivateResponse(): any {
+    return {
+      customizeUI: {
+        candPerRow: 9,
+        candFontSize: 16,
+        candFontName: "MingLiu",
+        candUseCursor: true,
+      },
+      seqNum: 0,
+      setSelKeys: "123456789",
+      addButton: [
+        {
+          id: "switch-lang",
+          icon: "icon file path",
+          commandId: 1,
+          tooltip: "中英文切換",
+        },
+        {
+          id: "windows-mode-icon",
+          icon: "icon file path",
+          commandId: 4,
+          tooltip: "中英文切換",
+        },
+        {
+          id: "switch-shape",
+          icon: "icon file path",
+          commandId: 2,
+          tooltip: "全形/半形切換",
+        },
+        {
+          id: "settings",
+          icon: "icon file path",
+          type: "menu",
+          tooltip: "設定",
+        },
+      ],
+    };
+  }
+}
+
+// https://hackmd.io/@SYkYaRqjTQm-oj2WqaWhUQ/BJ0xsY5A?type=slide#/
+const pimeMcBopomofo = new PimeMcBopomofo();
+
 module.exports = {
-  textReducer(request: any, preState: any) {},
-  response(request: any, preState: any) {},
+  textReducer(request: any, preState: any) {
+    if (request["method"] === "init") {
+      return Object.assign({}, preState, {
+        action: "",
+        compositionString: "",
+        compositionCursor: 0,
+        showCandidates: false,
+        candidateList: [],
+        candidateCursor: 0,
+      });
+    }
+
+    if (request.method === "onActivate") {
+      let response = pimeMcBopomofo.defaultActivateResponse();
+      response.success = true;
+      response.seqNum = request.seqNum;
+      return response;
+    }
+
+    if (request.method === "onKeyDown") {
+      // TODO: let input controller handle key
+    }
+
+    return preState;
+  },
+  response(request: any, preState: any) {
+    if (request.method === "filterKeyDown") {
+      return { return: true, success: true, seqNum: request.seqNum };
+    }
+
+    if (request.method === "onKeyDown") {
+      return Object.assign({}, preState, pimeMcBopomofo.uiState);
+    }
+  },
 };

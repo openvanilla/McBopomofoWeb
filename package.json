@@ -25,6 +25,7 @@
     "ts-build:watch": "tsc -w",
     "build": "webpack --mode production",
     "build:chromeos": "webpack --mode production --config webpack.config.chromeext.js",
+    "build:pime": "webpack --mode production --config webpack.config.pime.js",
     "build:dev": "webpack --mode development",
     "build:watch": "webpack --mode development --watch",
     "test": "./node_modules/jest/bin/jest.js",
