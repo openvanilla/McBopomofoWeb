@@ -10,6 +10,7 @@ module.exports = {
         exclude: [
           path.resolve(__dirname, "src/index.ts"),
           path.resolve(__dirname, "src/chromeos_ime.ts"),
+          path.resolve(__dirname, "src/LargeSync/LargeSync.ts"),
         ],
         use: "ts-loader",
       },
@@ -20,6 +21,9 @@ module.exports = {
   },
   output: {
     filename: "index.js",
+    library: "mcbopomofo",
+    libraryTarget: "umd",
+    globalObject: "this",
     path: path.resolve(__dirname, "output/pime"),
   },
 };
