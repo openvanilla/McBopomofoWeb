@@ -19,7 +19,7 @@ module.exports = {
     extensions: [".ts", ".js"],
   },
   output: {
-    filename: "inddex.js",
+    filename: "index.js",
     path: path.resolve(__dirname, "output/pime"),
   },
 };
