@@ -31,72 +31,63 @@ import { InputUI } from "./McBopomofo/InputUI";
 
 class PimeMcBopomofo {
   mcInputController: InputController;
+  uiState: any = {
+    compositionString: "",
+    compositionCursor: 0,
+    showCandidates: false,
+    candidateList: [],
+    candidateCursor: 0,
+  };
 
   constructor() {
-    this.mcInputController = new InputController(this.makeUI());
+    this.mcInputController = new InputController(this.makeUI(this));
   }
 
-  makeUI() {
-    let that = {
-      uiState: {},
-      reset: () => {},
-      commitString(text: string) {},
-      update(stateString: string) {},
-    };
-    that.uiState = {
-      action: "",
-      compositionString: "",
-      compositionCursor: 0,
-      showCandidates: false,
-      candidateList: [],
-      candidateCursor: 0,
-    };
-
-    that.reset = () => {
-      that.uiState = {
-        compositionString: "",
-        compositionCursor: 0,
-        showCandidates: false,
-        candidateList: [],
-        candidateCursor: 0,
-      };
-    };
-
-    that.commitString = (text) => {
-      that.uiState = {
-        commitSting: text,
-        compositionString: "",
-        compositionCursor: 0,
-        showCandidates: false,
-        candidateList: [],
-        candidateCursor: 0,
-      };
-    };
-
-    that.update = (stateString) => {
-      let state = JSON.parse(stateString);
-      let buffer = state.composingBuffer;
-      let candidates = state.candidates;
-      let selectedIndex = 0;
-      let index = 0;
-      let candidateList = [];
-      for (let candidate of state.candidates) {
-        if (candidate.selected) {
-          selectedIndex = index;
+  makeUI(controller: PimeMcBopomofo): InputUI {
+    let that: InputUI = {
+      reset: () => {
+        controller.uiState = {
+          compositionString: "",
+          compositionCursor: 0,
+          showCandidates: false,
+          candidateList: [],
+          candidateCursor: 0,
+        };
+      },
+      commitString(text: string) {
+        controller.uiState = {
+          commitSting: text,
+          compositionString: "",
+          compositionCursor: 0,
+          showCandidates: false,
+          candidateList: [],
+          candidateCursor: 0,
+        };
+      },
+      update(stateString: string) {
+        let state = JSON.parse(stateString);
+        let buffer = state.composingBuffer;
+        let candidates = state.candidates;
+        let selectedIndex = 0;
+        let index = 0;
+        let candidateList = [];
+        for (let candidate of state.candidates) {
+          if (candidate.selected) {
+            selectedIndex = index;
+          }
+          candidateList.push(candidate.candidate.displayedText);
+          index++;
         }
-        candidateList.push(candidate.candidate.displayedText);
-        index++;
-      }
 
-      that.uiState = {
-        compositionString: buffer,
-        compositionCursor: state.cursorIndex,
-        showCandidates: candidates.length > 0,
-        candidateList: candidateList,
-        candidateCursor: selectedIndex,
-      };
+        controller.uiState = {
+          compositionString: buffer,
+          compositionCursor: state.cursorIndex,
+          showCandidates: candidates.length > 0,
+          candidateList: candidateList,
+          candidateCursor: selectedIndex,
+        };
+      },
     };
-
     return that;
   }
 
