@@ -41,7 +41,7 @@ let isShiftHold = false;
 let isAlphabetMode = false;
 
 function myLocalizedString(en: string, zh: string): string {
-  return lang == "zh-TW" ? zh : en;
+  return lang === "zh-TW" ? zh : en;
 }
 
 function makeUI() {
@@ -339,7 +339,7 @@ function tryOpen(url: string) {
     }
 
     chrome.tabs.query({ url: url }).then((tabs) => {
-      if (tabs.length == 0) {
+      if (tabs.length === 0) {
         chrome.tabs.create({ active: true, url: url });
         return;
       }

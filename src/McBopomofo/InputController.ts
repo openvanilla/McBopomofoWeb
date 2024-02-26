@@ -415,7 +415,7 @@ export class InputController {
 
     if (key.ascii === "?") {
       if (this.state_ instanceof SelectingDictionary) {
-        isCancelKey == true;
+        isCancelKey = true;
       } else if (this.state_ instanceof ChoosingCandidate) {
         let current = this.candidateController_.selectedCandidate;
         let phrase = current.value;
