@@ -887,7 +887,6 @@ export class KeyHandler {
   ): ChoosingCandidate {
     let candidates = this.grid_.candidatesAt(this.actualCandidateCursorIndex);
     let inputting = this.buildInputtingState();
-    let cursorIndex = this.grid_.cursor;
 
     return new ChoosingCandidate(
       inputting.composingBuffer,
