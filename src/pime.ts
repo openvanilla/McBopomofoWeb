@@ -320,9 +320,10 @@ class PimeMcBopomofo {
   }
 
   defaultActivateResponse(): any {
+    // TODO: Use candPerRow to decide to use vertical or horizontal layout.
     return {
       customizeUI: {
-        candPerRow: 9,
+        candPerRow: 1,
         candFontSize: 16,
         candFontName: "MingLiu",
         candUseCursor: true,
