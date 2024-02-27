@@ -8,9 +8,9 @@
 import { Candidate } from "../Gramambular2";
 
 export class CandidateWrapper {
-  keyCap: string = "";
-  candidate: Candidate = new Candidate("", "", "");
-  selected: boolean = false;
+  readonly keyCap: string = "";
+  readonly candidate: Candidate = new Candidate("", "", "");
+  readonly selected: boolean = false;
 
   constructor(keyCap: string, candidate: Candidate, selected: boolean) {
     this.keyCap = keyCap;

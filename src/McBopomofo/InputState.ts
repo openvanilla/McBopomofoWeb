@@ -235,7 +235,10 @@ export class SelectingDateMacro implements InputState {
   readonly menu: string[] = [];
   constructor(converter: (input: string) => string) {
     for (let macro of SelectingDateMacro.macros) {
-      this.menu.push(converter(macro));
+      let value = converter(macro);
+      if (value) {
+        this.menu.push(value);
+      }
     }
   }
 }

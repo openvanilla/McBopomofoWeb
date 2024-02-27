@@ -260,11 +260,7 @@ export class KeyHandler {
       }
 
       if (this.traditionalMode_) {
-        let inputtingState = this.buildInputtingState();
-        let choosingCandidates = this.buildChoosingCandidateState(
-          inputtingState,
-          0
-        );
+        let choosingCandidates = this.buildChoosingCandidateState(0);
         this.reset();
         if (choosingCandidates.candidates.length === 1) {
           let text = choosingCandidates.candidates[0].value;
@@ -329,12 +325,7 @@ export class KeyHandler {
         this.grid_.cursor = originalCursorIndex - 1;
       }
 
-      stateCallback(
-        this.buildChoosingCandidateState(
-          maybeNotEmptyState,
-          originalCursorIndex
-        )
-      );
+      stateCallback(this.buildChoosingCandidateState(originalCursorIndex));
       return true;
     }
 
@@ -442,11 +433,8 @@ export class KeyHandler {
         if (this.selectPhraseAfterCursorAsCandidate_) {
           this.grid_.cursor = originalCursorIndex - 1;
         }
-        let inputtingState = this.buildInputtingState();
-        let choosingCandidateState = this.buildChoosingCandidateState(
-          inputtingState,
-          originalCursorIndex
-        );
+        let choosingCandidateState =
+          this.buildChoosingCandidateState(originalCursorIndex);
         stateCallback(choosingCandidateState);
       } else {
         // Punctuation ignored if a bopomofo reading is active..
@@ -674,7 +662,7 @@ export class KeyHandler {
       return true;
     }
 
-    let candidates = this.buildChoosingCandidateState(inputting, 0).candidates;
+    let candidates = this.buildChoosingCandidateState(0).candidates;
     if (!candidates.length) {
       errorCallback();
       return true;
@@ -879,8 +867,7 @@ export class KeyHandler {
     this.walk();
 
     if (this.traditionalMode_ && this.reading_.isEmpty) {
-      let inputting = this.buildInputtingState();
-      let candidateState = this.buildChoosingCandidateState(inputting, 0);
+      let candidateState = this.buildChoosingCandidateState(0);
       this.reset();
       if (candidateState.candidates.length === 1) {
         let text = candidateState.candidates[0].value;
@@ -896,15 +883,14 @@ export class KeyHandler {
   }
 
   private buildChoosingCandidateState(
-    nonEmptyState: NotEmpty,
     originalCursorIndex: number
   ): ChoosingCandidate {
     let candidates = this.grid_.candidatesAt(this.actualCandidateCursorIndex);
-    let cursorIndex = this.grid_.cursor;
+    let inputting = this.buildInputtingState();
 
     return new ChoosingCandidate(
-      nonEmptyState.composingBuffer,
-      cursorIndex,
+      inputting.composingBuffer,
+      inputting.cursorIndex,
       candidates,
       originalCursorIndex
     );
