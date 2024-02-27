@@ -2,6 +2,7 @@ import { List } from "lodash";
 import { InputController } from "./McBopomofo/InputController";
 import { InputUI } from "./McBopomofo/InputUI";
 import { Key, KeyName } from "./McBopomofo/Key";
+import path from "path";
 
 enum VK_Keys {
   VK_LBUTTON = 0x01,
@@ -229,6 +230,12 @@ function KeyFromKeyboardEvent(
     case VK_Keys.VK_TAB:
       keyName = KeyName.TAB;
       break;
+    case VK_Keys.VK_PRIOR:
+      keyName = KeyName.PAGE_UP;
+      break;
+    case VK_Keys.VK_NEXT:
+      keyName = KeyName.PAGE_DOWN;
+      break;
     default:
       keyName = KeyName.ASCII;
       break;
@@ -349,6 +356,7 @@ class PimeMcBopomofo {
   }
 
   makeUI(instance: PimeMcBopomofo): InputUI {
+    let iconDir = __dirname + "\\icons";
     let that: InputUI = {
       reset: () => {
         instance.uiState = {
@@ -392,8 +400,9 @@ class PimeMcBopomofo {
           compositionString += item.text;
         }
 
+        let commitString = instance.uiState.commitString;
         instance.uiState = {
-          commitString: "",
+          commitString: commitString,
           compositionString: compositionString,
           compositionCursor: state.cursorIndex,
           showCandidates: candidates.length > 0,
@@ -415,32 +424,32 @@ class PimeMcBopomofo {
         candUseCursor: true,
       },
       setSelKeys: "123456789",
-      // addButton: [
-      //   {
-      //     id: "switch-lang",
-      //     icon: "icon file path",
-      //     commandId: 1,
-      //     tooltip: "中英文切換",
-      //   },
-      //   {
-      //     id: "windows-mode-icon",
-      //     icon: "icon file path",
-      //     commandId: 4,
-      //     tooltip: "中英文切換",
-      //   },
-      //   {
-      //     id: "switch-shape",
-      //     icon: "icon file path",
-      //     commandId: 2,
-      //     tooltip: "全形/半形切換",
-      //   },
-      //   {
-      //     id: "settings",
-      //     icon: "icon file path",
-      //     type: "menu",
-      //     tooltip: "設定",
-      //   },
-      // ],
+      addButton: [
+        //   {
+        //     id: "switch-lang",
+        //     icon: "icon file path",
+        //     commandId: 1,
+        //     tooltip: "中英文切換",
+        //   },
+        //   {
+        //     id: "windows-mode-icon",
+        //     icon: "icon file path",
+        //     commandId: 4,
+        //     tooltip: "中英文切換",
+        //   },
+        //   {
+        //     id: "switch-shape",
+        //     icon: "icon file path",
+        //     commandId: 2,
+        //     tooltip: "全形/半形切換",
+        //   },
+        {
+          id: "settings",
+          icon: path.join(__dirname, "icons", "config.png"),
+          type: "menu",
+          tooltip: "設定",
+        },
+      ],
     };
   }
 }

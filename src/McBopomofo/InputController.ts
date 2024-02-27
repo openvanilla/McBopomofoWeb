@@ -372,6 +372,8 @@ export class InputController {
           this.state_,
           stateCallback
         );
+        let newState = this.state_.previousState;
+        stateCallback(newState);
       } else if (this.state_ instanceof ChoosingCandidate) {
         this.keyHandler_.candidateSelected(
           selected,
@@ -399,6 +401,8 @@ export class InputController {
           this.state_,
           stateCallback
         );
+        let newState = this.state_.previousState;
+        stateCallback(newState);
       } else if (this.state_ instanceof ChoosingCandidate) {
         this.keyHandler_.candidateSelected(
           current,
@@ -407,9 +411,10 @@ export class InputController {
             stateCallback(newState);
           }
         );
-        return;
       }
+      return;
     }
+
     let isCancelKey =
       key.name === KeyName.ESC || key.name === KeyName.BACKSPACE;
 
