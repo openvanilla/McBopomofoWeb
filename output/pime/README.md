@@ -3,7 +3,7 @@
 ## Build and Run
 
 - Install a copy of PIME on your PC
-- run `npm run build:pime`. The command build a "index.js" file into the folder.q
+- run `npm run build:pime`. The command build a "index.js" file into the folder.
 - Copy the folder to `C:\Program Files (x86)\PIME\node\input_methods\mcbopomofo`
 - Open a command prompt or Windows terminal as administrator, and then run
   `regsvr32 "C:\Program Files (X86)\PIME\x86\PIMETextService.dll"`

@@ -1,3 +1,4 @@
+import { List } from "lodash";
 import { InputController } from "./McBopomofo/InputController";
 import { InputUI } from "./McBopomofo/InputUI";
 import { Key, KeyName } from "./McBopomofo/Key";
@@ -238,37 +239,122 @@ function KeyFromKeyboardEvent(
   return key;
 }
 
+interface Settings {
+  layout: string;
+  select_phrase: string;
+  candidate_keys: string;
+  esc_key_clear_entire_buffer: boolean;
+  shift_key_toggle_alphabet_mode: boolean;
+  chineseConversion: boolean;
+  move_cursor: boolean;
+  letter_mode: string;
+}
+
+interface UiState {
+  commitString: string;
+  compositionString: string;
+  compositionCursor: number;
+  showCandidates: boolean;
+  candidateList: List<string>;
+  candidateCursor: number;
+}
+
 // The default settings.
-// var defaultSettings = {
-//   layout: "standard",
-//   select_phrase: "before_cursor",
-//   candidate_keys: "123456789",
-//   esc_key_clear_entire_buffer: false,
-//   shift_key_toggle_alphabet_mode: true,
-//   chineseConversion: false,
-//   move_cursor: true,
-//   letter_mode: "upper",
-// };
-// let settings = defaultSettings;
+var defaultSettings: Settings = {
+  layout: "standard",
+  select_phrase: "before_cursor",
+  candidate_keys: "123456789",
+  esc_key_clear_entire_buffer: false,
+  shift_key_toggle_alphabet_mode: true,
+  chineseConversion: false,
+  move_cursor: true,
+  letter_mode: "upper",
+};
 
 class PimeMcBopomofo {
   mcInputController: InputController;
-  uiState: any = {
+  uiState: UiState = {
+    commitString: "",
     compositionString: "",
     compositionCursor: 0,
     showCandidates: false,
     candidateList: [],
     candidateCursor: 0,
   };
+  lastKeyHandled = false;
+  settings: Settings = defaultSettings;
 
   constructor() {
     this.mcInputController = new InputController(this.makeUI(this));
+    this.mcInputController.setUserVerticalCandidates(true);
+    this.mcInputController.setOnOpenUrl((url: string) => {
+      // TODO: Helps the controller to open a URL
+    });
+    this.mcInputController.setOnPhraseChange((map: Map<string, string[]>) => {
+      // TODO: Save to user's phrase table
+      this.writeUserPhrases(map);
+    });
+    this.loadSettings();
+    this.applySettings();
   }
 
-  makeUI(mcbopomofo: PimeMcBopomofo): InputUI {
+  resetAfterHandlingKey() {
+    this.lastKeyHandled = false;
+    this.uiState = {
+      commitString: "",
+      compositionString: "",
+      compositionCursor: 0,
+      showCandidates: false,
+      candidateList: [],
+      candidateCursor: 0,
+    };
+  }
+
+  resetController() {
+    this.mcInputController.reset();
+  }
+
+  loadUserPhrases() {}
+
+  writeUserPhrases(map: Map<string, string[]) {
+
+  }
+
+  applySettings() {
+    this.mcInputController.setKeyboardLayout(this.settings.layout);
+    this.mcInputController.setSelectPhrase(this.settings.select_phrase);
+    this.mcInputController.setCandidateKeys(this.settings.candidate_keys);
+    this.mcInputController.setChineseConversionEnabled(
+      this.settings.chineseConversion
+    );
+    this.mcInputController.setEscClearEntireBuffer(
+      this.settings.esc_key_clear_entire_buffer
+    );
+    this.mcInputController.setMoveCursorAfterSelection(
+      this.settings.move_cursor
+    );
+    this.mcInputController.setLanguageCode("zh-tw");
+  }
+
+  private _settingsPath = "";
+
+  loadSettings() {
+    //TODO: implement this
+    //TODO: use fa package to load json file
+    //TODO: where to place the file?
+  }
+
+  writeSettings() {
+    //TODO: implement this
+    //TODO: use fa package to load json file
+    //TODO: where to place the file?
+  }
+
+  makeUI(instance: PimeMcBopomofo): InputUI {
     let that: InputUI = {
       reset: () => {
-        mcbopomofo.uiState = {
+        instance.uiState = {
+          commitString: "",
           compositionString: "",
           compositionCursor: 0,
           showCandidates: false,
@@ -277,7 +363,7 @@ class PimeMcBopomofo {
         };
       },
       commitString(text: string) {
-        mcbopomofo.uiState = {
+        instance.uiState = {
           commitString: text,
           compositionString: "",
           compositionCursor: 0,
@@ -288,7 +374,7 @@ class PimeMcBopomofo {
       },
       update(stateString: string) {
         let state = JSON.parse(stateString);
-        let buffer = state.composingBuffer;
+        let composingBuffer = state.composingBuffer;
         let candidates = state.candidates;
         let selectedIndex = 0;
         let index = 0;
@@ -301,14 +387,16 @@ class PimeMcBopomofo {
           index++;
         }
 
-        let text = "";
-        for (let item of buffer) {
-          text += item.text;
-          index += item.text.length;
+        // Note: McBopomofo's composing buffer are composed by segments so
+        // it allows an input method framework to draw underlines
+        let compositionString = "";
+        for (let item of composingBuffer) {
+          compositionString += item.text;
         }
 
-        mcbopomofo.uiState = {
-          compositionString: text,
+        instance.uiState = {
+          commitString: "",
+          compositionString: compositionString,
           compositionCursor: state.cursorIndex,
           showCandidates: candidates.length > 0,
           candidateList: candidateList,
@@ -325,7 +413,7 @@ class PimeMcBopomofo {
       customizeUI: {
         candPerRow: 1,
         candFontSize: 16,
-        candFontName: "MingLiu",
+        // candFontName: "MingLiu",
         candUseCursor: true,
       },
       setSelKeys: "123456789",
@@ -363,36 +451,73 @@ class PimeMcBopomofo {
 const pimeMcBopomofo = new PimeMcBopomofo();
 
 module.exports = {
-  textReducer(request: any, preState: any) {
+  textReducer(_: any, preState: any) {
+    // Note: textReducer and response are the pattern of NIME. Actually, PIME
+    // only care about the response. Since we let pimeMcBopomofo to do
+    // everything, we just left textReducer as an empty implementation to let
+    // NIME to call it.
     return preState;
   },
-  response(request: any, preState: any) {
+  response(request: any, _: any) {
     const responseTemplate = {
       return: false,
       success: true,
       seqNum: request.seqNum,
     };
-    if (request.method === "onActivate") {
+    if (request.method === "init") {
       let defaultActivateResponse = pimeMcBopomofo.defaultActivateResponse();
-      let rtn = Object.assign({}, responseTemplate, defaultActivateResponse);
-      return rtn;
+      let response = Object.assign(
+        {},
+        responseTemplate,
+        defaultActivateResponse
+      );
+      return response;
+    }
+
+    if (request.method === "onActivate") {
+      return responseTemplate;
+    }
+
+    if (request.method === "onDeactivate") {
+      return responseTemplate;
     }
 
     if (request.method === "filterKeyDown") {
       let { keyCode, charCode, keyStates } = request;
-      let char = String.fromCharCode(charCode);
-      let key = KeyFromKeyboardEvent(keyCode, keyStates, char);
+      let key = KeyFromKeyboardEvent(
+        keyCode,
+        keyStates,
+        String.fromCharCode(charCode)
+      );
       let handled = pimeMcBopomofo.mcInputController.mcbopomofoKeyEvent(key);
-      let rtn = Object.assign({}, responseTemplate, { return: handled });
-      return rtn;
+      pimeMcBopomofo.lastKeyHandled = handled;
+      let response = Object.assign({}, responseTemplate, { return: handled });
+      return response;
     }
 
     if (request.method === "onKeyDown") {
       let uiState = pimeMcBopomofo.uiState;
-      let rtn = Object.assign({}, responseTemplate, uiState, {
-        return: true,
+      let response = Object.assign({}, responseTemplate, uiState, {
+        return: pimeMcBopomofo.lastKeyHandled,
       });
-      return rtn;
+      pimeMcBopomofo.resetAfterHandlingKey();
+      return response;
+    }
+
+    if (request.method === "onCompositionTerminated") {
+      pimeMcBopomofo.resetController();
+      let uiState = pimeMcBopomofo.uiState;
+      let response = Object.assign({}, responseTemplate, uiState);
+      pimeMcBopomofo.resetAfterHandlingKey();
+      return response;
+    }
+
+    if (request.method === "onCommand") {
+      return responseTemplate;
+    }
+
+    if (request.method === "onMenu") {
+      return responseTemplate;
     }
 
     return responseTemplate;
