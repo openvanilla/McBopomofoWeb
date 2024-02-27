@@ -316,9 +316,7 @@ class PimeMcBopomofo {
 
   loadUserPhrases() {}
 
-  writeUserPhrases(map: Map<string, string[]) {
-
-  }
+  writeUserPhrases(map: Map<string, string[]>) {}
 
   applySettings() {
     this.mcInputController.setKeyboardLayout(this.settings.layout);
