@@ -508,8 +508,11 @@ class PimeMcBopomofo {
         };
       },
       commitString(text: string) {
+        console.log("commitString: " + text);
+        let joinedCommitString = instance.uiState.compositionString + text;
+        console.log("joinedCommitString: " + joinedCommitString);
         instance.uiState = {
-          commitString: instance.uiState.compositionString + text,
+          commitString: joinedCommitString,
           compositionString: "",
           compositionCursor: 0,
           showCandidates: false,

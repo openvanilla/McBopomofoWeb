@@ -197,6 +197,7 @@ export class KeyHandler {
 
     // Jump into the menu to select features
     if (simpleAscii === "\\") {
+      stateCallback(new Empty());
       this.reset();
       stateCallback(
         new SelectingFeature((input) => {
@@ -505,11 +506,10 @@ export class KeyHandler {
           // First, commit what's already in the composing buffer.
           let inputtingState = this.buildInputtingState();
           // Steal the composingBuffer built by the inputting state.
-          let committingState = new Committing(inputtingState.composingBuffer);
+          let committingState = new Committing(
+            inputtingState.composingBuffer + chrStr
+          );
           stateCallback(committingState);
-
-          // Then we commit that single character.
-          stateCallback(new Committing(chrStr));
           this.reset();
         }
         return true;
