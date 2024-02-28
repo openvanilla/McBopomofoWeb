@@ -698,24 +698,16 @@ module.exports = {
       seqNum: request.seqNum,
     };
     if (request.method === "init") {
-      let defaultActivateResponse = pimeMcBopomofo.customUiResponse();
-      let response = Object.assign(
-        {},
-        responseTemplate,
-        defaultActivateResponse
-      );
+      let customUi = pimeMcBopomofo.customUiResponse();
+      let response = Object.assign({}, responseTemplate, customUi);
       return response;
     }
 
     if (request.method === "onActivate") {
       pimeMcBopomofo.loadSettings();
       pimeMcBopomofo.loadUserPhrases();
-      let defaultActivateResponse = pimeMcBopomofo.customUiResponse();
-      let response = Object.assign(
-        {},
-        responseTemplate,
-        defaultActivateResponse
-      );
+      let customUi = pimeMcBopomofo.customUiResponse();
+      let response = Object.assign({}, responseTemplate, customUi);
       return response;
     }
 
@@ -731,13 +723,8 @@ module.exports = {
         pimeMcBopomofo.toggleAlphabetMode();
         pimeMcBopomofo.resetController();
         let uiState = pimeMcBopomofo.uiState;
-        let defaultActivateResponse = pimeMcBopomofo.customUiResponse();
-        let response = Object.assign(
-          {},
-          responseTemplate,
-          uiState,
-          defaultActivateResponse
-        );
+        let customui = pimeMcBopomofo.customUiResponse();
+        let response = Object.assign({}, responseTemplate, uiState, customui);
         pimeMcBopomofo.resetAfterHandlingKey();
         return response;
       }
@@ -788,12 +775,8 @@ module.exports = {
       pimeMcBopomofo.isOpened = opened;
       pimeMcBopomofo.loadSettings();
       pimeMcBopomofo.loadUserPhrases();
-      let defaultActivateResponse = pimeMcBopomofo.customUiResponse();
-      let response = Object.assign(
-        {},
-        responseTemplate,
-        defaultActivateResponse
-      );
+      let customUi = pimeMcBopomofo.customUiResponse();
+      let response = Object.assign({}, responseTemplate, customUi);
       return response;
     }
 
@@ -803,13 +786,8 @@ module.exports = {
         pimeMcBopomofo.resetController();
       }
       let uiState = pimeMcBopomofo.uiState;
-      let defaultActivateResponse = pimeMcBopomofo.customUiResponse();
-      let response = Object.assign(
-        {},
-        responseTemplate,
-        uiState,
-        defaultActivateResponse
-      );
+      let customUi = pimeMcBopomofo.customUiResponse();
+      let response = Object.assign({}, responseTemplate, uiState, customUi);
       pimeMcBopomofo.resetAfterHandlingKey();
       return response;
     }
@@ -818,13 +796,8 @@ module.exports = {
       let { id } = request;
       pimeMcBopomofo.handleCommand(id);
       let uiState = pimeMcBopomofo.uiState;
-      let defaultActivateResponse = pimeMcBopomofo.customUiResponse();
-      let response = Object.assign(
-        {},
-        responseTemplate,
-        uiState,
-        defaultActivateResponse
-      );
+      let customUi = pimeMcBopomofo.customUiResponse();
+      let response = Object.assign({}, responseTemplate, uiState, customUi);
       return response;
     }
 
