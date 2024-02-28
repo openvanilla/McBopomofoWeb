@@ -1,2 +1,2 @@
 echo "Launching the config tool"
-..\..\..\python\python3\pythonw.exe config_tool.py
+..\..\..\python\python3\python.exe config_tool.py

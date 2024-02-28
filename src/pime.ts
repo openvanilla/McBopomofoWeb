@@ -424,7 +424,9 @@ class PimeMcBopomofo {
       }
       console.log(data);
       try {
-        this.settings = JSON.parse(data.toString());
+        console.log("Try to load settings");
+        let newSettings = JSON.parse(data.toString());
+        this.settings = Object.assign({}, defaultSettings, newSettings);
         console.log(
           "Loaded settings: " + JSON.stringify(this.settings, null, 2)
         );
@@ -612,8 +614,10 @@ module.exports = {
     }
 
     if (request.method === "onKeyboardStatusChanged") {
-      console.log("handle onKeyboardStatusChanged");
-      console.log(request);
+      // console.log("handle onKeyboardStatusChanged");
+      // console.log(request);
+      pimeMcBopomofo.loadSettings();
+      pimeMcBopomofo.loadUserPhrases();
       let defaultActivateResponse = pimeMcBopomofo.customUiResponse();
       let response = Object.assign(
         {},
@@ -662,7 +666,7 @@ module.exports = {
               "..",
               "python",
               "python3",
-              "pythonw.exe"
+              "python.exe"
             );
             let script = path.join(__dirname, "config_tool.py");
             let command = `"${python3}" "${script}"`;

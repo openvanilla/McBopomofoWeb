@@ -67,8 +67,11 @@ window.onload = () => {
   }
 
   function saveSettings(settings) {
-    xhttp.open("GET", "/config");
-    xhttp.send();
+    console.log("saveSettings" + settings);
+    const xhttp = new XMLHttpRequest();
+    xhttp.open("POST", "/config");
+    let string = JSON.stringify(settings);
+    xhttp.send(string);
   }
 
   const xhttp = new XMLHttpRequest();

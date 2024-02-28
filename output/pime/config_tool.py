@@ -59,9 +59,16 @@ class ConfigHandler(BaseHandler):
     @tornado.web.authenticated
     def post(self):  # save config
         data = tornado.escape.json_decode(self.request.body)
+        # print(data)
         os.makedirs(config_dir, exist_ok=True)
         self.save_file("config.json", json.dumps(data, indent=2))
         self.write('{"return":true}')
+
+    def save_file(self, filename, json_data):
+        filepath = os.path.join(config_dir, filename)
+        print(filepath)
+        with open(filepath, "w") as f:
+            f.write(json_data)
 
     def load_config(self):
         config = DEFAULT_CONFIG  # the default settings
@@ -129,7 +136,7 @@ class ConfigApp(tornado.web.Application):
         # use a local html file to send access token to our service via http POST for authentication.
         os.makedirs(localdata_dir, exist_ok=True)
         filename = "launch_{}.html".format(tool_name)
-        # filename = os.path.join(localdata_dir, filename)
+        filename = os.path.join(localdata_dir, filename)
         with open(filename, "w") as f:
             f.write(user_html)
             os.startfile(filename)
