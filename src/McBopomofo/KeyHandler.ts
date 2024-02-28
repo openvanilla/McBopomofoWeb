@@ -154,7 +154,9 @@ export class KeyHandler {
   private latestWalk_: WalkResult | undefined;
 
   /** The dictionary services. */
-  readonly dictionaryServices: DictionaryServices = new DictionaryServices();
+  readonly dictionaryServices: DictionaryServices = new DictionaryServices(
+    this.localizedStrings_
+  );
   public get onOpenUrl(): ((input: string) => void) | undefined {
     return this.dictionaryServices.onOpenUrl;
   }
@@ -186,7 +188,7 @@ export class KeyHandler {
     // that can be represented by ASCII.
     let simpleAscii = key.ascii;
     if (
-      simpleAscii === "Shift" ||
+      (simpleAscii === "Shift" && key.name == KeyName.ASCII) ||
       simpleAscii === "Meta" ||
       simpleAscii === "Alt"
     ) {

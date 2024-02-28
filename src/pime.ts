@@ -259,10 +259,7 @@ function KeyFromKeyboardEvent(
       break;
   }
   let shiftKey = (keyStates[VK_Keys.VK_SHIFT] & (1 << 7)) != 0;
-  //  ||
-  // (keyStates[VK_Keys.VK_LSHIFT] & (1 << 7)) != 0 ||
-  // (keyStates[VK_Keys.VK_RSHIFT] & (1 << 7)) != 0
-  if (charCode === 0 && shiftKey) {
+  if (charCode === 0 && keyName === KeyName.ASCII && shiftKey) {
     ascii = "Shift";
   }
   let ctrlKey = (keyStates[VK_Keys.VK_CONTROL] & (1 << 7)) != 0;
@@ -296,7 +293,8 @@ interface UiState {
   showCandidates: boolean;
   candidateList: List<string>;
   candidateCursor: number;
-  tooltip: string;
+  showMessage: any;
+  hideMessage: boolean;
 }
 
 /**  The default settings. */
@@ -333,7 +331,8 @@ class PimeMcBopomofo {
     showCandidates: false,
     candidateList: [],
     candidateCursor: 0,
-    tooltip: "",
+    showMessage: {},
+    hideMessage: true,
   };
   isLastFilterKeyDownHandled: boolean = false;
   settings: Settings = defaultSettings;
@@ -366,7 +365,8 @@ class PimeMcBopomofo {
       showCandidates: false,
       candidateList: [],
       candidateCursor: 0,
-      tooltip: "",
+      showMessage: {},
+      hideMessage: true,
     };
   }
 
@@ -445,7 +445,7 @@ class PimeMcBopomofo {
     this.mcInputController.setHalfWidthPunctuationEnabled(
       this.settings.half_width_punctuation
     );
-    this.mcInputController.setLanguageCode("zh-tw");
+    this.mcInputController.setLanguageCode("zh-TW");
   }
 
   /** Load settings from disk */
@@ -502,18 +502,20 @@ class PimeMcBopomofo {
           showCandidates: false,
           candidateList: [],
           candidateCursor: 0,
-          tooltip: "",
+          showMessage: {},
+          hideMessage: true,
         };
       },
       commitString(text: string) {
         instance.uiState = {
-          commitString: text,
+          commitString: instance.uiState.compositionString + text,
           compositionString: "",
           compositionCursor: 0,
           showCandidates: false,
           candidateList: [],
           candidateCursor: 0,
-          tooltip: "",
+          showMessage: {},
+          hideMessage: true,
         };
       },
       update(stateString: string) {
@@ -538,6 +540,13 @@ class PimeMcBopomofo {
           compositionString += item.text;
         }
 
+        let tooltip = state.tooltip;
+        let showMessage = {};
+        let hideMessage = true;
+        if (tooltip) {
+          showMessage = { message: tooltip, duration: 3 };
+          hideMessage = false;
+        }
         let commitString = instance.uiState.commitString;
         instance.uiState = {
           commitString: commitString,
@@ -546,7 +555,8 @@ class PimeMcBopomofo {
           showCandidates: candidates.length > 0,
           candidateList: candidateList,
           candidateCursor: selectedIndex,
-          tooltip: "",
+          showMessage: showMessage,
+          hideMessage: hideMessage,
         };
       },
     };
@@ -554,7 +564,7 @@ class PimeMcBopomofo {
   }
 
   customUiResponse(): any {
-    let windowsModeIcon = "eng.ico";
+    let windowsModeIcon = "close.ico";
     if (this.isOpened) {
       if (this.isAlphabetMode) {
         windowsModeIcon = "eng.ico";
@@ -726,13 +736,7 @@ module.exports = {
           {},
           responseTemplate,
           uiState,
-          defaultActivateResponse,
-          {
-            showMessage: {
-              message: pimeMcBopomofo.isAlphabetMode ? "英文模式" : "中文模式",
-              duration: 3,
-            },
-          }
+          defaultActivateResponse
         );
         pimeMcBopomofo.resetAfterHandlingKey();
         return response;
@@ -755,9 +759,6 @@ module.exports = {
 
       if (shouldHandleShift) {
         pimeMcBopomofo.isShiftHold = key.ascii === "Shift";
-        console.log(
-          "pimeMcBopomofo.isShiftHold: " + pimeMcBopomofo.isShiftHold
-        );
       }
 
       if (pimeMcBopomofo.isAlphabetMode) {
@@ -775,21 +776,10 @@ module.exports = {
     }
 
     if (request.method === "onKeyDown") {
-      let uiState: any = Object.assign({}, pimeMcBopomofo.uiState);
-      let tooltip: any = {};
-      if (uiState.tooltip) {
-        tooltip.showMessage = {
-          message: uiState.tooltip,
-          duration: 3,
-        };
-      } else {
-        tooltip.hideMessage = true;
-      }
-      uiState.tooltip = undefined;
+      let uiState: any = pimeMcBopomofo.uiState;
       let response = Object.assign({}, responseTemplate, uiState, {
         return: pimeMcBopomofo.isLastFilterKeyDownHandled,
       });
-      // pimeMcBopomofo.resetAfterHandlingKey();
       return response;
     }
 
@@ -808,7 +798,10 @@ module.exports = {
     }
 
     if (request.method === "onCompositionTerminated") {
-      pimeMcBopomofo.resetController();
+      let { forced } = request;
+      if (forced) {
+        pimeMcBopomofo.resetController();
+      }
       let uiState = pimeMcBopomofo.uiState;
       let defaultActivateResponse = pimeMcBopomofo.customUiResponse();
       let response = Object.assign(
