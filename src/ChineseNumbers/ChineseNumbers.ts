@@ -108,7 +108,7 @@ export class ChineseNumbers {
     let output = "";
     let currentDigits = digits(numberCase);
 
-    if (intPart.length == 0) {
+    if (intPart.length === 0) {
       output += currentDigits.get("0");
     } else {
       let intSectionCount = Math.ceil(intTrimmed.length / 4);

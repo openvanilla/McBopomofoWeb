@@ -730,7 +730,7 @@ export class KeyHandler {
           candidate.value === currentNode.value
         ) {
           if (key.shiftPressed) {
-            currentIndex == 0
+            currentIndex === 0
               ? (currentIndex = candidates.length - 1)
               : currentIndex--;
           } else {

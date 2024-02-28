@@ -193,64 +193,85 @@ enum VK_Keys {
 function KeyFromKeyboardEvent(
   keyCode: number,
   keyStates: number[],
-  charCode: string
+  ascii: string,
+  charCode: number
 ) {
   let keyName = KeyName.UNKNOWN;
   switch (keyCode) {
     case VK_Keys.VK_LEFT:
       keyName = KeyName.LEFT;
+      ascii = "ArrowLeft";
       break;
     case VK_Keys.VK_RIGHT:
       keyName = KeyName.RIGHT;
+      ascii = "ArrowRight";
       break;
     case VK_Keys.VK_UP:
       keyName = KeyName.UP;
+      ascii = "ArrowUp";
       break;
     case VK_Keys.VK_DOWN:
       keyName = KeyName.DOWN;
+      ascii = "ArrowDown";
       break;
     case VK_Keys.VK_HOME:
       keyName = KeyName.HOME;
+      ascii = "Home";
       break;
     case VK_Keys.VK_END:
       keyName = KeyName.END;
+      ascii = "End";
       break;
     case VK_Keys.VK_BACK:
       keyName = KeyName.BACKSPACE;
+      ascii = "Backspace";
       break;
     case VK_Keys.VK_DELETE:
       keyName = KeyName.DELETE;
+      ascii = "Delete";
       break;
     case VK_Keys.VK_RETURN:
       keyName = KeyName.RETURN;
+      ascii = "Enter";
       break;
     case VK_Keys.VK_ESCAPE:
       keyName = KeyName.ESC;
+      ascii = "Escape";
       break;
     case VK_Keys.VK_SPACE:
       keyName = KeyName.SPACE;
+      ascii = "Space";
       break;
     case VK_Keys.VK_TAB:
       keyName = KeyName.TAB;
+      ascii = "Tab";
       break;
     case VK_Keys.VK_PRIOR:
       keyName = KeyName.PAGE_UP;
+      ascii = "PageUp";
       break;
     case VK_Keys.VK_NEXT:
       keyName = KeyName.PAGE_DOWN;
+      ascii = "PageDown";
       break;
     default:
       keyName = KeyName.ASCII;
       break;
   }
   let shiftKey = (keyStates[VK_Keys.VK_SHIFT] & (1 << 7)) != 0;
+  //  ||
+  // (keyStates[VK_Keys.VK_LSHIFT] & (1 << 7)) != 0 ||
+  // (keyStates[VK_Keys.VK_RSHIFT] & (1 << 7)) != 0
+  if (charCode === 0 && shiftKey) {
+    ascii = "Shift";
+  }
   let ctrlKey = (keyStates[VK_Keys.VK_CONTROL] & (1 << 7)) != 0;
   let altKey = (keyStates[VK_Keys.VK_MENU] & (1 << 7)) != 0;
-  if (altKey) {
-    charCode = "Alt";
+  if (charCode === 0 && keyName === KeyName.ASCII && altKey) {
+    ascii = "Alt";
   }
 
-  let key = new Key(charCode, keyName, shiftKey, ctrlKey);
+  let key = new Key(ascii, keyName, shiftKey, ctrlKey);
   return key;
 }
 
@@ -275,6 +296,7 @@ interface UiState {
   showCandidates: boolean;
   candidateList: List<string>;
   candidateCursor: number;
+  tooltip: string;
 }
 
 /**  The default settings. */
@@ -292,10 +314,13 @@ const defaultSettings: Settings = {
 
 enum PimeMcBopomofoCommand {
   modeIcon = 0,
-  homepage = 1,
-  bugReport = 2,
-  options = 3,
-  userPhrase = 4,
+  switchLanguage = 1,
+  homepage = 2,
+  bugReport = 3,
+  options = 4,
+  userPhrase = 5,
+  chineseConvert = 6,
+  halfWidthPunctuation = 7,
 }
 
 /** Wraps InputController and required states.  */
@@ -308,9 +333,13 @@ class PimeMcBopomofo {
     showCandidates: false,
     candidateList: [],
     candidateCursor: 0,
+    tooltip: "",
   };
-  lastKeyHandled = false;
+  isLastFilterKeyDownHandled: boolean = false;
   settings: Settings = defaultSettings;
+  isOpened: boolean = true;
+  isShiftHold: boolean = false;
+  isAlphabetMode: boolean = false;
 
   constructor() {
     this.mcInputController = new InputController(this.makeUI(this));
@@ -328,7 +357,8 @@ class PimeMcBopomofo {
   }
 
   resetAfterHandlingKey() {
-    this.lastKeyHandled = false;
+    console.log("resetAfterHandlingKey called");
+    this.isLastFilterKeyDownHandled = false;
     this.uiState = {
       commitString: "",
       compositionString: "",
@@ -336,10 +366,12 @@ class PimeMcBopomofo {
       showCandidates: false,
       candidateList: [],
       candidateCursor: 0,
+      tooltip: "",
     };
   }
 
   resetController() {
+    console.log("resetController called");
     this.mcInputController.reset();
   }
 
@@ -390,6 +422,10 @@ class PimeMcBopomofo {
         console.error(err);
       }
     });
+  }
+
+  toggleAlphabetMode() {
+    this.isAlphabetMode = !this.isAlphabetMode;
   }
 
   applySettings() {
@@ -466,6 +502,7 @@ class PimeMcBopomofo {
           showCandidates: false,
           candidateList: [],
           candidateCursor: 0,
+          tooltip: "",
         };
       },
       commitString(text: string) {
@@ -476,6 +513,7 @@ class PimeMcBopomofo {
           showCandidates: false,
           candidateList: [],
           candidateCursor: 0,
+          tooltip: "",
         };
       },
       update(stateString: string) {
@@ -508,6 +546,7 @@ class PimeMcBopomofo {
           showCandidates: candidates.length > 0,
           candidateList: candidateList,
           candidateCursor: selectedIndex,
+          tooltip: "",
         };
       },
     };
@@ -515,15 +554,27 @@ class PimeMcBopomofo {
   }
 
   customUiResponse(): any {
-    // let windowsModeIcon = "traC.ico";
     let windowsModeIcon = "eng.ico";
+    if (this.isOpened) {
+      if (this.isAlphabetMode) {
+        windowsModeIcon = "eng.ico";
+      } else {
+        if (this.settings.chineseConversion) {
+          windowsModeIcon = "simC.ico";
+        } else {
+          windowsModeIcon = "traC.ico";
+        }
+      }
+    }
+
     let windowsModeIconPath = path.join(__dirname, "icons", windowsModeIcon);
-    // TODO: Use candPerRow to decide to use vertical or horizontal layout.
     return {
+      openKeyboard: this.isOpened,
       customizeUI: {
         candPerRow: 1,
         candFontSize: 16,
-        candFontName: "MingLiu",
+        // candFontName: "MingLiu",
+        candFontName: "Microsoft YaHei",
         candUseCursor: true,
       },
       setSelKeys: this.settings.candidate_keys,
@@ -532,16 +583,90 @@ class PimeMcBopomofo {
           icon: windowsModeIconPath,
           id: "windows-mode-icon",
         },
+        {
+          icon: windowsModeIconPath,
+          id: "switch-lang",
+        },
       ],
       addButton: [
         {
           id: "windows-mode-icon",
           icon: path.join(__dirname, "icons", windowsModeIcon),
           commandId: PimeMcBopomofoCommand.modeIcon,
-          tooltip: "設定",
+          tooltip: "中英文切換",
+        },
+        {
+          id: "switch-lang",
+          icon: path.join(__dirname, "icons", windowsModeIcon),
+          commandId: PimeMcBopomofoCommand.switchLanguage,
+          tooltip: "中英文切換",
         },
       ],
     };
+  }
+
+  public handleCommand(id: PimeMcBopomofoCommand) {
+    switch (id) {
+      case PimeMcBopomofoCommand.modeIcon:
+      case PimeMcBopomofoCommand.switchLanguage:
+        {
+          this.toggleAlphabetMode();
+        }
+        break;
+      case PimeMcBopomofoCommand.homepage:
+        {
+          let url = "https://github.com/openvanilla/McBopomofoWeb";
+          let command = `start ${url}`;
+          console.log("Run " + command);
+          child_process.exec(command);
+        }
+        break;
+      case PimeMcBopomofoCommand.bugReport:
+        {
+          let url = "https://github.com/openvanilla/McBopomofoWeb/issues";
+          let command = `start ${url}`;
+          console.log("Run " + command);
+          child_process.exec(command);
+        }
+        break;
+      case PimeMcBopomofoCommand.options:
+        {
+          let python3 = path.join(
+            __dirname,
+            "..",
+            "..",
+            "..",
+            "python",
+            "python3",
+            "python.exe"
+          );
+          let script = path.join(__dirname, "config_tool.py");
+          let command = `"${python3}" "${script}"`;
+          console.log("Run " + command);
+          child_process.exec(command);
+        }
+        break;
+      case PimeMcBopomofoCommand.userPhrase: {
+        let url = pimeMcBopomofo.userPhrasesPath;
+        let command = `start ${url}`;
+        console.log("Run " + command);
+        child_process.exec(command);
+      }
+      case PimeMcBopomofoCommand.chineseConvert:
+        pimeMcBopomofo.settings.chineseConversion =
+          !pimeMcBopomofo.settings.chineseConversion;
+        pimeMcBopomofo.applySettings();
+        pimeMcBopomofo.writeSettings();
+        break;
+      case PimeMcBopomofoCommand.halfWidthPunctuation:
+        pimeMcBopomofo.settings.half_width_punctuation =
+          !pimeMcBopomofo.settings.half_width_punctuation;
+        pimeMcBopomofo.applySettings();
+        pimeMcBopomofo.writeSettings();
+        break;
+      default:
+        break;
+    }
   }
 }
 
@@ -591,31 +716,86 @@ module.exports = {
       return response;
     }
 
+    if (request.method === "filterKeyUp") {
+      if (pimeMcBopomofo.isShiftHold) {
+        pimeMcBopomofo.toggleAlphabetMode();
+        pimeMcBopomofo.resetController();
+        let uiState = pimeMcBopomofo.uiState;
+        let defaultActivateResponse = pimeMcBopomofo.customUiResponse();
+        let response = Object.assign(
+          {},
+          responseTemplate,
+          uiState,
+          defaultActivateResponse,
+          {
+            showMessage: {
+              message: pimeMcBopomofo.isAlphabetMode ? "英文模式" : "中文模式",
+              duration: 3,
+            },
+          }
+        );
+        pimeMcBopomofo.resetAfterHandlingKey();
+        return response;
+      }
+      pimeMcBopomofo.resetAfterHandlingKey();
+      return responseTemplate;
+    }
+
     if (request.method === "filterKeyDown") {
       let { keyCode, charCode, keyStates } = request;
       let key = KeyFromKeyboardEvent(
         keyCode,
         keyStates,
-        String.fromCharCode(charCode)
+        String.fromCharCode(charCode),
+        charCode
       );
+
+      let shouldHandleShift =
+        pimeMcBopomofo.settings.shift_key_toggle_alphabet_mode === true;
+
+      if (shouldHandleShift) {
+        pimeMcBopomofo.isShiftHold = key.ascii === "Shift";
+        console.log(
+          "pimeMcBopomofo.isShiftHold: " + pimeMcBopomofo.isShiftHold
+        );
+      }
+
+      if (pimeMcBopomofo.isAlphabetMode) {
+        let response = Object.assign({}, responseTemplate, { return: false });
+        return response;
+      }
+
+      console.log(key.toString());
       let handled = pimeMcBopomofo.mcInputController.mcbopomofoKeyEvent(key);
-      pimeMcBopomofo.lastKeyHandled = handled;
-      let response = Object.assign({}, responseTemplate, { return: handled });
+      pimeMcBopomofo.isLastFilterKeyDownHandled = handled;
+      let response = Object.assign({}, responseTemplate, {
+        return: handled,
+      });
       return response;
     }
 
     if (request.method === "onKeyDown") {
-      let uiState = pimeMcBopomofo.uiState;
+      let uiState: any = Object.assign({}, pimeMcBopomofo.uiState);
+      let tooltip: any = {};
+      if (uiState.tooltip) {
+        tooltip.showMessage = {
+          message: uiState.tooltip,
+          duration: 3,
+        };
+      } else {
+        tooltip.hideMessage = true;
+      }
+      uiState.tooltip = undefined;
       let response = Object.assign({}, responseTemplate, uiState, {
-        return: pimeMcBopomofo.lastKeyHandled,
+        return: pimeMcBopomofo.isLastFilterKeyDownHandled,
       });
-      pimeMcBopomofo.resetAfterHandlingKey();
+      // pimeMcBopomofo.resetAfterHandlingKey();
       return response;
     }
 
     if (request.method === "onKeyboardStatusChanged") {
-      // console.log("handle onKeyboardStatusChanged");
-      // console.log(request);
+      let { opened } = request;
+      pimeMcBopomofo.isOpened = opened;
       pimeMcBopomofo.loadSettings();
       pimeMcBopomofo.loadUserPhrases();
       let defaultActivateResponse = pimeMcBopomofo.customUiResponse();
@@ -630,63 +810,29 @@ module.exports = {
     if (request.method === "onCompositionTerminated") {
       pimeMcBopomofo.resetController();
       let uiState = pimeMcBopomofo.uiState;
-      let response = Object.assign({}, responseTemplate, uiState);
+      let defaultActivateResponse = pimeMcBopomofo.customUiResponse();
+      let response = Object.assign(
+        {},
+        responseTemplate,
+        uiState,
+        defaultActivateResponse
+      );
       pimeMcBopomofo.resetAfterHandlingKey();
       return response;
     }
 
     if (request.method === "onCommand") {
-      console.log(request);
       let { id } = request;
-      switch (id as PimeMcBopomofoCommand) {
-        case PimeMcBopomofoCommand.modeIcon:
-          break;
-        case PimeMcBopomofoCommand.homepage:
-          {
-            let url = "https://github.com/openvanilla/McBopomofoWeb";
-            let command = `start ${url}`;
-            console.log("Run " + command);
-            child_process.exec(command);
-          }
-          break;
-        case PimeMcBopomofoCommand.bugReport:
-          {
-            let url = "https://github.com/openvanilla/McBopomofoWeb/issues";
-            let command = `start ${url}`;
-            console.log("Run " + command);
-            child_process.exec(command);
-          }
-          break;
-        case PimeMcBopomofoCommand.options:
-          {
-            let python3 = path.join(
-              __dirname,
-              "..",
-              "..",
-              "..",
-              "python",
-              "python3",
-              "python.exe"
-            );
-            let script = path.join(__dirname, "config_tool.py");
-            let command = `"${python3}" "${script}"`;
-            console.log("Run " + command);
-            child_process.exec(command);
-          }
-          break;
-        case PimeMcBopomofoCommand.userPhrase:
-          {
-            let url = pimeMcBopomofo.userPhrasesPath;
-            let command = `start ${url}`;
-            console.log("Run " + command);
-            child_process.exec(command);
-          }
-          break;
-        default:
-          break;
-      }
-
-      return responseTemplate;
+      pimeMcBopomofo.handleCommand(id);
+      let uiState = pimeMcBopomofo.uiState;
+      let defaultActivateResponse = pimeMcBopomofo.customUiResponse();
+      let response = Object.assign(
+        {},
+        responseTemplate,
+        uiState,
+        defaultActivateResponse
+      );
+      return response;
     }
 
     if (request.method === "onMenu") {
@@ -699,6 +845,17 @@ module.exports = {
         {
           text: "問題回報",
           id: PimeMcBopomofoCommand.bugReport,
+        },
+        {},
+        {
+          text: "使用簡體中文",
+          id: PimeMcBopomofoCommand.chineseConvert,
+          checked: pimeMcBopomofo.settings.chineseConversion,
+        },
+        {
+          text: "使用半形標點",
+          id: PimeMcBopomofoCommand.halfWidthPunctuation,
+          checked: pimeMcBopomofo.settings.half_width_punctuation,
         },
         {},
         {

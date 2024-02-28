@@ -595,7 +595,7 @@ export class WalkResult {
       number | undefined /* node index */
     ]
   > {
-    if (this.nodes.length == 0) {
+    if (this.nodes.length === 0) {
       return [undefined, 0, undefined];
     }
     if (cursor > this.totalReadings) {
@@ -671,7 +671,7 @@ export class Span {
       this.nodes_[i] = undefined;
     }
     this.maxLength_ = 0;
-    if (length == 1) {
+    if (length === 1) {
       return;
     }
 
@@ -682,7 +682,7 @@ export class Span {
         return;
       }
 
-      if (i == 0) {
+      if (i === 0) {
         return;
       }
 

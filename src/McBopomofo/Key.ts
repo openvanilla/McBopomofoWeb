@@ -93,4 +93,8 @@ export class Key {
   get isDeleteKeys(): boolean {
     return this.name === KeyName.BACKSPACE || this.name === KeyName.DELETE;
   }
+
+  toString(): string {
+    return `Key{ascii: ${this.ascii_}, name: ${this.name_}, shift: ${this.shiftPressed_}, ctrl: ${this.ctrlPressed_}}`;
+  }
 }

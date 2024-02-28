@@ -74,20 +74,23 @@ window.onload = () => {
     xhttp.send(string);
   }
 
-  const xhttp = new XMLHttpRequest();
-  xhttp.onload = function () {
-    try {
-      settins = JSON.parse(this.responseText);
-      if (settings == undefined) {
+  (function () {
+    const xhttp = new XMLHttpRequest();
+    xhttp.onload = function () {
+      try {
+        settings = JSON.parse(this.responseText);
+        if (settings == undefined) {
+          settings = {};
+        }
+        console.log("settings loaded: " + settings);
+      } catch {
         settings = {};
       }
-    } catch {
-      settings = {};
-    }
-    applySettings(settings);
-  };
-  xhttp.open("GET", "/config");
-  xhttp.send();
+      applySettings(settings);
+    };
+    xhttp.open("GET", "/config");
+    xhttp.send();
+  })();
 
   document.getElementById("layout").onchange = (event) => {
     let value = document.getElementById("layout").value;

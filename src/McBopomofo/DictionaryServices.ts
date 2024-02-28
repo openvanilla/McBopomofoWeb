@@ -1,4 +1,5 @@
 import { Empty, InputState } from "./InputState";
+import { LocalizedStrings } from "./LocalizedStrings";
 
 abstract class DictionaryService {
   abstract readonly name: string;
@@ -8,7 +9,10 @@ abstract class DictionaryService {
     serviceIndex: number,
     stateCallback: (state: InputState) => void
   ): boolean;
-  abstract textForMenu(selectedString: string): string;
+  abstract textForMenu(
+    selectedString: string,
+    localizedStrings: LocalizedStrings
+  ): string;
 }
 
 class HttpBasedDictionary implements DictionaryService {
@@ -39,8 +43,11 @@ class HttpBasedDictionary implements DictionaryService {
     return true;
   }
 
-  textForMenu(selectedString: string): string {
-    return `Look up "${selectedString}" in ${this.name}`;
+  textForMenu(
+    selectedString: string,
+    localizedStrings: LocalizedStrings
+  ): string {
+    return localizedStrings.lookUp(selectedString, this.name);
   }
 }
 
@@ -116,10 +123,12 @@ let httpBasedDictionaryServices = {
 };
 
 export class DictionaryServices {
+  readonly localizedStrings: LocalizedStrings;
   onOpenUrl?: ((input: string) => void) | undefined;
 
   protected services: DictionaryService[] = [];
-  constructor() {
+  constructor(localizedStrings: LocalizedStrings) {
+    this.localizedStrings = localizedStrings;
     for (let info of httpBasedDictionaryServices.services) {
       let service = new HttpBasedDictionary(
         info.name,
@@ -137,7 +146,7 @@ export class DictionaryServices {
   buildMenu(phrase: string): string[] {
     let output: string[] = [];
     for (let service of this.services) {
-      output.push(service.textForMenu(phrase));
+      output.push(service.textForMenu(phrase, this.localizedStrings));
     }
     return output;
   }

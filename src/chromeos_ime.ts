@@ -77,7 +77,7 @@ class ChromeMcBopomofo {
   }
 
   myLocalizedString(en: string, zh: string): string {
-    return this.lang == "zh-TW" ? zh : en;
+    return this.lang === "zh-TW" ? zh : en;
   }
 
   loadSettings() {
@@ -226,7 +226,7 @@ class ChromeMcBopomofo {
       }
 
       chrome.tabs.query({ url: url }).then((tabs) => {
-        if (tabs.length == 0) {
+        if (tabs.length === 0) {
           chrome.tabs.create({ active: true, url: url });
           return;
         }
