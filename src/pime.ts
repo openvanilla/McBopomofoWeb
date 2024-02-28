@@ -290,6 +290,14 @@ const defaultSettings: Settings = {
   half_width_punctuation: false,
 };
 
+enum PimeMcBopomofoCommand {
+  modeIcon = 0,
+  homepage = 1,
+  bugReport = 2,
+  options = 3,
+  userPhrase = 4,
+}
+
 /** Wraps InputController and required states.  */
 class PimeMcBopomofo {
   readonly mcInputController: InputController;
@@ -334,21 +342,25 @@ class PimeMcBopomofo {
   resetController() {
     this.mcInputController.reset();
   }
-  private userDataPath_ = path.join(
+
+  readonly userDataPath: string = path.join(
     process.env.APPDATA || "",
     "PIME",
     "mcbopomofo"
   );
 
-  private userPhrasesPath_ = path.join(this.userDataPath_, "data.json");
-  private userSettingsPath_ = path.join(this.userDataPath_, "config.json");
+  readonly userPhrasesPath: string = path.join(this.userDataPath, "data.json");
+  readonly userSettingsPath: string = path.join(
+    this.userDataPath,
+    "config.json"
+  );
 
   loadUserPhrases() {
-    fs.readFile(this.userPhrasesPath_, (err, data) => {
+    fs.readFile(this.userPhrasesPath, (err, data) => {
       let map = new Map<string, string[]>();
       if (err) {
-        console.log(
-          "Unable to read user phrases from " + this.userPhrasesPath_
+        console.error(
+          "Unable to read user phrases from " + this.userPhrasesPath
         );
         this.writeUserPhrases(map);
         return;
@@ -364,32 +376,23 @@ class PimeMcBopomofo {
   }
 
   writeUserPhrases(map: Map<string, string[]>) {
-    if (!fs.existsSync(this.userDataPath_)) {
-      console.log("User data folder not found, creating " + this.userDataPath_);
+    if (!fs.existsSync(this.userDataPath)) {
+      console.log("User data folder not found, creating " + this.userDataPath);
       console.log("Creating one");
-      fs.mkdirSync(this.userDataPath_);
+      fs.mkdirSync(this.userDataPath);
     }
 
     let string = JSON.stringify(Array.from(map.entries()));
-    console.log("Writing user phrases to " + this.userPhrasesPath_);
-    fs.writeFile(this.userPhrasesPath_, string, (err) => {
+    console.log("Writing user phrases to " + this.userPhrasesPath);
+    fs.writeFile(this.userPhrasesPath, string, (err) => {
       if (err) {
+        console.error("Failed to write user phrases");
         console.error(err);
       }
     });
   }
 
   applySettings() {
-    // layout: string;
-    // select_phrase: string;
-    // candidate_keys: string;
-    // esc_key_clear_entire_buffer: boolean;
-    // shift_key_toggle_alphabet_mode: boolean;
-    // chineseConversion: boolean;
-    // move_cursor: boolean;
-    // letter_mode: string;
-    // half_width_punctuation: boolean;
-
     this.mcInputController.setKeyboardLayout(this.settings.layout);
     this.mcInputController.setSelectPhrase(this.settings.select_phrase);
     this.mcInputController.setCandidateKeys(this.settings.candidate_keys);
@@ -411,10 +414,10 @@ class PimeMcBopomofo {
 
   /** Load settings from disk */
   loadSettings() {
-    fs.readFile(this.userSettingsPath_, (err, data) => {
+    fs.readFile(this.userSettingsPath, (err, data) => {
       if (err) {
         console.log(
-          "Unable to read user settings from " + this.userSettingsPath_
+          "Unable to read user settings from " + this.userSettingsPath
         );
         this.writeSettings();
         return;
@@ -422,6 +425,9 @@ class PimeMcBopomofo {
       console.log(data);
       try {
         this.settings = JSON.parse(data.toString());
+        console.log(
+          "Loaded settings: " + JSON.stringify(this.settings, null, 2)
+        );
         this.applySettings();
       } catch {
         console.error("Failed to parse settings");
@@ -432,16 +438,17 @@ class PimeMcBopomofo {
 
   /** Write settings to disk */
   writeSettings() {
-    if (!fs.existsSync(this.userDataPath_)) {
-      console.log("User data folder not found, creating " + this.userDataPath_);
+    if (!fs.existsSync(this.userDataPath)) {
+      console.log("User data folder not found, creating " + this.userDataPath);
       console.log("Creating one");
-      fs.mkdirSync(this.userDataPath_);
+      fs.mkdirSync(this.userDataPath);
     }
 
-    console.log("Writing user settings to " + this.userSettingsPath_);
-    let string = JSON.stringify(this.settings);
-    fs.writeFile(this.userSettingsPath_, string, (err) => {
+    console.log("Writing user settings to " + this.userSettingsPath);
+    let string = JSON.stringify(this.settings, null, 2);
+    fs.writeFile(this.userSettingsPath, string, (err) => {
       if (err) {
+        console.error("Failed to write settings");
         console.error(err);
       }
     });
@@ -505,39 +512,30 @@ class PimeMcBopomofo {
     return that;
   }
 
-  defaultActivateResponse(): any {
+  customUiResponse(): any {
+    // let windowsModeIcon = "traC.ico";
+    let windowsModeIcon = "eng.ico";
+    let windowsModeIconPath = path.join(__dirname, "icons", windowsModeIcon);
     // TODO: Use candPerRow to decide to use vertical or horizontal layout.
     return {
       customizeUI: {
         candPerRow: 1,
         candFontSize: 16,
-        // candFontName: "MingLiu",
+        candFontName: "MingLiu",
         candUseCursor: true,
       },
-      setSelKeys: "123456789",
-      addButton: [
-        //   {
-        //     id: "switch-lang",
-        //     icon: "icon file path",
-        //     commandId: 1,
-        //     tooltip: "中英文切換",
-        //   },
-        //   {
-        //     id: "windows-mode-icon",
-        //     icon: "icon file path",
-        //     commandId: 4,
-        //     tooltip: "中英文切換",
-        //   },
-        //   {
-        //     id: "switch-shape",
-        //     icon: "icon file path",
-        //     commandId: 2,
-        //     tooltip: "全形/半形切換",
-        //   },
+      setSelKeys: this.settings.candidate_keys,
+      changeButton: [
         {
-          id: "settings",
-          icon: path.join(__dirname, "icons", "config.png"),
-          type: "menu",
+          icon: windowsModeIconPath,
+          id: "windows-mode-icon",
+        },
+      ],
+      addButton: [
+        {
+          id: "windows-mode-icon",
+          icon: path.join(__dirname, "icons", windowsModeIcon),
+          commandId: PimeMcBopomofoCommand.modeIcon,
           tooltip: "設定",
         },
       ],
@@ -563,7 +561,7 @@ module.exports = {
       seqNum: request.seqNum,
     };
     if (request.method === "init") {
-      let defaultActivateResponse = pimeMcBopomofo.defaultActivateResponse();
+      let defaultActivateResponse = pimeMcBopomofo.customUiResponse();
       let response = Object.assign(
         {},
         responseTemplate,
@@ -575,11 +573,20 @@ module.exports = {
     if (request.method === "onActivate") {
       pimeMcBopomofo.loadSettings();
       pimeMcBopomofo.loadUserPhrases();
-      return responseTemplate;
+      let defaultActivateResponse = pimeMcBopomofo.customUiResponse();
+      let response = Object.assign(
+        {},
+        responseTemplate,
+        defaultActivateResponse
+      );
+      return response;
     }
 
     if (request.method === "onDeactivate") {
-      return responseTemplate;
+      let response = Object.assign({}, responseTemplate, {
+        removeButton: ["windows-mode-icon"],
+      });
+      return response;
     }
 
     if (request.method === "filterKeyDown") {
@@ -604,6 +611,18 @@ module.exports = {
       return response;
     }
 
+    if (request.method === "onKeyboardStatusChanged") {
+      console.log("handle onKeyboardStatusChanged");
+      console.log(request);
+      let defaultActivateResponse = pimeMcBopomofo.customUiResponse();
+      let response = Object.assign(
+        {},
+        responseTemplate,
+        defaultActivateResponse
+      );
+      return response;
+    }
+
     if (request.method === "onCompositionTerminated") {
       pimeMcBopomofo.resetController();
       let uiState = pimeMcBopomofo.uiState;
@@ -613,11 +632,82 @@ module.exports = {
     }
 
     if (request.method === "onCommand") {
+      console.log(request);
+      let { id } = request;
+      switch (id as PimeMcBopomofoCommand) {
+        case PimeMcBopomofoCommand.modeIcon:
+          break;
+        case PimeMcBopomofoCommand.homepage:
+          {
+            let url = "https://github.com/openvanilla/McBopomofoWeb";
+            let command = `start ${url}`;
+            console.log("Run " + command);
+            child_process.exec(command);
+          }
+          break;
+        case PimeMcBopomofoCommand.bugReport:
+          {
+            let url = "https://github.com/openvanilla/McBopomofoWeb/issues";
+            let command = `start ${url}`;
+            console.log("Run " + command);
+            child_process.exec(command);
+          }
+          break;
+        case PimeMcBopomofoCommand.options:
+          {
+            let python3 = path.join(
+              __dirname,
+              "..",
+              "..",
+              "..",
+              "python",
+              "python3",
+              "pythonw.exe"
+            );
+            let script = path.join(__dirname, "config_tool.py");
+            let command = `"${python3}" "${script}"`;
+            console.log("Run " + command);
+            child_process.exec(command);
+          }
+          break;
+        case PimeMcBopomofoCommand.userPhrase:
+          {
+            let url = pimeMcBopomofo.userPhrasesPath;
+            let command = `start ${url}`;
+            console.log("Run " + command);
+            child_process.exec(command);
+          }
+          break;
+        default:
+          break;
+      }
+
       return responseTemplate;
     }
 
     if (request.method === "onMenu") {
-      return responseTemplate;
+      console.log(request);
+      let menu = [
+        {
+          text: "小麥注音輸入法網站",
+          id: PimeMcBopomofoCommand.homepage,
+        },
+        {
+          text: "問題回報",
+          id: PimeMcBopomofoCommand.bugReport,
+        },
+        {},
+        {
+          text: "偏好設定 (&O)",
+          id: PimeMcBopomofoCommand.options,
+        },
+        {
+          text: "編輯使用者詞庫 (&U)",
+          id: PimeMcBopomofoCommand.userPhrase,
+        },
+      ];
+      let response = Object.assign({}, responseTemplate, { return: menu });
+      return response;
     }
 
     return responseTemplate;

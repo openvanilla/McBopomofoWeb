@@ -132,8 +132,7 @@ class ConfigApp(tornado.web.Application):
         # filename = os.path.join(localdata_dir, filename)
         with open(filename, "w") as f:
             f.write(user_html)
-            print(filename)
-            # os.startfile(filename)
+            os.startfile(filename)
 
     def run(self, tool_name):
         # find a port number that's available
