@@ -1,5 +1,14 @@
 window.onload = () => {
-  let settings = {};
+  let settings = {
+    layout: "standard",
+    select_phrase: "before_cursor",
+    candidate_keys: "123456789",
+    esc_key_clear_entire_buffer: false,
+    shift_key_toggle_alphabet_mode: true,
+    chineseConversion: false,
+    move_cursor: true,
+    letter_mode: "upper",
+  };
 
   function applySettings(settings) {
     {
@@ -58,25 +67,24 @@ window.onload = () => {
   }
 
   function saveSettings(settings) {
-    // chrome.storage.sync.set({ settings: settings }, () => {
-    //   // debug(JSON.stringify(settings));
-    // });
+    xhttp.open("GET", "/config");
+    xhttp.send();
   }
 
   const xhttp = new XMLHttpRequest();
   xhttp.onload = function () {
-    document.getElementById("demo").innerHTML = this.responseText;
+    try {
+      settins = JSON.parse(this.responseText);
+      if (settings == undefined) {
+        settings = {};
+      }
+    } catch {
+      settings = {};
+    }
+    applySettings(settings);
   };
   xhttp.open("GET", "/config");
   xhttp.send();
-
-  // chrome.storage.sync.get("settings", (value) => {
-  //   settings = value.settings;
-  //   if (settings == undefined) {
-  //     settings = {};
-  //   }
-  //   applySettings(settings);
-  // });
 
   document.getElementById("layout").onchange = (event) => {
     let value = document.getElementById("layout").value;

@@ -334,6 +334,7 @@ export class InputController {
       } else {
         this.ui_.update();
       }
+      // Always handle the key when there is a candidate window.
       return true;
     }
     let accepted = this.keyHandler_.handle(

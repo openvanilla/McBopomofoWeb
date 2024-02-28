@@ -2,7 +2,10 @@ import { List } from "lodash";
 import { InputController } from "./McBopomofo/InputController";
 import { InputUI } from "./McBopomofo/InputUI";
 import { Key, KeyName } from "./McBopomofo/Key";
+import fs from "fs";
 import path from "path";
+import process from "process";
+import open from "open";
 
 enum VK_Keys {
   VK_LBUTTON = 0x01,
@@ -242,10 +245,16 @@ function KeyFromKeyboardEvent(
   }
   let shiftKey = (keyStates[VK_Keys.VK_SHIFT] & (1 << 7)) != 0;
   let ctrlKey = (keyStates[VK_Keys.VK_CONTROL] & (1 << 7)) != 0;
+  let altKey = (keyStates[VK_Keys.VK_MENU] & (1 << 7)) != 0;
+  if (altKey) {
+    charCode = "Alt";
+  }
+
   let key = new Key(charCode, keyName, shiftKey, ctrlKey);
   return key;
 }
 
+/** The McBopomofo Settings. */
 interface Settings {
   layout: string;
   select_phrase: string;
@@ -257,6 +266,7 @@ interface Settings {
   letter_mode: string;
 }
 
+/** A middle data structure between McBopomofo input controller and PIME. */
 interface UiState {
   commitString: string;
   compositionString: string;
@@ -266,8 +276,8 @@ interface UiState {
   candidateCursor: number;
 }
 
-// The default settings.
-var defaultSettings: Settings = {
+/**  The default settings. */
+const defaultSettings: Settings = {
   layout: "standard",
   select_phrase: "before_cursor",
   candidate_keys: "123456789",
@@ -278,8 +288,9 @@ var defaultSettings: Settings = {
   letter_mode: "upper",
 };
 
+/** Wraps InputController and required states.  */
 class PimeMcBopomofo {
-  mcInputController: InputController;
+  readonly mcInputController: InputController;
   uiState: UiState = {
     commitString: "",
     compositionString: "",
@@ -295,10 +306,9 @@ class PimeMcBopomofo {
     this.mcInputController = new InputController(this.makeUI(this));
     this.mcInputController.setUserVerticalCandidates(true);
     this.mcInputController.setOnOpenUrl((url: string) => {
-      // TODO: Helps the controller to open a URL
+      open(url);
     });
     this.mcInputController.setOnPhraseChange((map: Map<string, string[]>) => {
-      // TODO: Save to user's phrase table
       this.writeUserPhrases(map);
     });
     this.loadSettings();
@@ -321,9 +331,44 @@ class PimeMcBopomofo {
     this.mcInputController.reset();
   }
 
-  loadUserPhrases() {}
+  private _userPhrasesPath = path.join(
+    process.env.APPDATA || "",
+    "PIME",
+    "mcbopomofo",
+    "data.json"
+  );
 
-  writeUserPhrases(map: Map<string, string[]>) {}
+  loadUserPhrases() {
+    fs.readFile(this._userPhrasesPath, (err, data) => {
+      if (err) {
+        console.error(err);
+        return;
+      }
+      let map = new Map<string, string[]>();
+      try {
+        map = new Map(JSON.parse(data.toString()));
+      } catch {
+        console.error("Failed to parse user phrases");
+      }
+      this.mcInputController.setUserPhrases(map);
+    });
+  }
+
+  writeUserPhrases(map: Map<string, string[]>) {
+    let string = JSON.stringify(Array.from(map.entries()));
+    fs.writeFile(this._userPhrasesPath, string, (err) => {
+      if (err) {
+        console.error(err);
+      }
+    });
+  }
+
+  private _settingsPath = path.join(
+    process.env.APPDATA || "",
+    "PIME",
+    "mcbopomofo",
+    "config.json"
+  );
 
   applySettings() {
     this.mcInputController.setKeyboardLayout(this.settings.layout);
@@ -341,22 +386,33 @@ class PimeMcBopomofo {
     this.mcInputController.setLanguageCode("zh-tw");
   }
 
-  private _settingsPath = "";
-
+  /** Load settings from disk */
   loadSettings() {
-    //TODO: implement this
-    //TODO: use fa package to load json file
-    //TODO: where to place the file?
+    fs.readFile(this._settingsPath, (err, data) => {
+      if (err) {
+        console.error(err);
+        return;
+      }
+      console.log(data);
+      try {
+        this.settings = JSON.parse(data.toString());
+      } catch {
+        console.error("Failed to parse settings");
+      }
+    });
   }
 
+  /** Write settings to disk */
   writeSettings() {
-    //TODO: implement this
-    //TODO: use fa package to load json file
-    //TODO: where to place the file?
+    let string = JSON.stringify(this.settings);
+    fs.writeFile(this._settingsPath, string, (err) => {
+      if (err) {
+        console.error(err);
+      }
+    });
   }
 
   makeUI(instance: PimeMcBopomofo): InputUI {
-    let iconDir = __dirname + "\\icons";
     let that: InputUI = {
       reset: () => {
         instance.uiState = {
@@ -482,6 +538,8 @@ module.exports = {
     }
 
     if (request.method === "onActivate") {
+      pimeMcBopomofo.loadSettings();
+      pimeMcBopomofo.loadUserPhrases();
       return responseTemplate;
     }
 

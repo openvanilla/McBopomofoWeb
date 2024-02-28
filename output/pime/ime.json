@@ -8,7 +8,7 @@
   "win8_icon": "",
   "moduleName": "index",
   "serviceName": "",
-  "configTool": "..\\..\\python3\\pythonw.exe",
+  "configTool": "..\\..\\..\\python3\\pythonw.exe",
   "configToolParams": "config_tool.py",
   "configToolDir": "."
 }

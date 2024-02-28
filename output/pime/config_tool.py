@@ -8,16 +8,21 @@ import json
 
 current_dir = os.path.dirname(__file__)
 
-# The libchewing package is not in the default python path.
-# FIXME: set PYTHONPATH properly so we don't need to add this hack.
-sys.path.append(os.path.dirname(os.path.dirname(current_dir)))
-sys.path.append(current_dir)
-
 config_dir = os.path.join(os.path.expandvars("%APPDATA%"), "PIME", "mcbopomofo")
 localdata_dir = os.path.join(os.path.expandvars("%LOCALAPPDATA%"), "PIME", "mcbopomofo")
 
 COOKIE_ID = "mcbopomofo_config_token"
 SERVER_TIMEOUT = 120
+DEFAULT_CONFIG = {
+    "layout": "standard",
+    "select_phrase": "before_cursor",
+    "candidate_keys": "123456789",
+    "esc_key_clear_entire_buffer": False,
+    "shift_key_toggle_alphabet_mode": True,
+    "chineseConversion": False,
+    "move_cursor": True,
+    "letter_mode": "upper",
+}
 
 
 class BaseHandler(tornado.web.RequestHandler):
@@ -44,29 +49,22 @@ class ConfigHandler(BaseHandler):
 
     @tornado.web.authenticated
     def get(self):  # get config
-        data = self.load_config()
+        data = ""
+        try:
+            data = self.load_config()
+        except:
+            pass
         self.write(data)
 
     @tornado.web.authenticated
     def post(self):  # save config
         data = tornado.escape.json_decode(self.request.body)
-        # print(data)
-        # ensure the config dir exists
         os.makedirs(config_dir, exist_ok=True)
-        # write the config to files
-        config = data.get("config", None)
-        if config:
-            self.save_file("config.json", json.dumps(config, indent=2))
-        symbols = data.get("symbols", None)
-        if symbols:
-            self.save_file("symbols.dat", symbols)
-        swkb = data.get("swkb", None)
-        if swkb:
-            self.save_file("swkb.dat", swkb)
+        self.save_file("config.json", json.dumps(data, indent=2))
         self.write('{"return":true}')
 
     def load_config(self):
-        config = {}  # the default settings
+        config = DEFAULT_CONFIG  # the default settings
         try:
             with open(
                 os.path.join(config_dir, "config.json"), "r", encoding="UTF-8"
@@ -117,7 +115,7 @@ class ConfigApp(tornado.web.Application):
         self.timeout_handler = None
         self.port = 0
 
-    def launch_browser(self, tool_name):
+    def launch_browser(self, tool_name="options"):
         user_html = """<html>
     <form id="auth" action="http://127.0.0.1:{PORT}/login/{PAGE_NAME}" method="POST">
         <input type="hidden" name="token" value="{TOKEN}">
@@ -130,10 +128,12 @@ class ConfigApp(tornado.web.Application):
         )
         # use a local html file to send access token to our service via http POST for authentication.
         os.makedirs(localdata_dir, exist_ok=True)
-        filename = os.path.join(localdata_dir, "launch_{}.html".format(tool_name))
+        filename = "launch_{}.html".format(tool_name)
+        # filename = os.path.join(localdata_dir, filename)
         with open(filename, "w") as f:
             f.write(user_html)
-            os.startfile(filename)
+            print(filename)
+            # os.startfile(filename)
 
     def run(self, tool_name):
         # find a port number that's available
@@ -170,11 +170,11 @@ class ConfigApp(tornado.web.Application):
 
 def main():
     app = ConfigApp()
-    # if len(sys.argv) >= 2 and sys.argv[1] == "user_phrase_editor":
-    #     tool_name = "user_phrase_editor"
-    # else:
-    #     tool_name = "config_tool"
-    app.run()
+    if len(sys.argv) >= 2 and sys.argv[1] == "user_phrase_editor":
+        tool_name = "user_phrase_editor"
+    else:
+        tool_name = "options"
+    app.run(tool_name)
 
 
 if __name__ == "__main__":
