@@ -339,13 +339,14 @@ class PimeMcBopomofo {
   isOpened: boolean = true;
   isShiftHold: boolean = false;
   isAlphabetMode: boolean = false;
+  lastRequest: any = {};
 
   constructor() {
     this.mcInputController = new InputController(this.makeUI(this));
     this.mcInputController.setUserVerticalCandidates(true);
     this.mcInputController.setOnOpenUrl((url: string) => {
       let command = `start ${url}`;
-      console.log("Run " + command);
+      // console.log("Run " + command);
       child_process.exec(command);
     });
     this.mcInputController.setOnPhraseChange((map: Map<string, string[]>) => {
@@ -356,7 +357,7 @@ class PimeMcBopomofo {
   }
 
   resetAfterHandlingKey() {
-    console.log("resetAfterHandlingKey called");
+    // console.log("resetAfterHandlingKey called");
     this.isLastFilterKeyDownHandled = false;
     this.uiState = {
       commitString: "",
@@ -371,7 +372,7 @@ class PimeMcBopomofo {
   }
 
   resetController() {
-    console.log("resetController called");
+    // console.log("resetController called");
     this.mcInputController.reset();
   }
 
@@ -692,6 +693,8 @@ module.exports = {
     return preState;
   },
   response(request: any, _: any) {
+    let lastRequest = pimeMcBopomofo.lastRequest;
+    pimeMcBopomofo.lastRequest = request;
     const responseTemplate = {
       return: false,
       success: true,
@@ -719,6 +722,12 @@ module.exports = {
     }
 
     if (request.method === "filterKeyUp") {
+      if (lastRequest && lastRequest.method === "filterKeyUp") {
+        let response = Object.assign({}, responseTemplate, {
+          return: true,
+        });
+        return response;
+      }
       if (pimeMcBopomofo.isShiftHold) {
         pimeMcBopomofo.toggleAlphabetMode();
         pimeMcBopomofo.resetController();
@@ -729,10 +738,18 @@ module.exports = {
         return response;
       }
       pimeMcBopomofo.resetAfterHandlingKey();
-      return responseTemplate;
+      let response = Object.assign({}, responseTemplate, { return: true });
+      return response;
     }
 
     if (request.method === "filterKeyDown") {
+      if (lastRequest && lastRequest.method === "filterKeyDown") {
+        let response = Object.assign({}, responseTemplate, {
+          return: true,
+        });
+        return response;
+      }
+
       let { keyCode, charCode, keyStates } = request;
       let key = KeyFromKeyboardEvent(
         keyCode,
@@ -753,7 +770,7 @@ module.exports = {
         return response;
       }
 
-      console.log(key.toString());
+      // console.log(key.toString());
       let handled = pimeMcBopomofo.mcInputController.mcbopomofoKeyEvent(key);
       pimeMcBopomofo.isLastFilterKeyDownHandled = handled;
       let response = Object.assign({}, responseTemplate, {
@@ -763,6 +780,13 @@ module.exports = {
     }
 
     if (request.method === "onKeyDown") {
+      if (lastRequest && lastRequest.method === "onKeyDown") {
+        let response = Object.assign({}, responseTemplate, {
+          return: true,
+        });
+        return response;
+      }
+
       let uiState: any = pimeMcBopomofo.uiState;
       let response = Object.assign({}, responseTemplate, uiState, {
         return: pimeMcBopomofo.isLastFilterKeyDownHandled,
@@ -802,7 +826,7 @@ module.exports = {
     }
 
     if (request.method === "onMenu") {
-      console.log(request);
+      // console.log(request);
       let menu = [
         {
           text: "小麥注音輸入法網站",
