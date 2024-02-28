@@ -35,14 +35,14 @@ function CombineReadingValue(reading: string, value: string) {
 
 function IsPunctuation(node: Node) {
   let reading = node.reading;
-  return reading.length > 0 && reading[0] == "_";
+  return reading.length > 0 && reading[0] === "_";
 }
 
 // Form the observation key from the nodes of a walk. This goes backward, but
 // we are using a const_iterator, the "end" here should be a .cbegin() of a
 // vector.
 function FormObservationKey(nodes: Node[], head: number, end: number): string {
-  if (nodes.length == 0) {
+  if (nodes.length === 0) {
     return "";
   }
 
@@ -188,7 +188,7 @@ export class UserOverrideModel {
     // Now we need to find the head node in the previous walk (that is, before
     // the user override). Remember that actualCursor now is actually *past*
     // the current node, so we need to decrement by 1.
-    if (actualCursor == 0) {
+    if (actualCursor === 0) {
       // Shouldn't happen.
       return;
     }
@@ -320,7 +320,7 @@ export class UserOverrideModel {
         timestamp,
         this.m_decayExponent
       );
-      if (overrideScore == 0.0) {
+      if (overrideScore === 0.0) {
         continue;
       }
       if (overrideScore > score) {

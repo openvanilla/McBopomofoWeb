@@ -572,7 +572,7 @@ export class KeyHandler {
       this.languageModel_.hasUnigrams(customPunctuation) ||
       this.languageModel_.hasUnigrams(punctuation);
     if (!shouldAutoSelectCandidate) {
-      if (chrStr.length == 1 && chrStr >= "A" && chrStr <= "Z") {
+      if (chrStr.length === 1 && chrStr >= "A" && chrStr <= "Z") {
         let letter = kLetterPrefix + chrStr;
         if (this.languageModel_.hasUnigrams(letter)) {
           shouldAutoSelectCandidate = true;
@@ -641,7 +641,7 @@ export class KeyHandler {
       // Create a tooltip to warn the user that their cursor is between two
       // readings (syllables) even if the cursor is not in the middle of a
       // composed string due to its being shorter than the number of readings.
-      if (u32Value.length < spanningLength) {
+      if (u32Value.length !== spanningLength) {
         // builderCursor is guaranteed to be > 0. If it was 0, we wouldn't even
         // reach here due to runningCursor having already "caught up" with
         // builderCursor. It is also guaranteed to be less than the size of the
@@ -667,11 +667,11 @@ export class KeyHandler {
     stateCallback: (state: InputState) => void,
     errorCallback: () => void
   ): boolean {
-    if (this.reading_.isEmpty && (this.latestWalk_?.nodes ?? []).length == 9) {
+    if (this.reading_.isEmpty && (this.latestWalk_?.nodes ?? []).length === 9) {
       return false;
     }
 
-    if (state instanceof Inputting == false) {
+    if (state instanceof Inputting === false) {
       errorCallback();
       return true;
     }
@@ -715,8 +715,8 @@ export class KeyHandler {
         candidates[0].reading === currentNode.reading &&
         candidates[0].value === currentNode.value
       ) {
-        // if (candidates[0].reading == currentNode.reading &&
-        //     candidates[0].value == currentNode.value) {
+        // if (candidates[0].reading === currentNode.reading &&
+        //     candidates[0].value === currentNode.value) {
         // If the first candidate is the value of the current node, we use next
         // one.
         if (key.shiftPressed) {
@@ -939,7 +939,7 @@ export class KeyHandler {
       stateCallback(newState);
       return true;
     }
-    if (key.name == KeyName.RETURN) {
+    if (key.name === KeyName.RETURN) {
       if (state.number.length === 0) {
         stateCallback(new Empty());
         return true;
@@ -947,7 +947,7 @@ export class KeyHandler {
       let components = state.number.split(".");
       let intPart = "";
       let decPart = "";
-      if (components.length == 2) {
+      if (components.length === 2) {
         intPart = components[0];
         decPart = components[1];
       } else {
@@ -985,12 +985,12 @@ export class KeyHandler {
       let number = state.number + key.ascii;
       let newState = new ChineseNumber(number, state.style);
       stateCallback(newState);
-    } else if (key.ascii == ".") {
+    } else if (key.ascii === ".") {
       if (state.number.indexOf(".") !== -1) {
         errorCallback();
         return true;
       }
-      if (state.number.length == 0 || state.number.length > 20) {
+      if (state.number.length === 0 || state.number.length > 20) {
         errorCallback();
         return true;
       }
