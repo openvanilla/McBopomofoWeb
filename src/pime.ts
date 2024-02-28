@@ -356,7 +356,7 @@ class PimeMcBopomofo {
     this.loadUserPhrases();
   }
 
-  resetAfterHandlingKey() {
+  resetBeforeHandlingKey() {
     // console.log("resetAfterHandlingKey called");
     this.isLastFilterKeyDownHandled = false;
     this.uiState = {
@@ -722,7 +722,11 @@ module.exports = {
     }
 
     if (request.method === "filterKeyUp") {
-      if (lastRequest && lastRequest.method === "filterKeyUp") {
+      if (
+        lastRequest &&
+        lastRequest.method === "filterKeyUp" &&
+        lastRequest.keyCode === request.keyCode
+      ) {
         let response = Object.assign({}, responseTemplate, {
           return: true,
         });
@@ -734,21 +738,25 @@ module.exports = {
         let uiState = pimeMcBopomofo.uiState;
         let customui = pimeMcBopomofo.customUiResponse();
         let response = Object.assign({}, responseTemplate, uiState, customui);
-        pimeMcBopomofo.resetAfterHandlingKey();
         return response;
       }
-      pimeMcBopomofo.resetAfterHandlingKey();
+
       let response = Object.assign({}, responseTemplate, { return: true });
       return response;
     }
 
     if (request.method === "filterKeyDown") {
-      if (lastRequest && lastRequest.method === "filterKeyDown") {
+      if (
+        lastRequest &&
+        lastRequest.method === "filterKeyDown" &&
+        lastRequest.keyCode === request.keyCode
+      ) {
         let response = Object.assign({}, responseTemplate, {
           return: true,
         });
         return response;
       }
+      pimeMcBopomofo.resetBeforeHandlingKey();
 
       let { keyCode, charCode, keyStates } = request;
       let key = KeyFromKeyboardEvent(
@@ -780,7 +788,11 @@ module.exports = {
     }
 
     if (request.method === "onKeyDown") {
-      if (lastRequest && lastRequest.method === "onKeyDown") {
+      if (
+        lastRequest &&
+        lastRequest.method === "onKeyDown" &&
+        lastRequest.keyCode === request.keyCode
+      ) {
         let response = Object.assign({}, responseTemplate, {
           return: true,
         });
@@ -812,7 +824,7 @@ module.exports = {
       let uiState = pimeMcBopomofo.uiState;
       let customUi = pimeMcBopomofo.customUiResponse();
       let response = Object.assign({}, responseTemplate, uiState, customUi);
-      pimeMcBopomofo.resetAfterHandlingKey();
+      pimeMcBopomofo.resetBeforeHandlingKey();
       return response;
     }
 
