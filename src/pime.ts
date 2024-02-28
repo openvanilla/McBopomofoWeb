@@ -5,7 +5,6 @@ import { Key, KeyName } from "./McBopomofo/Key";
 import fs from "fs";
 import path from "path";
 import process from "process";
-import open from "open";
 
 enum VK_Keys {
   VK_LBUTTON = 0x01,
@@ -306,13 +305,13 @@ class PimeMcBopomofo {
     this.mcInputController = new InputController(this.makeUI(this));
     this.mcInputController.setUserVerticalCandidates(true);
     this.mcInputController.setOnOpenUrl((url: string) => {
-      open(url);
+      require('child_process').exec(`start ${url}`);
     });
     this.mcInputController.setOnPhraseChange((map: Map<string, string[]>) => {
       this.writeUserPhrases(map);
     });
     this.loadSettings();
-    this.applySettings();
+    this.loadUserPhrases();
   }
 
   resetAfterHandlingKey() {
@@ -340,14 +339,16 @@ class PimeMcBopomofo {
 
   loadUserPhrases() {
     fs.readFile(this._userPhrasesPath, (err, data) => {
+      let map = new Map<string, string[]>();
       if (err) {
         console.error(err);
+        this.writeUserPhrases(map);
         return;
       }
-      let map = new Map<string, string[]>();
       try {
         map = new Map(JSON.parse(data.toString()));
       } catch {
+        this.writeUserPhrases(map);
         console.error("Failed to parse user phrases");
       }
       this.mcInputController.setUserPhrases(map);
@@ -390,7 +391,8 @@ class PimeMcBopomofo {
   loadSettings() {
     fs.readFile(this._settingsPath, (err, data) => {
       if (err) {
-        console.error(err);
+        // console.error(err);
+        this.applySettings();
         return;
       }
       console.log(data);
@@ -398,6 +400,7 @@ class PimeMcBopomofo {
         this.settings = JSON.parse(data.toString());
       } catch {
         console.error("Failed to parse settings");
+        this.applySettings();
       }
     });
   }
