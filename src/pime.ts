@@ -5,6 +5,7 @@ import { Key, KeyName } from "./McBopomofo/Key";
 import fs from "fs";
 import path from "path";
 import process from "process";
+import child_process from "child_process";
 
 enum VK_Keys {
   VK_LBUTTON = 0x01,
@@ -305,7 +306,9 @@ class PimeMcBopomofo {
     this.mcInputController = new InputController(this.makeUI(this));
     this.mcInputController.setUserVerticalCandidates(true);
     this.mcInputController.setOnOpenUrl((url: string) => {
-      require('child_process').exec(`start ${url}`);
+      let command = `start ${url}`;
+      console.log("Run " + command);
+      child_process.exec(command);
     });
     this.mcInputController.setOnPhraseChange((map: Map<string, string[]>) => {
       this.writeUserPhrases(map);
@@ -329,19 +332,22 @@ class PimeMcBopomofo {
   resetController() {
     this.mcInputController.reset();
   }
-
-  private _userPhrasesPath = path.join(
+  private userDataPath_ = path.join(
     process.env.APPDATA || "",
     "PIME",
-    "mcbopomofo",
-    "data.json"
+    "mcbopomofo"
   );
 
+  private userPhrasesPath_ = path.join(this.userDataPath_, "data.json");
+  private userSettingsPath_ = path.join(this.userDataPath_, "config.json");
+
   loadUserPhrases() {
-    fs.readFile(this._userPhrasesPath, (err, data) => {
+    fs.readFile(this.userPhrasesPath_, (err, data) => {
       let map = new Map<string, string[]>();
       if (err) {
-        console.error(err);
+        console.log(
+          "Unable to read user phrases from " + this.userPhrasesPath_
+        );
         this.writeUserPhrases(map);
         return;
       }
@@ -356,20 +362,20 @@ class PimeMcBopomofo {
   }
 
   writeUserPhrases(map: Map<string, string[]>) {
+    if (!fs.existsSync(this.userDataPath_)) {
+      console.log("User data folder not found, creating " + this.userDataPath_);
+      console.log("Creating one");
+      fs.mkdirSync(this.userDataPath_);
+    }
+
     let string = JSON.stringify(Array.from(map.entries()));
-    fs.writeFile(this._userPhrasesPath, string, (err) => {
+    console.log("Writing user phrases to " + this.userPhrasesPath_);
+    fs.writeFile(this.userPhrasesPath_, string, (err) => {
       if (err) {
         console.error(err);
       }
     });
   }
-
-  private _settingsPath = path.join(
-    process.env.APPDATA || "",
-    "PIME",
-    "mcbopomofo",
-    "config.json"
-  );
 
   applySettings() {
     this.mcInputController.setKeyboardLayout(this.settings.layout);
@@ -389,26 +395,36 @@ class PimeMcBopomofo {
 
   /** Load settings from disk */
   loadSettings() {
-    fs.readFile(this._settingsPath, (err, data) => {
+    fs.readFile(this.userSettingsPath_, (err, data) => {
       if (err) {
-        // console.error(err);
-        this.applySettings();
+        console.log(
+          "Unable to read user settings from " + this.userSettingsPath_
+        );
+        this.writeSettings();
         return;
       }
       console.log(data);
       try {
         this.settings = JSON.parse(data.toString());
+        this.applySettings();
       } catch {
         console.error("Failed to parse settings");
-        this.applySettings();
+        this.writeSettings();
       }
     });
   }
 
   /** Write settings to disk */
   writeSettings() {
+    if (!fs.existsSync(this.userDataPath_)) {
+      console.log("User data folder not found, creating " + this.userDataPath_);
+      console.log("Creating one");
+      fs.mkdirSync(this.userDataPath_);
+    }
+
+    console.log("Writing user settings to " + this.userSettingsPath_);
     let string = JSON.stringify(this.settings);
-    fs.writeFile(this._settingsPath, string, (err) => {
+    fs.writeFile(this.userSettingsPath_, string, (err) => {
       if (err) {
         console.error(err);
       }
