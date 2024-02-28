@@ -2,7 +2,8 @@
 
 ## Build and Run
 
-- Install a copy of PIME on your PC
+- Install a copy of PIME on your PC. Please note you also need to check on the
+  option to install the node modules when installing PIME.
 - run `npm run build:pime`. The command build a "index.js" file into the folder.
 - Copy the folder to `C:\Program Files (x86)\PIME\node\input_methods\mcbopomofo`
 - Open a command prompt or Windows terminal as administrator, and then run

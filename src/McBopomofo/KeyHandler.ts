@@ -52,6 +52,8 @@ const kPunctuationListKey = "`"; // Hit the key to bring up the list.
 const kPunctuationListUnigramKey = "_punctuation_list";
 const kPunctuationKeyPrefix = "_punctuation_";
 const kLetterPrefix = "_letter_";
+const kCtrlPunctuationPrefix = "_ctrl_punctuation_";
+const kHalfPunctuationPrefix = "_half_punctuation_";
 
 const kMinValidMarkingReadingCount = 2;
 const kMaxValidMarkingReadingCount = 6;
@@ -83,6 +85,7 @@ function getTimestamp(): number {
 
 export class KeyHandler {
   private localizedStrings_: LocalizedStrings = new LocalizedStrings();
+
   public get languageCode(): string {
     return this.localizedStrings_.languageCode;
   }
@@ -135,6 +138,14 @@ export class KeyHandler {
   }
   public set traditionalMode(flag: boolean) {
     this.traditionalMode_ = flag;
+  }
+
+  private halfWidthPunctuation_: boolean = false;
+  public get halfWidthPunctuation(): boolean {
+    return this.halfWidthPunctuation_;
+  }
+  public set halfWidthPunctuation(flag: boolean) {
+    this.halfWidthPunctuation_ = flag;
   }
 
   private languageModel_: LanguageModel;
@@ -203,7 +214,8 @@ export class KeyHandler {
 
     // See if it's valid BPMF reading.
     let keyConsumedByReading = false;
-    if (this.reading_.isValidKey(simpleAscii)) {
+    let skipBpmfHandling = key.ctrlPressed;
+    if (!skipBpmfHandling && this.reading_.isValidKey(simpleAscii)) {
       this.reading_.combineKey(simpleAscii);
       keyConsumedByReading = true;
       // If asciiChar does not lead to a tone marker, we are done. Tone marker
@@ -447,9 +459,16 @@ export class KeyHandler {
       let chrStr = key.ascii;
       let unigram = "";
 
+      let prefix = kPunctuationKeyPrefix;
+      if (key.ctrlPressed) {
+        prefix = kCtrlPunctuationPrefix;
+      } else if (this.halfWidthPunctuation_) {
+        prefix = kHalfPunctuationPrefix;
+      }
+
       // Bopomofo layout-specific punctuation handling.
       unigram =
-        kPunctuationKeyPrefix +
+        prefix +
         GetKeyboardLayoutName(this.reading_.keyboardLayout) +
         "_" +
         chrStr;
@@ -458,7 +477,7 @@ export class KeyHandler {
       }
 
       // Not handled, try generic punctuations.
-      unigram = kPunctuationKeyPrefix + chrStr;
+      unigram = prefix + chrStr;
       if (this.handlePunctuation(unigram, stateCallback, errorCallback)) {
         return true;
       }

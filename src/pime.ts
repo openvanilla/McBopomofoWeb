@@ -264,6 +264,7 @@ interface Settings {
   chineseConversion: boolean;
   move_cursor: boolean;
   letter_mode: string;
+  half_width_punctuation: boolean;
 }
 
 /** A middle data structure between McBopomofo input controller and PIME. */
@@ -286,6 +287,7 @@ const defaultSettings: Settings = {
   chineseConversion: false,
   move_cursor: true,
   letter_mode: "upper",
+  half_width_punctuation: false,
 };
 
 /** Wraps InputController and required states.  */
@@ -378,6 +380,16 @@ class PimeMcBopomofo {
   }
 
   applySettings() {
+    // layout: string;
+    // select_phrase: string;
+    // candidate_keys: string;
+    // esc_key_clear_entire_buffer: boolean;
+    // shift_key_toggle_alphabet_mode: boolean;
+    // chineseConversion: boolean;
+    // move_cursor: boolean;
+    // letter_mode: string;
+    // half_width_punctuation: boolean;
+
     this.mcInputController.setKeyboardLayout(this.settings.layout);
     this.mcInputController.setSelectPhrase(this.settings.select_phrase);
     this.mcInputController.setCandidateKeys(this.settings.candidate_keys);
@@ -389,6 +401,10 @@ class PimeMcBopomofo {
     );
     this.mcInputController.setMoveCursorAfterSelection(
       this.settings.move_cursor
+    );
+    this.mcInputController.setLetterMode(this.settings.letter_mode);
+    this.mcInputController.setHalfWidthPunctuationEnabled(
+      this.settings.half_width_punctuation
     );
     this.mcInputController.setLanguageCode("zh-tw");
   }

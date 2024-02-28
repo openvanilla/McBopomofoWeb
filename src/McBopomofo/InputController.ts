@@ -133,6 +133,7 @@ export class InputController {
   private ui_: InputUIController;
   private candidateKeys_ = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
   private useVerticalCandidates_ = false;
+  private chineseConversionEnabled_ = false;
 
   constructor(ui: InputUI) {
     this.ui_ = new InputUIController(ui);
@@ -265,11 +266,15 @@ export class InputController {
     this.useVerticalCandidates_ = flag;
   }
 
+  public setHalfWidthPunctuationEnabled(enabled: boolean) {
+    this.keyHandler_.halfWidthPunctuation = enabled;
+  }
+
   /**
    * Sets the user phrases to the language model.
    * @param map The map of user phrases.
    */
-  setUserPhrases(map: Map<string, string[]>): void {
+  public setUserPhrases(map: Map<string, string[]>): void {
     this.lm_.setUserPhrases(map);
   }
 
@@ -277,14 +282,15 @@ export class InputController {
    * Sets the callback function when the user phrase model is changed.
    * @param callback The callback function.
    */
-  setOnPhraseChange(callback: (map: Map<string, string[]>) => void): void {
+  public setOnPhraseChange(
+    callback: (map: Map<string, string[]>) => void
+  ): void {
     this.lm_.setOnPhraseChange(callback);
   }
 
-  private chineseConversionEnabled = false;
   /** Sets Chinese conversion on or off. */
-  setChineseConversionEnabled(flag: boolean) {
-    this.chineseConversionEnabled = flag;
+  public setChineseConversionEnabled(flag: boolean) {
+    this.chineseConversionEnabled_ = flag;
     (this.lm_ as WebLanguageModel).setConverter(
       flag
         ? (input) => {
@@ -302,7 +308,7 @@ export class InputController {
   }
 
   /** Help the controller to open a URL. */
-  setOnOpenUrl(input: ((input: string) => void) | undefined) {
+  public setOnOpenUrl(input: ((input: string) => void) | undefined) {
     this.keyHandler_.onOpenUrl = input;
   }
 
@@ -311,12 +317,12 @@ export class InputController {
    * @param event The keyboard event.
    * @returns If the key is handled.
    */
-  keyEvent(event: KeyboardEvent): boolean {
+  public keyEvent(event: KeyboardEvent): boolean {
     let key = KeyFromKeyboardEvent(event);
     return this.mcbopomofoKeyEvent(key);
   }
 
-  mcbopomofoKeyEvent(key: Key): boolean {
+  public mcbopomofoKeyEvent(key: Key): boolean {
     if (
       this.state_ instanceof ChoosingCandidate ||
       this.state_ instanceof SelectingFeature ||
