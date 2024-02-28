@@ -59,6 +59,7 @@ jobs:
 
   build_publish:
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
     strategy:
       matrix:
         node-version: [20.x]
