@@ -88,7 +88,7 @@ class LoginHandler(BaseHandler):
         token = self.get_argument("token", "")
         if token == self.settings["access_token"]:
             self.set_cookie(COOKIE_ID, token)
-            page_name = "options"
+            # page_name = "options"
             self.redirect("/{}.html".format(page_name))
 
 
@@ -176,8 +176,13 @@ class ConfigApp(tornado.web.Application):
 
 def main():
     app = ConfigApp()
-    if len(sys.argv) >= 2 and sys.argv[1] == "user_phrase_editor":
-        tool_name = "user_phrase_editor"
+    if len(sys.argv) >= 2:
+        if sys.argv[1] == "user_phrase_editor":
+            tool_name = "user_phrase_editor"
+        elif sys.argv[1] == "help":
+            tool_name = "help"
+        else:
+            tool_name = "options"
     else:
         tool_name = "options"
     app.run(tool_name)

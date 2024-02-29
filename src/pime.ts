@@ -320,6 +320,7 @@ enum PimeMcBopomofoCommand {
   chineseConvert = 6,
   halfWidthPunctuation = 7,
   reloadUserPhrase = 8,
+  help = 9,
 }
 
 /** Wraps InputController and required states.  */
@@ -704,6 +705,22 @@ class PimeMcBopomofo {
         break;
       case PimeMcBopomofoCommand.reloadUserPhrase:
         pimeMcBopomofo.loadUserPhrases();
+        break;
+      case PimeMcBopomofoCommand.help:
+        let python3 = path.join(
+          __dirname,
+          "..",
+          "..",
+          "..",
+          "python",
+          "python3",
+          "python.exe"
+        );
+        let script = path.join(__dirname, "config_tool.py help");
+        let command = `"${python3}" "${script}"`;
+        console.log("Run " + command);
+        child_process.exec(command);
+        break;
       default:
         break;
     }
@@ -876,6 +893,10 @@ module.exports = {
         {
           text: "問題回報",
           id: PimeMcBopomofoCommand.bugReport,
+        },
+        {
+          text: "輔助說明",
+          id: PimeMcBopomofoCommand.help,
         },
         {},
         {
