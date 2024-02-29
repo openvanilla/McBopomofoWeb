@@ -196,7 +196,7 @@ export class KeyHandler {
     }
 
     // Jump into the menu to select features
-    if (simpleAscii === "\\") {
+    if (simpleAscii === "\\" && key.ctrlPressed) {
       stateCallback(new Empty());
       this.reset();
       stateCallback(
