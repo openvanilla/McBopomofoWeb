@@ -319,6 +319,7 @@ enum PimeMcBopomofoCommand {
   userPhrase = 5,
   chineseConvert = 6,
   halfWidthPunctuation = 7,
+  reloadUserPhrase = 8,
 }
 
 /** Wraps InputController and required states.  */
@@ -390,21 +391,34 @@ class PimeMcBopomofo {
 
   loadUserPhrases() {
     fs.readFile(this.userPhrasesPath, (err, data) => {
-      let map = new Map<string, string[]>();
       if (err) {
         console.error(
           "Unable to read user phrases from " + this.userPhrasesPath
         );
-        this.writeUserPhrases(map);
         return;
       }
       try {
-        map = new Map(JSON.parse(data.toString()));
+        let map = new Map<string, string[]>();
+
+        let string = data.toString();
+        let lines = string.split("\n");
+        for (let line in lines) {
+          let components = line.split(" ");
+          if (components.length >= 2) {
+            let key = components[0];
+            let phrase = components[1];
+            let phrases = map.get(key);
+            if (phrases === undefined) {
+              phrases = [];
+            }
+            phrases.push(phrase);
+            map.set(key, phrases);
+          }
+        }
+        this.mcInputController.setUserPhrases(map);
       } catch {
-        this.writeUserPhrases(map);
         console.error("Failed to parse user phrases");
       }
-      this.mcInputController.setUserPhrases(map);
     });
   }
 
@@ -415,7 +429,17 @@ class PimeMcBopomofo {
       fs.mkdirSync(this.userDataPath);
     }
 
-    let string = JSON.stringify(Array.from(map.entries()));
+    let string = "";
+    for (let key of map.keys()) {
+      let phrases = map.get(key);
+      if (phrases === undefined) {
+        continue;
+      }
+      for (let phrase of phrases) {
+        string += key + " " + phrase + "\n";
+      }
+    }
+
     console.log("Writing user phrases to " + this.userPhrasesPath);
     fs.writeFile(this.userPhrasesPath, string, (err) => {
       if (err) {
@@ -629,7 +653,7 @@ class PimeMcBopomofo {
         break;
       case PimeMcBopomofoCommand.homepage:
         {
-          let url = "https://github.com/openvanilla/McBopomofoWeb";
+          let url = "https://mcbopomofo.openvanilla.org/";
           let command = `start ${url}`;
           console.log("Run " + command);
           child_process.exec(command);
@@ -678,6 +702,8 @@ class PimeMcBopomofo {
         pimeMcBopomofo.applySettings();
         pimeMcBopomofo.writeSettings();
         break;
+      case PimeMcBopomofoCommand.reloadUserPhrase:
+        pimeMcBopomofo.loadUserPhrases();
       default:
         break;
     }
@@ -813,7 +839,7 @@ module.exports = {
       let { opened } = request;
       pimeMcBopomofo.isOpened = opened;
       pimeMcBopomofo.loadSettings();
-      pimeMcBopomofo.loadUserPhrases();
+      // pimeMcBopomofo.loadUserPhrases();
       let customUi = pimeMcBopomofo.customUiResponse();
       let response = Object.assign({}, responseTemplate, customUi);
       return response;
@@ -870,6 +896,10 @@ module.exports = {
         {
           text: "編輯使用者詞庫 (&U)",
           id: PimeMcBopomofoCommand.userPhrase,
+        },
+        {
+          text: "重新載入使用者詞庫",
+          id: PimeMcBopomofoCommand.reloadUserPhrase,
         },
       ];
       let response = Object.assign({}, responseTemplate, { return: menu });
