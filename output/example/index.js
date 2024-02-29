@@ -1,8 +1,8 @@
-var chineseMode = true;
+var alphabetMode = false;
 var composingBuffer = "";
 
 function resetUI() {
-  let renderText = chineseMode ? "【麥】" : "【英】";
+  let renderText = alphabetMode ? "【英】" : "【麥】";
   renderText += "<span class='cursor'>|</span>";
   document.getElementById("composing_buffer").innerHTML = renderText;
   document.getElementById("candidates").innerHTML = "";
@@ -28,7 +28,7 @@ let ui = (function () {
     let state = JSON.parse(string);
     {
       let buffer = state.composingBuffer;
-      let renderText = chineseMode ? "【麥】" : "【英】";
+      let renderText = alphabetMode ? "【英】" : "【麥】";
       let plainText = "";
       let i = 0;
       for (let item of buffer) {
@@ -225,19 +225,23 @@ document.getElementById("text_area").addEventListener("keyup", (event) => {
       ui.commitString(composingBuffer);
       composingBuffer = "";
     }
-    chineseMode = !chineseMode;
+    alphabetMode = !alphabetMode;
     controller.reset();
     return;
   }
 });
 
 document.getElementById("text_area").addEventListener("keydown", (event) => {
-  if (event.ctrlKey || event.metaKey || event.altKey) {
+  if (
+    // event.ctrlKey ||
+    event.metaKey ||
+    event.altKey
+  ) {
     return;
   }
 
   shiftKeyIsPressed = event.key === "Shift";
-  if (!chineseMode) {
+  if (alphabetMode) {
     return;
   }
 
