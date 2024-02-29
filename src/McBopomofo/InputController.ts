@@ -133,7 +133,8 @@ export class InputController {
   private ui_: InputUIController;
   private candidateKeys_ = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
   private useVerticalCandidates_ = false;
-  private chineseConversionEnabled_ = false;
+  private onError_: Function | undefined;
+  // private chineseConversionEnabled_ = false;
 
   constructor(ui: InputUI) {
     this.ui_ = new InputUIController(ui);
@@ -150,12 +151,12 @@ export class InputController {
   }
 
   /** Sets the UI component. */
-  public setUI(ui: InputUI) {
+  public setUI(ui: InputUI): void {
     this.ui_ = new InputUIController(ui);
   }
 
   /** Sets if the input controller should use traditional mode or not. */
-  public setTraditionalMode(flag: boolean) {
+  public setTraditionalMode(flag: boolean): void {
     this.keyHandler_.traditionalMode = flag;
   }
 
@@ -163,7 +164,7 @@ export class InputController {
    * The language code for localized messages.
    * @param languageCode The language code.
    */
-  public setLanguageCode(languageCode: string) {
+  public setLanguageCode(languageCode: string): void {
     this.keyHandler_.languageCode = languageCode;
   }
 
@@ -177,7 +178,7 @@ export class InputController {
    * - "HanyuPinyin"
    * - "IBM"
    */
-  public setKeyboardLayout(layout: string) {
+  public setKeyboardLayout(layout: string): void {
     switch (layout) {
       case "ETen":
         this.keyHandler_.keyboardLayout = BopomofoKeyboardLayout.ETenLayout;
@@ -206,7 +207,7 @@ export class InputController {
    * cursor.
    * @param option "after_cursor" or "before_cursor".
    * */
-  public setSelectPhrase(option: string) {
+  public setSelectPhrase(option: string): void {
     let flag: boolean = option === "after_cursor";
     this.keyHandler_.selectPhraseAfterCursorAsCandidate = flag;
   }
@@ -215,7 +216,7 @@ export class InputController {
    * Sets if the input method should move cursor after selecting a candidate.
    * @param flag To enable the function or not.
    */
-  public setMoveCursorAfterSelection(flag: boolean) {
+  public setMoveCursorAfterSelection(flag: boolean): void {
     this.keyHandler_.moveCursorAfterSelection = flag;
   }
 
@@ -224,7 +225,7 @@ export class InputController {
    * users type shift and letter keys.
    * @param letterCase "lower" or "upper".
    */
-  public setLetterMode(letterCase: string) {
+  public setLetterMode(letterCase: string): void {
     let flag = letterCase === "lower";
     this.keyHandler_.putLowercaseLettersToComposingBuffer = flag;
   }
@@ -233,7 +234,7 @@ export class InputController {
    * Sets the candidate keys
    * @param keys The candidate keys.
    */
-  public setCandidateKeys(keys: string) {
+  public setCandidateKeys(keys: string): void {
     if (keys == undefined) {
       keys = "123456789";
     }
@@ -255,7 +256,7 @@ export class InputController {
    * Sets if the ESC key should clear the entire composing buffer.
    * @param flag If the ESC key should clear the entire composing buffer.
    */
-  public setEscClearEntireBuffer(flag: boolean) {
+  public setEscClearEntireBuffer(flag: boolean): void {
     this.keyHandler_.escKeyClearsEntireComposingBuffer = flag;
   }
 
@@ -263,11 +264,11 @@ export class InputController {
    * Sets if we want to use vertical or horizontal candidate window.
    * @param flag Use the vertical candidate window.
    */
-  public setUserVerticalCandidates(flag: boolean) {
+  public setUserVerticalCandidates(flag: boolean): void {
     this.useVerticalCandidates_ = flag;
   }
 
-  public setHalfWidthPunctuationEnabled(enabled: boolean) {
+  public setHalfWidthPunctuationEnabled(enabled: boolean): void {
     this.keyHandler_.halfWidthPunctuation = enabled;
   }
 
@@ -290,8 +291,8 @@ export class InputController {
   }
 
   /** Sets Chinese conversion on or off. */
-  public setChineseConversionEnabled(flag: boolean) {
-    this.chineseConversionEnabled_ = flag;
+  public setChineseConversionEnabled(flag: boolean): void {
+    // this.chineseConversionEnabled_ = flag;
     (this.lm_ as WebLanguageModel).setConverter(
       flag
         ? (input) => {
@@ -306,6 +307,10 @@ export class InputController {
           }
         : undefined
     );
+  }
+
+  public setOnError(onError: Function): void {
+    this.onError_ = onError;
   }
 
   /** Help the controller to open a URL. */
@@ -334,7 +339,9 @@ export class InputController {
       this.handleCandidateKeyEvent(
         key,
         (newState) => this.enterNewState(newState),
-        () => {}
+        () => {
+          this.onError_?.();
+        }
       );
       if (this.state_ instanceof NotEmpty) {
         this.updatePreedit(this.state_);
@@ -348,7 +355,9 @@ export class InputController {
       key,
       this.state_,
       (newState) => this.enterNewState(newState),
-      () => {}
+      () => {
+        this.onError_?.();
+      }
     );
     return accepted;
   }

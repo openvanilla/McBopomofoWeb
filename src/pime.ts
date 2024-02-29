@@ -1,11 +1,11 @@
-import { List } from "lodash";
 import { InputController } from "./McBopomofo/InputController";
 import { InputUI } from "./McBopomofo/InputUI";
 import { KeyFromKeyboardEvent } from "./pime_keys";
+import { List } from "lodash";
+import child_process from "child_process";
 import fs from "fs";
 import path from "path";
 import process from "process";
-import child_process from "child_process";
 
 /** The McBopomofo Settings. */
 interface Settings {
@@ -19,6 +19,7 @@ interface Settings {
   letter_mode: string;
   half_width_punctuation: boolean;
   by_default_deactivated: boolean;
+  beep_on_error: boolean;
 }
 
 /** A middle data structure between McBopomofo input controller and PIME. */
@@ -45,6 +46,7 @@ const defaultSettings: Settings = {
   letter_mode: "upper",
   half_width_punctuation: false,
   by_default_deactivated: false,
+  beep_on_error: true,
 };
 
 enum PimeMcBopomofoCommand {
@@ -89,6 +91,11 @@ class PimeMcBopomofo {
     });
     this.mcInputController.setOnPhraseChange((map: Map<string, string[]>) => {
       this.writeUserPhrases(map);
+    });
+    this.mcInputController.setOnError(() => {
+      if (this.settings.beep_on_error) {
+        child_process.exec(`rundll32 user32.dll,MessageBeep`);
+      }
     });
     this.loadSettings();
     this.isOpened = !this.settings.by_default_deactivated;
@@ -387,6 +394,9 @@ class PimeMcBopomofo {
       case PimeMcBopomofoCommand.modeIcon:
       case PimeMcBopomofoCommand.switchLanguage:
         {
+          if (this.isOpened == false) {
+            return;
+          }
           this.toggleAlphabetMode();
         }
         break;

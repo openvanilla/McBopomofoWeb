@@ -8,6 +8,8 @@ window.onload = () => {
     chineseConversion: false,
     move_cursor: true,
     letter_mode: "upper",
+    by_default_deactivated: false,
+    beep_on_error: true,
   };
 
   function applySettings(settings) {
@@ -64,10 +66,17 @@ window.onload = () => {
         document.getElementById("lowercase_letters").checked = true;
       }
     }
+
+    {
+      document.getElementById("by_default_deactivated").checked =
+        settings.by_default_deactivated;
+    }
+    {
+      document.getElementById("beep_on_error").checked = settings.beep_on_error;
+    }
   }
 
   function saveSettings(settings) {
-    console.log("saveSettings" + settings);
     const xhttp = new XMLHttpRequest();
     xhttp.open("POST", "/config");
     let string = JSON.stringify(settings);
@@ -142,24 +151,15 @@ window.onload = () => {
     saveSettings(settings);
   };
 
-  document.getElementById("others_manage_user_phrases").onclick = (event) => {
-    function tryOpen(url) {
-      chrome.tabs.query({ url: url }).then((tabs) => {
-        if (tabs.length == 0) {
-          chrome.tabs.create({ active: true, url: url });
-          return;
-        }
-        let tabId = tabs[0].id;
-        if (tabId === undefined) {
-          chrome.tabs.create({ active: true, url: url });
-        } else {
-          chrome.tabs.update(tabId, { selected: true });
-        }
-      });
-    }
-    let page = "user_phrase.html";
-    let url = chrome.runtime.getURL(page);
-    tryOpen(url);
-    return false;
+  document.getElementById("by_default_deactivated").onchange = (event) => {
+    let checked = document.getElementById("by_default_deactivated").checked;
+    settings.by_default_deactivated = checked;
+    saveSettings(settings);
+  };
+
+  document.getElementById("beep_on_error").onchange = (event) => {
+    let checked = document.getElementById("beep_on_error").checked;
+    settings.by_default_deactivated = checked;
+    saveSettings(settings);
   };
 };
