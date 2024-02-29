@@ -10,6 +10,7 @@ module.exports = {
         exclude: [
           path.resolve(__dirname, "src/index.ts"),
           path.resolve(__dirname, "src/pime.ts"),
+          path.resolve(__dirname, "src/pime_keys.ts"),
         ],
         use: "ts-loader",
       },
