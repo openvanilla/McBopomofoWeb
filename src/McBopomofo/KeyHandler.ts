@@ -518,7 +518,13 @@ export class KeyHandler {
 
     // No key is handled. Refresh and consume the key.
     if (maybeNotEmptyState instanceof NotEmpty) {
-      errorCallback();
+      var shouldPromptAlert = true;
+      if (key.ctrlPressed) {
+        shouldPromptAlert = false;
+      }
+      if (shouldPromptAlert) {
+        errorCallback();
+      }
       stateCallback(this.buildInputtingState());
       return true;
     }
