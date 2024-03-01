@@ -58,8 +58,7 @@ enum PimeMcBopomofoCommand {
   userPhrase = 5,
   chineseConvert = 6,
   halfWidthPunctuation = 7,
-  reloadUserPhrase = 8,
-  help = 9,
+  help = 8,
 }
 
 /** Wraps InputController and required states.  */
@@ -105,7 +104,7 @@ class PimeMcBopomofo {
     this.loadUserPhrases();
   }
 
-  resetBeforeHandlingKey() {
+  public resetBeforeHandlingKey(): void {
     // console.log("resetAfterHandlingKey called");
     this.isLastFilterKeyDownHandled = false;
     this.uiState = {
@@ -120,7 +119,7 @@ class PimeMcBopomofo {
     };
   }
 
-  resetController() {
+  public resetController(): void {
     // console.log("resetController called");
     this.inputController.reset();
   }
@@ -137,7 +136,7 @@ class PimeMcBopomofo {
     "config.json"
   );
 
-  loadUserPhrases() {
+  public loadUserPhrases(): void {
     fs.readFile(this.userPhrasesPath, (err, data) => {
       if (err) {
         console.error(
@@ -170,7 +169,7 @@ class PimeMcBopomofo {
     });
   }
 
-  addPhrase(key: string, phrase: string) {
+  private addPhrase(key: string, phrase: string): void {
     if (!fs.existsSync(this.userDataPath)) {
       console.log("User data folder not found, creating " + this.userDataPath);
       console.log("Creating one");
@@ -190,7 +189,7 @@ class PimeMcBopomofo {
     });
   }
 
-  writeUserPhrases(map: Map<string, string[]>) {
+  private writeUserPhrases(map: Map<string, string[]>): void {
     if (!fs.existsSync(this.userDataPath)) {
       console.log("User data folder not found, creating " + this.userDataPath);
       console.log("Creating one");
@@ -217,11 +216,11 @@ class PimeMcBopomofo {
     });
   }
 
-  toggleAlphabetMode() {
+  public toggleAlphabetMode(): void {
     this.isAlphabetMode = !this.isAlphabetMode;
   }
 
-  applySettings() {
+  public applySettings(): void {
     this.inputController.setKeyboardLayout(this.settings.layout);
     this.inputController.setSelectPhrase(this.settings.select_phrase);
     this.inputController.setCandidateKeys(this.settings.candidate_keys);
@@ -240,7 +239,7 @@ class PimeMcBopomofo {
   }
 
   /** Load settings from disk */
-  loadSettings() {
+  public loadSettings(): void {
     fs.readFile(this.userSettingsPath, (err, data) => {
       if (err) {
         console.log(
@@ -266,7 +265,7 @@ class PimeMcBopomofo {
   }
 
   /** Write settings to disk */
-  writeSettings() {
+  private writeSettings() {
     if (!fs.existsSync(this.userDataPath)) {
       console.log("User data folder not found, creating " + this.userDataPath);
       console.log("Creating one");
@@ -283,7 +282,7 @@ class PimeMcBopomofo {
     });
   }
 
-  makeUI(instance: PimeMcBopomofo): InputUI {
+  public makeUI(instance: PimeMcBopomofo): InputUI {
     let that: InputUI = {
       reset: () => {
         instance.uiState = {
@@ -357,7 +356,7 @@ class PimeMcBopomofo {
     return that;
   }
 
-  customUiResponse(): any {
+  public customUiResponse(): any {
     let windowsModeIcon = "close.ico";
     if (this.isOpened) {
       if (this.isAlphabetMode) {
@@ -410,7 +409,7 @@ class PimeMcBopomofo {
     };
   }
 
-  public handleCommand(id: PimeMcBopomofoCommand) {
+  public handleCommand(id: PimeMcBopomofoCommand): void {
     switch (id) {
       case PimeMcBopomofoCommand.modeIcon:
       case PimeMcBopomofoCommand.switchLanguage:
@@ -471,9 +470,6 @@ class PimeMcBopomofo {
           !pimeMcBopomofo.settings.half_width_punctuation;
         pimeMcBopomofo.applySettings();
         pimeMcBopomofo.writeSettings();
-        break;
-      case PimeMcBopomofoCommand.reloadUserPhrase:
-        pimeMcBopomofo.loadUserPhrases();
         break;
       case PimeMcBopomofoCommand.help:
         let python3 = path.join(
@@ -696,10 +692,6 @@ module.exports = {
           text: "編輯使用者詞庫 (&U)",
           id: PimeMcBopomofoCommand.userPhrase,
         },
-        // {
-        //   text: "重新載入使用者詞庫",
-        //   id: PimeMcBopomofoCommand.reloadUserPhrase,
-        // },
       ];
       let response = Object.assign({}, responseTemplate, { return: menu });
       return response;
