@@ -1,6 +1,6 @@
 import { Key, KeyName } from "./McBopomofo/Key";
 
-enum VK_Keys {
+export enum VK_Keys {
   VK_LBUTTON = 0x01,
   VK_RBUTTON = 0x02,
   VK_CANCEL = 0x03,

@@ -134,7 +134,6 @@ export class InputController {
   private candidateKeys_ = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
   private useVerticalCandidates_ = false;
   private onError_: Function | undefined;
-  // private chineseConversionEnabled_ = false;
 
   constructor(ui: InputUI) {
     this.ui_ = new InputUIController(ui);
@@ -369,6 +368,12 @@ export class InputController {
         this.onError_?.();
       }
     );
+    if (this.state_ instanceof NotEmpty) {
+      this.updatePreedit(this.state_);
+    } else {
+      this.ui_.update();
+    }
+
     return accepted;
   }
 

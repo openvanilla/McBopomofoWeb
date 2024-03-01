@@ -1,6 +1,6 @@
 import { InputController } from "./McBopomofo/InputController";
 import { InputUI } from "./McBopomofo/InputUI";
-import { KeyFromKeyboardEvent } from "./pime_keys";
+import { KeyFromKeyboardEvent, VK_Keys } from "./pime_keys";
 import { List } from "lodash";
 import child_process from "child_process";
 import fs from "fs";
@@ -581,6 +581,12 @@ module.exports = {
       pimeMcBopomofo.resetBeforeHandlingKey();
 
       let { keyCode, charCode, keyStates } = request;
+      // Ignores capslock.
+      if ((keyStates[VK_Keys.VK_CAPITAL] & (1 << 7)) != 0) {
+        pimeMcBopomofo.resetController();
+        return false;
+      }
+
       let key = KeyFromKeyboardEvent(
         keyCode,
         keyStates,
@@ -600,7 +606,7 @@ module.exports = {
         return response;
       }
 
-      // console.log(key.toString());
+      console.log(key.toString());
       let handled = pimeMcBopomofo.inputController.mcbopomofoKeyEvent(key);
       pimeMcBopomofo.isLastFilterKeyDownHandled = handled;
       let response = Object.assign({}, responseTemplate, {
