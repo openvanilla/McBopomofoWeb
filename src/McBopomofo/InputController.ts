@@ -281,13 +281,23 @@ export class InputController {
   }
 
   /**
-   * Sets the callback function when the user phrase model is changed.
+   * Sets the callback function that would be called when the user phrase model is changed.
    * @param callback The callback function.
    */
   public setOnPhraseChange(
     callback: (map: Map<string, string[]>) => void
   ): void {
     this.lm_.setOnPhraseChange(callback);
+  }
+
+  /**
+   * Sets the callback function that would be called when the a user phrase model is added.
+   * @param callback The callback function.
+   */
+  public setOnPhraseAdded(
+    callback: (key: string, phrase: string) => void
+  ): void {
+    this.lm_.setOnPhraseAdded(callback);
   }
 
   /** Sets Chinese conversion on or off. */

@@ -64,7 +64,7 @@ enum PimeMcBopomofoCommand {
 
 /** Wraps InputController and required states.  */
 class PimeMcBopomofo {
-  readonly mcInputController: InputController;
+  readonly inputController: InputController;
   uiState: UiState = {
     commitString: "",
     compositionString: "",
@@ -75,24 +75,27 @@ class PimeMcBopomofo {
     showMessage: {},
     hideMessage: true,
   };
-  isLastFilterKeyDownHandled: boolean = false;
   settings: Settings = defaultSettings;
+  lastRequest: any = {};
+  isLastFilterKeyDownHandled: boolean = false;
   isOpened: boolean = true;
   isShiftHold: boolean = false;
   isAlphabetMode: boolean = false;
-  lastRequest: any = {};
 
   constructor() {
-    this.mcInputController = new InputController(this.makeUI(this));
-    this.mcInputController.setUserVerticalCandidates(true);
-    this.mcInputController.setOnOpenUrl((url: string) => {
+    this.inputController = new InputController(this.makeUI(this));
+    this.inputController.setUserVerticalCandidates(true);
+    this.inputController.setOnOpenUrl((url: string) => {
       let command = `start ${url}`;
       child_process.exec(command);
     });
-    this.mcInputController.setOnPhraseChange((map: Map<string, string[]>) => {
-      this.writeUserPhrases(map);
+    // this.mcInputController.setOnPhraseChange((map: Map<string, string[]>) => {
+    //   this.writeUserPhrases(map);
+    // });
+    this.inputController.setOnPhraseAdded((key: string, phrase: string) => {
+      this.addPhrase(key, phrase);
     });
-    this.mcInputController.setOnError(() => {
+    this.inputController.setOnError(() => {
       if (this.settings.beep_on_error) {
         child_process.exec(`rundll32 user32.dll,MessageBeep`);
       }
@@ -119,7 +122,7 @@ class PimeMcBopomofo {
 
   resetController() {
     // console.log("resetController called");
-    this.mcInputController.reset();
+    this.inputController.reset();
   }
 
   readonly userDataPath: string = path.join(
@@ -160,9 +163,29 @@ class PimeMcBopomofo {
             map.set(key, phrases);
           }
         }
-        this.mcInputController.setUserPhrases(map);
+        this.inputController.setUserPhrases(map);
       } catch {
         console.error("Failed to parse user phrases");
+      }
+    });
+  }
+
+  addPhrase(key: string, phrase: string) {
+    if (!fs.existsSync(this.userDataPath)) {
+      console.log("User data folder not found, creating " + this.userDataPath);
+      console.log("Creating one");
+      fs.mkdirSync(this.userDataPath);
+    }
+
+    fs.readFile(this.userPhrasesPath, (err, data) => {
+      let lineToWrite = key + " " + phrase + "\n";
+      if (data) {
+        let string = data.toString();
+        if (string[string.length - 1] !== "\n") {
+          string += "\n";
+        }
+        string += lineToWrite;
+        fs.writeFile(this.userPhrasesPath, string, (err) => {});
       }
     });
   }
@@ -199,23 +222,21 @@ class PimeMcBopomofo {
   }
 
   applySettings() {
-    this.mcInputController.setKeyboardLayout(this.settings.layout);
-    this.mcInputController.setSelectPhrase(this.settings.select_phrase);
-    this.mcInputController.setCandidateKeys(this.settings.candidate_keys);
-    this.mcInputController.setChineseConversionEnabled(
+    this.inputController.setKeyboardLayout(this.settings.layout);
+    this.inputController.setSelectPhrase(this.settings.select_phrase);
+    this.inputController.setCandidateKeys(this.settings.candidate_keys);
+    this.inputController.setChineseConversionEnabled(
       this.settings.chineseConversion
     );
-    this.mcInputController.setEscClearEntireBuffer(
+    this.inputController.setEscClearEntireBuffer(
       this.settings.esc_key_clear_entire_buffer
     );
-    this.mcInputController.setMoveCursorAfterSelection(
-      this.settings.move_cursor
-    );
-    this.mcInputController.setLetterMode(this.settings.letter_mode);
-    this.mcInputController.setHalfWidthPunctuationEnabled(
+    this.inputController.setMoveCursorAfterSelection(this.settings.move_cursor);
+    this.inputController.setLetterMode(this.settings.letter_mode);
+    this.inputController.setHalfWidthPunctuationEnabled(
       this.settings.half_width_punctuation
     );
-    this.mcInputController.setLanguageCode("zh-TW");
+    this.inputController.setLanguageCode("zh-TW");
   }
 
   /** Load settings from disk */
@@ -475,8 +496,19 @@ class PimeMcBopomofo {
   }
 }
 
-// https://hackmd.io/@SYkYaRqjTQm-oj2WqaWhUQ/BJ0xsY5A?type=slide#/
 const pimeMcBopomofo = new PimeMcBopomofo();
+
+fs.watch(pimeMcBopomofo.userSettingsPath, (event, filename) => {
+  if (filename) {
+    pimeMcBopomofo.loadSettings();
+  }
+});
+
+fs.watch(pimeMcBopomofo.userPhrasesPath, (event, filename) => {
+  if (filename) {
+    pimeMcBopomofo.loadUserPhrases();
+  }
+});
 
 module.exports = {
   textReducer(_: any, preState: any) {
@@ -501,10 +533,8 @@ module.exports = {
     }
 
     if (request.method === "onActivate") {
-      // let { isKeyboardOpen } = request;
-      // pimeMcBopomofo.isKeyboardOpened = isKeyboardOpen;
-      pimeMcBopomofo.loadSettings();
-      pimeMcBopomofo.loadUserPhrases();
+      // pimeMcBopomofo.loadSettings();
+      // pimeMcBopomofo.loadUserPhrases();
       let customUi = pimeMcBopomofo.customUiResponse();
       let response = Object.assign({}, responseTemplate, customUi);
       return response;
@@ -575,7 +605,7 @@ module.exports = {
       }
 
       // console.log(key.toString());
-      let handled = pimeMcBopomofo.mcInputController.mcbopomofoKeyEvent(key);
+      let handled = pimeMcBopomofo.inputController.mcbopomofoKeyEvent(key);
       pimeMcBopomofo.isLastFilterKeyDownHandled = handled;
       let response = Object.assign({}, responseTemplate, {
         return: handled,
@@ -666,10 +696,10 @@ module.exports = {
           text: "編輯使用者詞庫 (&U)",
           id: PimeMcBopomofoCommand.userPhrase,
         },
-        {
-          text: "重新載入使用者詞庫",
-          id: PimeMcBopomofoCommand.reloadUserPhrase,
-        },
+        // {
+        //   text: "重新載入使用者詞庫",
+        //   id: PimeMcBopomofoCommand.reloadUserPhrase,
+        // },
       ];
       let response = Object.assign({}, responseTemplate, { return: menu });
       return response;

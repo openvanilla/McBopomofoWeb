@@ -13,7 +13,8 @@ import { BopomofoSyllable } from "../Mandarin/BopomofoSyllable";
  */
 export class UserPhrases implements LanguageModel {
   private map_: Map<string, string[]> = new Map();
-  private onPhraseChange: (map: Map<string, string[]>) => void = () => {};
+  private onPhraseChange_: (map: Map<string, string[]>) => void = () => {};
+  private onPhraseAdded_: (key: string, phrase: string) => void = () => {};
 
   setUserPhrases(map: Map<string, string[]>): void {
     if (map === null || map === undefined) {
@@ -23,7 +24,11 @@ export class UserPhrases implements LanguageModel {
   }
 
   setOnPhraseChange(callback: (map: Map<string, string[]>) => void): void {
-    this.onPhraseChange = callback;
+    this.onPhraseChange_ = callback;
+  }
+
+  setOnPhraseAdded(callback: (key: string, phrase: string) => void): void {
+    this.onPhraseAdded_ = callback;
   }
 
   addUserPhrase(key: string, phrase: string): void {
@@ -39,7 +44,8 @@ export class UserPhrases implements LanguageModel {
       list.push(phrase);
       this.map_.set(key, list);
     }
-    this.onPhraseChange(this.map_);
+    this.onPhraseAdded_(key, phrase);
+    this.onPhraseChange_(this.map_);
   }
 
   getUnigrams(key: string): Unigram[] {
@@ -70,36 +76,46 @@ export class WebLanguageModel implements LanguageModel {
 
   private macroConverter_?: (input: string) => string | undefined;
   /** Sets the string converter. */
-  setMacroConverter(converter?: (input: string) => string | undefined): void {
+  public setMacroConverter(
+    converter?: (input: string) => string | undefined
+  ): void {
     this.macroConverter_ = converter;
   }
 
   private converter_?: (input: string) => string | undefined;
   /** Sets the string converter. */
-  setConverter(converter?: (input: string) => string | undefined): void {
+  public setConverter(converter?: (input: string) => string | undefined): void {
     this.converter_ = converter;
   }
 
   /** Converts a macro. */
-  convertMacro(input: string): string {
+  public convertMacro(input: string): string {
     let result = this.macroConverter_?.(input);
     return result ?? input;
   }
 
   private addUserPhraseConverter?: (input: string) => string | undefined;
   /** Sets the string converter. */
-  setAddUserPhraseConverter(
+  public setAddUserPhraseConverter(
     converter?: (input: string) => string | undefined
   ): void {
     this.addUserPhraseConverter = converter;
   }
 
-  setUserPhrases(map: Map<string, string[]>): void {
+  public setUserPhrases(map: Map<string, string[]>): void {
     this.userPhrases_.setUserPhrases(map);
   }
 
-  setOnPhraseChange(callback: (map: Map<string, string[]>) => void): void {
+  public setOnPhraseChange(
+    callback: (map: Map<string, string[]>) => void
+  ): void {
     this.userPhrases_.setOnPhraseChange(callback);
+  }
+
+  public setOnPhraseAdded(
+    callback: (key: string, phrase: string) => void
+  ): void {
+    this.userPhrases_.setOnPhraseAdded(callback);
   }
 
   /**
