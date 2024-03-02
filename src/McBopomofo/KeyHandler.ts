@@ -423,6 +423,10 @@ export class KeyHandler {
               composed += "</ruby>";
             }
           }
+          let committing = new Committing(composed);
+          stateCallback(committing);
+          this.reset();
+          return true;
         }
 
         return false;

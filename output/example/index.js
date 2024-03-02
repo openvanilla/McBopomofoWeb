@@ -93,6 +93,7 @@ let defaultSettings = {
   esc_key_clear_entire_buffer: false,
   move_cursor: true,
   letter_mode: "upper",
+  ctrl_option: 0,
 };
 let settings = {};
 
@@ -188,6 +189,16 @@ function applySettings(settings) {
       document.getElementById("uppercase_letters").checked = false;
       document.getElementById("lowercase_letters").checked = true;
       controller.setLetterMode("lower");
+    }
+  }
+  {
+    let select = document.getElementById("ctrl_enter_option");
+    let options = select.getElementsByTagName("option");
+    for (let option of options) {
+      if (option.value === settings.ctrl_option) {
+        option.selected = "selected";
+        break;
+      }
     }
   }
 }
@@ -336,6 +347,18 @@ document.getElementById("move_cursor").onchange = function (event) {
   controller.setMoveCursorAfterSelection(checked);
   settings.move_cursor = checked;
   saveSettings(settings);
+  document.getElementById("text_area").focus();
+};
+
+document.getElementById("ctrl_enter_option").onchange = function (event) {
+  console.log("ctrl_enter_option");
+  let value = document.getElementById("ctrl_enter_option").value;
+  value = +value;
+  console.log("value" + value);
+  controller.setCtrlEnterOption(value);
+  settings.ctrl_enter_option = value;
+  saveSettings(settings);
+  console.log(settings);
   document.getElementById("text_area").focus();
 };
 
