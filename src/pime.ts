@@ -9,16 +9,30 @@ import process from "process";
 
 /** The McBopomofo Settings. */
 interface Settings {
+  /** The keyboard layout. Valid options: "Standard", "Hsu", "ETen", "ETen26",
+   * "IBM", "HanyuPinyin" */
   layout: string;
+  /** "before_cursor" and "after_cursor". */
   select_phrase: string;
+  /** The candidate keys like "123456789", "asdfghjkl" and so on. */
   candidate_keys: string;
+  /** Whether ESC key clears all of the composing buffer. */
   esc_key_clear_entire_buffer: boolean;
+  /** Whether Shift key toggles the BPMF/Alphabet mode. */
   shift_key_toggle_alphabet_mode: boolean;
+  /** Whether Traditional/Simplified Chinese conversion is on. */
   chineseConversion: boolean;
+  /** Whether the input method moves the cursor to the place of the end of the
+   * selected candidate. Only works when select_phrase is "after_cursor" */
   move_cursor: boolean;
+  /** Inputs upper case or lower case letters when shift key is pressed. */
   letter_mode: string;
+  /** Whether input half width punctuation instead of default full width
+   * punctuation. */
   half_width_punctuation: boolean;
+  /** Whether the input method is deactivated on Windows 8 and above. */
   by_default_deactivated: boolean;
+  /** Whether prompts sound alerts when a user inputs invalid keys. */
   beep_on_error: boolean;
 }
 
@@ -475,7 +489,6 @@ class PimeMcBopomofo {
   }
 }
 
-// https://hackmd.io/@SYkYaRqjTQm-oj2WqaWhUQ/BJ0xsY5A?type=slide#/
 const pimeMcBopomofo = new PimeMcBopomofo();
 
 module.exports = {
@@ -523,6 +536,8 @@ module.exports = {
         lastRequest.method === "filterKeyUp" &&
         lastRequest.keyCode === request.keyCode
       ) {
+        // NOTE: Some app, like MS Word, may send repeated key up event.
+        // We should ignore such events.
         let response = Object.assign({}, responseTemplate, {
           return: true,
         });
@@ -547,6 +562,8 @@ module.exports = {
         lastRequest.method === "filterKeyDown" &&
         lastRequest.keyCode === request.keyCode
       ) {
+        // NOTE: Some app, like MS Word, may send repeated key down event.
+        // We should ignore such events.
         let response = Object.assign({}, responseTemplate, {
           return: true,
         });
@@ -574,7 +591,6 @@ module.exports = {
         return response;
       }
 
-      // console.log(key.toString());
       let handled = pimeMcBopomofo.mcInputController.mcbopomofoKeyEvent(key);
       pimeMcBopomofo.isLastFilterKeyDownHandled = handled;
       let response = Object.assign({}, responseTemplate, {
@@ -589,6 +605,8 @@ module.exports = {
         lastRequest.method === "onKeyDown" &&
         lastRequest.keyCode === request.keyCode
       ) {
+        // NOTE: Some app, like MS Word, may send repeated key up event.
+        // We should ignore such events.
         let response = Object.assign({}, responseTemplate, {
           return: true,
         });
