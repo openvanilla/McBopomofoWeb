@@ -35,6 +35,7 @@ import { OverrideType } from "../Gramambular2/ReadingGrid";
 import { ChineseNumbers, SuzhouNumbers } from "../ChineseNumbers";
 import { Case } from "../ChineseNumbers/ChineseNumbers";
 import { DictionaryServices } from "./DictionaryServices";
+import { CtrlEnterOption } from "./CtrlEnterOption";
 
 export class ComposedString {
   head: string = "";
@@ -146,6 +147,14 @@ export class KeyHandler {
   }
   public set halfWidthPunctuation(flag: boolean) {
     this.halfWidthPunctuation_ = flag;
+  }
+
+  private ctrlEnterOption_: CtrlEnterOption = CtrlEnterOption.none;
+  public get ctrlEnterOption(): CtrlEnterOption {
+    return this.ctrlEnterOption_;
+  }
+  public set ctrlEnterOption(flag: CtrlEnterOption) {
+    this.ctrlEnterOption_ = flag;
   }
 
   private languageModel_: LanguageModel;
@@ -387,6 +396,36 @@ export class KeyHandler {
         errorCallback();
         stateCallback(this.buildInputtingState());
         return true;
+      }
+
+      if (this.traditionalMode_ == false && key.ctrlPressed) {
+        if (this.ctrlEnterOption_ === CtrlEnterOption.bpmfReadings) {
+          let readings = this.grid_.readings;
+          let readingValue = readings.join(kJoinSeparator);
+
+          let committing = new Committing(readingValue);
+          stateCallback(committing);
+          this.reset();
+          return true;
+        }
+        if (this.ctrlEnterOption_ === CtrlEnterOption.htmlRuby) {
+          let composed = "";
+          for (let node of this.latestWalk_?.nodes ?? []) {
+            let reading = node.reading;
+            reading = reading.replace(kJoinSeparator, " ");
+            let value = node.value;
+            if (reading[0] === "_") {
+              composed += value;
+            } else {
+              composed += "<ruby>";
+              composed += value;
+              composed += "<rp>(</rp><rt>" + reading + "</rt><rp>)</rp>";
+              composed += "</ruby>";
+            }
+          }
+        }
+
+        return false;
       }
 
       // See if we are in Marking state, and, if a valid mark, accept it.

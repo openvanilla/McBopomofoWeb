@@ -8,6 +8,7 @@
 import { Candidate } from "../Gramambular2";
 import { BopomofoKeyboardLayout } from "../Mandarin";
 import { CandidateWrapper, CandidateController } from "./CandidateController";
+import { CtrlEnterOption } from "./CtrlEnterOption";
 import { inputMacroController } from "./InputMacro";
 
 import {
@@ -325,6 +326,11 @@ export class InputController {
   /** Help the controller to open a URL. */
   public setOnOpenUrl(input: ((input: string) => void) | undefined) {
     this.keyHandler_.onOpenUrl = input;
+  }
+
+  /** Sets the option for Ctrl + Enter key. */
+  public setCtrlEnterOption(option: CtrlEnterOption): void {
+    this.keyHandler_.ctrlEnterOption = option;
   }
 
   /**
