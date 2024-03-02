@@ -103,7 +103,6 @@ export class ChineseNumbers {
 
   static generate(intPart: string, decPart: string, numberCase: Case): string {
     let intTrimmed = TrimZerosAtStart(intPart);
-    console.log("intTrimmed" + intTrimmed);
     let decTrimmed = TrimZerosAtEnd(decPart);
     let output = "";
     let currentDigits = digits(numberCase);
@@ -142,7 +141,9 @@ export class ChineseNumbers {
         output += currentDigits.get(decTrimmed[i]);
       }
     }
-
+    if (output.length === 0) {
+      return currentDigits.get("0") as string;
+    }
     return output;
   }
 }

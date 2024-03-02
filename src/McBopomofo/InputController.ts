@@ -338,6 +338,15 @@ export class InputController {
   }
 
   public mcbopomofoKeyEvent(key: Key): boolean {
+    let simpleAscii = key.ascii;
+    if (
+      (simpleAscii === "Shift" && key.name == KeyName.ASCII) ||
+      simpleAscii === "Meta" ||
+      simpleAscii === "Alt"
+    ) {
+      return false;
+    }
+
     if (
       this.state_ instanceof ChoosingCandidate ||
       this.state_ instanceof SelectingFeature ||

@@ -187,13 +187,6 @@ export class KeyHandler {
     // From Key's definition, if shiftPressed is true, it can't be a simple key
     // that can be represented by ASCII.
     let simpleAscii = key.ascii;
-    if (
-      (simpleAscii === "Shift" && key.name == KeyName.ASCII) ||
-      simpleAscii === "Meta" ||
-      simpleAscii === "Alt"
-    ) {
-      return false;
-    }
 
     // Jump into the menu to select features
     if (simpleAscii === "\\" && key.ctrlPressed) {

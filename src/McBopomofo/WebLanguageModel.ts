@@ -251,17 +251,20 @@ export class WebLanguageModel implements LanguageModel {
       }
 
       let value = originalValue;
-      if (this.macroConverter_ != undefined) {
+      if (this.macroConverter_) {
         let replacement = this.macroConverter_(value);
-        if (replacement != undefined) {
+        if (replacement !== undefined) {
           value = replacement;
         }
       }
-      if (this.converter_ != undefined) {
+      if (this.converter_) {
         let replacement = this.converter_(value);
-        if (replacement != undefined) {
+        if (replacement !== undefined) {
           value = replacement;
         }
+      }
+      if (!value) {
+        continue;
       }
       if (!insertedValues.has(value)) {
         results.push(new Unigram(value, unigram.score));
