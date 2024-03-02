@@ -1,6 +1,6 @@
 import { InputController } from "./McBopomofo/InputController";
 import { InputUI } from "./McBopomofo/InputUI";
-import { KeyFromKeyboardEvent } from "./pime_keys";
+import { KeyFromKeyboardEvent, VK_Keys } from "./pime_keys";
 import { List } from "lodash";
 import child_process from "child_process";
 import fs from "fs";
@@ -72,13 +72,12 @@ enum PimeMcBopomofoCommand {
   userPhrase = 5,
   chineseConvert = 6,
   halfWidthPunctuation = 7,
-  reloadUserPhrase = 8,
-  help = 9,
+  help = 8,
 }
 
 /** Wraps InputController and required states.  */
 class PimeMcBopomofo {
-  readonly mcInputController: InputController;
+  readonly inputController: InputController;
   uiState: UiState = {
     commitString: "",
     compositionString: "",
@@ -89,24 +88,27 @@ class PimeMcBopomofo {
     showMessage: {},
     hideMessage: true,
   };
-  isLastFilterKeyDownHandled: boolean = false;
   settings: Settings = defaultSettings;
+  lastRequest: any = {};
+  isLastFilterKeyDownHandled: boolean = false;
   isOpened: boolean = true;
   isShiftHold: boolean = false;
   isAlphabetMode: boolean = false;
-  lastRequest: any = {};
 
   constructor() {
-    this.mcInputController = new InputController(this.makeUI(this));
-    this.mcInputController.setUserVerticalCandidates(true);
-    this.mcInputController.setOnOpenUrl((url: string) => {
+    this.inputController = new InputController(this.makeUI(this));
+    this.inputController.setUserVerticalCandidates(true);
+    this.inputController.setOnOpenUrl((url: string) => {
       let command = `start ${url}`;
       child_process.exec(command);
     });
-    this.mcInputController.setOnPhraseChange((map: Map<string, string[]>) => {
-      this.writeUserPhrases(map);
+    // this.mcInputController.setOnPhraseChange((map: Map<string, string[]>) => {
+    //   this.writeUserPhrases(map);
+    // });
+    this.inputController.setOnPhraseAdded((key: string, phrase: string) => {
+      this.addPhrase(key, phrase);
     });
-    this.mcInputController.setOnError(() => {
+    this.inputController.setOnError(() => {
       if (this.settings.beep_on_error) {
         child_process.exec(`rundll32 user32.dll,MessageBeep`);
       }
@@ -116,7 +118,7 @@ class PimeMcBopomofo {
     this.loadUserPhrases();
   }
 
-  resetBeforeHandlingKey() {
+  public resetBeforeHandlingKey(): void {
     // console.log("resetAfterHandlingKey called");
     this.isLastFilterKeyDownHandled = false;
     this.uiState = {
@@ -131,9 +133,9 @@ class PimeMcBopomofo {
     };
   }
 
-  resetController() {
+  public resetController(): void {
     // console.log("resetController called");
-    this.mcInputController.reset();
+    this.inputController.reset();
   }
 
   readonly userDataPath: string = path.join(
@@ -148,7 +150,7 @@ class PimeMcBopomofo {
     "config.json"
   );
 
-  loadUserPhrases() {
+  public loadUserPhrases(): void {
     fs.readFile(this.userPhrasesPath, (err, data) => {
       if (err) {
         console.error(
@@ -174,14 +176,34 @@ class PimeMcBopomofo {
             map.set(key, phrases);
           }
         }
-        this.mcInputController.setUserPhrases(map);
+        this.inputController.setUserPhrases(map);
       } catch {
         console.error("Failed to parse user phrases");
       }
     });
   }
 
-  writeUserPhrases(map: Map<string, string[]>) {
+  private addPhrase(key: string, phrase: string): void {
+    if (!fs.existsSync(this.userDataPath)) {
+      console.log("User data folder not found, creating " + this.userDataPath);
+      console.log("Creating one");
+      fs.mkdirSync(this.userDataPath);
+    }
+
+    fs.readFile(this.userPhrasesPath, (err, data) => {
+      let lineToWrite = key + " " + phrase + "\n";
+      if (data) {
+        let string = data.toString();
+        if (string[string.length - 1] !== "\n") {
+          string += "\n";
+        }
+        string += lineToWrite;
+        fs.writeFile(this.userPhrasesPath, string, (err) => {});
+      }
+    });
+  }
+
+  private writeUserPhrases(map: Map<string, string[]>): void {
     if (!fs.existsSync(this.userDataPath)) {
       console.log("User data folder not found, creating " + this.userDataPath);
       console.log("Creating one");
@@ -208,32 +230,30 @@ class PimeMcBopomofo {
     });
   }
 
-  toggleAlphabetMode() {
+  public toggleAlphabetMode(): void {
     this.isAlphabetMode = !this.isAlphabetMode;
   }
 
-  applySettings() {
-    this.mcInputController.setKeyboardLayout(this.settings.layout);
-    this.mcInputController.setSelectPhrase(this.settings.select_phrase);
-    this.mcInputController.setCandidateKeys(this.settings.candidate_keys);
-    this.mcInputController.setChineseConversionEnabled(
+  public applySettings(): void {
+    this.inputController.setKeyboardLayout(this.settings.layout);
+    this.inputController.setSelectPhrase(this.settings.select_phrase);
+    this.inputController.setCandidateKeys(this.settings.candidate_keys);
+    this.inputController.setChineseConversionEnabled(
       this.settings.chineseConversion
     );
-    this.mcInputController.setEscClearEntireBuffer(
+    this.inputController.setEscClearEntireBuffer(
       this.settings.esc_key_clear_entire_buffer
     );
-    this.mcInputController.setMoveCursorAfterSelection(
-      this.settings.move_cursor
-    );
-    this.mcInputController.setLetterMode(this.settings.letter_mode);
-    this.mcInputController.setHalfWidthPunctuationEnabled(
+    this.inputController.setMoveCursorAfterSelection(this.settings.move_cursor);
+    this.inputController.setLetterMode(this.settings.letter_mode);
+    this.inputController.setHalfWidthPunctuationEnabled(
       this.settings.half_width_punctuation
     );
-    this.mcInputController.setLanguageCode("zh-TW");
+    this.inputController.setLanguageCode("zh-TW");
   }
 
   /** Load settings from disk */
-  loadSettings() {
+  public loadSettings(): void {
     fs.readFile(this.userSettingsPath, (err, data) => {
       if (err) {
         console.log(
@@ -259,7 +279,7 @@ class PimeMcBopomofo {
   }
 
   /** Write settings to disk */
-  writeSettings() {
+  private writeSettings() {
     if (!fs.existsSync(this.userDataPath)) {
       console.log("User data folder not found, creating " + this.userDataPath);
       console.log("Creating one");
@@ -276,7 +296,7 @@ class PimeMcBopomofo {
     });
   }
 
-  makeUI(instance: PimeMcBopomofo): InputUI {
+  public makeUI(instance: PimeMcBopomofo): InputUI {
     let that: InputUI = {
       reset: () => {
         instance.uiState = {
@@ -350,7 +370,7 @@ class PimeMcBopomofo {
     return that;
   }
 
-  customUiResponse(): any {
+  public customUiResponse(): any {
     let windowsModeIcon = "close.ico";
     if (this.isOpened) {
       if (this.isAlphabetMode) {
@@ -403,7 +423,7 @@ class PimeMcBopomofo {
     };
   }
 
-  public handleCommand(id: PimeMcBopomofoCommand) {
+  public handleCommand(id: PimeMcBopomofoCommand): void {
     switch (id) {
       case PimeMcBopomofoCommand.modeIcon:
       case PimeMcBopomofoCommand.switchLanguage:
@@ -465,9 +485,6 @@ class PimeMcBopomofo {
         pimeMcBopomofo.applySettings();
         pimeMcBopomofo.writeSettings();
         break;
-      case PimeMcBopomofoCommand.reloadUserPhrase:
-        pimeMcBopomofo.loadUserPhrases();
-        break;
       case PimeMcBopomofoCommand.help:
         let python3 = path.join(
           __dirname,
@@ -490,6 +507,18 @@ class PimeMcBopomofo {
 }
 
 const pimeMcBopomofo = new PimeMcBopomofo();
+
+fs.watch(pimeMcBopomofo.userSettingsPath, (event, filename) => {
+  if (filename) {
+    pimeMcBopomofo.loadSettings();
+  }
+});
+
+fs.watch(pimeMcBopomofo.userPhrasesPath, (event, filename) => {
+  if (filename) {
+    pimeMcBopomofo.loadUserPhrases();
+  }
+});
 
 module.exports = {
   textReducer(_: any, preState: any) {
@@ -514,10 +543,8 @@ module.exports = {
     }
 
     if (request.method === "onActivate") {
-      // let { isKeyboardOpen } = request;
-      // pimeMcBopomofo.isKeyboardOpened = isKeyboardOpen;
-      pimeMcBopomofo.loadSettings();
-      pimeMcBopomofo.loadUserPhrases();
+      // pimeMcBopomofo.loadSettings();
+      // pimeMcBopomofo.loadUserPhrases();
       let customUi = pimeMcBopomofo.customUiResponse();
       let response = Object.assign({}, responseTemplate, customUi);
       return response;
@@ -572,6 +599,12 @@ module.exports = {
       pimeMcBopomofo.resetBeforeHandlingKey();
 
       let { keyCode, charCode, keyStates } = request;
+      // Ignores capslock.
+      if ((keyStates[VK_Keys.VK_CAPITAL] & (1 << 7)) != 0) {
+        pimeMcBopomofo.resetController();
+        return false;
+      }
+
       let key = KeyFromKeyboardEvent(
         keyCode,
         keyStates,
@@ -591,7 +624,8 @@ module.exports = {
         return response;
       }
 
-      let handled = pimeMcBopomofo.mcInputController.mcbopomofoKeyEvent(key);
+      // console.log(key.toString());
+      let handled = pimeMcBopomofo.inputController.mcbopomofoKeyEvent(key);
       pimeMcBopomofo.isLastFilterKeyDownHandled = handled;
       let response = Object.assign({}, responseTemplate, {
         return: handled,
@@ -683,10 +717,6 @@ module.exports = {
         {
           text: "編輯使用者詞庫 (&U)",
           id: PimeMcBopomofoCommand.userPhrase,
-        },
-        {
-          text: "重新載入使用者詞庫",
-          id: PimeMcBopomofoCommand.reloadUserPhrase,
         },
       ];
       let response = Object.assign({}, responseTemplate, { return: menu });

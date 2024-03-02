@@ -187,13 +187,6 @@ export class KeyHandler {
     // From Key's definition, if shiftPressed is true, it can't be a simple key
     // that can be represented by ASCII.
     let simpleAscii = key.ascii;
-    if (
-      (simpleAscii === "Shift" && key.name == KeyName.ASCII) ||
-      simpleAscii === "Meta" ||
-      simpleAscii === "Alt"
-    ) {
-      return false;
-    }
 
     // Jump into the menu to select features
     if (simpleAscii === "\\" && key.ctrlPressed) {
@@ -518,7 +511,13 @@ export class KeyHandler {
 
     // No key is handled. Refresh and consume the key.
     if (maybeNotEmptyState instanceof NotEmpty) {
-      errorCallback();
+      var shouldPromptAlert = true;
+      if (key.ctrlPressed) {
+        shouldPromptAlert = false;
+      }
+      if (shouldPromptAlert) {
+        errorCallback();
+      }
       stateCallback(this.buildInputtingState());
       return true;
     }

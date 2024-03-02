@@ -13,7 +13,8 @@ import { BopomofoSyllable } from "../Mandarin/BopomofoSyllable";
  */
 export class UserPhrases implements LanguageModel {
   private map_: Map<string, string[]> = new Map();
-  private onPhraseChange: (map: Map<string, string[]>) => void = () => {};
+  private onPhraseChange_: (map: Map<string, string[]>) => void = () => {};
+  private onPhraseAdded_: (key: string, phrase: string) => void = () => {};
 
   setUserPhrases(map: Map<string, string[]>): void {
     if (map === null || map === undefined) {
@@ -23,7 +24,11 @@ export class UserPhrases implements LanguageModel {
   }
 
   setOnPhraseChange(callback: (map: Map<string, string[]>) => void): void {
-    this.onPhraseChange = callback;
+    this.onPhraseChange_ = callback;
+  }
+
+  setOnPhraseAdded(callback: (key: string, phrase: string) => void): void {
+    this.onPhraseAdded_ = callback;
   }
 
   addUserPhrase(key: string, phrase: string): void {
@@ -39,7 +44,8 @@ export class UserPhrases implements LanguageModel {
       list.push(phrase);
       this.map_.set(key, list);
     }
-    this.onPhraseChange(this.map_);
+    this.onPhraseAdded_(key, phrase);
+    this.onPhraseChange_(this.map_);
   }
 
   getUnigrams(key: string): Unigram[] {
@@ -67,39 +73,56 @@ export class UserPhrases implements LanguageModel {
 export class WebLanguageModel implements LanguageModel {
   private map_: any;
   private userPhrases_: UserPhrases = new UserPhrases();
+  private excludedPhrases_: UserPhrases = new UserPhrases();
 
   private macroConverter_?: (input: string) => string | undefined;
   /** Sets the string converter. */
-  setMacroConverter(converter?: (input: string) => string | undefined): void {
+  public setMacroConverter(
+    converter?: (input: string) => string | undefined
+  ): void {
     this.macroConverter_ = converter;
   }
 
   private converter_?: (input: string) => string | undefined;
   /** Sets the string converter. */
-  setConverter(converter?: (input: string) => string | undefined): void {
+  public setConverter(converter?: (input: string) => string | undefined): void {
     this.converter_ = converter;
   }
 
   /** Converts a macro. */
-  convertMacro(input: string): string {
+  public convertMacro(input: string): string {
     let result = this.macroConverter_?.(input);
     return result ?? input;
   }
 
   private addUserPhraseConverter?: (input: string) => string | undefined;
   /** Sets the string converter. */
-  setAddUserPhraseConverter(
+  public setAddUserPhraseConverter(
     converter?: (input: string) => string | undefined
   ): void {
     this.addUserPhraseConverter = converter;
   }
 
-  setUserPhrases(map: Map<string, string[]>): void {
+  /** Sets the user phrases. */
+  public setUserPhrases(map: Map<string, string[]>): void {
     this.userPhrases_.setUserPhrases(map);
   }
 
-  setOnPhraseChange(callback: (map: Map<string, string[]>) => void): void {
+  /** Sets the excluded phrases. */
+  public setExcludedPhrases(map: Map<string, string[]>): void {
+    this.excludedPhrases_.setUserPhrases(map);
+  }
+
+  public setOnPhraseChange(
+    callback: (map: Map<string, string[]>) => void
+  ): void {
     this.userPhrases_.setOnPhraseChange(callback);
+  }
+
+  public setOnPhraseAdded(
+    callback: (key: string, phrase: string) => void
+  ): void {
+    this.userPhrases_.setOnPhraseAdded(callback);
   }
 
   /**
@@ -124,44 +147,82 @@ export class WebLanguageModel implements LanguageModel {
       return [space];
     }
 
-    let result: Unigram[] = [];
-    let usedValues: string[] = [];
-    let userPhrases = this.userPhrases_.getUnigrams(key);
-    for (let phrase of userPhrases) {
-      if (this.macroConverter_ != null) {
-        let converted = this.macroConverter_(phrase.value) ?? phrase.value;
-        phrase = new Unigram(converted, phrase.score);
+    let allUnigrams: Unigram[] = [];
+    let userUnigrams: Unigram[] = [];
+    let excludedValues: Set<string> = new Set();
+    let insertedValues: Set<string> = new Set();
+
+    if (this.excludedPhrases_.hasUnigrams(key)) {
+      let excludedUnigrams = this.excludedPhrases_.getUnigrams(key);
+      for (let u of excludedUnigrams) {
+        excludedValues.add(u.value);
       }
-      if (this.converter_ != null) {
-        let converted = this.converter_(phrase.value) ?? phrase.value;
-        phrase = new Unigram(converted, phrase.score);
-      }
-      if (phrase.value != "" && !usedValues.includes(phrase.value)) {
-        result.push(phrase);
-      }
-      usedValues.push(phrase.value);
+    }
+
+    if (this.userPhrases_.hasUnigrams(key)) {
+      let rawUserUnigrams = this.userPhrases_.getUnigrams(key);
+      userUnigrams = this.filterAndTransformUnigrams(
+        rawUserUnigrams,
+        excludedValues,
+        insertedValues
+      );
     }
 
     let actualKey = WebLanguageModel.maybeAbsoluteOrderKey(key);
     if (actualKey in this.map_) {
       let values = this.map_[actualKey].split(" ");
+      let rawGlobalUnigrams: Unigram[] = [];
       for (let i = 0; i < values.length; i += 2) {
-        let value: string = values[i];
-        let score: number = parseFloat(values[i + 1]);
-        if (this.macroConverter_ != null) {
-          value = this.macroConverter_(value) ?? value;
-        }
-        if (this.converter_ != null) {
-          value = this.converter_(value) ?? value;
-        }
-        if (value != "" && !usedValues.includes(value)) {
-          let g = new Unigram(value, score);
-          result.push(g);
-        }
-        usedValues.push(value);
+        let value = values[i];
+        let score = parseFloat(values[i + 1]);
+        let unigram = new Unigram(value, score);
+        rawGlobalUnigrams.push(unigram);
       }
+      allUnigrams = this.filterAndTransformUnigrams(
+        rawGlobalUnigrams,
+        excludedValues,
+        insertedValues
+      );
     }
-    return result;
+
+    // This relies on the fact that we always use the default separator.
+    let isKeyMultiSyllable = key.includes("-");
+
+    // If key is multi-syllabic (for example, ㄉㄨㄥˋ-ㄈㄢˋ), we just
+    // insert all collected userUnigrams on top of the unigrams fetched from
+    // the database. If key is mono-syllabic (for example, ㄉㄨㄥˋ), then
+    // we'll have to rewrite the collected userUnigrams.
+    //
+    // This is because, by default, user unigrams have a score of 0, which
+    // guarantees that grid walks will choose them. This is problematic,
+    // however, when a single-syllabic user phrase is competing with other
+    // multisyllabic phrases that start with the same syllable. For example,
+    // if a user has 丼 for ㄉㄨㄥˋ, and because that unigram has a score
+    // of 0, no other phrases in the database that start with ㄉㄨㄥˋ would
+    // be able to compete with it. Without the rewrite, ㄉㄨㄥˋ-ㄗㄨㄛˋ
+    // would always result in "丼" + "作" instead of "動作" because the
+    // node for "丼" would dominate the walk.
+    if (isKeyMultiSyllable || allUnigrams.length === 0) {
+      allUnigrams = userUnigrams.concat(allUnigrams);
+    } else if (userUnigrams.length !== 0) {
+      // Find the highest score from the existing allUnigrams.
+      let topScore = Number.MIN_SAFE_INTEGER;
+      for (let unigram of allUnigrams) {
+        if (unigram.score > topScore) {
+          topScore = unigram.score;
+        }
+      }
+
+      // Boost by a very small number. This is the score for user phrases.
+      const epsilon = 0.000000001;
+      let boostedScore = topScore + epsilon;
+      let rewrittenUserUnigrams: Unigram[] = [];
+      for (let unigram of userUnigrams) {
+        rewrittenUserUnigrams.push(new Unigram(unigram.value, boostedScore));
+      }
+      allUnigrams = rewrittenUserUnigrams.concat(allUnigrams);
+    }
+    return allUnigrams;
   }
 
   hasUnigrams(key: string): boolean {
@@ -174,6 +235,43 @@ export class WebLanguageModel implements LanguageModel {
       return true;
     }
     return WebLanguageModel.maybeAbsoluteOrderKey(key) in this.map_;
+  }
+
+  filterAndTransformUnigrams(
+    unigrams: Unigram[],
+    excludedValues: Set<string>,
+    insertedValues: Set<string>
+  ) {
+    let results: Unigram[] = [];
+
+    for (let unigram of unigrams) {
+      let originalValue = unigram.value;
+      if (excludedValues.has(originalValue)) {
+        continue;
+      }
+
+      let value = originalValue;
+      if (this.macroConverter_) {
+        let replacement = this.macroConverter_(value);
+        if (replacement !== undefined) {
+          value = replacement;
+        }
+      }
+      if (this.converter_) {
+        let replacement = this.converter_(value);
+        if (replacement !== undefined) {
+          value = replacement;
+        }
+      }
+      if (!value) {
+        continue;
+      }
+      if (!insertedValues.has(value)) {
+        results.push(new Unigram(value, unigram.score));
+        insertedValues.add(value);
+      }
+    }
+    return results;
   }
 
   /**

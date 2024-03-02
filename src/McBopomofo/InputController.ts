@@ -134,7 +134,6 @@ export class InputController {
   private candidateKeys_ = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
   private useVerticalCandidates_ = false;
   private onError_: Function | undefined;
-  // private chineseConversionEnabled_ = false;
 
   constructor(ui: InputUI) {
     this.ui_ = new InputUIController(ui);
@@ -281,13 +280,23 @@ export class InputController {
   }
 
   /**
-   * Sets the callback function when the user phrase model is changed.
+   * Sets the callback function that would be called when the user phrase model is changed.
    * @param callback The callback function.
    */
   public setOnPhraseChange(
     callback: (map: Map<string, string[]>) => void
   ): void {
     this.lm_.setOnPhraseChange(callback);
+  }
+
+  /**
+   * Sets the callback function that would be called when the a user phrase model is added.
+   * @param callback The callback function.
+   */
+  public setOnPhraseAdded(
+    callback: (key: string, phrase: string) => void
+  ): void {
+    this.lm_.setOnPhraseAdded(callback);
   }
 
   /** Sets Chinese conversion on or off. */
@@ -329,6 +338,15 @@ export class InputController {
   }
 
   public mcbopomofoKeyEvent(key: Key): boolean {
+    let simpleAscii = key.ascii;
+    if (
+      (simpleAscii === "Shift" && key.name == KeyName.ASCII) ||
+      simpleAscii === "Meta" ||
+      simpleAscii === "Alt"
+    ) {
+      return false;
+    }
+
     if (
       this.state_ instanceof ChoosingCandidate ||
       this.state_ instanceof SelectingFeature ||
@@ -359,6 +377,12 @@ export class InputController {
         this.onError_?.();
       }
     );
+    if (this.state_ instanceof NotEmpty) {
+      this.updatePreedit(this.state_);
+    } else {
+      this.ui_.update();
+    }
+
     return accepted;
   }
 
