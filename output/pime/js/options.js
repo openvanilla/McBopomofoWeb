@@ -8,6 +8,7 @@ window.onload = () => {
     chineseConversion: false,
     move_cursor: true,
     letter_mode: "upper",
+    ctrl_enter_option: 0,
     by_default_deactivated: false,
     beep_on_error: true,
   };
@@ -58,12 +59,37 @@ window.onload = () => {
     }
 
     {
+      document.getElementById("ctrl_enter_option").onchange = function (event) {
+        console.log("ctrl_enter_option");
+        let value = document.getElementById("ctrl_enter_option").value;
+        value = +value;
+        console.log("value" + value);
+        controller.setCtrlEnterOption(value);
+        settings.ctrl_enter_option = value;
+        saveSettings(settings);
+        console.log(settings);
+        document.getElementById("text_area").focus();
+      };
+    }
+
+    {
       if (settings.letter_mode === "upper") {
         document.getElementById("uppercase_letters").checked = true;
         document.getElementById("lowercase_letters").checked = false;
       } else if (settings.letter_mode === "lower") {
         document.getElementById("uppercase_letters").checked = false;
         document.getElementById("lowercase_letters").checked = true;
+      }
+    }
+
+    {
+      let select = document.getElementById("ctrl_enter_option");
+      let options = select.getElementsByTagName("option");
+      for (let option of options) {
+        if (option.value === settings.ctrl_option) {
+          option.selected = "selected";
+          break;
+        }
       }
     }
 
