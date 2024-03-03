@@ -491,12 +491,7 @@ chrome.input.ime.onKeyEvent.addListener((engineID, keyData) => {
     chromeMcBopomofo.isShiftHold = keyData.key === "Shift";
   }
 
-  if (
-    keyData.altKey ||
-    keyData.ctrlKey ||
-    keyData.altgrKey ||
-    keyData.capsLock
-  ) {
+  if (keyData.altKey || keyData.altgrKey || keyData.capsLock) {
     return false;
   }
 
