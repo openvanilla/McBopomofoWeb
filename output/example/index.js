@@ -87,6 +87,7 @@ controller.setOnOpenUrl(function (url) {
 let defaultSettings = {
   trad_mode: false,
   chinese_conversion: false,
+  half_width_punctuation: false,
   layout: "standard",
   candidate_keys: "123456789",
   select_phrase: "before_cursor",
@@ -133,6 +134,16 @@ function applySettings(settings) {
     } else {
       document.getElementById("chinese_convert_trad").checked = true;
       document.getElementById("chinese_convert_simp").checked = false;
+    }
+  }
+  {
+    controller.setChineseConversionEnabled(settings.half_width_punctuation);
+    if (settings.half_width_punctuation) {
+      document.getElementById("full_width_punctuation").checked = true;
+      document.getElementById("half_width_punctuation").checked = false;
+    } else {
+      document.getElementById("full_width_punctuation").checked = true;
+      document.getElementById("half_width_punctuation").checked = false;
     }
   }
   {
@@ -350,15 +361,23 @@ document.getElementById("move_cursor").onchange = function (event) {
   document.getElementById("text_area").focus();
 };
 
+
+document.getElementById("punctuation").onchange = function (event) {
+  let value = document.getElementById("punctuation").value;
+  value = +value;
+  controller.setCtrlEnterOption(value);
+  settings.half_width_punctuation = value;
+  saveSettings(settings);
+  document.getElementById("text_area").focus();
+};
+
+
 document.getElementById("ctrl_enter_option").onchange = function (event) {
-  // console.log("ctrl_enter_option");
   let value = document.getElementById("ctrl_enter_option").value;
   value = +value;
-  // console.log("value" + value);
   controller.setCtrlEnterOption(value);
   settings.ctrl_enter_option = value;
   saveSettings(settings);
-  // console.log(settings);
   document.getElementById("text_area").focus();
 };
 

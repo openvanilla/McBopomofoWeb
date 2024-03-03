@@ -18,10 +18,11 @@ type ChromeMcBopomofoSettings = {
   candidate_keys: string;
   esc_key_clear_entire_buffer: boolean;
   shift_key_toggle_alphabet_mode: boolean;
-  chineseConversion: boolean;
+  chinese_conversion: boolean;
   move_cursor: boolean;
   letter_mode: string;
   ctrl_enter_option: number;
+  half_width_punctuation_enabled: boolean;
 };
 
 class ChromeMcBopomofo {
@@ -38,10 +39,11 @@ class ChromeMcBopomofo {
     candidate_keys: "123456789",
     esc_key_clear_entire_buffer: false,
     shift_key_toggle_alphabet_mode: true,
-    chineseConversion: false,
+    chinese_conversion: false,
     move_cursor: true,
     letter_mode: "upper",
     ctrl_enter_option: 0,
+    half_width_punctuation_enabled: false,
   };
   settings: ChromeMcBopomofoSettings = {
     layout: "standard",
@@ -49,10 +51,11 @@ class ChromeMcBopomofo {
     candidate_keys: "123456789",
     esc_key_clear_entire_buffer: false,
     shift_key_toggle_alphabet_mode: true,
-    chineseConversion: false,
+    chinese_conversion: false,
     move_cursor: true,
     letter_mode: "upper",
     ctrl_enter_option: 0,
+    half_width_punctuation_enabled: false,
   };
   lang = "en";
   isShiftHold = false;
@@ -97,7 +100,7 @@ class ChromeMcBopomofo {
       }
 
       this.mcInputController.setChineseConversionEnabled(
-        this.settings.chineseConversion === true
+        this.settings.chinese_conversion === true
       );
       this.mcInputController.setKeyboardLayout(this.settings.layout);
       this.mcInputController.setSelectPhrase(this.settings.select_phrase);
@@ -116,6 +119,9 @@ class ChromeMcBopomofo {
       this.mcInputController.setCtrlEnterOption(
         this.settings.ctrl_enter_option
       );
+      this.mcInputController.setHalfWidthPunctuationEnabled(
+        this.settings.half_width_punctuation_enabled
+      )
     });
   }
 
@@ -145,9 +151,8 @@ class ChromeMcBopomofo {
         label: this.myLocalizedString("Input Letters", "輸入英文字母"),
         // chrome.i18n.getMessage("menuChineseConversion"),
         style: "check",
-        checked: this.settings.chineseConversion === true,
+        checked: this.isAlphabetMode === true,
       },
-
       {
         id: "mcbopomofo-chinese-conversion",
         label: this.myLocalizedString(
@@ -156,7 +161,17 @@ class ChromeMcBopomofo {
         ),
         // chrome.i18n.getMessage("menuChineseConversion"),
         style: "check",
-        checked: this.settings.chineseConversion === true,
+        checked: this.settings.chinese_conversion === true,
+      },
+      {
+        id: "mcbopomofo-half-width-punctuation",
+        label: this.myLocalizedString(
+          "Input Half Width Punctuation",
+          "輸入半形標點"
+        ),
+        // chrome.i18n.getMessage("menuChineseConversion"),
+        style: "check",
+        checked: this.settings.half_width_punctuation_enabled === true,
       },
       {
         id: "mcbopomofo-options",
@@ -201,9 +216,10 @@ class ChromeMcBopomofo {
   }
 
   toggleChineseConversion() {
-    let checked = this.settings.chineseConversion;
+    let checked = this.settings.chinese_conversion;
     checked = !checked;
-    this.settings.chineseConversion = checked;
+    this.settings.chinese_conversion = checked;
+    this.mcInputController.setChineseConversionEnabled(checked);
 
     chrome.notifications.create("mcbopomofo-chinese-conversion" + Date.now(), {
       title: checked
@@ -215,7 +231,7 @@ class ChromeMcBopomofo {
       iconUrl: "icons/icon48.png",
     });
 
-    chrome.storage.sync.set({ settings: settings }, () => {
+    chrome.storage.sync.set({ settings: this.settings }, () => {
       if (this.engineID === undefined) return;
       if (this.context === undefined) return;
 
@@ -223,6 +239,32 @@ class ChromeMcBopomofo {
       this.updateMenu();
     });
   }
+
+  toggleHalfWidthPunctuation() {
+    let checked = this.settings.half_width_punctuation_enabled;
+    checked = !checked;
+    this.settings.half_width_punctuation_enabled = checked;
+    this.mcInputController.setHalfWidthPunctuationEnabled(checked);
+
+    chrome.notifications.create("mcbopomofo-half-width-punctuation" + Date.now(), {
+      title: checked
+        ? this.myLocalizedString("Using half width punctuation", "使用半形標點")
+        : this.myLocalizedString("Using full width punctuation", "使用全形標點"),
+
+      message: "",
+      type: "basic",
+      iconUrl: "icons/icon48.png",
+    });
+
+    chrome.storage.sync.set({ settings: this.settings }, () => {
+      if (this.engineID === undefined) return;
+      if (this.context === undefined) return;
+
+      this.loadSettings();
+      this.updateMenu();
+    });
+  }
+
 
   tryOpen(url: string) {
     chrome.windows.getCurrent({}, (win) => {
@@ -517,6 +559,11 @@ chrome.input.ime.onMenuItemActivated.addListener((engineID, name) => {
 
   if (name === "mcbopomofo-chinese-conversion") {
     chromeMcBopomofo.toggleChineseConversion();
+    return;
+  }
+
+  if (name === "mcbopomofo-half-width-punctuation") {
+    chromeMcBopomofo.toggleHalfWidthPunctuation();
     return;
   }
 
