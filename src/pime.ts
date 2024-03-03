@@ -507,12 +507,26 @@ class PimeMcBopomofo {
 }
 
 const pimeMcBopomofo = new PimeMcBopomofo();
+if (!fs.existsSync(pimeMcBopomofo.userDataPath)) {
+  fs.mkdirSync(pimeMcBopomofo.userDataPath);
+}
+
+if (!fs.existsSync(pimeMcBopomofo.userSettingsPath)) {
+  fs.writeFileSync(
+    pimeMcBopomofo.userSettingsPath,
+    JSON.stringify(defaultSettings)
+  );
+}
 
 fs.watch(pimeMcBopomofo.userSettingsPath, (event, filename) => {
   if (filename) {
     pimeMcBopomofo.loadSettings();
   }
 });
+
+if (!fs.existsSync(pimeMcBopomofo.userPhrasesPath)) {
+  fs.writeFileSync(pimeMcBopomofo.userSettingsPath, "");
+}
 
 fs.watch(pimeMcBopomofo.userPhrasesPath, (event, filename) => {
   if (filename) {
