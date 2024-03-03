@@ -138,15 +138,22 @@ class PimeMcBopomofo {
     this.inputController.reset();
   }
 
-  readonly userDataPath: string = path.join(
+  readonly pimeUserDataPath: string = path.join(
     process.env.APPDATA || "",
-    "PIME",
+    "PIME"
+  );
+
+  readonly mcBopomofoUserDataPath: string = path.join(
+    this.pimeUserDataPath,
     "mcbopomofo"
   );
 
-  readonly userPhrasesPath: string = path.join(this.userDataPath, "data.json");
+  readonly userPhrasesPath: string = path.join(
+    this.mcBopomofoUserDataPath,
+    "data.json"
+  );
   readonly userSettingsPath: string = path.join(
-    this.userDataPath,
+    this.mcBopomofoUserDataPath,
     "config.json"
   );
 
@@ -184,10 +191,12 @@ class PimeMcBopomofo {
   }
 
   private addPhrase(key: string, phrase: string): void {
-    if (!fs.existsSync(this.userDataPath)) {
-      console.log("User data folder not found, creating " + this.userDataPath);
+    if (!fs.existsSync(this.mcBopomofoUserDataPath)) {
+      console.log(
+        "User data folder not found, creating " + this.mcBopomofoUserDataPath
+      );
       console.log("Creating one");
-      fs.mkdirSync(this.userDataPath);
+      fs.mkdirSync(this.mcBopomofoUserDataPath);
     }
 
     fs.readFile(this.userPhrasesPath, (err, data) => {
@@ -204,10 +213,12 @@ class PimeMcBopomofo {
   }
 
   private writeUserPhrases(map: Map<string, string[]>): void {
-    if (!fs.existsSync(this.userDataPath)) {
-      console.log("User data folder not found, creating " + this.userDataPath);
+    if (!fs.existsSync(this.mcBopomofoUserDataPath)) {
+      console.log(
+        "User data folder not found, creating " + this.mcBopomofoUserDataPath
+      );
       console.log("Creating one");
-      fs.mkdirSync(this.userDataPath);
+      fs.mkdirSync(this.mcBopomofoUserDataPath);
     }
 
     let string = "";
@@ -280,10 +291,12 @@ class PimeMcBopomofo {
 
   /** Write settings to disk */
   private writeSettings() {
-    if (!fs.existsSync(this.userDataPath)) {
-      console.log("User data folder not found, creating " + this.userDataPath);
+    if (!fs.existsSync(this.mcBopomofoUserDataPath)) {
+      console.log(
+        "User data folder not found, creating " + this.mcBopomofoUserDataPath
+      );
       console.log("Creating one");
-      fs.mkdirSync(this.userDataPath);
+      fs.mkdirSync(this.mcBopomofoUserDataPath);
     }
 
     console.log("Writing user settings to " + this.userSettingsPath);
@@ -507,32 +520,41 @@ class PimeMcBopomofo {
 }
 
 const pimeMcBopomofo = new PimeMcBopomofo();
-if (!fs.existsSync(pimeMcBopomofo.userDataPath)) {
-  fs.mkdirSync(pimeMcBopomofo.userDataPath);
-}
 
-if (!fs.existsSync(pimeMcBopomofo.userSettingsPath)) {
-  fs.writeFileSync(
-    pimeMcBopomofo.userSettingsPath,
-    JSON.stringify(defaultSettings)
-  );
-}
-
-fs.watch(pimeMcBopomofo.userSettingsPath, (event, filename) => {
-  if (filename) {
-    pimeMcBopomofo.loadSettings();
+try {
+  if (!fs.existsSync(pimeMcBopomofo.pimeUserDataPath)) {
+    fs.mkdirSync(pimeMcBopomofo.pimeUserDataPath);
   }
-});
 
-if (!fs.existsSync(pimeMcBopomofo.userPhrasesPath)) {
-  fs.writeFileSync(pimeMcBopomofo.userSettingsPath, "");
-}
-
-fs.watch(pimeMcBopomofo.userPhrasesPath, (event, filename) => {
-  if (filename) {
-    pimeMcBopomofo.loadUserPhrases();
+  if (!fs.existsSync(pimeMcBopomofo.mcBopomofoUserDataPath)) {
+    fs.mkdirSync(pimeMcBopomofo.mcBopomofoUserDataPath);
   }
-});
+
+  if (!fs.existsSync(pimeMcBopomofo.userSettingsPath)) {
+    fs.writeFileSync(
+      pimeMcBopomofo.userSettingsPath,
+      JSON.stringify(defaultSettings)
+    );
+  }
+
+  fs.watch(pimeMcBopomofo.userSettingsPath, (event, filename) => {
+    if (filename) {
+      pimeMcBopomofo.loadSettings();
+    }
+  });
+
+  if (!fs.existsSync(pimeMcBopomofo.userPhrasesPath)) {
+    fs.writeFileSync(pimeMcBopomofo.userPhrasesPath, "");
+  }
+
+  fs.watch(pimeMcBopomofo.userPhrasesPath, (event, filename) => {
+    if (filename) {
+      pimeMcBopomofo.loadUserPhrases();
+    }
+  });
+} catch (e) {
+  console.error(e);
+}
 
 module.exports = {
   textReducer(_: any, preState: any) {
