@@ -55,7 +55,19 @@ window.onload = () => {
         document.getElementById("lowercase_letters").checked = true;
       }
     }
+
+    {
+      let select = document.getElementById("ctrl_enter_option");
+      let options = select.getElementsByTagName("option");
+      for (let option of options) {
+        if (option.value === settings.ctrl_option) {
+          option.selected = "selected";
+          break;
+        }
+      }
+    }    
   }
+
 
   function saveSettings(settings) {
     chrome.storage.sync.set({ settings: settings }, () => {
@@ -142,6 +154,14 @@ window.onload = () => {
     return false;
   };
 
+  document.getElementById("ctrl_enter_option").onchange = function (event) {
+    console.log("ctrl_enter_option");
+    let value = document.getElementById("ctrl_enter_option").value;
+    value = +value;
+    settings.ctrl_enter_option = value;
+    saveSettings(settings);
+  };
+
   window.document.title = chrome.i18n.getMessage("optionTitle");
   document.getElementById("options_title").innerText =
     chrome.i18n.getMessage("optionTitle");
@@ -193,6 +213,15 @@ window.onload = () => {
     chrome.i18n.getMessage("optionShiftLetterUppercase");
   document.getElementById("shift_letter_lowercase").innerText =
     chrome.i18n.getMessage("optionShiftLetterLowercase");
+
+  document.getElementById("ctrl_enter_title").innerText =
+    chrome.i18n.getMessage("ctrl_enter_key");
+  document.getElementById("ctrl_enter_option_0").innerText =
+    chrome.i18n.getMessage("ctrl_enter_none");
+  document.getElementById("ctrl_enter_option_1").innerText =
+    chrome.i18n.getMessage("ctrl_enter_bpmf_reading");
+  document.getElementById("ctrl_enter_option_2").innerText =
+    chrome.i18n.getMessage("ctrl_enter_html_ruby");
 
   document.getElementById("others_title").innerText =
     chrome.i18n.getMessage("optionOthersTitle");
