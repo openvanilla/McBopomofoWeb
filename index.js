@@ -1,8 +1,8 @@
-var chineseMode = true;
+var alphabetMode = false;
 var composingBuffer = "";
 
 function resetUI() {
-  let renderText = chineseMode ? "【麥】" : "【英】";
+  let renderText = alphabetMode ? "【英】" : "【麥】";
   renderText += "<span class='cursor'>|</span>";
   document.getElementById("composing_buffer").innerHTML = renderText;
   document.getElementById("candidates").innerHTML = "";
@@ -28,7 +28,7 @@ let ui = (function () {
     let state = JSON.parse(string);
     {
       let buffer = state.composingBuffer;
-      let renderText = chineseMode ? "【麥】" : "【英】";
+      let renderText = alphabetMode ? "【英】" : "【麥】";
       let plainText = "";
       let i = 0;
       for (let item of buffer) {
@@ -87,12 +87,14 @@ controller.setOnOpenUrl(function (url) {
 let defaultSettings = {
   trad_mode: false,
   chinese_conversion: false,
+  half_width_punctuation: false,
   layout: "standard",
   candidate_keys: "123456789",
   select_phrase: "before_cursor",
   esc_key_clear_entire_buffer: false,
-  move_cursor: true,
+  move_cursor: false,
   letter_mode: "upper",
+  ctrl_option: 0,
 };
 let settings = {};
 
@@ -132,6 +134,16 @@ function applySettings(settings) {
     } else {
       document.getElementById("chinese_convert_trad").checked = true;
       document.getElementById("chinese_convert_simp").checked = false;
+    }
+  }
+  {
+    controller.setHalfWidthPunctuationEnabled(settings.half_width_punctuation);
+    if (settings.half_width_punctuation) {
+      document.getElementById("full_width_punctuation").checked = true;
+      document.getElementById("half_width_punctuation").checked = false;
+    } else {
+      document.getElementById("full_width_punctuation").checked = true;
+      document.getElementById("half_width_punctuation").checked = false;
     }
   }
   {
@@ -190,6 +202,16 @@ function applySettings(settings) {
       controller.setLetterMode("lower");
     }
   }
+  {
+    let select = document.getElementById("ctrl_enter_option");
+    let options = select.getElementsByTagName("option");
+    for (let option of options) {
+      if (option.value == settings.ctrl_option) {
+        option.selected = "selected";
+        break;
+      }
+    }
+  }
 }
 
 function loadUserPhrases() {
@@ -225,19 +247,23 @@ document.getElementById("text_area").addEventListener("keyup", (event) => {
       ui.commitString(composingBuffer);
       composingBuffer = "";
     }
-    chineseMode = !chineseMode;
+    alphabetMode = !alphabetMode;
     controller.reset();
     return;
   }
 });
 
 document.getElementById("text_area").addEventListener("keydown", (event) => {
-  if (event.ctrlKey || event.metaKey || event.altKey) {
+  if (
+    // event.ctrlKey ||
+    event.metaKey ||
+    event.altKey
+  ) {
     return;
   }
 
   shiftKeyIsPressed = event.key === "Shift";
-  if (!chineseMode) {
+  if (alphabetMode) {
     return;
   }
 
@@ -271,6 +297,20 @@ document.getElementById("chinese_convert_trad").onchange = function (event) {
 document.getElementById("chinese_convert_simp").onchange = function (event) {
   controller.setChineseConversionEnabled(true);
   settings.chinese_conversion = true;
+  saveSettings(settings);
+  document.getElementById("text_area").focus();
+};
+
+document.getElementById("full_width_punctuation").onchange = function (event) {
+  controller.setHalfWidthPunctuationEnabled(false);
+  settings.half_width_punctuation = false;
+  saveSettings(settings);
+  document.getElementById("text_area").focus();
+};
+
+document.getElementById("half_width_punctuation").onchange = function (event) {
+  controller.setHalfWidthPunctuationEnabled(true);
+  settings.half_width_punctuation = true;
   saveSettings(settings);
   document.getElementById("text_area").focus();
 };
@@ -331,6 +371,15 @@ document.getElementById("move_cursor").onchange = function (event) {
   let checked = document.getElementById("move_cursor").checked;
   controller.setMoveCursorAfterSelection(checked);
   settings.move_cursor = checked;
+  saveSettings(settings);
+  document.getElementById("text_area").focus();
+};
+
+document.getElementById("ctrl_enter_option").onchange = function (event) {
+  let value = document.getElementById("ctrl_enter_option").value;
+  value = +value;
+  controller.setCtrlEnterOption(value);
+  settings.ctrl_enter_option = value;
   saveSettings(settings);
   document.getElementById("text_area").focus();
 };

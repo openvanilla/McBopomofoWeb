@@ -49,6 +49,15 @@
             </td>
           </tr>
           <tr>
+            <td class="option_title">標點符號：</td>
+            <td>
+              <input type="radio" name="punctuation" value="0" id="full_width_punctuation" checked="checked"><label
+                for="full_width_punctuation">全形標點</label><br>
+              <input type="radio" name="punctuation" value="1" id="half_width_punctuation"><label
+                for="half_width_punctuation">半形標點</label>
+            </td>
+          </tr>
+          <tr>
             <td class="option_title">鍵盤配置：</td>
             <td>
               <select id="layout">
@@ -95,6 +104,16 @@
                 checked="checked"><label for="uppercase_letters">輸入大寫字母</label><br>
               <input type="radio" name="letters" value="lowercase_letters" id="lowercase_letters"><label
                 for="lowercase_letters">輸入小寫字母</label>
+            </td>
+          </tr>
+          <tr>
+            <td class="option_title">Ctrl + Enter：</td>
+            <td>
+              <select id="ctrl_enter_option">
+                <option value="0">不使用</option>
+                <option value="1">輸出注音符號</option>
+                <option value="2">輸出 HTML Ruby</option>
+              </select>
             </td>
           </tr>
 
