@@ -92,7 +92,7 @@ let defaultSettings = {
   candidate_keys: "123456789",
   select_phrase: "before_cursor",
   esc_key_clear_entire_buffer: false,
-  move_cursor: true,
+  move_cursor: false,
   letter_mode: "upper",
   ctrl_option: 0,
 };
