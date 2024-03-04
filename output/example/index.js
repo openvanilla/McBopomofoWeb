@@ -137,7 +137,7 @@ function applySettings(settings) {
     }
   }
   {
-    controller.setChineseConversionEnabled(settings.half_width_punctuation);
+    controller.setHalfWidthPunctuationEnabled(settings.half_width_punctuation);
     if (settings.half_width_punctuation) {
       document.getElementById("full_width_punctuation").checked = true;
       document.getElementById("half_width_punctuation").checked = false;
@@ -301,6 +301,20 @@ document.getElementById("chinese_convert_simp").onchange = function (event) {
   document.getElementById("text_area").focus();
 };
 
+document.getElementById("full_width_punctuation").onchange = function (event) {
+  controller.setHalfWidthPunctuationEnabled(false);
+  settings.half_width_punctuation = false;
+  saveSettings(settings);
+  document.getElementById("text_area").focus();
+};
+
+document.getElementById("half_width_punctuation").onchange = function (event) {
+  controller.setHalfWidthPunctuationEnabled(true);
+  settings.half_width_punctuation = true;
+  saveSettings(settings);
+  document.getElementById("text_area").focus();
+};
+
 document.getElementById("layout").onchange = function (event) {
   let value = document.getElementById("layout").value;
   controller.setKeyboardLayout(value);
@@ -360,17 +374,6 @@ document.getElementById("move_cursor").onchange = function (event) {
   saveSettings(settings);
   document.getElementById("text_area").focus();
 };
-
-
-document.getElementById("punctuation").onchange = function (event) {
-  let value = document.getElementById("punctuation").value;
-  value = +value;
-  controller.setCtrlEnterOption(value);
-  settings.half_width_punctuation = value;
-  saveSettings(settings);
-  document.getElementById("text_area").focus();
-};
-
 
 document.getElementById("ctrl_enter_option").onchange = function (event) {
   let value = document.getElementById("ctrl_enter_option").value;
