@@ -73,6 +73,7 @@ enum PimeMcBopomofoCommand {
   chineseConvert = 6,
   halfWidthPunctuation = 7,
   help = 8,
+  mcBopomofoUserDataFolder = 9,
 }
 
 /** Wraps InputController and required states.  */
@@ -150,7 +151,7 @@ class PimeMcBopomofo {
 
   readonly userPhrasesPath: string = path.join(
     this.mcBopomofoUserDataPath,
-    "data.json"
+    "data.txt"
   );
   readonly userSettingsPath: string = path.join(
     this.mcBopomofoUserDataPath,
@@ -499,20 +500,31 @@ class PimeMcBopomofo {
         pimeMcBopomofo.writeSettings();
         break;
       case PimeMcBopomofoCommand.help:
-        let python3 = path.join(
-          __dirname,
-          "..",
-          "..",
-          "..",
-          "python",
-          "python3",
-          "python.exe"
-        );
-        let script = path.join(__dirname, "config_tool.py");
-        let command = `"${python3}" "${script}" help`;
+        {
+          let python3 = path.join(
+            __dirname,
+            "..",
+            "..",
+            "..",
+            "python",
+            "python3",
+            "python.exe"
+          );
+          let script = path.join(__dirname, "config_tool.py");
+          let command = `"${python3}" "${script}" help`;
+          console.log("Run " + command);
+          child_process.exec(command);
+        }
+        break;
+      case PimeMcBopomofoCommand.mcBopomofoUserDataFolder: {
+        if (!fs.existsSync(pimeMcBopomofo.mcBopomofoUserDataPath)) {
+          fs.mkdirSync(pimeMcBopomofo.mcBopomofoUserDataPath);
+        }
+        let url = pimeMcBopomofo.mcBopomofoUserDataPath;
+        let command = `start ${url}`;
         console.log("Run " + command);
         child_process.exec(command);
-        break;
+      }
       default:
         break;
     }
@@ -579,8 +591,6 @@ module.exports = {
     }
 
     if (request.method === "onActivate") {
-      // pimeMcBopomofo.loadSettings();
-      // pimeMcBopomofo.loadUserPhrases();
       let customUi = pimeMcBopomofo.customUiResponse();
       let response = Object.assign({}, responseTemplate, customUi);
       return response;
@@ -588,7 +598,7 @@ module.exports = {
 
     if (request.method === "onDeactivate") {
       let response = Object.assign({}, responseTemplate, {
-        removeButton: ["windows-mode-icon"],
+        removeButton: ["windows-mode-icon", "switch-lang"],
       });
       return response;
     }
@@ -610,8 +620,8 @@ module.exports = {
         pimeMcBopomofo.toggleAlphabetMode();
         pimeMcBopomofo.resetController();
         let uiState = pimeMcBopomofo.uiState;
-        let customui = pimeMcBopomofo.customUiResponse();
-        let response = Object.assign({}, responseTemplate, uiState, customui);
+        let customUi = pimeMcBopomofo.customUiResponse();
+        let response = Object.assign({}, responseTemplate, uiState, customUi);
         return response;
       }
 
@@ -635,7 +645,7 @@ module.exports = {
       pimeMcBopomofo.resetBeforeHandlingKey();
 
       let { keyCode, charCode, keyStates } = request;
-      // Ignores capslock.
+      // Ignores caps lock.
       if ((keyStates[VK_Keys.VK_CAPITAL] & (1 << 7)) != 0) {
         pimeMcBopomofo.resetController();
         return false;
@@ -694,8 +704,6 @@ module.exports = {
       let { opened } = request;
       pimeMcBopomofo.isOpened = opened;
       pimeMcBopomofo.resetController();
-      pimeMcBopomofo.loadSettings();
-      // pimeMcBopomofo.loadUserPhrases();
       let customUi = pimeMcBopomofo.customUiResponse();
       let response = Object.assign({}, responseTemplate, customUi);
       return response;
@@ -736,12 +744,12 @@ module.exports = {
         },
         {},
         {
-          text: "使用簡體中文",
+          text: "輸入簡體中文",
           id: PimeMcBopomofoCommand.chineseConvert,
           checked: pimeMcBopomofo.settings.chineseConversion,
         },
         {
-          text: "使用半形標點",
+          text: "輸入半形標點",
           id: PimeMcBopomofoCommand.halfWidthPunctuation,
           checked: pimeMcBopomofo.settings.half_width_punctuation,
         },
@@ -753,6 +761,10 @@ module.exports = {
         {
           text: "編輯使用者詞庫 (&U)",
           id: PimeMcBopomofoCommand.userPhrase,
+        },
+        {
+          text: "打開使用者資料夾",
+          id: PimeMcBopomofoCommand.mcBopomofoUserDataFolder,
         },
       ];
       let response = Object.assign({}, responseTemplate, { return: menu });
