@@ -489,6 +489,7 @@ class PimeMcBopomofo {
         let command = `start ${url}`;
         console.log("Run " + command);
         child_process.exec(command);
+        break;
       }
       case PimeMcBopomofoCommand.chineseConvert:
         pimeMcBopomofo.settings.chineseConversion =
@@ -527,6 +528,7 @@ class PimeMcBopomofo {
         let command = `start ${url}`;
         console.log("Run " + command);
         child_process.exec(command);
+        break;
       }
       default:
         break;
