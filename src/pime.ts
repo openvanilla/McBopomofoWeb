@@ -34,6 +34,7 @@ interface Settings {
   by_default_deactivated: boolean;
   /** Whether prompts sound alerts when a user inputs invalid keys. */
   beep_on_error: boolean;
+  ctrl_enter_option: number;
 }
 
 /** A middle data structure between McBopomofo input controller and PIME. */
@@ -61,6 +62,7 @@ const defaultSettings: Settings = {
   half_width_punctuation: false,
   by_default_deactivated: false,
   beep_on_error: true,
+  ctrl_enter_option: 0,
 };
 
 enum PimeMcBopomofoCommand {
@@ -261,6 +263,7 @@ class PimeMcBopomofo {
     this.inputController.setHalfWidthPunctuationEnabled(
       this.settings.half_width_punctuation
     );
+    this.inputController.setCtrlEnterOption(this.settings.ctrl_enter_option);
     this.inputController.setLanguageCode("zh-TW");
   }
 

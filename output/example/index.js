@@ -94,7 +94,7 @@ let defaultSettings = {
   esc_key_clear_entire_buffer: false,
   move_cursor: false,
   letter_mode: "upper",
-  ctrl_option: 0,
+  ctrl_enter_option: 0,
 };
 let settings = {};
 
@@ -206,7 +206,7 @@ function applySettings(settings) {
     let select = document.getElementById("ctrl_enter_option");
     let options = select.getElementsByTagName("option");
     for (let option of options) {
-      if (option.value == settings.ctrl_option) {
+      if (option.value == settings.ctrl_enter_option) {
         option.selected = "selected";
         break;
       }

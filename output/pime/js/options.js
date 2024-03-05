@@ -82,7 +82,7 @@ window.onload = () => {
       let select = document.getElementById("ctrl_enter_option");
       let options = select.getElementsByTagName("option");
       for (let option of options) {
-        if (option.value == settings.ctrl_option) {
+        if (option.value == settings.ctrl_enter_option) {
           option.selected = "selected";
           break;
         }
@@ -99,6 +99,7 @@ window.onload = () => {
   }
 
   function saveSettings(settings) {
+    console.log("saving settings: " + settings);
     const xhttp = new XMLHttpRequest();
     xhttp.open("POST", "/config");
     let string = JSON.stringify(settings);
