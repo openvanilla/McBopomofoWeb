@@ -55,6 +55,6 @@
   },
   "ctrl_enter_key": { "message": "Ctrl + Enter Key:" },
   "ctrl_enter_none": { "message": "None" },
-  "ctrl_enter_bpmf_reading": { "message": "Output Bopomofo Reading" },
-  "ctrl_enter_html_ruby": { "message": "Output HTML Ruby" }
+  "ctrl_enter_bpmf_reading": { "message": "Input Bopomofo Reading" },
+  "ctrl_enter_html_ruby": { "message": "Input HTML Ruby" }
 }

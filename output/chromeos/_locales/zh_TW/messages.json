@@ -51,6 +51,6 @@
   },
   "ctrl_enter_key": { "message": "Ctrl + Enter 按鍵：" },
   "ctrl_enter_none": { "message": "不使用" },
-  "ctrl_enter_bpmf_reading": { "message": "輸出注音符號" },
-  "ctrl_enter_html_ruby": { "message": "輸出 HTML Ruby" }
+  "ctrl_enter_bpmf_reading": { "message": "輸入注音符號" },
+  "ctrl_enter_html_ruby": { "message": "輸入 HTML Ruby" }
 }
