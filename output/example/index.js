@@ -87,11 +87,12 @@ controller.setOnOpenUrl(function (url) {
 let defaultSettings = {
   trad_mode: false,
   chinese_conversion: false,
+  half_width_punctuation: false,
   layout: "standard",
   candidate_keys: "123456789",
   select_phrase: "before_cursor",
   esc_key_clear_entire_buffer: false,
-  move_cursor: true,
+  move_cursor: false,
   letter_mode: "upper",
   ctrl_option: 0,
 };
@@ -133,6 +134,16 @@ function applySettings(settings) {
     } else {
       document.getElementById("chinese_convert_trad").checked = true;
       document.getElementById("chinese_convert_simp").checked = false;
+    }
+  }
+  {
+    controller.setHalfWidthPunctuationEnabled(settings.half_width_punctuation);
+    if (settings.half_width_punctuation) {
+      document.getElementById("full_width_punctuation").checked = true;
+      document.getElementById("half_width_punctuation").checked = false;
+    } else {
+      document.getElementById("full_width_punctuation").checked = true;
+      document.getElementById("half_width_punctuation").checked = false;
     }
   }
   {
@@ -195,7 +206,7 @@ function applySettings(settings) {
     let select = document.getElementById("ctrl_enter_option");
     let options = select.getElementsByTagName("option");
     for (let option of options) {
-      if (option.value === settings.ctrl_option) {
+      if (option.value == settings.ctrl_option) {
         option.selected = "selected";
         break;
       }
@@ -290,6 +301,20 @@ document.getElementById("chinese_convert_simp").onchange = function (event) {
   document.getElementById("text_area").focus();
 };
 
+document.getElementById("full_width_punctuation").onchange = function (event) {
+  controller.setHalfWidthPunctuationEnabled(false);
+  settings.half_width_punctuation = false;
+  saveSettings(settings);
+  document.getElementById("text_area").focus();
+};
+
+document.getElementById("half_width_punctuation").onchange = function (event) {
+  controller.setHalfWidthPunctuationEnabled(true);
+  settings.half_width_punctuation = true;
+  saveSettings(settings);
+  document.getElementById("text_area").focus();
+};
+
 document.getElementById("layout").onchange = function (event) {
   let value = document.getElementById("layout").value;
   controller.setKeyboardLayout(value);
@@ -351,14 +376,11 @@ document.getElementById("move_cursor").onchange = function (event) {
 };
 
 document.getElementById("ctrl_enter_option").onchange = function (event) {
-  // console.log("ctrl_enter_option");
   let value = document.getElementById("ctrl_enter_option").value;
   value = +value;
-  // console.log("value" + value);
   controller.setCtrlEnterOption(value);
   settings.ctrl_enter_option = value;
   saveSettings(settings);
-  // console.log(settings);
   document.getElementById("text_area").focus();
 };
 

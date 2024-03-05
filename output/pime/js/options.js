@@ -5,8 +5,9 @@ window.onload = () => {
     candidate_keys: "123456789",
     esc_key_clear_entire_buffer: false,
     shift_key_toggle_alphabet_mode: true,
-    chineseConversion: false,
-    move_cursor: true,
+    half_width_punctuation: false,
+    chinese_conversion: false,
+    move_cursor: false,
     letter_mode: "upper",
     ctrl_enter_option: 0,
     by_default_deactivated: false,
@@ -60,15 +61,10 @@ window.onload = () => {
 
     {
       document.getElementById("ctrl_enter_option").onchange = function (event) {
-        console.log("ctrl_enter_option");
         let value = document.getElementById("ctrl_enter_option").value;
         value = +value;
-        console.log("value" + value);
-        controller.setCtrlEnterOption(value);
         settings.ctrl_enter_option = value;
         saveSettings(settings);
-        console.log(settings);
-        document.getElementById("text_area").focus();
       };
     }
 
@@ -86,7 +82,7 @@ window.onload = () => {
       let select = document.getElementById("ctrl_enter_option");
       let options = select.getElementsByTagName("option");
       for (let option of options) {
-        if (option.value === settings.ctrl_option) {
+        if (option.value == settings.ctrl_option) {
           option.selected = "selected";
           break;
         }
