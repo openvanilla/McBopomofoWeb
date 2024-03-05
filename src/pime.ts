@@ -76,6 +76,7 @@ enum PimeMcBopomofoCommand {
   halfWidthPunctuation = 7,
   help = 8,
   mcBopomofoUserDataFolder = 9,
+  reloadUserPhrase = 10,
 }
 
 /** Wraps InputController and required states.  */
@@ -171,9 +172,11 @@ class PimeMcBopomofo {
       try {
         let map = new Map<string, string[]>();
 
-        let string = data.toString();
+        let string = data.toString("utf8");
         let lines = string.split("\n");
-        for (let line in lines) {
+        // console.log("load user phrases");
+        for (let line of lines) {
+          console.log(line);
           let components = line.split(" ");
           if (components.length >= 2) {
             let key = components[0];
@@ -186,6 +189,8 @@ class PimeMcBopomofo {
             map.set(key, phrases);
           }
         }
+        // console.log("load user phrases");
+        // console.log(map);
         this.inputController.setUserPhrases(map);
       } catch {
         console.error("Failed to parse user phrases");
@@ -530,6 +535,11 @@ class PimeMcBopomofo {
         child_process.exec(command);
         break;
       }
+      case PimeMcBopomofoCommand.reloadUserPhrase:
+        {
+          pimeMcBopomofo.loadUserPhrases();
+        }
+        break;
       default:
         break;
     }
@@ -767,6 +777,10 @@ module.exports = {
           text: "編輯使用者詞庫 (&U)",
           id: PimeMcBopomofoCommand.userPhrase,
         },
+        // {
+        //   text: "重新載入使用者詞庫 (&U)",
+        //   id: PimeMcBopomofoCommand.reloadUserPhrase,
+        // },
         {
           text: "打開使用者資料夾",
           id: PimeMcBopomofoCommand.mcBopomofoUserDataFolder,
