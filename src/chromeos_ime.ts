@@ -21,6 +21,7 @@ type ChromeMcBopomofoSettings = {
   chineseConversion: boolean;
   move_cursor: boolean;
   letter_mode: string;
+  ctrl_enter_option: number;
 };
 
 class ChromeMcBopomofo {
@@ -40,8 +41,9 @@ class ChromeMcBopomofo {
     chineseConversion: false,
     move_cursor: true,
     letter_mode: "upper",
+    ctrl_enter_option: 0,
   };
-  readonly settings: ChromeMcBopomofoSettings = {
+  settings: ChromeMcBopomofoSettings = {
     layout: "standard",
     select_phrase: "before_cursor",
     candidate_keys: "123456789",
@@ -50,6 +52,7 @@ class ChromeMcBopomofo {
     chineseConversion: false,
     move_cursor: true,
     letter_mode: "upper",
+    ctrl_enter_option: 0,
   };
   lang = "en";
   isShiftHold = false;
@@ -82,9 +85,9 @@ class ChromeMcBopomofo {
 
   loadSettings() {
     chrome.storage.sync.get("settings", (value) => {
-      settings = value.settings;
-      if (settings === undefined) {
-        settings = defaultSettings;
+      this.settings = value.settings;
+      if (this.settings === undefined) {
+        this.settings = this.defaultSettings;
       }
       if (
         this.settings.shift_key_toggle_alphabet_mode === undefined ||
@@ -110,6 +113,9 @@ class ChromeMcBopomofo {
         this.settings.move_cursor
       );
       this.mcInputController.setLetterMode(this.settings.letter_mode);
+      this.mcInputController.setCtrlEnterOption(
+        this.settings.ctrl_enter_option
+      );
     });
   }
 
@@ -460,7 +466,7 @@ chrome.input.ime.onFocus.addListener((context) => {
   if (chromeMcBopomofo.deferredResetTimeout != null) {
     clearTimeout(chromeMcBopomofo.deferredResetTimeout);
   } else {
-    loadSettings();
+    chromeMcBopomofo.loadSettings();
   }
 });
 
@@ -491,12 +497,7 @@ chrome.input.ime.onKeyEvent.addListener((engineID, keyData) => {
     chromeMcBopomofo.isShiftHold = keyData.key === "Shift";
   }
 
-  if (
-    keyData.altKey ||
-    keyData.ctrlKey ||
-    keyData.altgrKey ||
-    keyData.capsLock
-  ) {
+  if (keyData.altKey || keyData.altgrKey || keyData.capsLock) {
     return false;
   }
 

@@ -351,14 +351,14 @@ document.getElementById("move_cursor").onchange = function (event) {
 };
 
 document.getElementById("ctrl_enter_option").onchange = function (event) {
-  console.log("ctrl_enter_option");
+  // console.log("ctrl_enter_option");
   let value = document.getElementById("ctrl_enter_option").value;
   value = +value;
-  console.log("value" + value);
+  // console.log("value" + value);
   controller.setCtrlEnterOption(value);
   settings.ctrl_enter_option = value;
   saveSettings(settings);
-  console.log(settings);
+  // console.log(settings);
   document.getElementById("text_area").focus();
 };
 

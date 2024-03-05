@@ -1,11 +1,11 @@
 {
-  "languageCode": {"message": "zh-TW"},
+  "languageCode": { "message": "zh-TW" },
   "manifestName": { "message": "小麥注音" },
   "manifestDesc": { "message": "小麥注音 ChromeOS 版" },
   "commandToggleChineseConvert": { "message": "切換是否使用簡繁轉換" },
   "imeUS": { "message": "小麥注音 (美式鍵盤)" },
   "imeDvorak": { "message": "小麥注音 (Dvorak 鍵盤)" },
-  "imeColmak": {"message": "小麥注音 (Colmak 鍵盤)"} ,
+  "imeColmak": { "message": "小麥注音 (Colmak 鍵盤)" },
   "menuChineseConversion": { "message": "輸入簡體中文" },
   "menuOptions": { "message": "選項" },
   "menuUserPhrases": { "message": "使用者詞彙" },
@@ -46,5 +46,11 @@
   "chineseConversionOn": { "message": "簡繁轉換已開啟" },
   "chineseConversionOff": { "message": "簡繁轉換已關閉" },
   "messageFromMcBopomofo": { "message": "來自小麥注音的通知訊息" },
-  "others_keyboard_shortcut": {"message": "您也可以在 chrome://extensions/shortcuts 頁面中設置鍵盤快速鍵。"}
+  "others_keyboard_shortcut": {
+    "message": "您也可以在 chrome://extensions/shortcuts 頁面中設置鍵盤快速鍵。"
+  },
+  "ctrl_enter_key": { "message": "Ctrl + Enter 按鍵：" },
+  "ctrl_enter_none": { "message": "不使用" },
+  "ctrl_enter_bpmf_reading": { "message": "輸出注音符號" },
+  "ctrl_enter_html_ruby": { "message": "輸出 HTML Ruby" }
 }
