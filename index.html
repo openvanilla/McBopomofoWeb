@@ -7,6 +7,7 @@
   <meta name="keywords" content="輸入法,注音,注音輸入法">
   <meta name="author" content="OpenVanilla">
   <link rel="stylesheet" href="index.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 
 <bodY>
@@ -16,7 +17,7 @@
       正在載入小麥注音輸入法，請稍候</p>
     <div class="left">
       <div id="edit_area">
-        <textarea id="text_area" rows="10" cols="50"></textarea>
+        <textarea id="text_area" rows="10" cols="50" title="輸入區"></textarea>
         <div class="function" id="function">
           <div class="composing_buffer" id="composing_buffer">【麥】</div>
           <div class="candidates" id="candidates"></div>
@@ -34,7 +35,7 @@
             <td class="option_title">模式：</td>
             <td>
               <input type="radio" name="input_mode" value="mcbopomofo" id="use_mcbopomofo" checked="checked"><label
-                for="use_mcbotpomofo">小麥注音</label><br>
+                for="use_mcbopomofo">小麥注音</label><br>
               <input type="radio" name="input_mode" value="plainbopomofo" id="use_plainbopomofo"><label
                 for="use_plainbopomofo">傳統注音</label>
             </td>
@@ -60,7 +61,7 @@
           <tr>
             <td class="option_title">鍵盤配置：</td>
             <td>
-              <select id="layout">
+              <select id="layout" title="鍵盤配置">
                 <option value="Standard">標準</option>
                 <option value="ETen">倚天</option>
                 <option value="Hsu">許式</option>
@@ -73,7 +74,7 @@
           <tr>
             <td class="option_title">選字按鍵：</td>
             <td>
-              <select id="keys">
+              <select id="keys" title="選字按鍵">
                 <option value="123456789">123456789</option>
                 <option value="asdfghjkl">asdfghjkl</option>
                 <option value="asdfzxcvb">asdfzxcvb</option>
@@ -109,7 +110,7 @@
           <tr>
             <td class="option_title">Ctrl + Enter：</td>
             <td>
-              <select id="ctrl_enter_option">
+              <select id="ctrl_enter_option" title="按下 Ctrl 與 Enter 時的行為">
                 <option value="0">不使用</option>
                 <option value="1">輸入注音符號</option>
                 <option value="2">輸入 HTML Ruby</option>
@@ -130,12 +131,13 @@
         <summary> 說明 </summary>
         <p>小麥注音是一套自動選字的注音輸入法，基本操作類似自然、酷音等。您可以在左方的輸入框中直接使用線上版本的小麥注音，無須安裝系統輸入法。使用方式如下</p>
         <ul>
-          <li>輸入鍵盤按鍵，就會輸入注音或標點符號，在標準鍵盤下：</li>
-          <ul>
-            <li>Shift + , 輸入逗號</li>
-            <li>Shift + . 輸入句號</li>
-            <li>Shift + / 輸入問號</li>
-          </ul>
+          <li>輸入鍵盤按鍵，就會輸入注音或標點符號，在標準鍵盤下：
+            <ul>
+              <li>Shift + , 輸入逗號</li>
+              <li>Shift + . 輸入句號</li>
+              <li>Shift + / 輸入問號</li>
+            </ul>
+          </li>
 
           <li>空白鍵選字</li>
           <li>按下 ` 會出現符號表</li>
