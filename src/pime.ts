@@ -392,7 +392,9 @@ class PimeMcBopomofo {
     return that;
   }
 
-  public customUiResponse(): any {
+  alreadyAddButton: boolean = false;
+
+  public buttonUiResponse(isWindows8Above: boolean = false): any {
     let windowsModeIcon = "close.ico";
     if (this.isOpened) {
       if (this.isAlphabetMode) {
@@ -407,6 +409,45 @@ class PimeMcBopomofo {
     }
 
     let windowsModeIconPath = path.join(__dirname, "icons", windowsModeIcon);
+    let settingsIconPath = path.join(__dirname, "icons", "config.ico");
+    let object: any = {};
+    let changeButton: any[] = [];
+    if (isWindows8Above) {
+      changeButton.push({ icon: windowsModeIconPath, id: "windows-mode-icon" });
+    }
+    changeButton.push({ icon: windowsModeIconPath, id: "switch-lang" });
+    object.changeButton = changeButton;
+
+    if (!this.alreadyAddButton) {
+      let addButton: any[] = [];
+      if (isWindows8Above) {
+        addButton.push({
+          id: "windows-mode-icon",
+          icon: windowsModeIconPath,
+          commandId: PimeMcBopomofoCommand.modeIcon,
+          tooltip: "中英文切換",
+        });
+      }
+
+      addButton.push({
+        id: "switch-lang",
+        icon: windowsModeIconPath,
+        commandId: PimeMcBopomofoCommand.switchLanguage,
+        tooltip: "中英文切換",
+      });
+      addButton.push({
+        id: "settings",
+        icon: settingsIconPath,
+        type: "menu",
+        tooltip: "設定",
+      });
+      object.addButton = addButton;
+      this.alreadyAddButton = true;
+    }
+    return object;
+  }
+
+  public customUiResponse(): any {
     return {
       openKeyboard: this.isOpened,
       customizeUI: {
@@ -418,30 +459,6 @@ class PimeMcBopomofo {
       },
       setSelKeys: this.settings.candidate_keys,
       keyboardOpen: this.isOpened,
-      changeButton: [
-        {
-          icon: windowsModeIconPath,
-          id: "windows-mode-icon",
-        },
-        {
-          icon: windowsModeIconPath,
-          id: "switch-lang",
-        },
-      ],
-      addButton: [
-        {
-          id: "windows-mode-icon",
-          icon: path.join(__dirname, "icons", windowsModeIcon),
-          commandId: PimeMcBopomofoCommand.modeIcon,
-          tooltip: "中英文切換",
-        },
-        {
-          id: "switch-lang",
-          icon: path.join(__dirname, "icons", windowsModeIcon),
-          commandId: PimeMcBopomofoCommand.switchLanguage,
-          tooltip: "中英文切換",
-        },
-      ],
     };
   }
 
@@ -604,17 +621,27 @@ module.exports = {
       let response = Object.assign({}, responseTemplate, customUi);
       return response;
     }
+    if (request.method === "close") {
+      let response = Object.assign({}, responseTemplate, {
+        removeButton: ["windows-mode-icon", "switch-lang", "settings"],
+      });
+      pimeMcBopomofo.alreadyAddButton = false;
+      return response;
+    }
 
     if (request.method === "onActivate") {
+      let { isWindows8Above } = request;
       let customUi = pimeMcBopomofo.customUiResponse();
-      let response = Object.assign({}, responseTemplate, customUi);
+      let buttonUi = pimeMcBopomofo.buttonUiResponse(isWindows8Above);
+      let response = Object.assign({}, responseTemplate, customUi, buttonUi);
       return response;
     }
 
     if (request.method === "onDeactivate") {
       let response = Object.assign({}, responseTemplate, {
-        removeButton: ["windows-mode-icon", "switch-lang"],
+        removeButton: ["windows-mode-icon", "switch-lang", "settings"],
       });
+      pimeMcBopomofo.alreadyAddButton = false;
       return response;
     }
 
@@ -636,7 +663,14 @@ module.exports = {
         pimeMcBopomofo.resetController();
         let uiState = pimeMcBopomofo.uiState;
         let customUi = pimeMcBopomofo.customUiResponse();
-        let response = Object.assign({}, responseTemplate, uiState, customUi);
+        let buttonUi = pimeMcBopomofo.buttonUiResponse(true);
+        let response = Object.assign(
+          {},
+          responseTemplate,
+          uiState,
+          customUi,
+          buttonUi
+        );
         return response;
       }
 
@@ -720,7 +754,8 @@ module.exports = {
       pimeMcBopomofo.isOpened = opened;
       pimeMcBopomofo.resetController();
       let customUi = pimeMcBopomofo.customUiResponse();
-      let response = Object.assign({}, responseTemplate, customUi);
+      let buttonUi = pimeMcBopomofo.buttonUiResponse(true);
+      let response = Object.assign({}, responseTemplate, customUi, buttonUi);
       return response;
     }
 
@@ -728,7 +763,14 @@ module.exports = {
       pimeMcBopomofo.resetController();
       let uiState = pimeMcBopomofo.uiState;
       let customUi = pimeMcBopomofo.customUiResponse();
-      let response = Object.assign({}, responseTemplate, uiState, customUi);
+      let buttonUi = pimeMcBopomofo.buttonUiResponse(true);
+      let response = Object.assign(
+        {},
+        responseTemplate,
+        uiState,
+        customUi,
+        buttonUi
+      );
       pimeMcBopomofo.resetBeforeHandlingKey();
       return response;
     }
@@ -738,7 +780,14 @@ module.exports = {
       pimeMcBopomofo.handleCommand(id);
       let uiState = pimeMcBopomofo.uiState;
       let customUi = pimeMcBopomofo.customUiResponse();
-      let response = Object.assign({}, responseTemplate, uiState, customUi);
+      let buttonUi = pimeMcBopomofo.buttonUiResponse(true);
+      let response = Object.assign(
+        {},
+        responseTemplate,
+        uiState,
+        customUi,
+        buttonUi
+      );
       return response;
     }
 
