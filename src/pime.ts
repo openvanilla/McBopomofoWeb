@@ -393,8 +393,9 @@ class PimeMcBopomofo {
   }
 
   alreadyAddButton: boolean = false;
+  isWindows8Above: boolean = false;
 
-  public buttonUiResponse(isWindows8Above: boolean = false): any {
+  public buttonUiResponse(): any {
     let windowsModeIcon = "close.ico";
     if (this.isOpened) {
       if (this.isAlphabetMode) {
@@ -412,7 +413,7 @@ class PimeMcBopomofo {
     let settingsIconPath = path.join(__dirname, "icons", "config.ico");
     let object: any = {};
     let changeButton: any[] = [];
-    if (isWindows8Above) {
+    if (this.isWindows8Above) {
       changeButton.push({ icon: windowsModeIconPath, id: "windows-mode-icon" });
     }
     changeButton.push({ icon: windowsModeIconPath, id: "switch-lang" });
@@ -420,7 +421,7 @@ class PimeMcBopomofo {
 
     if (!this.alreadyAddButton) {
       let addButton: any[] = [];
-      if (isWindows8Above) {
+      if (this.isWindows8Above) {
         addButton.push({
           id: "windows-mode-icon",
           icon: windowsModeIconPath,
@@ -617,6 +618,8 @@ module.exports = {
       seqNum: request.seqNum,
     };
     if (request.method === "init") {
+      let { isWindows8Above } = request;
+      pimeMcBopomofo.isWindows8Above = isWindows8Above;
       let customUi = pimeMcBopomofo.customUiResponse();
       let response = Object.assign({}, responseTemplate, customUi);
       return response;
@@ -630,9 +633,8 @@ module.exports = {
     }
 
     if (request.method === "onActivate") {
-      let { isWindows8Above } = request;
       let customUi = pimeMcBopomofo.customUiResponse();
-      let buttonUi = pimeMcBopomofo.buttonUiResponse(isWindows8Above);
+      let buttonUi = pimeMcBopomofo.buttonUiResponse();
       let response = Object.assign({}, responseTemplate, customUi, buttonUi);
       return response;
     }
@@ -663,7 +665,7 @@ module.exports = {
         pimeMcBopomofo.resetController();
         let uiState = pimeMcBopomofo.uiState;
         let customUi = pimeMcBopomofo.customUiResponse();
-        let buttonUi = pimeMcBopomofo.buttonUiResponse(true);
+        let buttonUi = pimeMcBopomofo.buttonUiResponse();
         let response = Object.assign(
           {},
           responseTemplate,
@@ -754,7 +756,7 @@ module.exports = {
       pimeMcBopomofo.isOpened = opened;
       pimeMcBopomofo.resetController();
       let customUi = pimeMcBopomofo.customUiResponse();
-      let buttonUi = pimeMcBopomofo.buttonUiResponse(true);
+      let buttonUi = pimeMcBopomofo.buttonUiResponse();
       let response = Object.assign({}, responseTemplate, customUi, buttonUi);
       return response;
     }
@@ -763,7 +765,7 @@ module.exports = {
       pimeMcBopomofo.resetController();
       let uiState = pimeMcBopomofo.uiState;
       let customUi = pimeMcBopomofo.customUiResponse();
-      let buttonUi = pimeMcBopomofo.buttonUiResponse(true);
+      let buttonUi = pimeMcBopomofo.buttonUiResponse();
       let response = Object.assign(
         {},
         responseTemplate,
@@ -780,7 +782,7 @@ module.exports = {
       pimeMcBopomofo.handleCommand(id);
       let uiState = pimeMcBopomofo.uiState;
       let customUi = pimeMcBopomofo.customUiResponse();
-      let buttonUi = pimeMcBopomofo.buttonUiResponse(true);
+      let buttonUi = pimeMcBopomofo.buttonUiResponse();
       let response = Object.assign(
         {},
         responseTemplate,
