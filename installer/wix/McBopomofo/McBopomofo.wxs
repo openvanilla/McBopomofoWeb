@@ -41,6 +41,7 @@
                                 <File Id="index.js.LICENSE.txt" Source="..\..\..\output\pime\index.js.LICENSE.txt" />
                                 <File Id="config_tool.py" Source="..\..\..\output\pime\config_tool.py" />
                                 <File Id="help.html" Source="..\..\..\output\pime\help.html" />
+                                <File Id="options.html" Source="..\..\..\output\pime\options.html" />
                                 <File Id="icon.ico" Source="..\..\..\output\pime\icon.ico" />
                                 <File Id="ime.json" Source="..\..\..\output\pime\ime.json" />
                                 <File Id="run_register_ime.bat" Source="..\..\..\output\pime\run_register_ime.bat" />
