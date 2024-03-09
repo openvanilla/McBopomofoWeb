@@ -17,10 +17,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-      - run: npm install -D typescript@5.3.2
+      - run: npm install -D typescript@5.3.3
       - run: npm install
       - run: npm run build
       - run: npm run test
@@ -33,10 +33,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-      - run: npm install -D typescript@5.3.2
+      - run: npm install -D typescript@5.3.3
       - run: npm install
       - run: npm run build:chromeos
       - run: npm run test
@@ -49,10 +49,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-      - run: npm install -D typescript@5.3.2
+      - run: npm install -D typescript@5.3.3
       - run: npm install
       - run: npm run build:pime
       - run: npm run test
@@ -65,10 +65,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-      - run: npm install -D typescript@5.3.2
+      - run: npm install -D typescript@5.3.3
       - run: npm install
       - run: npm run build:pime
       - name: Add msbuild to PATH
@@ -96,7 +96,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm install
