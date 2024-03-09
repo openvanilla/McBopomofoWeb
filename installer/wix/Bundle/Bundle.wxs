@@ -1,0 +1,18 @@
+﻿<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:bal="http://wixtoolset.org/schemas/v4/wxs/bal">
+    <Bundle Name="McBopomofo for PIME" Version="1.3.0" Manufacturer="OpenVanilla.org" UpgradeCode="9aaa54a2-2574-4ffe-9fb2-0b529781032c">
+        <BootstrapperApplication>
+            <bal:WixStandardBootstrapperApplication ShowVersion="yes" SuppressOptionsUI="yes" LicenseUrl="" Theme="hyperlinkSidebarLicense" />
+        </BootstrapperApplication>
+
+        <Chain DisableSystemRestore="yes">
+            <PackageGroupRef Id="InstallerPackages" />
+        </Chain>
+    </Bundle>
+
+    <Fragment>
+        <PackageGroup Id="InstallerPackages">
+            <MsiPackage DisplayName="McBopomofo" SourceFile="..\McBopomofo\McBopomofo.msi" Cache="remove" Visible="no" Compressed="yes" ForcePerMachine="yes">
+            </MsiPackage>
+        </PackageGroup>
+    </Fragment>
+</Wix>

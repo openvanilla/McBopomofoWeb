@@ -1,0 +1,99 @@
+﻿<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+    <Package Name="McBopomofo for PIME" Language="1033" Version="1.3.0" Manufacturer="Cerence Inc." Codepage="1252" UpgradeCode="3eebd424-9434-4312-aa6b-118c8ce352a7" InstallerVersion="300"><SummaryInformation Description="McBopomofo for PIME" Manufacturer="Openvanilla.org" />
+        <Media Id="1" Cabinet="Product.cab" EmbedCab="yes" />
+        <Property Id="PREVIOUSVERSIONSINSTALLED" Secure="yes" />
+        <Property Id="MSIUSEREALADMINDETECTION" Value="1" /> 
+        <MajorUpgrade DowngradeErrorMessage="Downgrade is not supported" AllowSameVersionUpgrades="yes" />
+        <!-- <Condition Message="Installation requires Administrator privileges">
+            <![CDATA[Privileged]]>
+        </Condition> -->
+
+        <Property Id="INSTALLDIR">
+            <RegistrySearch Id="DetermineInstallLocation" Type="raw" Root="HKLM" Key="SOFTWARE\OpenVanilla\McBopomofo" Name="InstallLocation" />
+        </Property>
+
+        
+        
+        <Feature Id="Complete" Title="McBopomofo for PIME" Description="The complete package." Display="expand" Level="1" TypicalDefault="install" InstallDefault="local" AllowAdvertise="no" AllowAbsent="no">
+        <!-- <Feature Id="Complete" Title="McBopomofo for PIME" Description="The complete package." Display="expand" Level="1" ConfigurableDirectory="INSTALLDIR" TypicalDefault="install" Absent="disallow" InstallDefault="local" AllowAdvertise="no"> -->
+            <Feature Id="Program" Title="Program files" Level="1" InstallDefault="local" AllowAdvertise="no" Description="The program files." AllowAbsent="no">
+                <ComponentRef Id="Main" />
+
+                <ComponentRef Id="css_folder" />
+                <ComponentRef Id="icons_folder" />
+                <ComponentRef Id="images_folder" />
+                <ComponentRef Id="js_folder" />
+            </Feature>
+        </Feature>
+
+        <InstallExecuteSequence></InstallExecuteSequence>
+        <!-- <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="Launch Cerence Smart Elevator Toolkit" />
+
+        <CustomAction Id="LaunchApplication" FileKey="pctool" ExeCommand="" Execute="immediate" Impersonate="yes" Return="asyncNoWait" />
+        <Property Id="WixShellExecTarget" Value="[#README]" />
+        <CustomAction Id="ShowReadMe" BinaryKey="WixCA" DllEntry="WixShellExec" Impersonate="yes" /> -->
+        <!-- <CustomAction Id="DownloadAndInvokeBootstrapper" Directory="ProgramFiles64Folder" Execute="deferred" ExeCommand="powershell.exe -windowstyle hidden Invoke-WebRequest -Uri &quot;https://go.microsoft.com/fwlink/p/?LinkId=2124703&quot; -OutFile &quot;$env:TEMP\MicrosoftEdgeWebview2Setup.exe&quot; ; &amp; $env:TEMP\MicrosoftEdgeWebview2Setup.exe /install" Return="check" /> -->
+        <Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR" />
+        <Upgrade Id="383FA4DD-AAF4-45F0-9694-A7F6D1A5B5C7">
+            <UpgradeVersion Minimum="1.0.0.0" Maximum="99.0.0.0" Property="PREVIOUSVERSIONSINSTALLED" IncludeMinimum="yes" IncludeMaximum="no" />
+        </Upgrade>
+    
+            <StandardDirectory Id="ProgramFilesFolder">
+                <Directory Id="PIME" Name="PIME">
+                    <Directory Id="node" Name="node">               
+                        <Directory Id="input_methods" Name="input_methods">
+                            <Directory Id="mcbopomofo" Name="mcbopomofo">
+                                <Component Id="Main" Guid="efae2643-6e29-4956-948e-d6bb3babb571" Bitness="always32">
+                                    <File Id="index.js" Source="..\..\..\output\pime\index.js" />
+                                    <File Id="index.js.LICENSE.txt" Source="..\..\..\output\pime\index.js.LICENSE.txt" /> 
+                                    <File Id="config_tool.py" Source="..\..\..\output\pime\config_tool.py" /> 
+                                    <File Id="help.html" Source="..\..\..\output\pime\help.html" /> 
+                                    <File Id="icon.ico" Source="..\..\..\output\pime\icon.ico" /> 
+                                    <File Id="ime.json" Source="..\..\..\output\pime\ime.json" /> 
+                                    <File Id="run_register_ime.bat" Source="..\..\..\output\pime\run_register_ime.bat" /> 
+                                    <File Id="server.js" Source="..\..\..\output\pime\server.js" /> 
+                                </Component>
+                                <Directory Id="css" Name="css">
+                                    <Component Id="css_folder" Guid="43be2fff-381d-4906-909a-d130ac7fdbab" Bitness="always32">
+                                        <File Id="help.css" Source="..\..\..\output\pime\css\help.css" />
+                                        <File Id="options.css" Source="..\..\..\output\pime\css\options.css" /> 
+                                    </Component>
+                                </Directory>
+
+                                <Directory Id="icons" Name="icons">
+                                    <Component Id="icons_folder" Guid="93bbb12c-c7a5-4cc4-bd9a-b456f996ce42" Bitness="always32">
+                                        <File Id="capsEng.ico" Source="..\..\..\output\pime\icons\capsEng.ico" />
+                                        <File Id="close.ico" Source="..\..\..\output\pime\icons\close.ico" /> 
+                                        <File Id="config.ico" Source="..\..\..\output\pime\icons\config.ico" /> 
+                                        <File Id="eng.ico" Source="..\..\..\output\pime\icons\eng.ico" /> 
+                                        <File Id="full.ico" Source="..\..\..\output\pime\icons\full.ico" /> 
+                                        <File Id="half.ico" Source="..\..\..\output\pime\icons\half.ico" /> 
+                                        <File Id="simC.ico" Source="..\..\..\output\pime\icons\simC.ico" /> 
+                                        <File Id="traC.ico" Source="..\..\..\output\pime\icons\traC.ico" /> 
+                                    </Component>
+                                </Directory>
+
+
+                               <Directory Id="images" Name="images">
+                                    <Component Id="images_folder" Guid="7f84ba06-93dc-4a5e-9666-bebabd2ae792" Bitness="always32">
+                                        <File Id="icon128.png" Source="..\..\..\output\pime\images\icon128.png" />
+                                        <File Id="icon16.png" Source="..\..\..\output\pime\images\icon16.png" />
+                                        <File Id="icon48.png" Source="..\..\..\output\pime\images\icon48.png" />
+                                        <File Id="icon64.png" Source="..\..\..\output\pime\images\icon64.png" />
+                                    </Component>
+                                </Directory>
+
+
+                               <Directory Id="js" Name="js">
+                                    <Component Id="js_folder" Guid="9640478d-d495-4169-840c-eece4a6fccd2" Bitness="always32">
+                                        <File Id="options.js" Source="..\..\..\output\pime\js\options.js" />
+                                    </Component>
+                                </Directory>
+
+                            </Directory>
+                        </Directory>
+                    </Directory>
+                </Directory>
+            </StandardDirectory>
+        </Package>
+</Wix>
