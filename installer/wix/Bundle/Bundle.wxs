@@ -1,4 +1,5 @@
-﻿<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:bal="http://wixtoolset.org/schemas/v4/wxs/bal">
+﻿<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
+    xmlns:bal="http://wixtoolset.org/schemas/v4/wxs/bal">
     <Bundle Name="McBopomofo for PIME" Version="1.3.0" Manufacturer="OpenVanilla.org" UpgradeCode="9aaa54a2-2574-4ffe-9fb2-0b529781032c">
         <BootstrapperApplication>
             <bal:WixStandardBootstrapperApplication ShowVersion="yes" SuppressOptionsUI="yes" LicenseUrl="" Theme="hyperlinkSidebarLicense" />
@@ -11,8 +12,21 @@
 
     <Fragment>
         <PackageGroup Id="InstallerPackages">
-            <MsiPackage DisplayName="McBopomofo" SourceFile="..\McBopomofo\McBopomofo.msi" Cache="remove" Visible="no" Compressed="yes" ForcePerMachine="yes">
-            </MsiPackage>
+            <MsiPackage DisplayName="McBopomofo" SourceFile="..\McBopomofo\McBopomofo.msi" Cache="remove" Visible="no" Compressed="yes" ForcePerMachine="yes"></MsiPackage>
         </PackageGroup>
+    </Fragment>
+
+    <Fragment>
+        <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+            <Component Id="TargetProgram" Guid="2324ad3d-a09c-4713-8d1c-c549c090f9ac">
+                <File Id="REGISTER_IME" Source="C:\Program Files (x86)\PIME\node\input_methods\mcbopomofo\run_register_ime.bat" />
+            </Component>
+        </ComponentGroup>
+
+        <CustomAction Id="EXECUTE_AFTER_FINALIZE" Execute="immediate" Impersonate="no" Return="asyncNoWait" FileRef="REGISTER_IME" ExeCommand="" />
+
+        <InstallExecuteSequence>
+            <Custom Action="EXECUTE_AFTER_FINALIZE" After="InstallFinalize" Condition="NOT Installed" />
+        </InstallExecuteSequence>
     </Fragment>
 </Wix>
