@@ -16,8 +16,12 @@ interface Settings {
   select_phrase: string;
   /** The candidate keys like "123456789", "asdfghjkl" and so on. */
   candidate_keys: string;
+  /** The number of candidate keys. */
+  candidate_keys_count: number;
   /** Whether ESC key clears all of the composing buffer. */
   esc_key_clear_entire_buffer: boolean;
+  /** Whether to use jk key to move cursor. */
+  use_jk_key_to_move_cursor: boolean;
   /** Whether Shift key toggles the BPMF/Alphabet mode. */
   shift_key_toggle_alphabet_mode: boolean;
   /** Whether Traditional/Simplified Chinese conversion is on. */
@@ -34,6 +38,7 @@ interface Settings {
   by_default_deactivated: boolean;
   /** Whether prompts sound alerts when a user inputs invalid keys. */
   beep_on_error: boolean;
+  /** The behavior for handling Ctrl+ Enter key. */
   ctrl_enter_option: number;
 }
 
@@ -63,6 +68,8 @@ const defaultSettings: Settings = {
   by_default_deactivated: false,
   beep_on_error: true,
   ctrl_enter_option: 0,
+  candidate_keys_count: 9,
+  use_jk_key_to_move_cursor: false,
 };
 
 enum PimeMcBopomofoCommand {
@@ -257,6 +264,9 @@ class PimeMcBopomofo {
     this.inputController.setKeyboardLayout(this.settings.layout);
     this.inputController.setSelectPhrase(this.settings.select_phrase);
     this.inputController.setCandidateKeys(this.settings.candidate_keys);
+    this.inputController.setCandidateKeysCount(
+      this.settings.candidate_keys_count
+    );
     this.inputController.setChineseConversionEnabled(
       this.settings.chineseConversion
     );
@@ -269,6 +279,9 @@ class PimeMcBopomofo {
       this.settings.half_width_punctuation
     );
     this.inputController.setCtrlEnterOption(this.settings.ctrl_enter_option);
+    this.inputController.setUseJKToMoveCursor(
+      this.settings.use_jk_key_to_move_cursor
+    );
     this.inputController.setLanguageCode("zh-TW");
   }
 

@@ -583,7 +583,7 @@ export class KeyHandler {
     stateCallback(this.buildInputtingState());
   }
 
-  candidatePanelCancelled(
+  public candidatePanelCancelled(
     originalCursorIndex: number,
     stateCallback: (state: InputState) => void
   ): void {
@@ -596,7 +596,7 @@ export class KeyHandler {
     stateCallback(this.buildInputtingState());
   }
 
-  handlePunctuationKeyInCandidatePanelForTraditionalMode(
+  public handlePunctuationKeyInCandidatePanelForTraditionalMode(
     key: Key,
     defaultCandidate: string,
     stateCallback: (state: InputState) => void,
@@ -632,10 +632,22 @@ export class KeyHandler {
     return false;
   }
 
-  reset(): void {
+  public reset(): void {
     this.reading_.clear();
     this.grid_.clear();
     this.latestWalk_ = undefined;
+  }
+
+  public get gridLength(): number {
+    return this.grid_.length;
+  }
+
+  public get cursor(): number {
+    return this.grid_.cursor;
+  }
+
+  public set cursor(index: number) {
+    this.grid_.cursor = index;
   }
 
   private getComposedString(builderCursor: number): ComposedString {
@@ -945,7 +957,7 @@ export class KeyHandler {
     return true;
   }
 
-  private buildChoosingCandidateState(
+  public buildChoosingCandidateState(
     originalCursorIndex: number
   ): ChoosingCandidate {
     let candidates = this.grid_.candidatesAt(this.actualCandidateCursorIndex);

@@ -5,6 +5,7 @@
  * SPDX-License-Identifier: MIT
  */
 
+import { min } from "lodash";
 import { Candidate } from "../Gramambular2";
 import { BopomofoKeyboardLayout } from "../Mandarin";
 import { CandidateWrapper, CandidateController } from "./CandidateController";
@@ -133,8 +134,10 @@ export class InputController {
   private candidateController_: CandidateController = new CandidateController();
   private ui_: InputUIController;
   private candidateKeys_ = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
+  private candidateKeysCount_: number = 9;
   private useVerticalCandidates_ = false;
   private onError_: Function | undefined;
+  private useJKToMoveCursor_: boolean = false;
 
   constructor(ui: InputUI) {
     this.ui_ = new InputUIController(ui);
@@ -252,6 +255,16 @@ export class InputController {
     this.candidateKeys_ = list;
   }
 
+  public setCandidateKeysCount(count: number): void {
+    if (count < 4) return;
+    if (count > 15) return;
+    this.candidateKeysCount_ = count;
+  }
+
+  public setUseJKToMoveCursor(flag: boolean): void {
+    this.useJKToMoveCursor_ = flag;
+  }
+
   /**
    * Sets if the ESC key should clear the entire composing buffer.
    * @param flag If the ESC key should clear the entire composing buffer.
@@ -268,6 +281,10 @@ export class InputController {
     this.useVerticalCandidates_ = flag;
   }
 
+  /**
+   * Sets if we want to use half width punctuation.
+   * @param enabled Use half width punctuation.
+   */
   public setHalfWidthPunctuationEnabled(enabled: boolean): void {
     this.keyHandler_.halfWidthPunctuation = enabled;
   }
@@ -302,7 +319,6 @@ export class InputController {
 
   /** Sets Chinese conversion on or off. */
   public setChineseConversionEnabled(flag: boolean): void {
-    // this.chineseConversionEnabled_ = flag;
     (this.lm_ as WebLanguageModel).setConverter(
       flag
         ? (input) => {
@@ -401,6 +417,41 @@ export class InputController {
     if (key.ascii === "Shift") {
       return;
     }
+
+    let isMovingToLeft =
+      (key.name === KeyName.LEFT && key.shiftPressed) ||
+      (this.useJKToMoveCursor_ && key.ascii === "j");
+    if (isMovingToLeft) {
+      let cursor = this.keyHandler_.cursor;
+      if (cursor === 0) {
+        errorCallback();
+        this.enterNewState(this.state_);
+        return;
+      }
+      let newIndex = cursor - 1;
+      this.keyHandler_.cursor = newIndex;
+      let state = this.keyHandler_.buildChoosingCandidateState(newIndex);
+      stateCallback(state);
+      return;
+    }
+    let isMovingToRight =
+      (key.name === KeyName.RIGHT && key.shiftPressed) ||
+      (this.useJKToMoveCursor_ && key.ascii === "k");
+    if (isMovingToRight) {
+      let cursor = this.keyHandler_.cursor;
+      let max = this.keyHandler_.gridLength;
+      if (cursor >= max) {
+        errorCallback();
+        this.enterNewState(this.state_);
+        return;
+      }
+      let newIndex = cursor + 1;
+      this.keyHandler_.cursor = newIndex;
+      let state = this.keyHandler_.buildChoosingCandidateState(newIndex);
+      stateCallback(state);
+      return;
+    }
+
     let selected = this.candidateController_.selectedCandidateWithKey(
       key.ascii
     );
@@ -659,7 +710,13 @@ export class InputController {
       }
     }
 
-    this.candidateController_.update(candidates, this.candidateKeys_);
+    let keys: string[] = [];
+    let min = Math.min(this.candidateKeysCount_, this.candidateKeys_.length);
+    for (let i = 0; i < min; i++) {
+      keys.push(this.candidateKeys_[i]);
+    }
+
+    this.candidateController_.update(candidates, keys);
     let result = this.candidateController_.currentPage;
     this.ui_.setCandidates(result);
     let totalPageCount = this.candidateController_.totalPageCount;
