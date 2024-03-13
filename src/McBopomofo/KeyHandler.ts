@@ -1009,21 +1009,21 @@ export class KeyHandler {
       }
       let commitString = "";
       switch (state.style) {
-        case ChineseNumberStyle.lowercase:
+        case ChineseNumberStyle.Lowercase:
           commitString = ChineseNumbers.generate(
             intPart,
             decPart,
             Case.lowercase
           );
           break;
-        case ChineseNumberStyle.uppercase:
+        case ChineseNumberStyle.Uppercase:
           commitString = ChineseNumbers.generate(
             intPart,
             decPart,
             Case.uppercase
           );
           break;
-        case ChineseNumberStyle.suzhou:
+        case ChineseNumberStyle.Suzhou:
           commitString = SuzhouNumbers.generate(intPart, decPart, "單位", true);
           break;
       }

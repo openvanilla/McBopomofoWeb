@@ -73,17 +73,17 @@ const defaultSettings: Settings = {
 };
 
 enum PimeMcBopomofoCommand {
-  modeIcon = 0,
-  switchLanguage = 1,
-  homepage = 2,
-  bugReport = 3,
-  options = 4,
-  userPhrase = 5,
-  chineseConvert = 6,
-  halfWidthPunctuation = 7,
-  help = 8,
-  mcBopomofoUserDataFolder = 9,
-  reloadUserPhrase = 10,
+  ModeIcon = 0,
+  SwitchLanguage = 1,
+  OpenHomepage = 2,
+  OpenBugReport = 3,
+  OpenOptions = 4,
+  EditUserPhrase = 5,
+  ToggleChineseConversion = 6,
+  ToggleHalfWidthPunctuation = 7,
+  Help = 8,
+  OpenMcBopomofoUserDataFolder = 9,
+  ReloadUserPhrase = 10,
 }
 
 /** Wraps InputController and required states.  */
@@ -438,7 +438,7 @@ class PimeMcBopomofo {
         addButton.push({
           id: "windows-mode-icon",
           icon: windowsModeIconPath,
-          commandId: PimeMcBopomofoCommand.modeIcon,
+          commandId: PimeMcBopomofoCommand.ModeIcon,
           tooltip: "中英文切換",
         });
       }
@@ -446,7 +446,7 @@ class PimeMcBopomofo {
       addButton.push({
         id: "switch-lang",
         icon: windowsModeIconPath,
-        commandId: PimeMcBopomofoCommand.switchLanguage,
+        commandId: PimeMcBopomofoCommand.SwitchLanguage,
         tooltip: "中英文切換",
       });
       addButton.push({
@@ -478,8 +478,8 @@ class PimeMcBopomofo {
 
   public handleCommand(id: PimeMcBopomofoCommand): void {
     switch (id) {
-      case PimeMcBopomofoCommand.modeIcon:
-      case PimeMcBopomofoCommand.switchLanguage:
+      case PimeMcBopomofoCommand.ModeIcon:
+      case PimeMcBopomofoCommand.SwitchLanguage:
         {
           if (this.isOpened == false) {
             return;
@@ -487,7 +487,7 @@ class PimeMcBopomofo {
           this.toggleAlphabetMode();
         }
         break;
-      case PimeMcBopomofoCommand.homepage:
+      case PimeMcBopomofoCommand.OpenHomepage:
         {
           let url = "https://mcbopomofo.openvanilla.org/";
           let command = `start ${url}`;
@@ -495,7 +495,7 @@ class PimeMcBopomofo {
           child_process.exec(command);
         }
         break;
-      case PimeMcBopomofoCommand.bugReport:
+      case PimeMcBopomofoCommand.OpenBugReport:
         {
           let url = "https://github.com/openvanilla/McBopomofoWeb/issues";
           let command = `start ${url}`;
@@ -503,7 +503,7 @@ class PimeMcBopomofo {
           child_process.exec(command);
         }
         break;
-      case PimeMcBopomofoCommand.options:
+      case PimeMcBopomofoCommand.OpenOptions:
         {
           let python3 = path.join(
             __dirname,
@@ -520,26 +520,26 @@ class PimeMcBopomofo {
           child_process.exec(command);
         }
         break;
-      case PimeMcBopomofoCommand.userPhrase: {
+      case PimeMcBopomofoCommand.EditUserPhrase: {
         let url = pimeMcBopomofo.userPhrasesPath;
         let command = `start ${url}`;
         console.log("Run " + command);
         child_process.exec(command);
         break;
       }
-      case PimeMcBopomofoCommand.chineseConvert:
+      case PimeMcBopomofoCommand.ToggleChineseConversion:
         pimeMcBopomofo.settings.chineseConversion =
           !pimeMcBopomofo.settings.chineseConversion;
         pimeMcBopomofo.applySettings();
         pimeMcBopomofo.writeSettings();
         break;
-      case PimeMcBopomofoCommand.halfWidthPunctuation:
+      case PimeMcBopomofoCommand.ToggleHalfWidthPunctuation:
         pimeMcBopomofo.settings.half_width_punctuation =
           !pimeMcBopomofo.settings.half_width_punctuation;
         pimeMcBopomofo.applySettings();
         pimeMcBopomofo.writeSettings();
         break;
-      case PimeMcBopomofoCommand.help:
+      case PimeMcBopomofoCommand.Help:
         {
           let python3 = path.join(
             __dirname,
@@ -556,7 +556,7 @@ class PimeMcBopomofo {
           child_process.exec(command);
         }
         break;
-      case PimeMcBopomofoCommand.mcBopomofoUserDataFolder: {
+      case PimeMcBopomofoCommand.OpenMcBopomofoUserDataFolder: {
         if (!fs.existsSync(pimeMcBopomofo.mcBopomofoUserDataPath)) {
           fs.mkdirSync(pimeMcBopomofo.mcBopomofoUserDataPath);
         }
@@ -566,7 +566,7 @@ class PimeMcBopomofo {
         child_process.exec(command);
         break;
       }
-      case PimeMcBopomofoCommand.reloadUserPhrase:
+      case PimeMcBopomofoCommand.ReloadUserPhrase:
         {
           pimeMcBopomofo.loadUserPhrases();
         }
@@ -811,35 +811,35 @@ module.exports = {
       let menu = [
         {
           text: "小麥注音輸入法網站",
-          id: PimeMcBopomofoCommand.homepage,
+          id: PimeMcBopomofoCommand.OpenHomepage,
         },
         {
           text: "問題回報",
-          id: PimeMcBopomofoCommand.bugReport,
+          id: PimeMcBopomofoCommand.OpenBugReport,
         },
         {
           text: "輔助說明",
-          id: PimeMcBopomofoCommand.help,
+          id: PimeMcBopomofoCommand.Help,
         },
         {},
         {
           text: "輸入簡體中文",
-          id: PimeMcBopomofoCommand.chineseConvert,
+          id: PimeMcBopomofoCommand.ToggleChineseConversion,
           checked: pimeMcBopomofo.settings.chineseConversion,
         },
         {
           text: "輸入半形標點",
-          id: PimeMcBopomofoCommand.halfWidthPunctuation,
+          id: PimeMcBopomofoCommand.ToggleHalfWidthPunctuation,
           checked: pimeMcBopomofo.settings.half_width_punctuation,
         },
         {},
         {
           text: "偏好設定 (&O)",
-          id: PimeMcBopomofoCommand.options,
+          id: PimeMcBopomofoCommand.OpenOptions,
         },
         {
           text: "編輯使用者詞庫 (&U)",
-          id: PimeMcBopomofoCommand.userPhrase,
+          id: PimeMcBopomofoCommand.EditUserPhrase,
         },
         // {
         //   text: "重新載入使用者詞庫 (&U)",
@@ -847,7 +847,7 @@ module.exports = {
         // },
         {
           text: "打開使用者資料夾",
-          id: PimeMcBopomofoCommand.mcBopomofoUserDataFolder,
+          id: PimeMcBopomofoCommand.OpenMcBopomofoUserDataFolder,
         },
       ];
       let response = Object.assign({}, responseTemplate, { return: menu });

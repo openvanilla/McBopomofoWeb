@@ -181,9 +181,9 @@ export class SelectingDictionary extends NotEmpty {
 }
 
 export enum ChineseNumberStyle {
-  lowercase,
-  uppercase,
-  suzhou,
+  Lowercase,
+  Uppercase,
+  Suzhou,
 }
 
 export class ChineseNumber implements InputState {
@@ -197,11 +197,11 @@ export class ChineseNumber implements InputState {
 
   get composingBuffer(): string {
     switch (this.style) {
-      case ChineseNumberStyle.lowercase:
+      case ChineseNumberStyle.Lowercase:
         return "[中文數字] " + this.number;
-      case ChineseNumberStyle.uppercase:
+      case ChineseNumberStyle.Uppercase:
         return "[大寫數字] " + this.number;
-      case ChineseNumberStyle.suzhou:
+      case ChineseNumberStyle.Suzhou:
         return "[蘇州碼] " + this.number;
       default:
         break;
@@ -262,15 +262,15 @@ export class SelectingFeature implements InputState {
     new Feature("日期與時間", () => new SelectingDateMacro(this.converter)),
     new Feature(
       "中文數字",
-      () => new ChineseNumber("", ChineseNumberStyle.lowercase)
+      () => new ChineseNumber("", ChineseNumberStyle.Lowercase)
     ),
     new Feature(
       "大寫數字",
-      () => new ChineseNumber("", ChineseNumberStyle.uppercase)
+      () => new ChineseNumber("", ChineseNumberStyle.Uppercase)
     ),
     new Feature(
       "蘇州碼",
-      () => new ChineseNumber("", ChineseNumberStyle.suzhou)
+      () => new ChineseNumber("", ChineseNumberStyle.Suzhou)
     ),
   ];
 
