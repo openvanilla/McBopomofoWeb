@@ -200,7 +200,7 @@ function applySettings(settings) {
       settings.esc_key_clear_entire_buffer;
   }
   {
-    controller.setUseJKToSelectCandidate(
+    controller.setUseJKToMoveCursor(
       settings.use_jk_key_to_move_cursor === true
     );
     document.getElementById("jk_key").checked =
@@ -383,7 +383,7 @@ document.getElementById("esc_key").onchange = function (event) {
 
 document.getElementById("jk_key").onchange = function (event) {
   let checked = document.getElementById("jk_key").checked;
-  controller.setUseJKToSelectCandidate(checked);
+  controller.setUseJKToMoveCursor(checked);
   settings.use_jk_key_to_move_cursor = checked;
   saveSettings(settings);
   document.getElementById("text_area").focus();
