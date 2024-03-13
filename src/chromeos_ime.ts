@@ -16,6 +16,7 @@ type ChromeMcBopomofoSettings = {
   layout: string;
   select_phrase: string;
   candidate_keys: string;
+  candidate_keys_count: number;
   esc_key_clear_entire_buffer: boolean;
   shift_key_toggle_alphabet_mode: boolean;
   chinese_conversion: boolean;
@@ -23,6 +24,7 @@ type ChromeMcBopomofoSettings = {
   letter_mode: string;
   ctrl_enter_option: number;
   half_width_punctuation_enabled: boolean;
+  use_jk_key_to_move_cursor: boolean;
 };
 
 class ChromeMcBopomofo {
@@ -37,30 +39,34 @@ class ChromeMcBopomofo {
     layout: "standard",
     select_phrase: "before_cursor",
     candidate_keys: "123456789",
+    candidate_keys_count: 9,
     esc_key_clear_entire_buffer: false,
     shift_key_toggle_alphabet_mode: true,
     chinese_conversion: false,
-    move_cursor: true,
+    move_cursor: false,
     letter_mode: "upper",
     ctrl_enter_option: 0,
     half_width_punctuation_enabled: false,
+    use_jk_key_to_move_cursor: false,
   };
   settings: ChromeMcBopomofoSettings = {
     layout: "standard",
     select_phrase: "before_cursor",
     candidate_keys: "123456789",
+    candidate_keys_count: 9,
     esc_key_clear_entire_buffer: false,
     shift_key_toggle_alphabet_mode: true,
     chinese_conversion: false,
-    move_cursor: true,
+    move_cursor: false,
     letter_mode: "upper",
     ctrl_enter_option: 0,
     half_width_punctuation_enabled: false,
+    use_jk_key_to_move_cursor: false,
   };
   lang = "en";
   isShiftHold = false;
   isAlphabetMode = false;
-  mcInputController: InputController;
+  inputController: InputController;
 
   constructor() {
     chrome.i18n.getAcceptLanguages((langs) => {
@@ -69,17 +75,17 @@ class ChromeMcBopomofo {
         // Changes language needs to restarts ChromeOS login session so it won't
         // change until user logs in again. So, we can just set language code once
         // at the start.
-        this.mcInputController.setLanguageCode(this.lang);
+        this.inputController.setLanguageCode(this.lang);
       }
     });
-    this.mcInputController = new InputController(this.makeUI());
-    this.mcInputController.setOnOpenUrl((input: string) => {
+    this.inputController = new InputController(this.makeUI());
+    this.inputController.setOnOpenUrl((input: string) => {
       this.tryOpen(input);
     });
 
     // The horizontal candidate windows on ChromeOS is actually broken so we
     // use the vertical one only.
-    this.mcInputController.setUserVerticalCandidates(true);
+    this.inputController.setUserVerticalCandidates(true);
   }
 
   myLocalizedString(en: string, zh: string): string {
@@ -99,29 +105,33 @@ class ChromeMcBopomofo {
         this.settings.shift_key_toggle_alphabet_mode = true;
       }
 
-      this.mcInputController.setChineseConversionEnabled(
+      this.inputController.setChineseConversionEnabled(
         this.settings.chinese_conversion === true
       );
-      this.mcInputController.setKeyboardLayout(this.settings.layout);
-      this.mcInputController.setSelectPhrase(this.settings.select_phrase);
+      this.inputController.setKeyboardLayout(this.settings.layout);
+      this.inputController.setSelectPhrase(this.settings.select_phrase);
       let keys = this.settings.candidate_keys;
       if (keys == undefined) {
         keys = "123456789";
       }
-      this.mcInputController.setCandidateKeys(this.settings.candidate_keys);
-      this.mcInputController.setEscClearEntireBuffer(
+      this.inputController.setCandidateKeys(this.settings.candidate_keys);
+      this.inputController.setEscClearEntireBuffer(
         this.settings.esc_key_clear_entire_buffer
       );
-      this.mcInputController.setMoveCursorAfterSelection(
+      this.inputController.setMoveCursorAfterSelection(
         this.settings.move_cursor
       );
-      this.mcInputController.setLetterMode(this.settings.letter_mode);
-      this.mcInputController.setCtrlEnterOption(
-        this.settings.ctrl_enter_option
-      );
-      this.mcInputController.setHalfWidthPunctuationEnabled(
+      this.inputController.setLetterMode(this.settings.letter_mode);
+      this.inputController.setCtrlEnterOption(this.settings.ctrl_enter_option);
+      this.inputController.setHalfWidthPunctuationEnabled(
         this.settings.half_width_punctuation_enabled
-      )
+      );
+      this.inputController.setCandidateKeysCount(
+        this.settings.candidate_keys_count
+      );
+      this.inputController.setUseJKToMoveCursor(
+        this.settings.use_jk_key_to_move_cursor
+      );
     });
   }
 
@@ -134,7 +144,7 @@ class ChromeMcBopomofo {
           let obj = JSON.parse(jsonString);
           if (obj) {
             let userPhrases = new Map<string, string[]>(Object.entries(obj));
-            this.mcInputController.setUserPhrases(userPhrases);
+            this.inputController.setUserPhrases(userPhrases);
           }
         } catch (e) {
           console.log("failed to parse user_phrase:" + e);
@@ -219,7 +229,7 @@ class ChromeMcBopomofo {
     let checked = this.settings.chinese_conversion;
     checked = !checked;
     this.settings.chinese_conversion = checked;
-    this.mcInputController.setChineseConversionEnabled(checked);
+    this.inputController.setChineseConversionEnabled(checked);
 
     chrome.notifications.create("mcbopomofo-chinese-conversion" + Date.now(), {
       title: checked
@@ -244,17 +254,26 @@ class ChromeMcBopomofo {
     let checked = this.settings.half_width_punctuation_enabled;
     checked = !checked;
     this.settings.half_width_punctuation_enabled = checked;
-    this.mcInputController.setHalfWidthPunctuationEnabled(checked);
+    this.inputController.setHalfWidthPunctuationEnabled(checked);
 
-    chrome.notifications.create("mcbopomofo-half-width-punctuation" + Date.now(), {
-      title: checked
-        ? this.myLocalizedString("Using half width punctuation", "使用半形標點")
-        : this.myLocalizedString("Using full width punctuation", "使用全形標點"),
+    chrome.notifications.create(
+      "mcbopomofo-half-width-punctuation" + Date.now(),
+      {
+        title: checked
+          ? this.myLocalizedString(
+              "Using half width punctuation",
+              "使用半形標點"
+            )
+          : this.myLocalizedString(
+              "Using full width punctuation",
+              "使用全形標點"
+            ),
 
-      message: "",
-      type: "basic",
-      iconUrl: "icons/icon48.png",
-    });
+        message: "",
+        type: "basic",
+        iconUrl: "icons/icon48.png",
+      }
+    );
 
     chrome.storage.sync.set({ settings: this.settings }, () => {
       if (this.engineID === undefined) return;
@@ -264,7 +283,6 @@ class ChromeMcBopomofo {
       this.updateMenu();
     });
   }
-
 
   tryOpen(url: string) {
     chrome.windows.getCurrent({}, (win) => {
@@ -302,7 +320,7 @@ class ChromeMcBopomofo {
 
     this.deferredResetTimeout = setTimeout(() => {
       chromeMcBopomofo.context = undefined;
-      chromeMcBopomofo.mcInputController.reset();
+      chromeMcBopomofo.inputController.reset();
       this.deferredResetTimeout = null;
     }, 5000);
   }
@@ -471,7 +489,7 @@ chrome.input.ime.onActivate.addListener((engineID) => {
   chromeMcBopomofo.loadSettings();
   chromeMcBopomofo.updateMenu();
   chromeMcBopomofo.loadUserPhrases();
-  chromeMcBopomofo.mcInputController.setOnPhraseChange((userPhrases) => {
+  chromeMcBopomofo.inputController.setOnPhraseChange((userPhrases) => {
     const obj = Object.fromEntries(userPhrases);
     let jsonString = JSON.stringify(obj);
     largeSync.set({ user_phrase: jsonString }, () => {});
@@ -480,23 +498,20 @@ chrome.input.ime.onActivate.addListener((engineID) => {
 
 // Called when the current text input are loses the focus.
 chrome.input.ime.onBlur.addListener((context) => {
-  // console.log("onBlur");
   chromeMcBopomofo.deferredReset();
 });
 
 chrome.input.ime.onReset.addListener((context) => {
-  // console.log("onReset");
   chromeMcBopomofo.deferredReset();
 });
 
 // Called when the user switch to another input method.
 chrome.input.ime.onDeactivated.addListener((context) => {
-  // console.log("onDeactivated");
   if (chromeMcBopomofo.deferredResetTimeout != null) {
     clearTimeout(chromeMcBopomofo.deferredResetTimeout);
   }
   chromeMcBopomofo.context = undefined;
-  chromeMcBopomofo.mcInputController.reset();
+  chromeMcBopomofo.inputController.reset();
   chromeMcBopomofo.deferredResetTimeout = null;
 });
 
@@ -522,7 +537,7 @@ chrome.input.ime.onKeyEvent.addListener((engineID, keyData) => {
     if (keyData.key === "Shift" && chromeMcBopomofo.isShiftHold) {
       chromeMcBopomofo.isShiftHold = false;
       chromeMcBopomofo.toggleAlphabetMode();
-      chromeMcBopomofo.mcInputController.reset();
+      chromeMcBopomofo.inputController.reset();
       return;
     }
     return false;
@@ -548,7 +563,7 @@ chrome.input.ime.onKeyEvent.addListener((engineID, keyData) => {
   }
 
   let keyEvent = KeyFromKeyboardEvent(keyData);
-  return chromeMcBopomofo.mcInputController.mcbopomofoKeyEvent(keyEvent);
+  return chromeMcBopomofo.inputController.mcbopomofoKeyEvent(keyEvent);
 });
 
 chrome.input.ime.onMenuItemActivated.addListener((engineID, name) => {

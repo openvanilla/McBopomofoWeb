@@ -59,6 +59,7 @@ const defaultSettings: Settings = {
   layout: "standard",
   select_phrase: "before_cursor",
   candidate_keys: "123456789",
+  candidate_keys_count: 9,
   esc_key_clear_entire_buffer: false,
   shift_key_toggle_alphabet_mode: true,
   chineseConversion: false,
@@ -68,7 +69,6 @@ const defaultSettings: Settings = {
   by_default_deactivated: false,
   beep_on_error: true,
   ctrl_enter_option: 0,
-  candidate_keys_count: 9,
   use_jk_key_to_move_cursor: false,
 };
 

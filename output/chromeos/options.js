@@ -1,5 +1,19 @@
 window.onload = () => {
   let settings = {};
+  const defaultSettings = {
+    layout: "standard",
+    select_phrase: "before_cursor",
+    candidate_keys: "123456789",
+    candidate_keys_count: 9,
+    esc_key_clear_entire_buffer: false,
+    use_jk_key_to_move_cursor: false,
+    shift_key_toggle_alphabet_mode: true,
+    half_width_punctuation: false,
+    chinese_conversion: false,
+    move_cursor: false,
+    letter_mode: "upper",
+    ctrl_enter_option: 0,
+  };
 
   function applySettings(settings) {
     {
@@ -23,6 +37,17 @@ window.onload = () => {
       }
     }
     {
+      controller.setCandidateKeysCount(settings.candidate_keys_count);
+      let select = document.getElementById("keys_count");
+      let options = select.getElementsByTagName("option");
+      for (let option of options) {
+        if (option.value == settings.candidate_keys) {
+          option.selected = "selected";
+          break;
+        }
+      }
+    }
+    {
       if (settings.select_phrase === "before_cursor") {
         document.getElementById("before_cursor").checked = true;
         document.getElementById("after_cursor").checked = false;
@@ -34,6 +59,10 @@ window.onload = () => {
     {
       document.getElementById("esc_key").checked =
         settings.esc_key_clear_entire_buffer;
+    }
+    {
+      document.getElementById("jk_key").checked =
+        settings.use_jk_key_to_move_cursor;
     }
     {
       let enabled = settings.shift_key_toggle_alphabet_mode;
@@ -77,7 +106,7 @@ window.onload = () => {
   chrome.storage.sync.get("settings", (value) => {
     settings = value.settings;
     if (settings == undefined) {
-      settings = {};
+      settings = defaultSettings;
     }
     applySettings(settings);
   });
@@ -94,6 +123,12 @@ window.onload = () => {
     saveSettings(settings);
   };
 
+  document.getElementById("keys_count").onchange = (event) => {
+    let value = document.getElementById("keys_count").value;
+    settings.candidate_keys = +value;
+    saveSettings(settings);
+  };
+
   document.getElementById("before_cursor").onchange = (event) => {
     settings.select_phrase = "before_cursor";
     saveSettings(settings);
@@ -107,6 +142,12 @@ window.onload = () => {
   document.getElementById("esc_key").onchange = (event) => {
     let checked = document.getElementById("esc_key").checked;
     settings.esc_key_clear_entire_buffer = checked;
+    saveSettings(settings);
+  };
+
+  document.getElementById("jk_key").onchange = function (event) {
+    let checked = document.getElementById("jk_key").checked;
+    settings.use_jk_key_to_move_cursor = checked;
     saveSettings(settings);
   };
 
@@ -153,7 +194,7 @@ window.onload = () => {
     return false;
   };
 
-  document.getElementById("ctrl_enter_option").onchange = function (event) {
+  document.getElementById("ctrl_enter_option").onchange = (event) => {
     console.log("ctrl_enter_option");
     let value = document.getElementById("ctrl_enter_option").value;
     value = +value;
@@ -226,4 +267,8 @@ window.onload = () => {
     chrome.i18n.getMessage("optionOthersTitle");
   document.getElementById("others_manage_user_phrases").innerText =
     chrome.i18n.getMessage("optionOtherManageUserPhrases");
+  document.getElementById("candidate_keys_count").innerText =
+    chrome.i18n.getMessage("candidate_keys_count");
+  document.getElementById("use_jk_key").innerText =
+    chrome.i18n.getMessage("use_jk_key");
 };

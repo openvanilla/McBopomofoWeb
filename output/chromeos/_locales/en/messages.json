@@ -56,5 +56,9 @@
   "ctrl_enter_key": { "message": "Ctrl + Enter Key:" },
   "ctrl_enter_none": { "message": "None" },
   "ctrl_enter_bpmf_reading": { "message": "Input Bopomofo Reading" },
-  "ctrl_enter_html_ruby": { "message": "Input HTML Ruby" }
+  "ctrl_enter_html_ruby": { "message": "Input HTML Ruby" },
+  "candidate_keys_count": { "message": "Candidate Keys Count:" },
+  "use_jk_key": {
+    "message": "Use J/K keys to move cursor when choosing candidates "
+  }
 }

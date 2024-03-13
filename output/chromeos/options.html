@@ -40,6 +40,24 @@
             </td>
         </tr>
         <tr>
+            <td class="option_title" id="candidate_keys_count">Number of Candidate Keys:</td>
+            <td>
+                <select id="keys_count">
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                </select>
+                <br />
+                <input type="checkbox" name="jk_key" id="jk_key"><label for="jk_key" id="use_jk_key">Use J/K keys to
+                    move cursor when choosing candidates</label>
+            </td>
+        </tr>
+
+        <tr>
             <td class="option_title" id="select_candidate">Select The Candidate:</td>
             <td>
                 <input type="radio" name="select_phrase" value="before_cursor" id="before_cursor"

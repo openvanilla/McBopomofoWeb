@@ -1,5 +1,6 @@
 window.onload = () => {
-  let settings = {
+  let settings = {};
+  const defaultSettings = {
     layout: "standard",
     select_phrase: "before_cursor",
     candidate_keys: "123456789",
@@ -129,11 +130,11 @@ window.onload = () => {
       try {
         settings = JSON.parse(this.responseText);
         if (settings == undefined) {
-          settings = {};
+          settings = defaultSettings;
         }
         console.log("settings loaded: " + settings);
       } catch {
-        settings = {};
+        settings = defaultSettings;
       }
       applySettings(settings);
     };
