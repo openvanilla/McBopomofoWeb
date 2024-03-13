@@ -175,7 +175,7 @@ function applySettings(settings) {
     let select = document.getElementById("keys_count");
     let options = select.getElementsByTagName("option");
     for (let option of options) {
-      if (option.value == settings.candidate_keys) {
+      if (option.value == settings.candidate_keys_count) {
         option.selected = "selected";
         break;
       }
@@ -354,7 +354,7 @@ document.getElementById("keys").onchange = function (event) {
 document.getElementById("keys_count").onchange = function (event) {
   let value = document.getElementById("keys_count").value;
   controller.setCandidateKeysCount(+value);
-  settings.candidate_keys = +value;
+  settings.candidate_keys_count = +value;
   saveSettings(settings);
   document.getElementById("text_area").focus();
 };

@@ -41,7 +41,7 @@ window.onload = () => {
       let select = document.getElementById("keys_count");
       let options = select.getElementsByTagName("option");
       for (let option of options) {
-        if (option.value == settings.candidate_keys) {
+        if (option.value == settings.candidate_keys_count) {
           option.selected = "selected";
           break;
         }
@@ -125,7 +125,7 @@ window.onload = () => {
 
   document.getElementById("keys_count").onchange = (event) => {
     let value = document.getElementById("keys_count").value;
-    settings.candidate_keys = +value;
+    settings.candidate_keys_count = +value;
     saveSettings(settings);
   };
 
