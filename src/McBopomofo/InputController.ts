@@ -375,14 +375,16 @@ export class InputController {
       this.state_ instanceof SelectingDateMacro ||
       this.state_ instanceof SelectingDictionary
     ) {
-      this.ui_.reset();
       this.handleCandidateKeyEvent(
         key,
-        (newState) => this.enterNewState(newState),
+        (newState) => {
+          this.enterNewState(newState);
+        },
         () => {
           this.onError_?.();
         }
       );
+
       if (this.state_ instanceof NotEmpty) {
         this.updatePreedit(this.state_);
       } else {
@@ -394,11 +396,14 @@ export class InputController {
     let accepted = this.keyHandler_.handle(
       key,
       this.state_,
-      (newState) => this.enterNewState(newState),
+      (newState) => {
+        this.enterNewState(newState);
+      },
       () => {
         this.onError_?.();
       }
     );
+
     if (this.state_ instanceof NotEmpty) {
       this.updatePreedit(this.state_);
     } else {
@@ -425,7 +430,6 @@ export class InputController {
       let cursor = this.keyHandler_.cursor;
       if (cursor === 0) {
         errorCallback();
-        this.enterNewState(this.state_);
         return;
       }
       let newIndex = cursor - 1;
@@ -442,7 +446,6 @@ export class InputController {
       let max = this.keyHandler_.gridLength;
       if (cursor >= max) {
         errorCallback();
-        this.enterNewState(this.state_);
         return;
       }
       let newIndex = cursor + 1;
@@ -722,12 +725,6 @@ export class InputController {
     let totalPageCount = this.candidateController_.totalPageCount;
     let pageIndex = this.candidateController_.currentPageIndex;
     this.ui_.setPageIndex(pageIndex + 1, totalPageCount);
-
-    if (state instanceof NotEmpty) {
-      this.updatePreedit(state);
-    } else {
-      this.ui_.update();
-    }
   }
 
   private handleMarking(prev: InputState, state: Marking) {
