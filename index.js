@@ -90,11 +90,13 @@ let defaultSettings = {
   half_width_punctuation: false,
   layout: "standard",
   candidate_keys: "123456789",
+  candidate_keys_count: 9,
   select_phrase: "before_cursor",
   esc_key_clear_entire_buffer: false,
   move_cursor: false,
   letter_mode: "upper",
   ctrl_enter_option: 0,
+  use_jk_key_to_move_cursor: false,
 };
 let settings = {};
 
@@ -169,6 +171,17 @@ function applySettings(settings) {
     }
   }
   {
+    controller.setCandidateKeysCount(settings.candidate_keys_count);
+    let select = document.getElementById("keys_count");
+    let options = select.getElementsByTagName("option");
+    for (let option of options) {
+      if (option.value == settings.candidate_keys) {
+        option.selected = "selected";
+        break;
+      }
+    }
+  }
+  {
     if (settings.select_phrase === "before_cursor") {
       controller.setSelectPhrase("before_cursor");
       document.getElementById("before_cursor").checked = true;
@@ -185,6 +198,13 @@ function applySettings(settings) {
     );
     document.getElementById("esc_key").checked =
       settings.esc_key_clear_entire_buffer;
+  }
+  {
+    controller.setUseJKToSelectCandidate(
+      settings.use_jk_key_to_move_cursor === true
+    );
+    document.getElementById("jk_key").checked =
+      settings.use_jk_key_to_move_cursor;
   }
   {
     document.getElementById("move_cursor").checked = settings.move_cursor;
@@ -331,6 +351,14 @@ document.getElementById("keys").onchange = function (event) {
   document.getElementById("text_area").focus();
 };
 
+document.getElementById("keys_count").onchange = function (event) {
+  let value = document.getElementById("keys_count").value;
+  controller.setCandidateKeysCount(+value);
+  settings.candidate_keys = +value;
+  saveSettings(settings);
+  document.getElementById("text_area").focus();
+};
+
 document.getElementById("before_cursor").onchange = function (event) {
   controller.setSelectPhrase("before_cursor");
   settings.select_phrase = "before_cursor";
@@ -349,6 +377,14 @@ document.getElementById("esc_key").onchange = function (event) {
   let checked = document.getElementById("esc_key").checked;
   controller.setEscClearEntireBuffer(checked);
   settings.esc_key_clear_entire_buffer = checked;
+  saveSettings(settings);
+  document.getElementById("text_area").focus();
+};
+
+document.getElementById("jk_key").onchange = function (event) {
+  let checked = document.getElementById("jk_key").checked;
+  controller.setUseJKToSelectCandidate(checked);
+  settings.use_jk_key_to_move_cursor = checked;
   saveSettings(settings);
   document.getElementById("text_area").focus();
 };
