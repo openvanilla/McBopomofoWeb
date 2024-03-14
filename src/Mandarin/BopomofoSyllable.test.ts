@@ -7,7 +7,7 @@
 
 import { BopomofoSyllable } from "./index";
 
-describe("Test Pintin", () => {
+describe("Test Pinyin", () => {
   test("Test 1", () => {
     let s = "yang5";
     let result = BopomofoSyllable.FromHanyuPinyin(s);
