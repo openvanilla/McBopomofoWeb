@@ -301,6 +301,9 @@ export class WebLanguageModel implements LanguageModel {
     let result: string | undefined = undefined;
     let topScore = -8;
     for (let key in this.map_) {
+      if (key.startsWith("_")) {
+        continue;
+      }
       let values = this.map_[key].split(" ");
       for (let i = 0; i < values.length; i += 2) {
         let value = values[i];
@@ -317,10 +320,6 @@ export class WebLanguageModel implements LanguageModel {
     if (result === undefined) {
       return undefined;
     }
-    if (result.startsWith("_")) {
-      return undefined;
-    }
-    console.log("result");
     let readings: string[] = [];
     for (let i = 0; i < result.length; i += 2) {
       let substring = result.substring(i, i + 2);

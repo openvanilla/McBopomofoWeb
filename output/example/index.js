@@ -11,6 +11,9 @@ function toggle_feature(id) {
     document.getElementById(feature).style.display = "none";
   }
   document.getElementById(id).style.display = "block";
+  if (id === "feature_input") {
+    document.getElementById("text_area").focus();
+  }
 }
 
 function resetUI() {
@@ -261,6 +264,7 @@ function applySettings(settings) {
     }
   }
   {
+    controller.setCtrlEnterOption(settings.ctrl_enter_option);
     let select = document.getElementById("ctrl_enter_option");
     let options = select.getElementsByTagName("option");
     for (let option of options) {

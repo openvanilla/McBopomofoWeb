@@ -6,3 +6,4 @@
  */
 
 export { InputController } from "./McBopomofo/InputController";
+export { Service } from "./McBopomofo/Service";
