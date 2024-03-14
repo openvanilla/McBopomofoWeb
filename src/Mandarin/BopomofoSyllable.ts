@@ -492,12 +492,12 @@ export class BopomofoSyllable {
       middle = "";
       vowel =
         cc === BopomofoSyllable.J ||
-          cc === BopomofoSyllable.Q ||
-          cc === BopomofoSyllable.X
+        cc === BopomofoSyllable.Q ||
+        cc === BopomofoSyllable.X
           ? "iong"
           : !cc && mvc === BopomofoSyllable.U
-            ? "eng"
-            : "ong";
+          ? "eng"
+          : "ong";
     }
 
     // ien, uen, üen -> in, un, ün ; but note "wen", "yin" and "yun"
@@ -586,12 +586,40 @@ export class BopomofoSyllable {
     return str;
   }
 
+  static FromAbsoluteOrder(order: number): BopomofoSyllable {
+    let copy = order;
+    let consonantMask = copy % 22;
+    copy -= consonantMask;
+    let middleVowelMask = (copy % (22 * 4)) / 22;
+    copy -= middleVowelMask * 22;
+    let vowelMask = (copy % (22 * 4 * 14)) / (22 * 4);
+    copy -= vowelMask * 22 * 4;
+    let ToneMarkerMask = copy / (22 * 4 * 14);
+    middleVowelMask = middleVowelMask << 5;
+    vowelMask = vowelMask << 7;
+    ToneMarkerMask = ToneMarkerMask << 11;
+
+    return new BopomofoSyllable(
+      consonantMask | middleVowelMask | vowelMask | ToneMarkerMask
+    );
+  }
+
   get absoluteOrder(): number {
     // turn BPMF syllable into a 4*14*4*22 number
-    return (this.syllable_ & BopomofoSyllable.ConsonantMask) +
+    return (
+      (this.syllable_ & BopomofoSyllable.ConsonantMask) +
       ((this.syllable_ & BopomofoSyllable.MiddleVowelMask) >> 5) * 22 +
       ((this.syllable_ & BopomofoSyllable.VowelMask) >> 7) * 22 * 4 +
-      ((this.syllable_ & BopomofoSyllable.ToneMarkerMask) >> 11) * 22 * 4 * 14;
+      ((this.syllable_ & BopomofoSyllable.ToneMarkerMask) >> 11) * 22 * 4 * 14
+    );
+  }
+
+  static FromAbsoluteOrderString(orderString: string) {
+    let lowCode = orderString.charCodeAt(0);
+    let highCode = orderString.charCodeAt(1);
+    let low = lowCode - 48;
+    let High = (highCode - 48) * 79;
+    return BopomofoSyllable.FromAbsoluteOrder(low + High);
   }
 
   get absoluteOrderString(): string {

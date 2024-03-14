@@ -5,14 +5,12 @@ describe("Test BopomofoBrailleConverter", () => {
     let input = "ㄊㄞˊㄨㄢㄖㄣˊ";
     let r1 = BopomofoBrailleConverter.convertBpmfToBraille(input);
     expect(r1).toBe("⠋⠺⠂⠻⠄⠛⠥⠂");
-    console.log(r1);
     let r2 = BopomofoBrailleConverter.convertBrailleToBpmf(r1);
     expect(r2).toBe(input);
   });
   test("Test Phonetic only 2", () => {
     let input = "ㄏㄨㄤˊㄈㄟㄏㄨㄥˊ";
     let r1 = BopomofoBrailleConverter.convertBpmfToBraille(input);
-    console.log(r1);
     let r2 = BopomofoBrailleConverter.convertBrailleToBpmf(r1);
     expect(r2).toBe(input);
   });
@@ -20,7 +18,6 @@ describe("Test BopomofoBrailleConverter", () => {
     let input = "ㄏㄨㄤˊㄈㄟㄏㄨㄥˊ，";
     let r1 = BopomofoBrailleConverter.convertBpmfToBraille(input);
     expect(r1).toBe("⠗⠸⠂⠟⠴⠄⠗⠯⠂⠆");
-    console.log(r1);
     let r2 = BopomofoBrailleConverter.convertBrailleToBpmf(r1);
     expect(r2).toBe(input);
   });

@@ -5,6 +5,6 @@
  * SPDX-License-Identifier: MIT
  */
 
-export { BopomofoSyllable } from "./BopomofoBraille";
+export { BopomofoBrailleSyllable as BopomofoSyllable } from "./BopomofoBraille";
 export { Punctuation } from "./Punctuation";
 export { BopomofoBrailleConverter } from "./Converter";

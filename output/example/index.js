@@ -1,6 +1,18 @@
 var alphabetMode = false;
 var composingBuffer = "";
 
+function toggle_feature(id) {
+  let features = [
+    "feature_input",
+    "feature_text_to_braille",
+    "feature_braille_to_text",
+  ];
+  for (let feature of features) {
+    document.getElementById(feature).style.display = "none";
+  }
+  document.getElementById(id).style.display = "block";
+}
+
 function resetUI() {
   let renderText = alphabetMode ? "【英】" : "【麥】";
   renderText += "<span class='cursor'>|</span>";

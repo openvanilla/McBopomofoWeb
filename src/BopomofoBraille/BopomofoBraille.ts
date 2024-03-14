@@ -379,7 +379,7 @@ namespace Tone {
   }
 }
 
-export class BopomofoSyllable {
+export class BopomofoBrailleSyllable {
   bpmf: string;
   braille: string;
 
@@ -421,7 +421,6 @@ export class BopomofoSyllable {
     if (vowel != undefined) {
       if (middleVowel != undefined) {
         let combination = MiddleVowel.buildCombination(middleVowel, vowel);
-        console.log(combination);
         if (combination != null) {
           if (ㄧ_Combination.allBpmf.includes(combination)) {
             output += ㄧ_Combination.toBraille(combination as ㄧ_Combination);
@@ -445,7 +444,7 @@ export class BopomofoSyllable {
     return output;
   }
 
-  static fromBpmf(bpmf: string): BopomofoSyllable {
+  static fromBpmf(bpmf: string): BopomofoBrailleSyllable {
     bpmf = bpmf.trim();
     if (bpmf.length < kMinimalBopomofoLength) {
       throw new Error("Invalid Bopomofo length");
@@ -504,16 +503,16 @@ export class BopomofoSyllable {
       }
     }
 
-    let braille = BopomofoSyllable.makeBraille(
+    let braille = BopomofoBrailleSyllable.makeBraille(
       consonant,
       middleVowel,
       vowel,
       tone
     );
-    return new BopomofoSyllable(bpmf, braille);
+    return new BopomofoBrailleSyllable(bpmf, braille);
   }
 
-  static fromBraille(braille: string): BopomofoSyllable {
+  static fromBraille(braille: string): BopomofoBrailleSyllable {
     braille = braille.trim();
     if (braille.length < kMinimalBrailleLength) {
       throw new Error("Invalid Braille length");
@@ -678,7 +677,12 @@ export class BopomofoSyllable {
       throw new Error("Invalid Braille: no tone");
     }
 
-    let bpmf = BopomofoSyllable.makeBpmf(consonant, middleVowel, vowel, tone);
-    return new BopomofoSyllable(bpmf, braille);
+    let bpmf = BopomofoBrailleSyllable.makeBpmf(
+      consonant,
+      middleVowel,
+      vowel,
+      tone
+    );
+    return new BopomofoBrailleSyllable(bpmf, braille);
   }
 }

@@ -134,3 +134,11 @@ textarea:focus {
   padding: 10px;
   display: block;
 }
+
+div#feature_text_to_braille {
+  display: none;
+}
+
+div#feature_braille_to_text {
+  display: none;
+}

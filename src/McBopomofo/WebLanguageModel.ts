@@ -6,7 +6,7 @@
  */
 
 import { LanguageModel, Unigram } from "../Gramambular2";
-import { BopomofoSyllable } from "../Mandarin/BopomofoSyllable";
+import { BopomofoSyllable } from "../Mandarin";
 
 /**
  * The model for user phrases.
@@ -295,5 +295,39 @@ export class WebLanguageModel implements LanguageModel {
 
     let actualKey = elements.join("").replace(/_______/g, "_-");
     return actualKey;
+  }
+
+  getReading(input: string): string | undefined {
+    let result: string | undefined = undefined;
+    let topScore = -8;
+    for (let key in this.map_) {
+      let values = this.map_[key].split(" ");
+      for (let i = 0; i < values.length; i += 2) {
+        let value = values[i];
+        if (value === input) {
+          let score = parseFloat(values[i + 1]);
+          if (score > topScore) {
+            result = key;
+            topScore = score;
+            break;
+          }
+        }
+      }
+    }
+    if (result === undefined) {
+      return undefined;
+    }
+    if (result.startsWith("_")) {
+      return undefined;
+    }
+    console.log("result");
+    let readings: string[] = [];
+    for (let i = 0; i < result.length; i += 2) {
+      let substring = result.substring(i, i + 2);
+      let bopomofoSyllable =
+        BopomofoSyllable.FromAbsoluteOrderString(substring);
+      readings.push(bopomofoSyllable.composedString);
+    }
+    return readings.join("-");
   }
 }
