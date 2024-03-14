@@ -5,7 +5,6 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { min } from "lodash";
 import { Candidate } from "../Gramambular2";
 import { BopomofoKeyboardLayout } from "../Mandarin";
 import { CandidateWrapper, CandidateController } from "./CandidateController";

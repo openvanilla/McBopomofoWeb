@@ -32,10 +32,10 @@ import {
   WalkResult,
 } from "../Gramambular2";
 import { OverrideType } from "../Gramambular2/ReadingGrid";
-import { ChineseNumbers, SuzhouNumbers } from "../ChineseNumbers";
-import { Case } from "../ChineseNumbers/ChineseNumbers";
+import { ChineseNumbers, SuzhouNumbers, Case } from "../ChineseNumbers";
 import { DictionaryServices } from "./DictionaryServices";
 import { CtrlEnterOption } from "./CtrlEnterOption";
+import { BopomofoBrailleConverter } from "../BopomofoBraille";
 
 export class ComposedString {
   head: string = "";
@@ -407,8 +407,7 @@ export class KeyHandler {
           stateCallback(committing);
           this.reset();
           return true;
-        }
-        if (this.ctrlEnterOption_ === CtrlEnterOption.htmlRuby) {
+        } else if (this.ctrlEnterOption_ === CtrlEnterOption.htmlRuby) {
           let composed = "";
           for (let node of this.latestWalk_?.nodes ?? []) {
             let reading = node.reading;
@@ -423,6 +422,28 @@ export class KeyHandler {
               composed += "</ruby>";
             }
           }
+          let committing = new Committing(composed);
+          stateCallback(committing);
+          this.reset();
+          return true;
+        } else if (this.ctrlEnterOption_ === CtrlEnterOption.bopomofoBraille) {
+          let composed = "";
+
+          for (let node of this.latestWalk_?.nodes ?? []) {
+            let reading = node.reading;
+            reading = reading.replace(kJoinSeparator, " ");
+            let value = node.value;
+            if (reading[0] === "_") {
+              composed += BopomofoBrailleConverter.convertBpmfToBraille(value);
+            } else {
+              let components = reading.split(kJoinSeparator);
+              for (let component of components) {
+                composed +=
+                  BopomofoBrailleConverter.convertBpmfToBraille(component);
+              }
+            }
+          }
+
           let committing = new Committing(composed);
           stateCallback(committing);
           this.reset();

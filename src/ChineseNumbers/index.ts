@@ -5,5 +5,5 @@
  * SPDX-License-Identifier: MIT
  */
 
-export { ChineseNumbers } from "./ChineseNumbers";
+export { ChineseNumbers, Case } from "./ChineseNumbers";
 export { SuzhouNumbers } from "./SuzhouNumbers";

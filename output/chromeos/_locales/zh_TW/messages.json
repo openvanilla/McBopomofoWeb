@@ -53,6 +53,7 @@
   "ctrl_enter_none": { "message": "不使用" },
   "ctrl_enter_bpmf_reading": { "message": "輸入注音符號" },
   "ctrl_enter_html_ruby": { "message": "輸入 HTML Ruby" },
+  "ctrl_enter_taiwanese_braille": { "message": "輸入台灣點字" },
   "candidate_keys_count": { "message": "選字按鍵數量" },
   "use_jk_key": { "message": "使用 JK 按鍵在選字時移動游標" }
 }
