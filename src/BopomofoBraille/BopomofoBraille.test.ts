@@ -5,4 +5,9 @@ describe("Test BopomofoSyllable", () => {
     let result = BopomofoBraille.BopomofoSyllable.fromBpmf("ㄋㄧˇ");
     expect(result.braille).toBe("⠝⠡⠈");
   });
+
+  test("Test 1", () => {
+    let result = BopomofoBraille.BopomofoSyllable.fromBraille("⠝⠡⠈");
+    expect(result.bpmf).toBe("ㄋㄧˇ");
+  });
 });
