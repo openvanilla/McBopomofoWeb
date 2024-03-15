@@ -7,22 +7,36 @@ body {
   height: 85%;
 }
 
+.navi {
+  font-size: 11pt;
+}
+
+.navi a {
+  color: #999;
+  text-decoration: none;
+}
+
 textarea {
+  padding: 10px;
+  resize: none;
+  width: 100%;
+  font-size: 14pt;
+}
+
+textarea#text_area {
   background-color: gray;
   font-size: 14pt;
   color: #fff;
   border: 0;
-  padding: 10px;
   width: 100%;
   height: calc(100% - 2em);
-  resize: none;
   ime-mode: disabled;
   -webkit-ime-mode: disabled;
   -moz-ime-mode: disabled;
   -ms-ime-mode: disabled;
 }
 
-textarea:focus {
+textarea#text_area:focus {
   background-color: blue;
 }
 

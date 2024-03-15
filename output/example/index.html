@@ -16,10 +16,10 @@
         height="20" width="20">
       正在載入小麥注音輸入法，請稍候</p>
 
-    <p>功能展示：
+    <p class="navi">功能展示：
       <a href="#" onclick="toggle_feature('feature_input'); return false;">輸入功能</a>
-      <a href="#" onclick="toggle_feature('feature_text_to_braille'); return false;">中文轉點字</a>
-      <a href="#" onclick="toggle_feature('feature_braille_to_text'); return false;">點字轉中文</a>
+      <a href="#" onclick="toggle_feature('feature_text_to_braille'); return false;">中文轉注音點字</a>
+      <a href="#" onclick="toggle_feature('feature_braille_to_text'); return false;">注音點字轉中文</a>
     </p>
 
     <div id="feature_input">
@@ -31,8 +31,6 @@
             <div class="candidates" id="candidates"></div>
           </div>
         </div>
-        <!-- <br clear="all" /> -->
-        <!-- <div id="dump_area"></div> -->
       </div>
 
       <div class="right">
@@ -187,9 +185,18 @@
     </div>
     <div id="feature_text_to_braille">
       <h2>中文轉點字</h2>
+      <p>請在底下的輸入框中輸入中文。</p>
+      <textarea id="text_to_braille_text_area" rows="10" cols="50" title="輸入區"></textarea>
+      <p><input type="button" value="轉換" onclick="text_to_braille();"></p>
+      <div id="text_to_braille_output"></div>
+
     </div>
     <div id="feature_braille_to_text">
       <h2>點字轉中文</h2>
+      <p>請在底下的輸入框中輸入六點注音點字。</p>
+      <textarea id="braille_to_text_text_area" rows="10" cols="50" title="輸入區"></textarea>
+      <p> <input type="button" value="轉換" onclick="braille_to_text();"></p>
+      <div id="braille_to_text_output"></div>
     </div>
   </div>
 

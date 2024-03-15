@@ -13,6 +13,10 @@ function toggle_feature(id) {
   document.getElementById(id).style.display = "block";
   if (id === "feature_input") {
     document.getElementById("text_area").focus();
+  } else if (id === "feature_text_to_braille") {
+    document.getElementById("text_to_braille_text_area").focus();
+  } else if (id === "feature_braille_to_text") {
+    document.getElementById("braille_to_text_text_area").focus();
   }
 }
 
@@ -101,8 +105,9 @@ let ui = (function () {
   return that;
 })();
 
-const { InputController } = window.mcbopomofo;
+const { InputController, Service } = window.mcbopomofo;
 let controller = new InputController(ui);
+let service = new Service();
 controller.setOnOpenUrl(function (url) {
   window.open(url);
 });
@@ -507,3 +512,45 @@ setTimeout(function () {
 }, 2000);
 resetUI();
 document.getElementById("text_area").focus();
+
+function text_to_braille() {
+  let text = document.getElementById("text_to_braille_text_area").value;
+  text = text.trim();
+  if (text.length === 0) {
+    document.getElementById("text_to_braille_output").innerHTML =
+      "<p>您沒有輸入任何內容！</p>";
+    return;
+  }
+  console.log(text);
+  let output = service.convertTextToBraille(text);
+  console.log(output);
+  let lines = output.split("\n");
+  console.log(lines);
+  let html = "<h2>轉換結果如下</h2>";
+  for (let line of lines) {
+    html += "<p>" + line + "</p>";
+  }
+
+  document.getElementById("text_to_braille_output").innerHTML = html;
+}
+
+function braille_to_text() {
+  let text = document.getElementById("braille_to_text_text_area").value;
+  text = text.trim();
+  if (text.length === 0) {
+    document.getElementById("braille_to_text_output").innerHTML =
+      "<p>您沒有輸入任何內容！</p>";
+    return;
+  }
+  console.log(text);
+  let output = service.convertBrailleToText(text);
+  console.log(output);
+  let lines = output.split("\n");
+  console.log(lines);
+  let html = "<h2>轉換結果如下</h2>";
+  for (let line of lines) {
+    html += "<p>" + line + "</p>";
+  }
+
+  document.getElementById("braille_to_text_output").innerHTML = html;
+}
