@@ -34,7 +34,13 @@
         </div>
       </div>
 
+
       <div class="right">
+        <div id="note">
+          <p>這個網頁不支援手機在上使用，請使用電腦上的瀏覽器開啟。在電腦上，您
+            可以直接透過鍵盤以及網頁上的注音輸入法來輸入中文。</p>
+        </div>
+
         <details open>
           <summary> 設定 </summary>
           <table>
@@ -156,7 +162,9 @@
         </details>
         <details>
           <summary> 說明 </summary>
-          <p>小麥注音是一套自動選字的注音輸入法，基本操作類似自然、酷音等。您可以在左方的輸入框中直接使用線上版本的小麥注音，無須安裝系統輸入法。使用方式如下</p>
+          <p>小麥注音是一套自動選字的注音輸入法，基本操作類似自然、酷音等。您可
+            以在左方的輸入框中直接使用線上版本的小麥注音，無須安裝系統輸入法。使用
+            方式如下</p>
           <ul>
             <li>輸入鍵盤按鍵，就會輸入注音或標點符號，在標準鍵盤下：
               <ul>
@@ -170,6 +178,20 @@
             <li>按下 ` 會出現符號表</li>
             <li>按一下 Shift 用來切換中英文</li>
           </ul>
+        </details>
+        <details>
+          <summary> 特殊功能 </summary>
+          <p>小麥注音有一些特殊功能：</p>
+          <ul>
+            <li>一些特殊詞句，例如「火」，可以出現特別符號如「🔥」。</li>
+            <li>打「今年」、「今年」等詞彙，可以展開當天日期。</li>
+            <li>在出現選字窗時，在候選字上按下問題（？），就可以展開可用字典查詢
+              這個候選字。同樣地，在使用 Shift 與左右按鍵選擇一段範圍後，也可以按
+              下問號，查詢所選範圍的字。</li>
+            <li>打了一些內容後，可以選擇用 Ctrl + Enter 按鍵，輸出原本的注音符
+              號，或是台灣通行的點字。</li>
+          </ul>
+
         </details>
         <details>
           <summary> 其他 </summary>
@@ -186,7 +208,7 @@
     </div>
     <div id="feature_text_to_braille">
       <h1>中文轉點字</h1>
-      <p>請在底下的輸入框中輸入中文。</p>
+      <p>請在底下的輸入框中輸入中文，按下「轉換」即可轉換成點字。</p>
       <textarea id="text_to_braille_text_area" rows="10" cols="50" title="輸入區"></textarea>
       <p><input type="button" value="轉換" onclick="text_to_braille();"></p>
       <div id="text_to_braille_output"></div>
@@ -194,7 +216,7 @@
     </div>
     <div id="feature_braille_to_text">
       <h1>點字轉中文</h1>
-      <p>請在底下的輸入框中輸入六點注音點字。</p>
+      <p>請在底下的輸入框中輸入六點注音點字，按下「轉換」即可轉換成中文。</p>
       <textarea id="braille_to_text_text_area" rows="10" cols="50" title="輸入區"></textarea>
       <p> <input type="button" value="轉換" onclick="braille_to_text();"></p>
       <div id="braille_to_text_output"></div>

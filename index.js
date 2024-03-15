@@ -235,21 +235,17 @@ function applySettings(settings) {
     }
   }
   {
-    controller.setEscClearEntireBuffer(
-      settings.esc_key_clear_entire_buffer === true
-    );
+    controller.setEscClearEntireBuffer(settings.esc_key_clear_entire_buffer);
     document.getElementById("esc_key").checked =
       settings.esc_key_clear_entire_buffer;
   }
   {
-    controller.setUseJKToMoveCursor(
-      settings.use_jk_key_to_move_cursor === true
-    );
+    controller.setUseJKToMoveCursor(settings.use_jk_key_to_move_cursor);
     document.getElementById("jk_key").checked =
       settings.use_jk_key_to_move_cursor;
   }
   {
-    document.getElementById("beep_on_error").checked = settings.beep_pn_error;
+    document.getElementById("beep_on_error").checked = settings.beep_on_error;
   }
   {
     document.getElementById("move_cursor").checked = settings.move_cursor;
@@ -320,11 +316,7 @@ document.getElementById("text_area").addEventListener("keyup", (event) => {
 });
 
 document.getElementById("text_area").addEventListener("keydown", (event) => {
-  if (
-    // event.ctrlKey ||
-    event.metaKey ||
-    event.altKey
-  ) {
+  if (event.metaKey || event.altKey) {
     return;
   }
 
@@ -338,10 +330,6 @@ document.getElementById("text_area").addEventListener("keydown", (event) => {
     event.preventDefault();
   }
 });
-
-// document.getElementById("feature_input").onclick = function (event) {
-//   document.getElementById("text_area").focus();
-// };
 
 document.getElementById("use_mcbopomofo").onchange = function (event) {
   controller.setTraditionalMode(false);
