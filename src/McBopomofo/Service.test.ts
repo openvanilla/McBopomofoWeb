@@ -47,4 +47,10 @@ describe("Test service", () => {
     let result = service.convertTextToBraille("，，，");
     expect(result).toBe("⠆⠆⠆");
   });
+
+  test("Test convertTextToBraille 7", () => {
+    let service = new Service();
+    let result = service.convertTextToBraille("除了在");
+    expect(result).toBe("⠃⠌⠂⠉⠮⠁⠓⠺⠐");
+  });
 });
