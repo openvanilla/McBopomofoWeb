@@ -18,7 +18,6 @@ describe("Test service", () => {
     let result = service.convertTextToBraille("天氣好");
     expect(result).toBe("⠋⠞⠄⠚⠡⠐⠗⠩⠈");
   });
-
   test("Test convertTextToBraille 2", () => {
     let service = new Service();
     let result = service.convertTextToBraille("天氣真的很好");
@@ -31,9 +30,21 @@ describe("Test service", () => {
     expect(result).toBe("⠅⠹⠄⠋⠞⠄⠋⠞⠄⠚⠡⠐⠗⠩⠈⠚⠽⠄⠊⠸⠈");
   });
 
-  test("Test convertTextToBraille 2", () => {
+  test("Test convertTextToBraille 4", () => {
     let service = new Service();
     let result = service.convertTextToBraille("，");
     expect(result).toBe("⠆");
+  });
+
+  test("Test convertTextToBraille 5", () => {
+    let service = new Service();
+    let result = service.convertTextToBraille("同樣");
+    expect(result).toBe("⠋⠯⠂⠨⠐");
+  });
+
+  test("Test convertTextToBraille 6", () => {
+    let service = new Service();
+    let result = service.convertTextToBraille("，，，");
+    expect(result).toBe("⠆⠆⠆");
   });
 });

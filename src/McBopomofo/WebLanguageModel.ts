@@ -306,9 +306,6 @@ export class WebLanguageModel implements LanguageModel {
     if (this.reverseMap_ === undefined) {
       this.reverseMap_ = new Map();
       for (let key in this.map_) {
-        // if (key.startsWith("_")) {
-        //   continue;
-        // }
         let values = this.map_[key].split(" ");
         for (let i = 0; i < values.length; i += 2) {
           let value = values[i];
@@ -346,7 +343,8 @@ export class WebLanguageModel implements LanguageModel {
       return undefined;
     }
 
-    if (result.startsWith("_")) {
+    if (result.startsWith("_") && result.charAt(result.length - 2) === "_") {
+      // this is a punctuation
       return result;
     }
 

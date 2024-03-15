@@ -55,7 +55,6 @@ export class Service {
         let subString = converted.substring(readHead, end);
         let reading = this.lm_.getReading(subString);
         if (reading != undefined) {
-          console.log("reading" + reading);
           if (reading.startsWith("_")) {
             // punctuation
             output += BopomofoBrailleConverter.convertBpmfToBraille(subString);
