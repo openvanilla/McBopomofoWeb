@@ -25,7 +25,7 @@ export class BopomofoBrailleConverter {
         }
       }
       if (!found) {
-        let substring = bopomofo.substring(readHead, readHead + 1);
+        let substring = bopomofo.charAt(readHead);
         let punctuation = Punctuation.fromBpmf(substring);
         if (punctuation != undefined) {
           output += Punctuation.toBraille(punctuation);
@@ -34,7 +34,7 @@ export class BopomofoBrailleConverter {
         }
       }
       if (!found) {
-        let substring = bopomofo.substring(readHead, readHead + 1);
+        let substring = bopomofo.charAt(readHead);
         output += substring;
         readHead += 1;
       }
@@ -126,7 +126,7 @@ export class BopomofoBrailleConverter {
       }
       if (!found) {
         target = Math.min(4, length - readHead);
-        for (let i = target; i >= 1; i--) {
+        for (let i = target; i >= 0; i--) {
           let start = readHead;
           let end = readHead + i;
           let substring = braille.substring(start, end);

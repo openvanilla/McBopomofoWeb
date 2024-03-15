@@ -306,9 +306,9 @@ export class WebLanguageModel implements LanguageModel {
     if (this.reverseMap_ === undefined) {
       this.reverseMap_ = new Map();
       for (let key in this.map_) {
-        if (key.startsWith("_")) {
-          continue;
-        }
+        // if (key.startsWith("_")) {
+        //   continue;
+        // }
         let values = this.map_[key].split(" ");
         for (let i = 0; i < values.length; i += 2) {
           let value = values[i];
@@ -344,6 +344,10 @@ export class WebLanguageModel implements LanguageModel {
 
     if (result === undefined) {
       return undefined;
+    }
+
+    if (result.startsWith("_")) {
+      return result;
     }
 
     let readings: string[] = [];

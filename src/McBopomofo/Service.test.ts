@@ -30,4 +30,10 @@ describe("Test service", () => {
     let result = service.convertTextToBraille("今天天氣好清爽");
     expect(result).toBe("⠅⠹⠄⠋⠞⠄⠋⠞⠄⠚⠡⠐⠗⠩⠈⠚⠽⠄⠊⠸⠈");
   });
+
+  test("Test convertTextToBraille 2", () => {
+    let service = new Service();
+    let result = service.convertTextToBraille("，");
+    expect(result).toBe("⠆");
+  });
 });

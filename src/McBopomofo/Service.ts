@@ -46,7 +46,7 @@ export class Service {
     let converted = ChineseConvert.cn2tw(input);
     let length = converted.length;
     let readHead = 0;
-    let debug = "";
+
     while (readHead < length) {
       let targetLength = Math.min(6, length - readHead);
       let found = false;
@@ -55,10 +55,16 @@ export class Service {
         let subString = converted.substring(readHead, end);
         let reading = this.lm_.getReading(subString);
         if (reading != undefined) {
-          debug += reading;
-          let components = reading.split("-");
-          for (let component of components) {
-            output += BopomofoBrailleConverter.convertBpmfToBraille(component);
+          console.log("reading" + reading);
+          if (reading.startsWith("_")) {
+            // punctuation
+            output += BopomofoBrailleConverter.convertBpmfToBraille(subString);
+          } else {
+            let components = reading.split("-");
+            for (let component of components) {
+              output +=
+                BopomofoBrailleConverter.convertBpmfToBraille(component);
+            }
           }
           readHead = end;
           found = true;

@@ -166,6 +166,16 @@ div#feature_text_to_braille {
   display: none;
 }
 
+div.text_to_braille_output {
+  width: 100%;
+  max-width: 100%;
+}
+
 div#feature_braille_to_text {
   display: none;
+}
+
+div.braille_to_text_output {
+  width: 100%;
+  max-width: 100%;
 }

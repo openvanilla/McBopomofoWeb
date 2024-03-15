@@ -437,6 +437,7 @@ export class BopomofoBrailleSyllable {
       output += MiddleVowel.toBraille(middleVowel);
     } else if (consonant != null) {
       if (Consonant.isSingle(consonant)) {
+        // ㄭ
         output += "⠱";
       }
     }
@@ -538,11 +539,12 @@ export class BopomofoBrailleSyllable {
           vowel = Vowel.ㄦ;
         }
         if (consonant != undefined) {
-          if (Consonant.isSingle(consonant)) {
+          if (Consonant.isSingle(consonant) == false) {
             throw new Error("Invalid Braille: other");
           }
         }
       } else if (c === "⠁") {
+        // ㄓ or tone5
         if (i === 0) {
           consonant = Consonant.ㄓ;
         } else {

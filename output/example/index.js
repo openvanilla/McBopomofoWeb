@@ -519,19 +519,18 @@ function text_to_braille() {
   if (text.length === 0) {
     document.getElementById("text_to_braille_output").innerHTML =
       "<p>您沒有輸入任何內容！</p>";
+    document.getElementById("text_to_braille_text_area").focus();
     return;
   }
-  console.log(text);
   let output = service.convertTextToBraille(text);
-  console.log(output);
   let lines = output.split("\n");
-  console.log(lines);
   let html = "<h2>轉換結果如下</h2>";
   for (let line of lines) {
     html += "<p>" + line + "</p>";
   }
 
   document.getElementById("text_to_braille_output").innerHTML = html;
+  document.getElementById("text_to_braille_text_area").focus();
 }
 
 function braille_to_text() {
@@ -540,17 +539,16 @@ function braille_to_text() {
   if (text.length === 0) {
     document.getElementById("braille_to_text_output").innerHTML =
       "<p>您沒有輸入任何內容！</p>";
+    document.getElementById("braille_to_text_text_area").focus();
     return;
   }
-  console.log(text);
   let output = service.convertBrailleToText(text);
-  console.log(output);
   let lines = output.split("\n");
-  console.log(lines);
   let html = "<h2>轉換結果如下</h2>";
   for (let line of lines) {
     html += "<p>" + line + "</p>";
   }
 
   document.getElementById("braille_to_text_output").innerHTML = html;
+  document.getElementById("braille_to_text_text_area").focus();
 }
