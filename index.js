@@ -1,6 +1,25 @@
 var alphabetMode = false;
 var composingBuffer = "";
 
+function toggle_feature(id) {
+  let features = [
+    "feature_input",
+    "feature_text_to_braille",
+    "feature_braille_to_text",
+  ];
+  for (let feature of features) {
+    document.getElementById(feature).style.display = "none";
+  }
+  document.getElementById(id).style.display = "block";
+  if (id === "feature_input") {
+    document.getElementById("text_area").focus();
+  } else if (id === "feature_text_to_braille") {
+    document.getElementById("text_to_braille_text_area").focus();
+  } else if (id === "feature_braille_to_text") {
+    document.getElementById("braille_to_text_text_area").focus();
+  }
+}
+
 function resetUI() {
   let renderText = alphabetMode ? "【英】" : "【麥】";
   renderText += "<span class='cursor'>|</span>";
@@ -86,8 +105,9 @@ let ui = (function () {
   return that;
 })();
 
-const { InputController } = window.mcbopomofo;
+const { InputController, Service } = window.mcbopomofo;
 let controller = new InputController(ui);
+let service = new Service();
 controller.setOnOpenUrl(function (url) {
   window.open(url);
 });
@@ -249,6 +269,7 @@ function applySettings(settings) {
     }
   }
   {
+    controller.setCtrlEnterOption(settings.ctrl_enter_option);
     let select = document.getElementById("ctrl_enter_option");
     let options = select.getElementsByTagName("option");
     for (let option of options) {
@@ -319,6 +340,10 @@ document.getElementById("text_area").addEventListener("keydown", (event) => {
   }
 });
 
+// document.getElementById("feature_input").onclick = function (event) {
+//   document.getElementById("text_area").focus();
+// };
+
 document.getElementById("use_mcbopomofo").onchange = function (event) {
   controller.setTraditionalMode(false);
   settings.trad_mode = false;
@@ -368,6 +393,9 @@ document.getElementById("layout").onchange = function (event) {
   saveSettings(settings);
   document.getElementById("text_area").focus();
 };
+document.getElementById("layout").onblur = function (event) {
+  document.getElementById("text_area").focus();
+};
 
 document.getElementById("keys").onchange = function (event) {
   let value = document.getElementById("keys").value;
@@ -376,12 +404,18 @@ document.getElementById("keys").onchange = function (event) {
   saveSettings(settings);
   document.getElementById("text_area").focus();
 };
+document.getElementById("keys").onblur = function (event) {
+  document.getElementById("text_area").focus();
+};
 
 document.getElementById("keys_count").onchange = function (event) {
   let value = document.getElementById("keys_count").value;
   controller.setCandidateKeysCount(+value);
   settings.candidate_keys_count = +value;
   saveSettings(settings);
+  document.getElementById("text_area").focus();
+};
+document.getElementById("keys_count").onblur = function (event) {
   document.getElementById("text_area").focus();
 };
 
@@ -478,3 +512,43 @@ setTimeout(function () {
 }, 2000);
 resetUI();
 document.getElementById("text_area").focus();
+
+function text_to_braille() {
+  let text = document.getElementById("text_to_braille_text_area").value;
+  text = text.trim();
+  if (text.length === 0) {
+    document.getElementById("text_to_braille_output").innerHTML =
+      "<p>您沒有輸入任何內容！</p>";
+    document.getElementById("text_to_braille_text_area").focus();
+    return;
+  }
+  let output = service.convertTextToBraille(text);
+  let lines = output.split("\n");
+  let html = "<h2>轉換結果如下</h2>";
+  for (let line of lines) {
+    html += "<p>" + line + "</p>";
+  }
+
+  document.getElementById("text_to_braille_output").innerHTML = html;
+  document.getElementById("text_to_braille_text_area").focus();
+}
+
+function braille_to_text() {
+  let text = document.getElementById("braille_to_text_text_area").value;
+  text = text.trim();
+  if (text.length === 0) {
+    document.getElementById("braille_to_text_output").innerHTML =
+      "<p>您沒有輸入任何內容！</p>";
+    document.getElementById("braille_to_text_text_area").focus();
+    return;
+  }
+  let output = service.convertBrailleToText(text);
+  let lines = output.split("\n");
+  let html = "<h2>轉換結果如下</h2>";
+  for (let line of lines) {
+    html += "<p>" + line + "</p>";
+  }
+
+  document.getElementById("braille_to_text_output").innerHTML = html;
+  document.getElementById("braille_to_text_text_area").focus();
+}

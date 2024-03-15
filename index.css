@@ -7,22 +7,36 @@ body {
   height: 85%;
 }
 
+.navi {
+  font-size: 11pt;
+}
+
+.navi a {
+  color: #999;
+  text-decoration: none;
+}
+
 textarea {
+  padding: 10px;
+  resize: none;
+  width: 100%;
+  font-size: 14pt;
+}
+
+textarea#text_area {
   background-color: gray;
   font-size: 14pt;
   color: #fff;
   border: 0;
-  padding: 10px;
   width: 100%;
   height: calc(100% - 2em);
-  resize: none;
   ime-mode: disabled;
   -webkit-ime-mode: disabled;
   -moz-ime-mode: disabled;
   -ms-ime-mode: disabled;
 }
 
-textarea:focus {
+textarea#text_area:focus {
   background-color: blue;
 }
 
@@ -133,4 +147,35 @@ textarea:focus {
   background-color: #000;
   padding: 10px;
   display: block;
+}
+
+div#feature_input {
+  -moz-user-select: -moz-none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+
+  /*
+     Introduced in IE 10.
+     See http://ie.microsoft.com/testdrive/HTML5/msUserSelect/
+   */
+  -ms-user-select: none;
+  user-select: none;
+}
+
+div#feature_text_to_braille {
+  display: none;
+}
+
+div.text_to_braille_output {
+  width: 100%;
+  max-width: 100%;
+}
+
+div#feature_braille_to_text {
+  display: none;
+}
+
+div.braille_to_text_output {
+  width: 100%;
+  max-width: 100%;
 }
