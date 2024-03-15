@@ -249,8 +249,7 @@ function applySettings(settings) {
       settings.use_jk_key_to_move_cursor;
   }
   {
-    document.getElementById("beep_on_error").checked =
-      settings.use_jk_key_to_move_cursor;
+    document.getElementById("beep_on_error").checked = settings.beep_pn_error;
   }
   {
     document.getElementById("move_cursor").checked = settings.move_cursor;
