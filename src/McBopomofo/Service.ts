@@ -1,4 +1,8 @@
-import { BopomofoBrailleConverter } from "../BopomofoBraille";
+import {
+  BopomofoBrailleConverter,
+  BopomofoBrailleSyllable,
+} from "../BopomofoBraille";
+import { ReadingGrid } from "../Gramambular2";
 import { webData } from "./WebData";
 import { WebLanguageModel } from "./WebLanguageModel";
 
@@ -6,9 +10,35 @@ const ChineseConvert = require("chinese_convert");
 
 export class Service {
   private lm_: WebLanguageModel;
+  private grid_: ReadingGrid;
 
   constructor() {
     this.lm_ = new WebLanguageModel(webData);
+    this.grid_ = new ReadingGrid(this.lm_);
+  }
+
+  public convertBrailleToText(input: string): string {
+    let output: string = "";
+    let tokens = BopomofoBrailleConverter.convertBrailleToTokens(input);
+    for (let token of tokens) {
+      if (token instanceof BopomofoBrailleSyllable) {
+        this.grid_.insertReading(token.bpmf);
+      } else {
+        let result = this.grid_.walk();
+        for (let node of result.nodes) {
+          output += node.value;
+        }
+        this.grid_.clear();
+        output += token;
+      }
+    }
+
+    let result = this.grid_.walk();
+    for (let node of result.nodes) {
+      output += node.value;
+    }
+    this.grid_.clear();
+    return output;
   }
 
   public convertTextToBraille(input: string): string {

@@ -92,7 +92,9 @@ export class BopomofoBrailleConverter {
     return output;
   }
 
-  static convertBrailleToToken(braille: string): any[] {
+  static convertBrailleToTokens(
+    braille: string
+  ): (BopomofoBrailleSyllable | string)[] {
     var output: any[] = [];
     let text = "";
     let readHead = 0;

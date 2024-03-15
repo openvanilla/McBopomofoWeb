@@ -297,29 +297,55 @@ export class WebLanguageModel implements LanguageModel {
     return actualKey;
   }
 
+  private reverseMap_: Map<string, [string, number][]> | undefined = undefined;
+
   getReading(input: string): string | undefined {
     let result: string | undefined = undefined;
     let topScore = -8;
-    for (let key in this.map_) {
-      if (key.startsWith("_")) {
-        continue;
-      }
-      let values = this.map_[key].split(" ");
-      for (let i = 0; i < values.length; i += 2) {
-        let value = values[i];
-        if (value === input) {
+
+    if (this.reverseMap_ === undefined) {
+      this.reverseMap_ = new Map();
+      for (let key in this.map_) {
+        if (key.startsWith("_")) {
+          continue;
+        }
+        let values = this.map_[key].split(" ");
+        for (let i = 0; i < values.length; i += 2) {
+          let value = values[i];
           let score = parseFloat(values[i + 1]);
-          if (score > topScore) {
-            result = key;
-            topScore = score;
-            break;
+          // Also add to reverse map.
+          let list = this.reverseMap_.get(value);
+          if (list === undefined) {
+            list = [];
+          }
+          list.push([key, score]);
+          this.reverseMap_.set(value, list);
+
+          if (value === input) {
+            if (score > topScore) {
+              result = key;
+              topScore = score;
+            }
           }
         }
       }
+    } else {
+      let list = this.reverseMap_.get(input);
+      if (list === undefined) {
+        return undefined;
+      }
+      for (let item of list) {
+        if (item[1] > topScore) {
+          result = item[0];
+          topScore = item[1];
+        }
+      }
     }
+
     if (result === undefined) {
       return undefined;
     }
+
     let readings: string[] = [];
     for (let i = 0; i < result.length; i += 2) {
       let substring = result.substring(i, i + 2);

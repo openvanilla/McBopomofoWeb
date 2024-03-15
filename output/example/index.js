@@ -335,6 +335,10 @@ document.getElementById("text_area").addEventListener("keydown", (event) => {
   }
 });
 
+// document.getElementById("feature_input").onclick = function (event) {
+//   document.getElementById("text_area").focus();
+// };
+
 document.getElementById("use_mcbopomofo").onchange = function (event) {
   controller.setTraditionalMode(false);
   settings.trad_mode = false;
@@ -384,6 +388,9 @@ document.getElementById("layout").onchange = function (event) {
   saveSettings(settings);
   document.getElementById("text_area").focus();
 };
+document.getElementById("layout").onblur = function (event) {
+  document.getElementById("text_area").focus();
+};
 
 document.getElementById("keys").onchange = function (event) {
   let value = document.getElementById("keys").value;
@@ -392,12 +399,18 @@ document.getElementById("keys").onchange = function (event) {
   saveSettings(settings);
   document.getElementById("text_area").focus();
 };
+document.getElementById("keys").onblur = function (event) {
+  document.getElementById("text_area").focus();
+};
 
 document.getElementById("keys_count").onchange = function (event) {
   let value = document.getElementById("keys_count").value;
   controller.setCandidateKeysCount(+value);
   settings.candidate_keys_count = +value;
   saveSettings(settings);
+  document.getElementById("text_area").focus();
+};
+document.getElementById("keys_count").onblur = function (event) {
   document.getElementById("text_area").focus();
 };
 
