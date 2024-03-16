@@ -39,7 +39,6 @@ window.onload = () => {
       }
     }
     {
-      controller.setCandidateKeysCount(settings.candidate_keys_count);
       let select = document.getElementById("keys_count");
       let options = select.getElementsByTagName("option");
       for (let option of options) {
