@@ -654,10 +654,6 @@ export class Span {
   }
 
   add(node: Node) {
-    // assert(
-    //   node.spanningLength > 0 &&
-    //     node.spanningLength <= ReadingGrid.kMaximumSpanLength
-    // );
     this.nodes_[node.spanningLength - 1] = node;
 
     if (node.spanningLength >= this.maxLength_) {

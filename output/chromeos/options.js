@@ -254,6 +254,9 @@ window.onload = () => {
   document.getElementById("shift_letter_lowercase").innerText =
     chrome.i18n.getMessage("optionShiftLetterLowercase");
 
+  document.getElementById("others_keyboard_shortcut").innerText =
+    chrome.i18n.getMessage("others_keyboard_shortcut");
+
   document.getElementById("ctrl_enter_title").innerText =
     chrome.i18n.getMessage("ctrl_enter_key");
   document.getElementById("ctrl_enter_option_0").innerText =
