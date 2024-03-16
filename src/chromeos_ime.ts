@@ -25,6 +25,7 @@ type ChromeMcBopomofoSettings = {
   ctrl_enter_option: number;
   half_width_punctuation_enabled: boolean;
   use_jk_key_to_move_cursor: boolean;
+  use_notification: boolean;
 };
 
 class ChromeMcBopomofo {
@@ -48,6 +49,7 @@ class ChromeMcBopomofo {
     ctrl_enter_option: 0,
     half_width_punctuation_enabled: false,
     use_jk_key_to_move_cursor: false,
+    use_notification: true,
   };
   settings: ChromeMcBopomofoSettings = {
     layout: "standard",
@@ -62,6 +64,7 @@ class ChromeMcBopomofo {
     ctrl_enter_option: 0,
     half_width_punctuation_enabled: false,
     use_jk_key_to_move_cursor: false,
+    use_notification: true,
   };
   lang = "en";
   isShiftHold = false;
@@ -82,6 +85,7 @@ class ChromeMcBopomofo {
     this.inputController.setOnOpenUrl((input: string) => {
       this.tryOpen(input);
     });
+    this.inputController.setOnError(() => {});
 
     // The horizontal candidate windows on ChromeOS is actually broken so we
     // use the vertical one only.
@@ -103,6 +107,12 @@ class ChromeMcBopomofo {
         this.settings.shift_key_toggle_alphabet_mode === null
       ) {
         this.settings.shift_key_toggle_alphabet_mode = true;
+      }
+      if (
+        this.settings.use_notification === undefined ||
+        this.settings.use_notification === null
+      ) {
+        this.settings.use_notification = true;
       }
 
       this.inputController.setChineseConversionEnabled(
@@ -214,15 +224,17 @@ class ChromeMcBopomofo {
   toggleAlphabetMode() {
     this.isAlphabetMode = !this.isAlphabetMode;
 
-    chrome.notifications.create("mcbopomofo-alphabet-mode" + Date.now(), {
-      title: this.isAlphabetMode
-        ? this.myLocalizedString("English Mode", "英文模式")
-        : this.myLocalizedString("Chinese Mode", "中文模式"),
+    if (this.settings.use_notification) {
+      chrome.notifications.create("mcbopomofo-alphabet-mode" + Date.now(), {
+        title: this.isAlphabetMode
+          ? this.myLocalizedString("English Mode", "英文模式")
+          : this.myLocalizedString("Chinese Mode", "中文模式"),
 
-      message: "",
-      type: "basic",
-      iconUrl: "icons/icon48.png",
-    });
+        message: "",
+        type: "basic",
+        iconUrl: "icons/icon48.png",
+      });
+    }
   }
 
   toggleChineseConversion() {
@@ -231,15 +243,23 @@ class ChromeMcBopomofo {
     this.settings.chinese_conversion = checked;
     this.inputController.setChineseConversionEnabled(checked);
 
-    chrome.notifications.create("mcbopomofo-chinese-conversion" + Date.now(), {
-      title: checked
-        ? this.myLocalizedString("Chinese Conversion On", "簡繁轉換已開啟")
-        : this.myLocalizedString("Chinese Conversion Off", "簡繁轉換已關閉"),
+    if (this.settings.use_notification) {
+      chrome.notifications.create(
+        "mcbopomofo-chinese-conversion" + Date.now(),
+        {
+          title: checked
+            ? this.myLocalizedString("Chinese Conversion On", "簡繁轉換已開啟")
+            : this.myLocalizedString(
+                "Chinese Conversion Off",
+                "簡繁轉換已關閉"
+              ),
 
-      message: "",
-      type: "basic",
-      iconUrl: "icons/icon48.png",
-    });
+          message: "",
+          type: "basic",
+          iconUrl: "icons/icon48.png",
+        }
+      );
+    }
 
     chrome.storage.sync.set({ settings: this.settings }, () => {
       if (this.engineID === undefined) return;

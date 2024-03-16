@@ -61,5 +61,7 @@
   "candidate_keys_count": { "message": "Candidate Keys Count:" },
   "use_jk_key": {
     "message": "Use J/K keys to move cursor when choosing candidates "
-  }
+  },
+  "system": { "message": "System:" },
+  "use_notification": { "message": "Use system notification" }
 }

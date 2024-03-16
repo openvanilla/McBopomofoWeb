@@ -13,6 +13,7 @@ window.onload = () => {
     move_cursor: false,
     letter_mode: "upper",
     ctrl_enter_option: 0,
+    use_notification: true,
   };
 
   function applySettings(settings) {
@@ -37,7 +38,6 @@ window.onload = () => {
       }
     }
     {
-      controller.setCandidateKeysCount(settings.candidate_keys_count);
       let select = document.getElementById("keys_count");
       let options = select.getElementsByTagName("option");
       for (let option of options) {
@@ -57,24 +57,16 @@ window.onload = () => {
       }
     }
     {
+      document.getElementById("shift_key").checked =
+        settings.shift_key_toggle_alphabet_mode;
       document.getElementById("esc_key").checked =
         settings.esc_key_clear_entire_buffer;
-    }
-    {
       document.getElementById("jk_key").checked =
         settings.use_jk_key_to_move_cursor;
-    }
-    {
-      let enabled = settings.shift_key_toggle_alphabet_mode;
-      if (enabled === undefined) {
-        enabled = true;
-      }
-      document.getElementById("shift_key").checked = enabled;
-    }
-    {
       document.getElementById("move_cursor").checked = settings.move_cursor;
+      document.getElementById("use_notification").checked =
+        settings.use_notification;
     }
-
     {
       if (settings.letter_mode === "upper") {
         document.getElementById("uppercase_letters").checked = true;
@@ -84,7 +76,6 @@ window.onload = () => {
         document.getElementById("lowercase_letters").checked = true;
       }
     }
-
     {
       let select = document.getElementById("ctrl_enter_option");
       let options = select.getElementsByTagName("option");
@@ -107,6 +98,11 @@ window.onload = () => {
     settings = value.settings;
     if (settings == undefined) {
       settings = defaultSettings;
+    }
+    for (let key in defaultSettings) {
+      if (!(key in settings)) {
+        settings[key] = defaultSettings[key];
+      }
     }
     applySettings(settings);
   });
@@ -148,6 +144,12 @@ window.onload = () => {
   document.getElementById("jk_key").onchange = function (event) {
     let checked = document.getElementById("jk_key").checked;
     settings.use_jk_key_to_move_cursor = checked;
+    saveSettings(settings);
+  };
+
+  document.getElementById("use_notification").onchange = function (event) {
+    let checked = document.getElementById("use_notification").checked;
+    settings.use_notification = checked;
     saveSettings(settings);
   };
 
@@ -276,4 +278,8 @@ window.onload = () => {
     chrome.i18n.getMessage("candidate_keys_count");
   document.getElementById("use_jk_key").innerText =
     chrome.i18n.getMessage("use_jk_key");
+  document.getElementById("system").innerText =
+    chrome.i18n.getMessage("system");
+  document.getElementById("use_notification_label").innerText =
+    chrome.i18n.getMessage("use_notification");
 };

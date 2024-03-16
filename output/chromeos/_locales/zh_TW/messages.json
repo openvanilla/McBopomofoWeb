@@ -55,5 +55,7 @@
   "ctrl_enter_html_ruby": { "message": "輸入 HTML Ruby" },
   "ctrl_enter_taiwanese_braille": { "message": "輸入台灣點字" },
   "candidate_keys_count": { "message": "選字按鍵數量" },
-  "use_jk_key": { "message": "使用 JK 按鍵在選字時移動游標" }
+  "use_jk_key": { "message": "使用 JK 按鍵在選字時移動游標" },
+  "system": { "message": "系統：" },
+  "use_notification": { "message": "使用系統提示通知" }
 }
