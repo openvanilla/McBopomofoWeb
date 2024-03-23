@@ -65,4 +65,29 @@ describe("Test service", () => {
     let result = service.convertBrailleToText("⠋⠞⠄⠚⠡⠐⠗⠩⠈ ⠼⠂⠆⠒⠲");
     expect(result).toBe("天氣好 1234");
   });
+
+  test("Test two way convert 1", () => {
+    let service = new Service();
+    let input = "小麥注音輸入法";
+    let r1 = service.convertTextToBraille(input);
+    let r2 = service.convertBrailleToText(r1);
+    expect(r2).toBe(input);
+  });
+
+  test("Test two way convert 2", () => {
+    let service = new Service();
+    let input = "2.5";
+    let r1 = service.convertTextToBraille(input);
+    expect(r1).toBe("⠼⠆⠨⠢");
+    let r2 = service.convertBrailleToText(r1);
+    expect(r2).toBe(input);
+  });
+
+  test("Test two way convert 3", () => {
+    let service = new Service();
+    let input = "小麥注音輸入法 2.5";
+    let r1 = service.convertTextToBraille(input);
+    let r2 = service.convertBrailleToText(r1);
+    expect(r2).toBe(input);
+  });
 });

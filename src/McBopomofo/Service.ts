@@ -56,15 +56,15 @@ export class Service {
         let subString = converted.substring(readHead, end);
         let reading = this.lm_.getReading(subString);
         if (reading != undefined) {
-          if (pendingText.length > 0) {
-            output +=
-              BopomofoBrailleConverter.convertBpmfToBraille(pendingText);
-            pendingText = "";
-          }
           if (reading.startsWith("_")) {
-            // punctuation
-            output += BopomofoBrailleConverter.convertBpmfToBraille(subString);
+            pendingText += subString;
           } else {
+            if (pendingText.length > 0) {
+              output +=
+                BopomofoBrailleConverter.convertBpmfToBraille(pendingText);
+              pendingText = "";
+            }
+
             let components = reading.split("-");
             for (let component of components) {
               output +=
@@ -82,6 +82,8 @@ export class Service {
         readHead += 1;
       }
     }
+
+    console.log("pendingText", pendingText);
 
     if (pendingText.length > 0) {
       output += BopomofoBrailleConverter.convertBpmfToBraille(pendingText);

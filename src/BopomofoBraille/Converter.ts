@@ -172,8 +172,6 @@ export class BopomofoBrailleConverter {
     let readHead = 0;
     let length = braille.length;
     while (readHead < length) {
-      // console.log("braille.charAt(readHead)[" + braille.charAt(readHead) + "]");
-      // console.log("[" + output + "]");
       if (braille.charAt(readHead) === " ") {
         if (output.charAt(output.length - 1) != " ") {
           output += " ";
@@ -391,9 +389,29 @@ export class BopomofoBrailleConverter {
           text += digit;
           readHead += 1;
           continue;
-        } else {
-          state = ConverterState.initial;
         }
+
+        {
+          let target = Math.min(7, length - readHead);
+          let found = false;
+          for (let i = target; i >= 1; i--) {
+            let start = readHead;
+            let end = readHead + i;
+            let substring = braille.substring(start, end);
+            let punctuation = DigitRelated.fromBraille(substring);
+            if (punctuation != undefined) {
+              text += DigitRelated.toPunctuation(punctuation);
+              readHead = end;
+              found = true;
+              break;
+            }
+          }
+          if (found) {
+            continue;
+          }
+        }
+
+        state = ConverterState.initial;
       }
       if (state === ConverterState.letters) {
         let substring = braille.charAt(readHead);
