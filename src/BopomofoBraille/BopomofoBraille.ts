@@ -1,5 +1,3 @@
-import { execPath } from "process";
-
 const kMinimalBopomofoLength = 1;
 const kMinimalBrailleLength = 2;
 
@@ -28,32 +26,32 @@ enum Consonant {
 }
 
 namespace Consonant {
-  const map = new Map<Consonant, string>([
-    [Consonant.ㄅ, "⠕"],
-    [Consonant.ㄆ, "⠏"],
-    [Consonant.ㄇ, "⠍"],
-    [Consonant.ㄈ, "⠟"],
-    [Consonant.ㄉ, "⠙"],
-    [Consonant.ㄊ, "⠋"],
-    [Consonant.ㄋ, "⠝"],
-    [Consonant.ㄌ, "⠉"],
-    [Consonant.ㄍ, "⠅"],
-    [Consonant.ㄎ, "⠇"],
-    [Consonant.ㄏ, "⠗"],
-    [Consonant.ㄐ, "⠅"],
-    [Consonant.ㄑ, "⠚"],
-    [Consonant.ㄒ, "⠑"],
-    [Consonant.ㄓ, "⠁"],
-    [Consonant.ㄔ, "⠃"],
-    [Consonant.ㄕ, "⠊"],
-    [Consonant.ㄖ, "⠛"],
-    [Consonant.ㄗ, "⠓"],
-    [Consonant.ㄘ, "⠚"],
-    [Consonant.ㄙ, "⠑"],
+  const map = new Map<Consonant, string[]>([
+    [Consonant.ㄅ, ["⠕", "135"]],
+    [Consonant.ㄆ, ["⠏", "1234"]],
+    [Consonant.ㄇ, ["⠍", "134"]],
+    [Consonant.ㄈ, ["⠟", "12345"]],
+    [Consonant.ㄉ, ["⠙", "145"]],
+    [Consonant.ㄊ, ["⠋", "124"]],
+    [Consonant.ㄋ, ["⠝", "1345"]],
+    [Consonant.ㄌ, ["⠉", "14"]],
+    [Consonant.ㄍ, ["⠅", "13"]],
+    [Consonant.ㄎ, ["⠇", "123"]],
+    [Consonant.ㄏ, ["⠗", "1235"]],
+    [Consonant.ㄐ, ["⠅", "13"]],
+    [Consonant.ㄑ, ["⠚", "245"]],
+    [Consonant.ㄒ, ["⠑", "15"]],
+    [Consonant.ㄓ, ["⠁", "1"]],
+    [Consonant.ㄔ, ["⠃", "12"]],
+    [Consonant.ㄕ, ["⠊", "24"]],
+    [Consonant.ㄖ, ["⠛", "1245"]],
+    [Consonant.ㄗ, ["⠓", "125"]],
+    [Consonant.ㄘ, ["⠚", "245"]],
+    [Consonant.ㄙ, ["⠑", "15"]],
   ]);
 
   export const allBpmf: string[] = Array.from(map.keys());
-  export const allBraille: string[] = Array.from(map.values());
+  export const allBraille: string[] = Array.from(map.values()).map((v) => v[0]);
 
   export function fromBpmf(b: string): Consonant | undefined {
     if (map.has(b as Consonant)) {
@@ -63,7 +61,15 @@ namespace Consonant {
   }
   export function fromBraille(b: string): Consonant | undefined {
     for (let [key, value] of map) {
-      if (value === b) {
+      if (value[0] === b) {
+        return key;
+      }
+    }
+    return undefined;
+  }
+  export function fromBrailleCode(b: string): Consonant | undefined {
+    for (let [key, value] of map) {
+      if (value[1] === b) {
         return key;
       }
     }
@@ -73,7 +79,10 @@ namespace Consonant {
     return c;
   }
   export function toBraille(c: Consonant): string {
-    return map.get(c) as string;
+    return (map.get(c) as string[])[0];
+  }
+  export function toBrailleCode(c: Consonant): string {
+    return (map.get(c) as string[])[1];
   }
   export function isSingle(c: Consonant): boolean {
     switch (c) {
@@ -99,14 +108,14 @@ enum MiddleVowel {
 }
 
 namespace MiddleVowel {
-  const map = new Map<MiddleVowel, string>([
-    [MiddleVowel.ㄧ, "⠡"],
-    [MiddleVowel.ㄨ, "⠌"],
-    [MiddleVowel.ㄩ, "⠳"],
+  const map = new Map<MiddleVowel, string[]>([
+    [MiddleVowel.ㄧ, ["⠡", "16"]],
+    [MiddleVowel.ㄨ, ["⠌", "34"]],
+    [MiddleVowel.ㄩ, ["⠳", "1256"]],
   ]);
 
   export const allBpmf: string[] = Array.from(map.keys());
-  export const allBraille: string[] = Array.from(map.values());
+  export const allBraille: string[] = Array.from(map.values()).map((v) => v[0]);
   export function fromBpmf(b: string): MiddleVowel | undefined {
     if (map.has(b as MiddleVowel)) {
       return b as MiddleVowel;
@@ -115,7 +124,15 @@ namespace MiddleVowel {
   }
   export function fromBraille(b: string): MiddleVowel | undefined {
     for (let [key, value] of map) {
-      if (value === b) {
+      if (value[0] === b) {
+        return key;
+      }
+    }
+    return undefined;
+  }
+  export function fromBrailleCode(b: string): MiddleVowel | undefined {
+    for (let [key, value] of map) {
+      if (value[1] === b) {
         return key;
       }
     }
@@ -125,7 +142,10 @@ namespace MiddleVowel {
     return c;
   }
   export function toBraille(c: MiddleVowel): string {
-    return map.get(c) as string;
+    return (map.get(c) as string[])[0];
+  }
+  export function toBrailleCode(c: MiddleVowel): string {
+    return (map.get(c) as string[])[1];
   }
   export function buildCombination(
     c: MiddleVowel,
@@ -159,24 +179,24 @@ enum Vowel {
 }
 
 namespace Vowel {
-  const map = new Map<Vowel, string>([
-    [Vowel.ㄚ, "⠜"],
-    [Vowel.ㄛ, "⠣"],
-    [Vowel.ㄜ, "⠮"],
-    [Vowel.ㄝ, "⠢"],
-    [Vowel.ㄞ, "⠺"],
-    [Vowel.ㄟ, "⠴"],
-    [Vowel.ㄠ, "⠩"],
-    [Vowel.ㄡ, "⠷"],
-    [Vowel.ㄢ, "⠧"],
-    [Vowel.ㄣ, "⠥"],
-    [Vowel.ㄤ, "⠭"],
-    [Vowel.ㄥ, "⠵"],
-    [Vowel.ㄦ, "⠱"],
+  const map = new Map<Vowel, string[]>([
+    [Vowel.ㄚ, ["⠜", "345"]],
+    [Vowel.ㄛ, ["⠣", "126"]],
+    [Vowel.ㄜ, ["⠮", "2346"]],
+    [Vowel.ㄝ, ["⠢", "26"]],
+    [Vowel.ㄞ, ["⠺", "2456"]],
+    [Vowel.ㄟ, ["⠴", "356"]],
+    [Vowel.ㄠ, ["⠩", "146"]],
+    [Vowel.ㄡ, ["⠷", "12356"]],
+    [Vowel.ㄢ, ["⠧", "1236"]],
+    [Vowel.ㄣ, ["⠥", "136"]],
+    [Vowel.ㄤ, ["⠭", "1346"]],
+    [Vowel.ㄥ, ["⠵", "1356"]],
+    [Vowel.ㄦ, ["⠱", "156"]],
   ]);
 
   export const allBpmf: string[] = Array.from(map.keys());
-  export const allBraille: string[] = Array.from(map.values());
+  export const allBraille: string[] = Array.from(map.values()).map((v) => v[0]);
   export function fromBpmf(b: string): Vowel | undefined {
     if (map.has(b as Vowel)) {
       return b as Vowel;
@@ -185,7 +205,15 @@ namespace Vowel {
   }
   export function fromBraille(b: string): Vowel | undefined {
     for (let [key, value] of map) {
-      if (value === b) {
+      if (value[0] === b) {
+        return key;
+      }
+    }
+    return undefined;
+  }
+  export function fromBrailleCode(b: string): Vowel | undefined {
+    for (let [key, value] of map) {
+      if (value[1] === b) {
         return key;
       }
     }
@@ -195,7 +223,10 @@ namespace Vowel {
     return c;
   }
   export function toBraille(c: Vowel): string {
-    return map.get(c) as string;
+    return (map.get(c) as string[])[0];
+  }
+  export function toBrailleCode(c: Vowel): string {
+    return (map.get(c) as string[])[1];
   }
 }
 
@@ -213,21 +244,21 @@ enum ㄧ_Combination {
 }
 
 namespace ㄧ_Combination {
-  const map = new Map<ㄧ_Combination, string>([
-    [ㄧ_Combination.ㄧㄚ, "⠾"],
-    [ㄧ_Combination.ㄧㄛ, "⠴"],
-    [ㄧ_Combination.ㄧㄝ, "⠬"],
-    [ㄧ_Combination.ㄧㄞ, "⠢"],
-    [ㄧ_Combination.ㄧㄠ, "⠪"],
-    [ㄧ_Combination.ㄧㄡ, "⠎"],
-    [ㄧ_Combination.ㄧㄢ, "⠞"],
-    [ㄧ_Combination.ㄧㄣ, "⠹"],
-    [ㄧ_Combination.ㄧㄤ, "⠨"],
-    [ㄧ_Combination.ㄧㄥ, "⠽"],
+  const map = new Map<ㄧ_Combination, string[]>([
+    [ㄧ_Combination.ㄧㄚ, ["⠾", "23456"]],
+    [ㄧ_Combination.ㄧㄛ, ["⠴", "356"]],
+    [ㄧ_Combination.ㄧㄝ, ["⠬", "346"]],
+    [ㄧ_Combination.ㄧㄞ, ["⠢", "26"]],
+    [ㄧ_Combination.ㄧㄠ, ["⠪", "246"]],
+    [ㄧ_Combination.ㄧㄡ, ["⠎", "234"]],
+    [ㄧ_Combination.ㄧㄢ, ["⠞", "2345"]],
+    [ㄧ_Combination.ㄧㄣ, ["⠹", "1456"]],
+    [ㄧ_Combination.ㄧㄤ, ["⠨", "46"]],
+    [ㄧ_Combination.ㄧㄥ, ["⠽", "13456"]],
   ]);
 
   export const allBpmf: string[] = Array.from(map.keys());
-  export const allBraille: string[] = Array.from(map.values());
+  export const allBraille: string[] = Array.from(map.values()).map((v) => v[0]);
   export function fromBpmf(b: string): ㄧ_Combination | undefined {
     b = "ㄧ" + b;
     if (map.has(b as ㄧ_Combination)) {
@@ -237,7 +268,15 @@ namespace ㄧ_Combination {
   }
   export function fromBraille(b: string): ㄧ_Combination | undefined {
     for (let [key, value] of map) {
-      if (value === b) {
+      if (value[0] === b) {
+        return key;
+      }
+    }
+    return undefined;
+  }
+  export function fromBrailleCode(b: string): ㄧ_Combination | undefined {
+    for (let [key, value] of map) {
+      if (value[1] === b) {
         return key;
       }
     }
@@ -247,7 +286,10 @@ namespace ㄧ_Combination {
     return c;
   }
   export function toBraille(c: ㄧ_Combination): string {
-    return map.get(c) as string;
+    return (map.get(c) as string[])[0];
+  }
+  export function toBrailleCode(c: ㄧ_Combination): string {
+    return (map.get(c) as string[])[1];
   }
 }
 
@@ -263,19 +305,19 @@ enum ㄨ_Combination {
 }
 
 namespace ㄨ_Combination {
-  const map = new Map<ㄨ_Combination, string>([
-    [ㄨ_Combination.ㄨㄚ, "⠔"],
-    [ㄨ_Combination.ㄨㄛ, "⠒"],
-    [ㄨ_Combination.ㄨㄞ, "⠶"],
-    [ㄨ_Combination.ㄨㄟ, "⠫"],
-    [ㄨ_Combination.ㄨㄢ, "⠻"],
-    [ㄨ_Combination.ㄨㄣ, "⠿"],
-    [ㄨ_Combination.ㄨㄤ, "⠸"],
-    [ㄨ_Combination.ㄨㄥ, "⠯"],
+  const map = new Map<ㄨ_Combination, string[]>([
+    [ㄨ_Combination.ㄨㄚ, ["⠔", "35,"]],
+    [ㄨ_Combination.ㄨㄛ, ["⠒", "25"]],
+    [ㄨ_Combination.ㄨㄞ, ["⠶", "2356"]],
+    [ㄨ_Combination.ㄨㄟ, ["⠫", "1246"]],
+    [ㄨ_Combination.ㄨㄢ, ["⠻", "12456"]],
+    [ㄨ_Combination.ㄨㄣ, ["⠿", "12345"]],
+    [ㄨ_Combination.ㄨㄤ, ["⠸", "456"]],
+    [ㄨ_Combination.ㄨㄥ, ["⠯", "12346"]],
   ]);
 
   export const allBpmf: string[] = Array.from(map.keys());
-  export const allBraille: string[] = Array.from(map.values());
+  export const allBraille: string[] = Array.from(map.values()).map((v) => v[0]);
   export function fromBpmf(b: string): ㄨ_Combination | undefined {
     b = "ㄨ" + b;
     if (map.has(b as ㄨ_Combination)) {
@@ -285,7 +327,15 @@ namespace ㄨ_Combination {
   }
   export function fromBraille(b: string): ㄨ_Combination | undefined {
     for (let [key, value] of map) {
-      if (value === b) {
+      if (value[0] === b) {
+        return key;
+      }
+    }
+    return undefined;
+  }
+  export function fromBrailleCode(b: string): ㄨ_Combination | undefined {
+    for (let [key, value] of map) {
+      if (value[1] === b) {
         return key;
       }
     }
@@ -295,7 +345,10 @@ namespace ㄨ_Combination {
     return c;
   }
   export function toBraille(c: ㄨ_Combination): string {
-    return map.get(c) as string;
+    return (map.get(c) as string[])[0];
+  }
+  export function toBrailleCode(c: ㄨ_Combination): string {
+    return (map.get(c) as string[])[1];
   }
 }
 
@@ -306,15 +359,15 @@ enum ㄩ_Combination {
   ㄩㄥ = "ㄩㄥ",
 }
 namespace ㄩ_Combination {
-  const map = new Map<ㄩ_Combination, string>([
-    [ㄩ_Combination.ㄩㄝ, "⠦"],
-    [ㄩ_Combination.ㄩㄢ, "⠘"],
-    [ㄩ_Combination.ㄩㄣ, "⠲"],
-    [ㄩ_Combination.ㄩㄥ, "⠖"],
+  const map = new Map<ㄩ_Combination, string[]>([
+    [ㄩ_Combination.ㄩㄝ, ["⠦", "236"]],
+    [ㄩ_Combination.ㄩㄢ, ["⠘", "45"]],
+    [ㄩ_Combination.ㄩㄣ, ["⠲", "256"]],
+    [ㄩ_Combination.ㄩㄥ, ["⠖", "235"]],
   ]);
 
   export const allBpmf: string[] = Array.from(map.keys());
-  export const allBraille: string[] = Array.from(map.values());
+  export const allBraille: string[] = Array.from(map.values()).map((v) => v[0]);
   export function fromBpmf(b: string): ㄩ_Combination | undefined {
     b = "ㄩ" + b;
     if (map.has(b as ㄩ_Combination)) {
@@ -324,7 +377,15 @@ namespace ㄩ_Combination {
   }
   export function fromBraille(b: string): ㄩ_Combination | undefined {
     for (let [key, value] of map) {
-      if (value === b) {
+      if (value[0] === b) {
+        return key;
+      }
+    }
+    return undefined;
+  }
+  export function fromBrailleCode(b: string): ㄩ_Combination | undefined {
+    for (let [key, value] of map) {
+      if (value[1] === b) {
         return key;
       }
     }
@@ -334,7 +395,10 @@ namespace ㄩ_Combination {
     return c;
   }
   export function toBraille(c: ㄩ_Combination): string {
-    return map.get(c) as string;
+    return (map.get(c) as string[])[0];
+  }
+  export function toBrailleCode(c: ㄩ_Combination): string {
+    return (map.get(c) as string[])[1];
   }
 }
 
@@ -347,16 +411,16 @@ enum Tone {
 }
 
 namespace Tone {
-  const map = new Map<Tone, string>([
-    [Tone.tone1, "⠄"],
-    [Tone.tone2, "⠂"],
-    [Tone.tone3, "⠈"],
-    [Tone.tone4, "⠐"],
-    [Tone.tone5, "⠁"],
+  const map = new Map<Tone, string[]>([
+    [Tone.tone1, ["⠄", "3"]],
+    [Tone.tone2, ["⠂", "2"]],
+    [Tone.tone3, ["⠈", "4"]],
+    [Tone.tone4, ["⠐", "5"]],
+    [Tone.tone5, ["⠁", "1"]],
   ]);
 
   export const allBpmf: string[] = Array.from(map.keys());
-  export const allBraille: string[] = Array.from(map.values());
+  export const allBraille: string[] = Array.from(map.values()).map((v) => v[0]);
   export function fromBpmf(b: string): Tone | undefined {
     if (map.has(b as Tone)) {
       return b as Tone;
@@ -365,7 +429,15 @@ namespace Tone {
   }
   export function fromBraille(b: string): Tone | undefined {
     for (let [key, value] of map) {
-      if (value === b) {
+      if (value[0] === b) {
+        return key;
+      }
+    }
+    return undefined;
+  }
+  export function fromBrailleCode(b: string): Tone | undefined {
+    for (let [key, value] of map) {
+      if (value[1] === b) {
         return key;
       }
     }
@@ -375,7 +447,10 @@ namespace Tone {
     return c;
   }
   export function toBraille(c: Tone): string {
-    return map.get(c) as string;
+    return (map.get(c) as string[])[0];
+  }
+  export function toBrailleCode(c: Tone): string {
+    return (map.get(c) as string[])[1];
   }
 }
 

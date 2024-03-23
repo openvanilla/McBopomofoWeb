@@ -6,5 +6,6 @@
  */
 
 export { BopomofoBrailleSyllable } from "./BopomofoBraille";
-export { Punctuation } from "./Punctuation";
+export { FullWidthPunctuation as Punctuation } from "./FullWidthPunctuation";
+export { Letter } from "./Letter";
 export { BopomofoBrailleConverter } from "./Converter";

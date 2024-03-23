@@ -1,14 +1,30 @@
 import { BopomofoBrailleConverter } from "./Converter";
 
 describe("Test BopomofoBrailleConverter", () => {
-  test("Test Phonetic only 1", () => {
+  test("Test Phonetic only 1 - 1", () => {
+    let input = "ㄊㄞˊ";
+    let r1 = BopomofoBrailleConverter.convertBpmfToBraille(input);
+    expect(r1).toBe("⠋⠺⠂");
+    let r2 = BopomofoBrailleConverter.convertBrailleToBpmf(r1);
+    expect(r2).toBe(input);
+  });
+
+  test("Test Phonetic only 2 - 1", () => {
+    let input = "ㄊㄞˊㄨㄢ";
+    let r1 = BopomofoBrailleConverter.convertBpmfToBraille(input);
+    expect(r1).toBe("⠋⠺⠂⠻⠄");
+    let r2 = BopomofoBrailleConverter.convertBrailleToBpmf(r1);
+    expect(r2).toBe(input);
+  });
+
+  test("Test Phonetic only 3 - 1", () => {
     let input = "ㄊㄞˊㄨㄢㄖㄣˊ";
     let r1 = BopomofoBrailleConverter.convertBpmfToBraille(input);
     expect(r1).toBe("⠋⠺⠂⠻⠄⠛⠥⠂");
     let r2 = BopomofoBrailleConverter.convertBrailleToBpmf(r1);
     expect(r2).toBe(input);
   });
-  test("Test Phonetic only 2", () => {
+  test("Test Phonetic only 3 - 2", () => {
     let input = "ㄏㄨㄤˊㄈㄟㄏㄨㄥˊ";
     let r1 = BopomofoBrailleConverter.convertBpmfToBraille(input);
     let r2 = BopomofoBrailleConverter.convertBrailleToBpmf(r1);
@@ -51,5 +67,21 @@ describe("Test BopomofoBrailleConverter", () => {
     expect(r1).toBe("⠰⠤⠰⠤⠰⠤⠰⠤⠋⠺⠂");
     let r2 = BopomofoBrailleConverter.convertBrailleToBpmf(r1);
     expect(r2).toBe(input);
+  });
+
+  test("Test Phonetic and letter 1 - 1", () => {
+    let input = "ㄊㄞˊabc";
+    let r1 = BopomofoBrailleConverter.convertBpmfToBraille(input);
+    expect(r1).toBe("⠋⠺⠂ ⠁⠃⠉");
+    // let r2 = BopomofoBrailleConverter.convertBrailleToBpmf(r1);
+    // expect(r2).toBe(input);
+  });
+
+  test("Test Phonetic and digit 1 - 1", () => {
+    let input = "ㄊㄞˊ1234";
+    let r1 = BopomofoBrailleConverter.convertBpmfToBraille(input);
+    expect(r1).toBe("⠋⠺⠂ ⠼⠂⠆⠒⠲");
+    // let r2 = BopomofoBrailleConverter.convertBrailleToBpmf(r1);
+    // expect(r2).toBe(input);
   });
 });
