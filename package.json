@@ -2,7 +2,7 @@
   "devDependencies": {
     "@types/chrome": "^0.0.263",
     "@types/jest": "^28.1.6",
-    "@types/lodash": "^4.14.202",
+    "@types/lodash": "^4.17.0",
     "@types/node": "^20.11.28",
     "@typescript-eslint/parser": "^7.3.1",
     "@typescript-eslint/eslint-plugin": "^7.3.1",
