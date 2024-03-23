@@ -763,10 +763,9 @@ export class BopomofoBrailleSyllable {
     }
 
     if (
-      (middleVowel == undefined &&
-        vowel == undefined &&
-        consonant == undefined) ||
-      Consonant.isSingle(consonant!) == false
+      middleVowel == undefined &&
+      vowel == undefined &&
+      (consonant == undefined || Consonant.isSingle(consonant!) == false)
     ) {
       throw new Error("Invalid Bopomofo: invalid character");
     }
