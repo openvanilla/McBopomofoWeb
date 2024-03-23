@@ -116,4 +116,12 @@ describe("Test BopomofoBrailleConverter", () => {
     let r2 = BopomofoBrailleConverter.convertBrailleToBpmf(r1);
     expect(r2).toBe("1234 ABCD");
   });
+
+  test("Test digit 1 - 1", () => {
+    let input = "name";
+    let r1 = BopomofoBrailleConverter.convertBpmfToBraille(input);
+    expect(r1).toBe("⠝⠁⠍⠑");
+    let r2 = BopomofoBrailleConverter.convertBrailleToBpmf(r1);
+    expect(r2).toBe("name");
+  });
 });

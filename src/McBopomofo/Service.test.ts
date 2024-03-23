@@ -53,4 +53,16 @@ describe("Test service", () => {
     let result = service.convertTextToBraille("除了在");
     expect(result).toBe("⠃⠌⠂⠉⠮⠁⠓⠺⠐");
   });
+
+  test("Test convertTextToBraille with digits 1", () => {
+    let service = new Service();
+    let result = service.convertTextToBraille("天氣好 1234");
+    expect(result).toBe("⠋⠞⠄⠚⠡⠐⠗⠩⠈ ⠼⠂⠆⠒⠲");
+  });
+
+  test("Test convertTextToBraille with digits1", () => {
+    let service = new Service();
+    let result = service.convertBrailleToText("⠋⠞⠄⠚⠡⠐⠗⠩⠈ ⠼⠂⠆⠒⠲");
+    expect(result).toBe("天氣好 1234");
+  });
 });

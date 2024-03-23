@@ -239,8 +239,8 @@ export class BopomofoBrailleConverter {
         }
       }
       {
-        let found = false;
         let target = Math.min(4, length - readHead);
+        let found = false;
         for (let i = target; i >= 1; i--) {
           let start = readHead;
           let end = readHead + i;
@@ -320,37 +320,103 @@ export class BopomofoBrailleConverter {
   static convertBrailleToTokens(
     braille: string
   ): (BopomofoBrailleSyllable | string)[] {
+    let state: ConverterState = ConverterState.initial;
     var output: any[] = [];
     let text = "";
     let readHead = 0;
     let length = braille.length;
     while (readHead < length) {
-      let target = Math.min(3, length - readHead);
-      let found = false;
-      if (target > 0) {
-        for (let i = target; i >= 1; i--) {
-          let start = readHead;
-          let end = readHead + i;
-          let substring = braille.substring(start, end);
-          try {
-            let b = BopomofoBrailleSyllable.fromBraille(substring);
-            if (b != undefined) {
-              if (text.length > 0) {
-                output.push(text);
-                text = "";
-              }
-              output.push(b);
+      if (braille.charAt(readHead) === " ") {
+        if (text.charAt(output.length - 1) != " ") {
+          text += " ";
+        }
+        readHead += 1;
+        state = ConverterState.initial;
+        continue;
+      }
+
+      if (state === ConverterState.digits) {
+        let substring = braille.charAt(readHead);
+        let digit = Digit.fromBraille(substring);
+        if (digit != undefined) {
+          text += digit;
+          readHead += 1;
+          continue;
+        } else {
+          state = ConverterState.initial;
+        }
+      }
+      if (state === ConverterState.letters) {
+        let substring = braille.charAt(readHead);
+        let isUppercase = false;
+        if (substring === "⠠") {
+          readHead += 1;
+          isUppercase = true;
+          substring = braille.charAt(readHead);
+        }
+        let letter = Letter.fromBraille(substring);
+        if (letter != undefined) {
+          if (isUppercase) {
+            text += letter.toUpperCase();
+          } else {
+            text += letter;
+          }
+          readHead += 1;
+          continue;
+        } else {
+          let found = false;
+          let target = Math.min(3, length - readHead);
+          for (let i = target; i >= 1; i--) {
+            let start = readHead;
+            let end = readHead + i;
+            let substring = braille.substring(start, end);
+            let punctuation = HalfWidthPunctuation.fromBraille(substring);
+            if (punctuation != undefined) {
+              text += HalfWidthPunctuation.toBpmf(punctuation);
               readHead = end;
               found = true;
               break;
             }
-          } catch (e) {
-            // pass
           }
+          if (found) {
+            continue;
+          }
+          state = ConverterState.initial;
         }
       }
-      if (!found) {
-        target = Math.min(4, length - readHead);
+
+      {
+        let target = Math.min(3, length - readHead);
+        let found = false;
+        if (target > 0) {
+          for (let i = target; i >= 1; i--) {
+            let start = readHead;
+            let end = readHead + i;
+            let substring = braille.substring(start, end);
+            try {
+              let b = BopomofoBrailleSyllable.fromBraille(substring);
+              if (b != undefined) {
+                if (text.length > 0) {
+                  output.push(text);
+                  text = "";
+                }
+                output.push(b);
+                readHead = end;
+                found = true;
+                break;
+              }
+            } catch (e) {
+              // pass
+            }
+          }
+        }
+        if (found) {
+          continue;
+        }
+      }
+      {
+        let found = false;
+        let target = Math.min(4, length - readHead);
         for (let i = target; i >= 0; i--) {
           let start = readHead;
           let end = readHead + i;
@@ -363,12 +429,66 @@ export class BopomofoBrailleConverter {
             break;
           }
         }
+        if (found) {
+          continue;
+        }
       }
-      if (!found) {
-        let substring = braille.substring(readHead, readHead + 1);
-        text += substring;
+
+      let substring = braille.charAt(readHead);
+      if (substring === "⠼") {
+        let digit = Digit.fromBraille(braille.charAt(readHead + 1));
+        if (digit != undefined) {
+          text += digit;
+          readHead += 2;
+          state = ConverterState.digits;
+          continue;
+        }
+      }
+      if (substring === "⠠" && readHead + 1 < length) {
+        let letter = Letter.fromBraille(braille.charAt(readHead + 1));
+        if (letter != undefined) {
+          text += letter.toUpperCase();
+          readHead += 2;
+          state = ConverterState.letters;
+          continue;
+        }
+      }
+      let letter = Letter.fromBraille(braille.charAt(readHead));
+      if (letter != undefined) {
+        text += letter;
         readHead += 1;
+        state = ConverterState.letters;
+        continue;
       }
+
+      {
+        let found = false;
+        let target = Math.min(3, length - readHead);
+        for (let i = target; i >= 1; i--) {
+          let start = readHead;
+          let end = readHead + i;
+          let substring = braille.substring(start, end);
+          let punctuation = HalfWidthPunctuation.fromBraille(substring);
+          if (punctuation != undefined) {
+            text += HalfWidthPunctuation.toBpmf(punctuation);
+            readHead = end;
+            state = ConverterState.letters;
+            found = true;
+            break;
+          }
+        }
+        if (found) {
+          continue;
+        }
+      }
+
+      if (readHead === length) {
+        break;
+      }
+
+      substring = braille.substring(readHead, readHead + 1);
+      text += substring;
+      readHead += 1;
     }
 
     if (text.length > 0) {

@@ -46,6 +46,7 @@ export class Service {
     let converted = ChineseConvert.cn2tw(input);
     let length = converted.length;
     let readHead = 0;
+    let pendingText = "";
 
     while (readHead < length) {
       let targetLength = Math.min(6, length - readHead);
@@ -55,6 +56,11 @@ export class Service {
         let subString = converted.substring(readHead, end);
         let reading = this.lm_.getReading(subString);
         if (reading != undefined) {
+          if (pendingText.length > 0) {
+            output +=
+              BopomofoBrailleConverter.convertBpmfToBraille(pendingText);
+            pendingText = "";
+          }
           if (reading.startsWith("_")) {
             // punctuation
             output += BopomofoBrailleConverter.convertBpmfToBraille(subString);
@@ -72,10 +78,16 @@ export class Service {
       }
 
       if (!found) {
-        output += converted.charAt(readHead);
+        pendingText += converted.charAt(readHead);
         readHead += 1;
       }
     }
+
+    if (pendingText.length > 0) {
+      output += BopomofoBrailleConverter.convertBpmfToBraille(pendingText);
+      pendingText = "";
+    }
+
     return output;
   }
 }
