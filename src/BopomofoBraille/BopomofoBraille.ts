@@ -579,6 +579,14 @@ export class BopomofoBrailleSyllable {
       }
     }
 
+    if (
+      consonant == undefined &&
+      middleVowel == undefined &&
+      vowel == undefined
+    ) {
+      throw new Error("Invalid Bopomofo: invalid character");
+    }
+
     let braille = BopomofoBrailleSyllable.makeBraille(
       consonant,
       middleVowel,
@@ -752,6 +760,14 @@ export class BopomofoBrailleSyllable {
 
     if (tone == undefined) {
       throw new Error("Invalid Braille: no tone");
+    }
+
+    if (
+      consonant == undefined &&
+      middleVowel == undefined &&
+      vowel == undefined
+    ) {
+      throw new Error("Invalid Bopomofo: invalid character");
     }
 
     let bpmf = BopomofoBrailleSyllable.makeBpmf(
