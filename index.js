@@ -13,10 +13,13 @@ function toggle_feature(id) {
   document.getElementById(id).style.display = "block";
   if (id === "feature_input") {
     document.getElementById("text_area").focus();
+    document.title = "輸入功能";
   } else if (id === "feature_text_to_braille") {
     document.getElementById("text_to_braille_text_area").focus();
+    document.title = "中文轉注音點字";
   } else if (id === "feature_braille_to_text") {
     document.getElementById("braille_to_text_text_area").focus();
+    document.title = "注音點字轉中文";
   }
 }
 
@@ -539,3 +542,19 @@ function braille_to_text() {
   document.getElementById("braille_to_text_output").innerHTML = html;
   document.getElementById("braille_to_text_text_area").focus();
 }
+
+function onHashChange() {
+  let hash = window.location.hash;
+  toggle_feature(hash.substring(1));
+}
+
+window.addEventListener("hashchange", () => {
+  onHashChange();
+});
+document.addEventListener("DOMContentLoaded", (event) => {
+  let hash = window.location.hash;
+  if (hash.length === 0) {
+    window.location.hash = "feature_input";
+  }
+  onHashChange();
+});
