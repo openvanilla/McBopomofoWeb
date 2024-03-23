@@ -117,11 +117,35 @@ describe("Test BopomofoBrailleConverter", () => {
     expect(r2).toBe("1234 ABCD");
   });
 
-  test("Test digit 1 - 1", () => {
+  test("Test letter 1 - 1", () => {
     let input = "name";
     let r1 = BopomofoBrailleConverter.convertBpmfToBraille(input);
     expect(r1).toBe("⠝⠁⠍⠑");
     let r2 = BopomofoBrailleConverter.convertBrailleToBpmf(r1);
     expect(r2).toBe("name");
+  });
+
+  test("Test mix 1 - 1", () => {
+    let input = "ㄒㄧㄠˇㄇㄞˋ";
+    let r1 = BopomofoBrailleConverter.convertBpmfToBraille(input);
+    expect(r1).toBe("⠑⠪⠈⠍⠺⠐");
+    let r2 = BopomofoBrailleConverter.convertBrailleToBpmf(r1);
+    expect(r2).toBe("ㄒㄧㄠˇㄇㄞˋ");
+  });
+
+  test("Test mix 1 - 2", () => {
+    let input = "ㄒㄧㄠˇㄇㄞˋㄓㄨˋㄧㄣ";
+    let r1 = BopomofoBrailleConverter.convertBpmfToBraille(input);
+    expect(r1).toBe("⠑⠪⠈⠍⠺⠐⠁⠌⠐⠹⠄");
+    let r2 = BopomofoBrailleConverter.convertBrailleToBpmf(r1);
+    expect(r2).toBe("ㄒㄧㄠˇㄇㄞˋㄓㄨˋㄧㄣ");
+  });
+
+  test("Test mix 1 - 3", () => {
+    let input = "ㄒㄧㄠˇㄇㄞˋㄓㄨˋㄧㄣ 2.5";
+    let r1 = BopomofoBrailleConverter.convertBpmfToBraille(input);
+    expect(r1).toBe("⠑⠪⠈⠍⠺⠐⠁⠌⠐⠹⠄ ⠼⠆⠨⠢");
+    let r2 = BopomofoBrailleConverter.convertBrailleToBpmf(r1);
+    expect(r2).toBe("ㄒㄧㄠˇㄇㄞˋㄓㄨˋㄧㄣ 2.5");
   });
 });

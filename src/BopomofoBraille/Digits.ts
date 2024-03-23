@@ -49,3 +49,41 @@ export namespace Digit {
     return map.get(c) as string;
   }
 }
+
+export enum DigitRelated {
+  point = ".",
+  percent = "%",
+  celsius = "°C",
+}
+
+export namespace DigitRelated {
+  const map = new Map<DigitRelated, string>([
+    [DigitRelated.point, "⠨"],
+    [DigitRelated.percent, "⠈⠴"],
+    [DigitRelated.celsius, "⠘⠨⠡ ⠰⠠⠉"],
+  ]);
+
+  export const allDigits: string[] = Array.from(map.keys());
+  export const allBraille: string[] = Array.from(map.values());
+
+  export function fromPunctuation(b: string): DigitRelated | undefined {
+    if (map.has(b as DigitRelated)) {
+      return b as DigitRelated;
+    }
+    return undefined;
+  }
+  export function fromBraille(b: string): DigitRelated | undefined {
+    for (let [key, value] of map) {
+      if (value === b) {
+        return key;
+      }
+    }
+    return undefined;
+  }
+  export function toPunctuation(c: DigitRelated): string {
+    return c;
+  }
+  export function toBraille(c: DigitRelated): string {
+    return map.get(c) as string;
+  }
+}
