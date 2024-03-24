@@ -197,7 +197,9 @@ export class BopomofoBrailleConverter {
 
     while (readHead < length) {
       if (braille.charAt(readHead) === " ") {
-        if (nonBpmfText.charAt(output.length - 1) != " ") {
+        if (nonBpmfText.length === 0) {
+          nonBpmfText += " ";
+        } else if (nonBpmfText.charAt(output.length - 1) != " ") {
           nonBpmfText += " ";
         }
         readHead += 1;
