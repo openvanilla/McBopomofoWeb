@@ -1,5 +1,8 @@
+//Note: we added context menu items to convert text in the background worker,
+//and then the background worker sends the converted text to the content script.
+//The content script then replaces the selected text with the converted text.
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-  function replaceSelectedText(replacementText) {
+  function replaceSelectedText(replacementText, isHtml) {
     var sel, range;
     if (window.getSelection) {
       sel = window.getSelection();
@@ -18,7 +21,13 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         if (sel.rangeCount) {
           range = sel.getRangeAt(0);
           range.deleteContents();
-          range.insertNode(document.createTextNode(replacementText));
+          if (isHtml) {
+            const div = document.createElement("div");
+            div.innerHTML = replacementText;
+            range.insertNode(div);
+          } else {
+            range.insertNode(document.createTextNode(replacementText));
+          }
         } else {
           sel.deleteFromDocument();
         }
@@ -30,5 +39,6 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   }
 
   let text = request.text;
-  replaceSelectedText(text);
+  let isHtml = request.isHtml;
+  replaceSelectedText(text, isHtml);
 });

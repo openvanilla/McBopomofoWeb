@@ -119,6 +119,11 @@ export class Service {
     );
   }
 
+  /**
+   * Converts text to HTML Ruby
+   * @param input The text input
+   * @returns The HTML Ruby output
+   */
   public convertTextToHtmlRuby(input: string): string {
     return this.convertText(
       input,
@@ -128,6 +133,23 @@ export class Service {
         composed += "<rp>(</rp><rt>" + reading + "</rt><rp>)</rp>";
         composed += "</ruby>";
         return composed;
+      },
+      (input: string) => {
+        return input;
+      }
+    );
+  }
+
+  /**
+   * Converts text to Bopomofo readings.
+   * @param input The text input
+   * @returns The Bopomofo output
+   */
+  public convertTextToBpmfReadings(input: string): string {
+    return this.convertText(
+      input,
+      (reading: string, value: string) => {
+        return reading;
       },
       (input: string) => {
         return input;

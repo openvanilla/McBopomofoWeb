@@ -698,8 +698,15 @@ chrome.contextMenus.onClicked.addListener((event, tab) => {
     return;
   }
   let converted = selectionText;
+  let isHtml = false;
 
-  if (menuItemId === "append_taiwanese_braille") {
+  if (menuItemId === "convert_text_to_bpmf_syllables") {
+    converted =
+      chromeMcBopomofo.service.convertTextToBpmfReadings(selectionText);
+  } else if (menuItemId === "convert_text_to_html_ruby") {
+    converted = chromeMcBopomofo.service.convertTextToHtmlRuby(selectionText);
+    isHtml = true;
+  } else if (menuItemId === "append_taiwanese_braille") {
     converted =
       selectionText +
       "\n\n" +
@@ -715,8 +722,27 @@ chrome.contextMenus.onClicked.addListener((event, tab) => {
     chrome.tabs.sendMessage(tabId, {
       command: "replace_text",
       text: converted,
+      isHtml: isHtml,
     });
   }
+});
+
+chrome.contextMenus.create({
+  id: "convert_text_to_bpmf_syllables",
+  title: chromeMcBopomofo.myLocalizedString(
+    "Convert Text to Bopomofo Syllables",
+    "將國字轉為注音"
+  ),
+  contexts: ["selection", "editable"],
+});
+
+chrome.contextMenus.create({
+  id: "convert_text_to_html_ruby",
+  title: chromeMcBopomofo.myLocalizedString(
+    "Convert Text to HTML Ruby",
+    "將國字轉為 HTML Ruby"
+  ),
+  contexts: ["selection", "editable"],
 });
 
 chrome.contextMenus.create({
