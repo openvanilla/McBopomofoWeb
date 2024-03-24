@@ -7,6 +7,7 @@
  */
 
 import { InputController } from "./McBopomofo/InputController";
+import { Service } from "./McBopomofo/Service";
 import { Key, KeyName } from "./McBopomofo/Key";
 import { LargeSync } from "./LargeSync/LargeSync";
 
@@ -70,6 +71,7 @@ class ChromeMcBopomofo {
   isShiftHold = false;
   isAlphabetMode = false;
   inputController: InputController;
+  service: Service;
 
   constructor() {
     chrome.i18n.getAcceptLanguages((langs) => {
@@ -82,6 +84,7 @@ class ChromeMcBopomofo {
       }
     });
     this.inputController = new InputController(this.makeUI());
+    this.service = new Service();
     this.inputController.setOnOpenUrl((input: string) => {
       this.tryOpen(input);
     });
@@ -339,8 +342,8 @@ class ChromeMcBopomofo {
     }
 
     this.deferredResetTimeout = setTimeout(() => {
-      chromeMcBopomofo.context = undefined;
-      chromeMcBopomofo.inputController.reset();
+      this.context = undefined;
+      this.inputController.reset();
       this.deferredResetTimeout = null;
     }, 5000);
   }
@@ -504,7 +507,7 @@ class ChromeMcBopomofo {
 
 let chromeMcBopomofo = new ChromeMcBopomofo();
 
-chrome.input.ime.onActivate.addListener((engineID) => {
+chrome.input?.ime.onActivate.addListener((engineID) => {
   chromeMcBopomofo.engineID = engineID;
   chromeMcBopomofo.loadSettings();
   chromeMcBopomofo.updateMenu();
@@ -517,16 +520,16 @@ chrome.input.ime.onActivate.addListener((engineID) => {
 });
 
 // Called when the current text input are loses the focus.
-chrome.input.ime.onBlur.addListener((context) => {
+chrome.input?.ime.onBlur.addListener((context) => {
   chromeMcBopomofo.deferredReset();
 });
 
-chrome.input.ime.onReset.addListener((context) => {
+chrome.input?.ime.onReset.addListener((context) => {
   chromeMcBopomofo.deferredReset();
 });
 
 // Called when the user switch to another input method.
-chrome.input.ime.onDeactivated.addListener((context) => {
+chrome.input?.ime.onDeactivated.addListener((context) => {
   if (chromeMcBopomofo.deferredResetTimeout != null) {
     clearTimeout(chromeMcBopomofo.deferredResetTimeout);
   }
@@ -537,7 +540,7 @@ chrome.input.ime.onDeactivated.addListener((context) => {
 
 // Called when the current text input is focused. We reload the settings this
 // time.
-chrome.input.ime.onFocus.addListener((context) => {
+chrome.input?.ime.onFocus.addListener((context) => {
   // console.log("onFocus");
   chromeMcBopomofo.context = context;
   if (chromeMcBopomofo.deferredResetTimeout != null) {
@@ -548,7 +551,7 @@ chrome.input.ime.onFocus.addListener((context) => {
 });
 
 // The main keyboard event handler.
-chrome.input.ime.onKeyEvent.addListener((engineID, keyData) => {
+chrome.input?.ime.onKeyEvent.addListener((engineID, keyData) => {
   if (keyData.type === "keyup") {
     // If we have a shift in a key down event, then a key up event with the
     // shift key, and there is no other key down event between them, it means it
@@ -586,7 +589,7 @@ chrome.input.ime.onKeyEvent.addListener((engineID, keyData) => {
   return chromeMcBopomofo.inputController.mcbopomofoKeyEvent(keyEvent);
 });
 
-chrome.input.ime.onMenuItemActivated.addListener((engineID, name) => {
+chrome.input?.ime.onMenuItemActivated.addListener((engineID, name) => {
   if (name === "mcbopomofo-toggle-alphabet-mode") {
     chromeMcBopomofo.toggleAlphabetMode();
     return;
@@ -650,7 +653,6 @@ chrome.runtime.onConnect.addListener((port) => {
 
 // A workaround to prevent Chrome to kill the service worker.
 let lifeline: chrome.runtime.Port | undefined = undefined;
-keepAlive();
 
 function keepAliveForced() {
   lifeline?.disconnect();
@@ -683,6 +685,66 @@ async function retryOnTabUpdate(
     keepAlive();
   }
 }
+
+keepAlive();
+
+chrome.contextMenus.onClicked.addListener((event, tab) => {
+  const selectionText = event.selectionText?.trim();
+  const menuItemId = event.menuItemId;
+  if (selectionText === undefined) {
+    return;
+  }
+  if (selectionText.length === 0) {
+    return;
+  }
+  let converted = selectionText;
+
+  if (menuItemId === "append_taiwanese_braille") {
+    converted =
+      selectionText +
+      "\n\n" +
+      chromeMcBopomofo.service.convertTextToBraille(selectionText);
+  } else if (menuItemId === "convert_text_to_taiwanese_braille") {
+    converted = chromeMcBopomofo.service.convertTextToBraille(selectionText);
+  } else if (menuItemId === "convert_taiwanese_braille_to_text") {
+    converted = chromeMcBopomofo.service.convertBrailleToText(selectionText);
+  }
+
+  let tabId = (tab as chrome.tabs.Tab).id;
+  if (tabId !== undefined) {
+    chrome.tabs.sendMessage(tabId, {
+      command: "replace_text",
+      text: converted,
+    });
+  }
+});
+
+chrome.contextMenus.create({
+  id: "append_taiwanese_braille",
+  title: chromeMcBopomofo.myLocalizedString(
+    "Append Taiwanese Braille to Text",
+    "將國字加上台灣點字"
+  ),
+  contexts: ["selection", "editable"],
+});
+
+chrome.contextMenus.create({
+  id: "convert_text_to_taiwanese_braille",
+  title: chromeMcBopomofo.myLocalizedString(
+    "Convert Text to Taiwanese Braille",
+    "將國字轉換成台灣點字"
+  ),
+  contexts: ["selection", "editable"],
+});
+
+chrome.contextMenus.create({
+  id: "convert_taiwanese_braille_to_text",
+  title: chromeMcBopomofo.myLocalizedString(
+    "Convert Taiwanese Braille to Text",
+    "將台灣點字轉回國字"
+  ),
+  contexts: ["selection", "editable"],
+});
 
 function KeyFromKeyboardEvent(event: chrome.input.ime.KeyboardEvent) {
   let keyName = KeyName.UNKNOWN;
