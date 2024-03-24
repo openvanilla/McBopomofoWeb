@@ -80,12 +80,20 @@ describe("Test BopomofoBrailleConverter", () => {
     expect(r2).toBe("ㄊㄞˊ abc");
   });
 
-  test("Test bopomofo syllables and upper case letter", () => {
+  test("Test bopomofo syllables and upper case letter - 1", () => {
     let input = "ㄊㄞˊAbc";
     let r1 = BopomofoBrailleConverter.convertBpmfToBraille(input);
     expect(r1).toBe("⠋⠺⠂ ⠠⠁⠃⠉");
     let r2 = BopomofoBrailleConverter.convertBrailleToBpmf(r1);
     expect(r2).toBe("ㄊㄞˊ Abc");
+  });
+
+  test("Test bopomofo syllables and upper case letter - 2", () => {
+    let input = "Abcㄊㄞˊ";
+    let r1 = BopomofoBrailleConverter.convertBpmfToBraille(input);
+    expect(r1).toBe("⠠⠁⠃⠉ ⠋⠺⠂");
+    let r2 = BopomofoBrailleConverter.convertBrailleToBpmf(r1);
+    expect(r2).toBe("Abc ㄊㄞˊ");
   });
 
   test("Test bopomofo syllables and digit 1 - 1", () => {

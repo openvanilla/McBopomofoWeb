@@ -2,7 +2,7 @@ export enum HalfWidthPunctuation {
   period = ".",
   comma = ",",
   semicolon = ";",
-  dash = "’",
+  dash = "'",
   questionMark = "?",
   exclamationMark = "!",
   colon = ":",

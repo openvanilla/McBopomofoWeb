@@ -4,7 +4,7 @@ import { FullWidthPunctuation } from "./Tokens/FullWidthPunctuation";
 import { HalfWidthPunctuation } from "./Tokens/HalfWidthPunctuation";
 import { Letter } from "./Tokens/Letter";
 
-enum ConverterState {
+const enum ConverterState {
   initial = 0,
   bpmf = 1,
   digits = 2,
@@ -21,7 +21,12 @@ export class BopomofoBrailleConverter {
    * @returns Converted Braille in Unicode.
    */
   public static convertBpmfToBraille(bopomofo: string): string {
-    let state: ConverterState = ConverterState.initial;
+    let state:
+      | ConverterState.initial
+      | ConverterState.bpmf
+      | ConverterState.letters
+      | ConverterState.digits;
+    state = ConverterState.initial;
     let output = "";
     let readHead = 0;
     const length = bopomofo.length;
@@ -64,7 +69,9 @@ export class BopomofoBrailleConverter {
         }
         state = ConverterState.initial;
         output += " ";
-      } else if (state === ConverterState.letters) {
+      }
+
+      if (state === ConverterState.letters) {
         let substring = bopomofo.charAt(readHead);
         let lowered = substring.toLowerCase();
         if (lowered >= "a" && lowered <= "z") {
@@ -74,7 +81,8 @@ export class BopomofoBrailleConverter {
           output += Letter.toBraille(Letter.fromLetter(lowered) as Letter);
           readHead += 1;
           continue;
-        } else if (HalfWidthPunctuation.allPunctuation.includes(substring)) {
+        }
+        if (HalfWidthPunctuation.allPunctuation.includes(substring)) {
           output += HalfWidthPunctuation.toBraille(
             HalfWidthPunctuation.fromPunctuation(
               substring
@@ -82,10 +90,9 @@ export class BopomofoBrailleConverter {
           );
           readHead += 1;
           continue;
-        } else {
-          state = ConverterState.initial;
-          output += " ";
         }
+        state = ConverterState.initial;
+        output += " ";
       }
       {
         let target = Math.min(4, length - readHead);
@@ -122,7 +129,7 @@ export class BopomofoBrailleConverter {
       let substring = bopomofo.charAt(readHead);
 
       if (substring >= "0" && substring <= "9") {
-        if (state === ConverterState.bpmf) {
+        if (state !== ConverterState.initial) {
           output += " ";
         }
         output += "⠼";
@@ -134,7 +141,7 @@ export class BopomofoBrailleConverter {
 
       let lowered = substring.toLowerCase();
       if (lowered >= "a" && lowered <= "z") {
-        if (state === ConverterState.bpmf) {
+        if (state !== ConverterState.initial) {
           output += " ";
         }
         if (substring >= "A" && substring <= "Z") {
@@ -146,7 +153,7 @@ export class BopomofoBrailleConverter {
         continue;
       }
       if (HalfWidthPunctuation.allPunctuation.includes(substring)) {
-        if (state === ConverterState.bpmf) {
+        if (state === ConverterState.initial) {
           output += " ";
         }
         output += HalfWidthPunctuation.toBraille(
@@ -163,7 +170,7 @@ export class BopomofoBrailleConverter {
         break;
       }
 
-      if (state === ConverterState.bpmf) {
+      if (state !== ConverterState.initial) {
         output += " ";
       }
       state = ConverterState.initial;
@@ -234,41 +241,39 @@ export class BopomofoBrailleConverter {
         let substring = braille.charAt(readHead);
         let isUppercase = false;
         if (substring === "⠠") {
-          // Uppercase
-          readHead += 1;
           isUppercase = true;
-          substring = braille.charAt(readHead);
+          substring = braille.charAt(readHead + 1);
         }
         let letter = Letter.fromBraille(substring);
         if (letter != undefined) {
           if (isUppercase) {
             nonBpmfText += letter.toUpperCase();
+            readHead += 2;
           } else {
             nonBpmfText += letter;
+            readHead += 1;
           }
-          readHead += 1;
           continue;
-        } else {
-          let found = false;
-          let target = Math.min(3, length - readHead);
-          for (let i = target; i >= 1; i--) {
-            let start = readHead;
-            let end = readHead + i;
-            let substring = braille.substring(start, end);
-            let punctuation = HalfWidthPunctuation.fromBraille(substring);
-            if (punctuation != undefined) {
-              nonBpmfText += HalfWidthPunctuation.toBpmf(punctuation);
-              readHead = end;
-              state = ConverterState.bpmf;
-              found = true;
-              break;
-            }
-          }
-          if (found) {
-            continue;
-          }
-          state = ConverterState.initial;
         }
+
+        let target = Math.min(3, length - readHead);
+        let found = false;
+        for (let i = target; i >= 1; i--) {
+          let start = readHead;
+          let end = readHead + i;
+          let substring = braille.substring(start, end);
+          let punctuation = HalfWidthPunctuation.fromBraille(substring);
+          if (punctuation != undefined) {
+            nonBpmfText += HalfWidthPunctuation.toBpmf(punctuation);
+            readHead = end;
+            found = true;
+            break;
+          }
+        }
+        if (found) {
+          continue;
+        }
+        state = ConverterState.initial;
       }
 
       // Tried to find a Bopomofo syllable
