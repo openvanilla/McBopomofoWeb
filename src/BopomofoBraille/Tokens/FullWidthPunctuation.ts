@@ -3,7 +3,7 @@ export enum FullWidthPunctuation {
   dot = "·",
   comma = "，",
   semicolon = "；",
-  // ideographicComma = "、",
+  ideographicComma = "、",
   questionMark = "？",
   exclamationMark = "！",
   colon = "：",
@@ -31,7 +31,7 @@ export namespace FullWidthPunctuation {
     [FullWidthPunctuation.dot, "⠤"],
     [FullWidthPunctuation.comma, "⠆"],
     [FullWidthPunctuation.semicolon, "⠰"],
-    // [FullWidthPunctuation.ideographicComma, "⠠"],
+    [FullWidthPunctuation.ideographicComma, "⠠"],
     [FullWidthPunctuation.questionMark, "⠕"],
     [FullWidthPunctuation.exclamationMark, "⠇"],
     [FullWidthPunctuation.colon, "⠒⠒"],
@@ -75,5 +75,15 @@ export namespace FullWidthPunctuation {
   }
   export function toBraille(c: FullWidthPunctuation): string {
     return map.get(c) as string;
+  }
+  export function supposedToBeAtStart(c: FullWidthPunctuation): boolean {
+    let validPunctuation = [
+      FullWidthPunctuation.singleQuotationMarkLeft,
+      FullWidthPunctuation.doubleQuotationMarkLeft,
+      FullWidthPunctuation.parenthesesLeft,
+      FullWidthPunctuation.bracketLeft,
+      FullWidthPunctuation.braceLeft,
+    ];
+    return validPunctuation.includes(c);
   }
 }
