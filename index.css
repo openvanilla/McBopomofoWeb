@@ -21,6 +21,11 @@ body {
   text-decoration: none;
 }
 
+.navi a:hover {
+  color: #900;
+  text-decoration: none;
+}
+
 textarea {
   padding: 10px;
   resize: none;
@@ -172,6 +177,10 @@ div.text_to_braille_output {
 }
 
 div#feature_braille_to_text {
+  display: none;
+}
+
+div#feature_add_bpmf {
   display: none;
 }
 
