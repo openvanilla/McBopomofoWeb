@@ -1,9 +1,8 @@
-import { read } from "fs";
-import { BopomofoBrailleSyllable } from "./BopomofoBraille";
-import { Digit, DigitRelated } from "./Digits";
-import { FullWidthPunctuation } from "./FullWidthPunctuation";
-import { HalfWidthPunctuation } from "./HalfWidthPunctuation";
-import { Letter } from "./Letter";
+import { BopomofoSyllable } from "./Tokens/BopomofoSyllable";
+import { Digit, DigitRelated } from "./Tokens/Digits";
+import { FullWidthPunctuation } from "./Tokens/FullWidthPunctuation";
+import { HalfWidthPunctuation } from "./Tokens/HalfWidthPunctuation";
+import { Letter } from "./Tokens/Letter";
 
 enum ConverterState {
   initial = 0,
@@ -88,7 +87,7 @@ export class BopomofoBrailleConverter {
           let end = readHead + i;
           let substring = bopomofo.substring(start, end);
           try {
-            let b = BopomofoBrailleSyllable.fromBpmf(substring);
+            let b = BopomofoSyllable.fromBpmf(substring);
             output += b.braille;
             readHead = end;
             state = ConverterState.bpmf;
@@ -263,7 +262,7 @@ export class BopomofoBrailleConverter {
               continue;
             }
             try {
-              let b = BopomofoBrailleSyllable.fromBraille(substring);
+              let b = BopomofoSyllable.fromBraille(substring);
               if (b != undefined) {
                 output += b.bpmf;
                 readHead = end;
@@ -366,7 +365,7 @@ export class BopomofoBrailleConverter {
 
   static convertBrailleToTokens(
     braille: string
-  ): (BopomofoBrailleSyllable | string)[] {
+  ): (BopomofoSyllable | string)[] {
     let state: ConverterState = ConverterState.initial;
     var output: any[] = [];
     let text = "";
@@ -466,7 +465,7 @@ export class BopomofoBrailleConverter {
             }
 
             try {
-              let b = BopomofoBrailleSyllable.fromBraille(substring);
+              let b = BopomofoSyllable.fromBraille(substring);
               if (b != undefined) {
                 if (text.length > 0) {
                   output.push(text);

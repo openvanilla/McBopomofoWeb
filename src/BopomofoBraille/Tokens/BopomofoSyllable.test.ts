@@ -1,18 +1,18 @@
-import { BopomofoBrailleSyllable } from "./BopomofoBraille";
+import { BopomofoSyllable } from "./BopomofoSyllable";
 
 describe("Test BopomofoSyllable", () => {
   test("Test 1", () => {
-    let result = BopomofoBrailleSyllable.fromBpmf("ㄋㄧˇ");
+    let result = BopomofoSyllable.fromBpmf("ㄋㄧˇ");
     expect(result.braille).toBe("⠝⠡⠈");
   });
 
   test("Test 1", () => {
-    let result = BopomofoBrailleSyllable.fromBraille("⠝⠡⠈");
+    let result = BopomofoSyllable.fromBraille("⠝⠡⠈");
     expect(result.bpmf).toBe("ㄋㄧˇ");
   });
 
   test("Test 2", () => {
-    let result = BopomofoBrailleSyllable.fromBpmf("ㄨㄢ");
+    let result = BopomofoSyllable.fromBpmf("ㄨㄢ");
     expect(result.braille).toBe("⠻⠄");
   });
 });

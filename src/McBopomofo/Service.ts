@@ -1,7 +1,4 @@
-import {
-  BopomofoBrailleConverter,
-  BopomofoBrailleSyllable,
-} from "../BopomofoBraille";
+import { BopomofoBrailleConverter, BopomofoSyllable } from "../BopomofoBraille";
 import { ReadingGrid } from "../Gramambular2";
 import { webData } from "./WebData";
 import { WebLanguageModel } from "./WebLanguageModel";
@@ -21,7 +18,7 @@ export class Service {
     let output: string = "";
     let tokens = BopomofoBrailleConverter.convertBrailleToTokens(input);
     for (let token of tokens) {
-      if (token instanceof BopomofoBrailleSyllable) {
+      if (token instanceof BopomofoSyllable) {
         this.grid_.insertReading(token.bpmf);
       } else {
         let result = this.grid_.walk();
