@@ -156,4 +156,16 @@ export class Service {
       }
     );
   }
+
+  public appendBpmfReadingsToText(input: string): string {
+    return this.convertText(
+      input,
+      (reading: string, value: string) => {
+        return value + "(" + reading + ")";
+      },
+      (input: string) => {
+        return input;
+      }
+    );
+  }
 }

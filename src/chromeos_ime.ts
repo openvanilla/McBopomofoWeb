@@ -703,6 +703,9 @@ chrome.contextMenus.onClicked.addListener((event, tab) => {
   if (menuItemId === "convert_text_to_bpmf_syllables") {
     converted =
       chromeMcBopomofo.service.convertTextToBpmfReadings(selectionText);
+  } else if (menuItemId === "append_bpmf_syllables_to_text") {
+    converted =
+      chromeMcBopomofo.service.appendBpmfReadingsToText(selectionText);
   } else if (menuItemId === "convert_text_to_html_ruby") {
     converted = chromeMcBopomofo.service.convertTextToHtmlRuby(selectionText);
     isHtml = true;
@@ -732,6 +735,15 @@ chrome.contextMenus.create({
   title: chromeMcBopomofo.myLocalizedString(
     "Convert Text to Bopomofo Syllables",
     "將國字轉為注音"
+  ),
+  contexts: ["selection", "editable"],
+});
+
+chrome.contextMenus.create({
+  id: "append_bpmf_syllables_to_text",
+  title: chromeMcBopomofo.myLocalizedString(
+    "Append Bopomofo Syllables to Text",
+    "將國字加上注音"
   ),
   contexts: ["selection", "editable"],
 });
