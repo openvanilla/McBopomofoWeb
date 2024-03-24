@@ -26,7 +26,16 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             div.innerHTML = replacementText;
             range.insertNode(div);
           } else {
-            range.insertNode(document.createTextNode(replacementText));
+            let lines = replacementText.split("\n").reverse();
+            if (lines.length > 1) {
+              for (let line of lines) {
+                const p = document.createElement("p");
+                p.innerText = line;
+                range.insertNode(p);
+              }
+            } else {
+              range.insertNode(document.createTextNode(replacementText));
+            }
           }
         } else {
           sel.deleteFromDocument();
@@ -40,5 +49,6 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 
   let text = request.text;
   let isHtml = request.isHtml;
+  console.log(text);
   replaceSelectedText(text, isHtml);
 });

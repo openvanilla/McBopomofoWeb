@@ -59,8 +59,10 @@
     "storage",
     "notifications",
     "tabs",
-    "contextMenus"
+    "contextMenus",
+    "scripting"
   ],
+  "host_permissions": ["<all_urls>"],
   "commands": {
     "toggle-chinese-convert": {
       "suggested_key": "Alt+Shift+G",

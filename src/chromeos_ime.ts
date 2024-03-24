@@ -690,46 +690,121 @@ async function retryOnTabUpdate(
 keepAlive();
 
 chrome.contextMenus.onClicked.addListener((event, tab) => {
-  const selectionText = event.selectionText?.trim();
-  const menuItemId = event.menuItemId;
-  if (selectionText === undefined) {
-    return;
-  }
-  if (selectionText.length === 0) {
-    return;
-  }
-  let converted = selectionText;
-  let isHtml = false;
+  function handle(selectionText: string, menuItemId: string, tabId: number) {
+    console.log(selectionText);
+    if (selectionText.length === 0) {
+      return;
+    }
+    let converted = selectionText;
+    let isHtml = false;
 
-  if (menuItemId === "convert_text_to_bpmf_syllables") {
-    converted = ChineseConvert.cn2tw(selectionText);
-    converted = chromeMcBopomofo.service.convertTextToBpmfReadings(converted);
-  } else if (menuItemId === "append_bpmf_syllables_to_text") {
-    converted = ChineseConvert.cn2tw(selectionText);
-    converted = chromeMcBopomofo.service.appendBpmfReadingsToText(converted);
-  } else if (menuItemId === "convert_text_to_html_ruby") {
-    converted = chromeMcBopomofo.service.convertTextToHtmlRuby(selectionText);
-    isHtml = true;
-  } else if (menuItemId === "append_taiwanese_braille") {
-    converted = ChineseConvert.cn2tw(selectionText);
-    converted =
-      selectionText +
-      "\n\n" +
-      chromeMcBopomofo.service.convertTextToBraille(converted);
-  } else if (menuItemId === "convert_text_to_taiwanese_braille") {
-    converted = ChineseConvert.cn2tw(selectionText);
-    converted = chromeMcBopomofo.service.convertTextToBraille(converted);
-  } else if (menuItemId === "convert_taiwanese_braille_to_text") {
-    converted = chromeMcBopomofo.service.convertBrailleToText(selectionText);
-  }
+    if (menuItemId === "convert_text_to_bpmf_syllables") {
+      let lines = selectionText.split("\n");
+      let convertedLines = [];
+      for (let line of lines) {
+        let convertedLine = ChineseConvert.cn2tw(line);
+        convertedLine =
+          chromeMcBopomofo.service.convertTextToBpmfReadings(convertedLine);
+        convertedLines.push(convertedLine);
+      }
+      converted = convertedLines.join("\n");
+    } else if (menuItemId === "append_bpmf_syllables_to_text") {
+      let lines = selectionText.split("\n");
+      let convertedLines = [];
+      for (let line of lines) {
+        let convertedLine = ChineseConvert.cn2tw(line);
+        convertedLine =
+          chromeMcBopomofo.service.appendBpmfReadingsToText(convertedLine);
+        convertedLines.push(convertedLine);
+      }
+      converted = convertedLines.join("\n");
+    } else if (menuItemId === "convert_text_to_html_ruby") {
+      let lines = selectionText.split("\n");
+      let convertedLines = [];
+      for (let line of lines) {
+        let convertedLine = ChineseConvert.cn2tw(line);
+        convertedLine =
+          "<p>" +
+          chromeMcBopomofo.service.convertTextToHtmlRuby(convertedLine) +
+          "</p>";
+        convertedLines.push(convertedLine);
+      }
+      converted = convertedLines.join("\n");
 
-  let tabId = (tab as chrome.tabs.Tab).id;
-  if (tabId !== undefined) {
+      isHtml = true;
+    } else if (menuItemId === "append_taiwanese_braille") {
+      let lines = selectionText.split("\n");
+      let convertedLines = [];
+      for (let line of lines) {
+        let convertedLine = ChineseConvert.cn2tw(line);
+        convertedLine =
+          line +
+          "\n\n" +
+          chromeMcBopomofo.service.convertTextToBraille(convertedLine);
+        convertedLines.push(convertedLine);
+      }
+      converted = convertedLines.join("\n");
+    } else if (menuItemId === "convert_text_to_taiwanese_braille") {
+      let lines = selectionText.split("\n");
+      let convertedLines = [];
+      for (let line of lines) {
+        let convertedLine = ChineseConvert.cn2tw(line);
+        convertedLine = ChineseConvert.convertTextToBraille(line);
+        convertedLines.push(convertedLine);
+      }
+      converted = convertedLines.join("\n");
+    } else if (menuItemId === "convert_taiwanese_braille_to_text") {
+      let lines = selectionText.split("\n");
+      let convertedLines = [];
+      for (let line of lines) {
+        let convertedLine = chromeMcBopomofo.service.convertBrailleToText(line);
+        convertedLines.push(convertedLine);
+      }
+      converted = convertedLines.join("\n");
+    }
+
     chrome.tabs.sendMessage(tabId, {
       command: "replace_text",
       text: converted,
       isHtml: isHtml,
     });
+  }
+
+  const menuItemId = event.menuItemId;
+  let tabId = (tab as chrome.tabs.Tab).id;
+  if (tabId === undefined) {
+    return;
+  }
+
+  try {
+    chrome.tabs.executeScript(
+      { code: "window.getSelection().toString();" },
+      (selection) => {
+        let selected = selection[0];
+        if (selected === undefined) {
+          return;
+        }
+        handle(selected, menuItemId as string, tabId as number);
+      }
+    );
+  } catch {
+    chrome.scripting
+      .executeScript<any[], string | undefined>({
+        target: {
+          tabId: tabId as number,
+        },
+        func: () => {
+          return window?.getSelection()?.toString();
+        },
+      })
+      .then((selection) => {
+        const { result } = selection[0];
+        let selected = result;
+        if (selected === undefined) {
+          return;
+        }
+        handle(selected as string, menuItemId as string, tabId as number);
+      });
   }
 });
 
