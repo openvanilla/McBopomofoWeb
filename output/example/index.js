@@ -6,6 +6,7 @@ function toggle_feature(id) {
     "feature_input",
     "feature_text_to_braille",
     "feature_braille_to_text",
+    "feature_add_bpmf",
   ];
   for (let feature of features) {
     document.getElementById(feature).style.display = "none";
@@ -20,6 +21,9 @@ function toggle_feature(id) {
   } else if (id === "feature_braille_to_text") {
     document.getElementById("braille_to_text_text_area").focus();
     document.title = "注音點字轉中文";
+  } else if (id === "feature_add_bpmf") {
+    document.getElementById("add_bpmf_text_area").focus();
+    document.title = "國字加注音";
   }
 }
 
@@ -541,6 +545,26 @@ function braille_to_text() {
 
   document.getElementById("braille_to_text_output").innerHTML = html;
   document.getElementById("braille_to_text_text_area").focus();
+}
+
+function add_bpmf() {
+  let text = document.getElementById("add_bpmf_text_area").value;
+  text = text.trim();
+  if (text.length === 0) {
+    document.getElementById("add_bpmf_output").innerHTML =
+      "<p>您沒有輸入任何內容！</p>";
+    document.getElementById("add_bpmf_text_area").focus();
+    return;
+  }
+  let output = service.convertTextToHtmlRuby(text);
+  let lines = output.split("\n");
+  let html = "<h2>轉換結果如下</h2>";
+  for (let line of lines) {
+    html += "<p>" + line + "</p>";
+  }
+
+  document.getElementById("add_bpmf_output").innerHTML = html;
+  document.getElementById("add_bpmf_text_area").focus();
 }
 
 function onHashChange() {

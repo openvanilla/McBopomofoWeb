@@ -6,7 +6,7 @@
   <link rel="stylesheet" href="index.css">
   <link rel="icon" type="image/x-icon" href="icons/icon16.png">
 
-  <meta name="description" content="無須額外安裝軟體就可以在瀏覽器當中使用的智慧選字輸入法頁面，並提供中文轉台灣點字等功能">
+  <meta name="description" content="無須額外安裝軟體就可以在瀏覽器當中使用的智慧選字輸入法頁面，並提供國字轉台灣點字等功能">
   <meta name="keywords" content="輸入法,注音,注音輸入法,點字,台灣點字">
   <meta name="author" content="OpenVanilla">
   <meta name="twitter:card" content="summary">
@@ -18,14 +18,14 @@
   <meta name="twitter:description" content="無須額外安裝軟體就可以在瀏覽器當中使用的智慧選字輸入法頁面，並提供中文轉台灣點字等功能">
   <meta property="og:image"
     content="https://opengraph.githubassets.com/fcb18127e60576701bca409d2a5aba2ab9611e0902a42549ed9f1799f9516fa2/openvanilla/McBopomofoWeb">
-  <meta property="og:image:alt" content="無須額外安裝軟體就可以在瀏覽器當中使用的智慧選字輸入法頁面，並提供中文轉台灣點字等功能">
+  <meta property="og:image:alt" content="無須額外安裝軟體就可以在瀏覽器當中使用的智慧選字輸入法頁面，並提供國字轉台灣點字等功能">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="600">
   <meta property="og:site_name" content="GitHub">
   <meta property="og:type" content="object">
   <meta property="og:title" content="McBopomofo 小麥注音輸入法線上版本">
   <meta property="og:url" content="https://github.com/openvanilla/McBopomofoWeb">
-  <meta property="og:description" content="無須額外安裝軟體就可以在瀏覽器當中使用的智慧選字輸入法頁面，並提供中文轉台灣點字等功能">
+  <meta property="og:description" content="無須額外安裝軟體就可以在瀏覽器當中使用的智慧選字輸入法頁面，並提供國字轉台灣點字等功能">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="Pragma" content="no-cache">
@@ -43,19 +43,19 @@
       <a href="#feature_input">輸入功能</a>
       <a href="#feature_text_to_braille">中文轉注音點字</a>
       <a href="#feature_braille_to_text">注音點字轉中文</a>
+      <a href="#feature_add_bpmf">國字加注音</a>
     </p>
 
     <div id="feature_input">
       <div class="left">
         <div id="edit_area">
-          <textarea id="text_area" rows="10" cols="50" title="輸入區"></textarea>
+          <textarea placeholder="請在此直接使用英數鍵盤打字" id="text_area" rows="10" cols="50" title="輸入區"></textarea>
           <div class="function" id="function">
             <div class="composing_buffer" id="composing_buffer">【麥】</div>
             <div class="candidates" id="candidates"></div>
           </div>
         </div>
       </div>
-
 
       <div class="right">
         <div id="note">
@@ -227,25 +227,34 @@
         <p>版本：1.3.0</p>
       </div>
     </div>
+
     <div id="feature_text_to_braille">
-      <h1>中文轉點字</h1>
+      <h1>國字轉點字</h1>
       <p>請在底下的輸入框中輸入中文，按下「轉換」即可轉換成台灣六點點字。</p>
       <p>範例：「小麥注音輸入法」可以轉換成「⠑⠪⠈⠍⠺⠐⠁⠌⠐⠹⠄⠊⠌⠄⠛⠌⠐⠟⠜⠈」</p>
-      <textarea id="text_to_braille_text_area" rows="10" cols="50" title="輸入區"></textarea>
+      <textarea placeholder="請在此輸入國字" id="text_to_braille_text_area" rows="10" cols="50" title="輸入區"></textarea>
       <p><input type="button" value="轉換" onclick="text_to_braille();"></p>
       <div id="text_to_braille_output"></div>
-
     </div>
+
     <div id="feature_braille_to_text">
-      <h1>點字轉中文</h1>
+      <h1>點字轉國字</h1>
       <p>請在底下的輸入框中輸入六點注音點字（Unicode），按下「轉換」即可轉換成中文。</p>
       <p>範例：「⠑⠪⠈⠍⠺⠐⠁⠌⠐⠹⠄⠊⠌⠄⠛⠌⠐⠟⠜⠈」可以轉換成「小麥注音輸入法」</p>
-      <textarea id="braille_to_text_text_area" rows="10" cols="50" title="輸入區"></textarea>
+      <textarea placeholder="請在此輸入六點注音" id="braille_to_text_text_area" rows="10" cols="50" title="輸入區"></textarea>
       <p> <input type="button" value="轉換" onclick="braille_to_text();"></p>
       <div id="braille_to_text_output"></div>
     </div>
-  </div>
 
+    <div id="feature_add_bpmf">
+      <h1>國字加注音</h1>
+      <p>請在底下的輸入框中輸入國字，按下「轉換」就可以加上注音。</p>
+      <textarea placeholder="請在此輸入國字" id="add_bpmf_text_area" rows="10" cols="50" title="輸入區"></textarea>
+      <p> <input type="button" value="轉換" onclick="add_bpmf();"></p>
+      <div id="add_bpmf_output"></div>
+    </div>
+
+  </div>
 </bodY>
 
 
