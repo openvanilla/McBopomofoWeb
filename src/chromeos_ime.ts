@@ -749,7 +749,7 @@ chrome.contextMenus.onClicked.addListener((event, tab) => {
       let convertedLines = [];
       for (let line of lines) {
         let convertedLine = ChineseConvert.cn2tw(line);
-        convertedLine = ChineseConvert.convertTextToBraille(line);
+        convertedLine = chromeMcBopomofo.service.convertTextToBraille(line);
         convertedLines.push(convertedLine);
       }
       converted = convertedLines.join("\n");
