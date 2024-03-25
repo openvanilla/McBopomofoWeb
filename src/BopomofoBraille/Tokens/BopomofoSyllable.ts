@@ -755,6 +755,8 @@ export class BopomofoSyllable {
           throw new Error("Invalid Braille: multiple tones");
         }
         tone = Tone.fromBraille(c);
+      } else {
+        throw new Error("Invalid character in Braille");
       }
     }
 
