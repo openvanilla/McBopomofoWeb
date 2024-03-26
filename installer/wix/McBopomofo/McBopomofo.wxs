@@ -1,5 +1,5 @@
 ﻿<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
-    <Package Name="McBopomofo for PIME" Language="1033" Version="1.3.0" Manufacturer="Cerence Inc." Codepage="1252" UpgradeCode="3eebd424-9434-4312-aa6b-118c8ce352a7" InstallerVersion="300">
+    <Package Name="McBopomofo for PIME" Language="1033" Version="1.5.0" Manufacturer="Cerence Inc." Codepage="1252" UpgradeCode="3eebd424-9434-4312-aa6b-118c8ce352a7" InstallerVersion="300">
         <SummaryInformation Description="McBopomofo for PIME" Manufacturer="Openvanilla.org" />
         <Media Id="1" Cabinet="Product.cab" EmbedCab="yes" />
         <Property Id="PREVIOUSVERSIONSINSTALLED" Secure="yes" />
