@@ -1,16 +1,26 @@
 # McBopomofoWeb - 使用網頁技術打造的小麥注音輸入法
 
-本專案嘗試使用 JavaScript/TypeScript 與網頁相關技術實作小麥注音輸入法，在專案目錄下提供
+本專案嘗試使用 JavaScript/TypeScript 與網頁相關技術實作小麥注音輸入法。小麥注音
+是一套自動選字的注音輸入法，提供多種常用鍵盤配置，以及各種方便快速輸入的功能。
+
+在專案目錄下提供
 
 - src：使用 TypeScript 寫成的小麥輸入法核心
 - output/example：範例網頁
 - output/chromeos：Chrome OS 下的輸入法
 - output/pime：在 Windows 上的輸入法 (基於 [PIME](https://github.com/EasyIME/PIME) 框架)
 
+除了輸入法之外，這個專案中也提供以下的文字轉換服務：
+
+- 國字加上注音，包括 HTML Ruby 形式
+- 國字轉換成台灣點字
+- 台灣點字轉換成國字
+
 ## 使用
 
 - 網頁版本：可以在 [這裡](https://openvanilla.github.io/McBopomofoWeb/) 使用
 - Chrome OS 版本：請前往 [Chrome Web Store](https://chromewebstore.google.com/detail/pkjjfjnlglfhgfaipoempeaghmpfakkg) 下載
+- PIME 版本：目前請自行透過 Node.js 工具編譯後使用
 
 ## 編譯方式
 
@@ -18,11 +28,12 @@
 
 ```sh
 npm install
-npm run build
-npm run build:chromeos
+npm run build # 編譯翻譯網頁版本
+npm run build:chromeos # 編譯 Chrome OS 版本
+npm run build:pime # 編譯 Windows PIME 版本
 ```
 
-這個指令會在 example、chomeos 等目錄下，分別建立對應的檔案，通常叫做 bundle.js。
+這個指令會在 output，分別建立對應的檔案，通常叫做 bundle.js。
 
 ### 範例網頁
 
