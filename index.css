@@ -188,3 +188,7 @@ div.braille_to_text_output {
   width: 100%;
   max-width: 100%;
 }
+
+.credit {
+  font-size: 10pt;
+}
