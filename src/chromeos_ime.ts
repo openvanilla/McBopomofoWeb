@@ -96,10 +96,6 @@ class ChromeMcBopomofo {
     this.inputController.setUserVerticalCandidates(true);
   }
 
-  myLocalizedString(en: string, zh: string): string {
-    return this.lang === "zh-TW" ? zh : en;
-  }
-
   loadSettings() {
     chrome.storage.sync.get("settings", (value) => {
       this.settings = value.settings;
@@ -172,53 +168,40 @@ class ChromeMcBopomofo {
     let menus = [
       {
         id: "mcbopomofo-toggle-alphabet-mode",
-        label: this.myLocalizedString("Input Letters", "輸入英文字母"),
-        // chrome.i18n.getMessage("menuChineseConversion"),
+        label: chrome.i18n.getMessage("menuAlphabetMode"),
         style: "check",
         checked: this.isAlphabetMode === true,
       },
       {
         id: "mcbopomofo-chinese-conversion",
-        label: this.myLocalizedString(
-          "Input Simplified Chinese",
-          "輸入簡體中文"
-        ),
-        // chrome.i18n.getMessage("menuChineseConversion"),
+        label: chrome.i18n.getMessage("menuChineseConversion"),
         style: "check",
         checked: this.settings.chinese_conversion === true,
       },
       {
         id: "mcbopomofo-half-width-punctuation",
-        label: this.myLocalizedString(
-          "Input Half Width Punctuation",
-          "輸入半形標點"
-        ),
-        // chrome.i18n.getMessage("menuChineseConversion"),
+        label: chrome.i18n.getMessage("menuHalfWidthPunctuation"),
         style: "check",
         checked: this.settings.half_width_punctuation_enabled === true,
       },
       {
         id: "mcbopomofo-options",
-        label: this.myLocalizedString("Options", "選項"),
-        // chrome.i18n.getMessage("menuOptions"),
+        label: chrome.i18n.getMessage("menuOptions"),
         style: "check",
       },
       {
         id: "mcbopomofo-user-phrase",
-        label: this.myLocalizedString("User Phrases", "使用者詞彙"),
-        // chrome.i18n.getMessage("menuUserPhrases"),
+        label: chrome.i18n.getMessage("menuUserPhrases"),
         style: "check",
       },
       {
         id: "mcbopomofo-help",
-        label: this.myLocalizedString("Help...", "輔助說明…"),
-        // chrome.i18n.getMessage("menuHelp"),
+        label: chrome.i18n.getMessage("menuHelp"),
         style: "check",
       },
       {
         id: "mcbopomofo-homepage",
-        label: this.myLocalizedString("Homepage", "專案首頁"),
-        //  chrome.i18n.getMessage("homepage"),
+        label: chrome.i18n.getMessage("homepage"),
         style: "check",
       },
     ];
@@ -231,9 +214,8 @@ class ChromeMcBopomofo {
     if (this.settings.use_notification) {
       chrome.notifications.create("mcbopomofo-alphabet-mode" + Date.now(), {
         title: this.isAlphabetMode
-          ? this.myLocalizedString("English Mode", "英文模式")
-          : this.myLocalizedString("Chinese Mode", "中文模式"),
-
+          ? chrome.i18n.getMessage("alphabet_mode")
+          : chrome.i18n.getMessage("chinese_mode"),
         message: "",
         type: "basic",
         iconUrl: "icons/icon48.png",
@@ -252,11 +234,8 @@ class ChromeMcBopomofo {
         "mcbopomofo-chinese-conversion" + Date.now(),
         {
           title: checked
-            ? this.myLocalizedString("Chinese Conversion On", "簡繁轉換已開啟")
-            : this.myLocalizedString(
-                "Chinese Conversion Off",
-                "簡繁轉換已關閉"
-              ),
+            ? chrome.i18n.getMessage("chinese_conversion_on")
+            : chrome.i18n.getMessage("chinese_conversion_off"),
 
           message: "",
           type: "basic",
@@ -284,14 +263,8 @@ class ChromeMcBopomofo {
       "mcbopomofo-half-width-punctuation" + Date.now(),
       {
         title: checked
-          ? this.myLocalizedString(
-              "Using half width punctuation",
-              "使用半形標點"
-            )
-          : this.myLocalizedString(
-              "Using full width punctuation",
-              "使用全形標點"
-            ),
+          ? chrome.i18n.getMessage("using_half_width_punctuation")
+          : chrome.i18n.getMessage("using_full_width_punctuation"),
 
         message: "",
         type: "basic",
@@ -483,8 +456,7 @@ class ChromeMcBopomofo {
             contextID: this.context.contextID,
             candidates: [
               {
-                candidate: this.myLocalizedString("Tooltip", "提示"),
-                // chrome.i18n.getMessage("tooltip"),
+                candidate: chrome.i18n.getMessage("tooltip"),
                 annotation: "",
                 id: 0,
                 label: " ",
@@ -810,55 +782,37 @@ chrome.contextMenus.onClicked.addListener((event, tab) => {
 
 chrome.contextMenus.create({
   id: "convert_text_to_bpmf_syllables",
-  title: chromeMcBopomofo.myLocalizedString(
-    "Convert Text to Bopomofo Syllables",
-    "將國字轉為注音"
-  ),
+  title: chrome.i18n.getMessage("convert_text_to_bpmf_syllables"),
   contexts: ["selection", "editable"],
 });
 
 chrome.contextMenus.create({
   id: "append_bpmf_syllables_to_text",
-  title: chromeMcBopomofo.myLocalizedString(
-    "Append Bopomofo Syllables to Text",
-    "將國字加上注音"
-  ),
+  title: chrome.i18n.getMessage("append_bpmf_syllables_to_text"),
   contexts: ["selection", "editable"],
 });
 
 chrome.contextMenus.create({
   id: "convert_text_to_html_ruby",
-  title: chromeMcBopomofo.myLocalizedString(
-    "Convert Text to HTML Ruby",
-    "將國字轉為 HTML Ruby"
-  ),
+  title: chrome.i18n.getMessage("convert_text_to_html_ruby"),
   contexts: ["selection", "editable"],
 });
 
 chrome.contextMenus.create({
   id: "append_taiwanese_braille",
-  title: chromeMcBopomofo.myLocalizedString(
-    "Append Taiwanese Braille to Text",
-    "將國字加上台灣點字"
-  ),
+  title: chrome.i18n.getMessage("append_taiwanese_braille"),
   contexts: ["selection", "editable"],
 });
 
 chrome.contextMenus.create({
   id: "convert_text_to_taiwanese_braille",
-  title: chromeMcBopomofo.myLocalizedString(
-    "Convert Text to Taiwanese Braille",
-    "將國字轉換成台灣點字"
-  ),
+  title: chrome.i18n.getMessage("convert_text_to_taiwanese_braille"),
   contexts: ["selection", "editable"],
 });
 
 chrome.contextMenus.create({
   id: "convert_taiwanese_braille_to_text",
-  title: chromeMcBopomofo.myLocalizedString(
-    "Convert Taiwanese Braille to Text",
-    "將台灣點字轉回國字"
-  ),
+  title: chrome.i18n.getMessage("convert_taiwanese_braille_to_text"),
   contexts: ["selection", "editable"],
 });
 

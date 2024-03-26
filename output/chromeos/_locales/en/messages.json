@@ -6,11 +6,13 @@
   "imeUS": { "message": "McBopomofo (US Keyboard)" },
   "imeDvorak": { "message": "McBopomofo (Dvorak Keyboard)" },
   "imeColmak": { "message": "McBopomofo (Colmak Keyboard)" },
+  "menuAlphabetMode": { "message": "English Mode" },
   "menuChineseConversion": { "message": "Input Simplified Chinese" },
+  "menuHalfWidthPunctuation": { "message": "Input Half-Width Punctuations" },
   "menuOptions": { "message": "Options" },
   "menuUserPhrases": { "message": "User Phrases" },
   "homepage": { "message": "Homepage" },
-  "tooltip": { "message": "tooltip" },
+  "tooltip": { "message": "Tooltip" },
   "optionTitle": { "message": "McBompofo Options" },
   "optionKeyboardLayout": { "message": "Keyboard Layout:" },
   "optionKeyboardLayoutStandard": { "message": "Standard" },
@@ -63,5 +65,26 @@
     "message": "Use J/K keys to move cursor when choosing candidates "
   },
   "system": { "message": "System:" },
-  "use_notification": { "message": "Use system notification" }
+  "use_notification": { "message": "Use system notification" },
+  "alphabet_mode": { "message": "English Mode" },
+  "chinese_mode": { "message": "Chinese Mode" },
+  "chinese_conversion_on": { "message": "Chinese Conversion On" },
+  "chinese_conversion_off": { "message": "Chinese Conversion Off" },
+  "using_half_width_punctuation": { "message": "Using half-width punctuation" },
+  "using_full_width_punctuation": { "message": "Using full-width punctuation" },
+  "convert_text_to_bpmf_syllables": {
+    "message": "Convert text to Bopomofo syllables"
+  },
+  "append_bpmf_syllables_to_text": {
+    "message": "Append Bopomofo syllables to text"
+  },
+  "convert_text_to_html_ruby": { "message": "Convert text to HTML Ruby" },
+  "append_taiwanese_braille": { "message": "Append Taiwanese Braille" },
+  "convert_text_to_taiwanese_braille": {
+    "message": "Convert text to Taiwanese Braille"
+  },
+  "convert_taiwanese_braille_to_text": {
+    "message": "Convert Taiwanese Braille to text"
+  },
+  "menuHelp": { "message": "Help..." }
 }
