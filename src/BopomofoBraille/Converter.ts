@@ -4,6 +4,11 @@ import { FullWidthPunctuation } from "./Tokens/FullWidthPunctuation";
 import { HalfWidthPunctuation } from "./Tokens/HalfWidthPunctuation";
 import { Letter } from "./Tokens/Letter";
 
+/**
+ * The state of the converter.
+
+ * @internal
+ */
 const enum ConverterState {
   initial = 0,
   bpmf = 1,
@@ -19,14 +24,14 @@ export class BopomofoBrailleConverter {
    * Converts Bopomofo syllables to Braille.
    * @param bopomofo Bopomofo syllables in Unicode.
    * @returns Converted Braille in Unicode.
+   *
+   * @example
+   * ``` ts
+   * BopomofoBrailleConverter.convertBpmfToBraille("ㄒㄧㄠˇㄇㄞˋㄓㄨˋㄧㄣ");
+   * ```
    */
   public static convertBpmfToBraille(bopomofo: string): string {
-    let state:
-      | ConverterState.initial
-      | ConverterState.bpmf
-      | ConverterState.letters
-      | ConverterState.digits;
-    state = ConverterState.initial;
+    let state: ConverterState = ConverterState.initial;
     let output = "";
     let readHead = 0;
     const length = bopomofo.length;
@@ -181,10 +186,37 @@ export class BopomofoBrailleConverter {
   }
 
   /**
-   * Converts Braille to tokens. The tokens could be  BopomofoSyllable objects
-   * or strings
+   * Converts a Braille string to tokens. The tokens could be  BopomofoSyllable
+   * objects or strings
+   *
    * @param braille Braille in Unicode.
-   * @returns Tokens.
+   * @returns Tokens. A token could be a BopomofoSyllable object or a string.
+   *
+   * @privateRemarks
+   * The converter tokenizes the input string by trying to find three kinds of
+   * tokens, Bopomofo syllables, digits, and letters. However, it converts
+   * digits and letters into strings since the users of the method only need to
+   * know about the range of the Bopomofo syllables, so they can convert the
+   * Bopomofo syllables into Chinese characters using McBopomofo's input method
+   * module.
+   *
+   * What the converters does are including.
+   * - Set the state of the converter to initial.
+   * - Tries to find if there is a valid Bopomofo syllable in the begin of the
+   *   input string.
+   * - If failed, tries to find a full-width punctuation. Please note that some
+   *   punctuation should not be in the beginning of sentences, such as comma,
+   *   so such punctuations will be ignored.
+   * - If failed, tries to find a digit. A digit starts with "⠼". If a digit is
+   *   found , we let the convert enter digits state and keep finding digits.
+   * - If failed, tries to find a letter. If a letter is found, we let the
+   *   converter enter letters state and keep finding letters.
+   * - If there is a space, reset the state of the converter to initial, and
+   *   continue to parse incoming characters.
+   * @example
+   * ``` ts
+   * BopomofoBrailleConverter.convertBrailleToTokens("⠑⠪⠈⠍⠺⠐⠁⠌⠐⠹⠄");
+   * ```
    */
   static convertBrailleToTokens(
     braille: string
@@ -398,7 +430,8 @@ export class BopomofoBrailleConverter {
         }
       }
 
-      if (readHead === length) {
+      // The read head might be already over the length here.
+      if (readHead >= length) {
         break;
       }
 
@@ -417,11 +450,20 @@ export class BopomofoBrailleConverter {
 
   /**
    * Converts Braille to Bopomofo syllables.
+   *
+   * The method calls `convertBrailleToTokens` to convert the input string to
+   * tokens, and then connects the tokens to form a string.
+   *
    * @param braille Braille in Unicode.
    * @returns Converted Bopomofo syllables in Unicode.
+   *
+   * @example
+   * ``` ts
+   * BopomofoBrailleConverter.convertBrailleToBpmf("⠑⠪⠈⠍⠺⠐⠁⠌⠐⠹⠄");
+   * ```
    */
   static convertBrailleToBpmf(braille: string): string {
-    let tokens = this.convertBrailleToTokens(braille);
+    const tokens = this.convertBrailleToTokens(braille);
     let output = "";
     for (let token of tokens) {
       if (token instanceof BopomofoSyllable) {
