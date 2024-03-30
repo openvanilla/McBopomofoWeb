@@ -543,6 +543,15 @@ chrome.input?.ime.onKeyEvent.addListener((engineID, keyData) => {
     return false;
   }
 
+  // console.log("keyData.ctrlKey " + keyData.ctrlKey);
+  // console.log("keyData.key " + keyData.key);
+
+  // We always prevent handling Ctrl + Space so we can switch input methods.
+  if (keyData.ctrlKey && keyData.code === "Space") {
+    chromeMcBopomofo.inputController.reset();
+    return false;
+  }
+
   let shouldHandleShift =
     chromeMcBopomofo.settings.shift_key_toggle_alphabet_mode === true;
 

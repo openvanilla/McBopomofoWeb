@@ -2,6 +2,7 @@ const path = require("path");
 
 module.exports = {
   entry: "./src/chromeos_ime.ts",
+  devtool: "cheap-source-map",
   module: {
     rules: [
       {
@@ -22,5 +23,6 @@ module.exports = {
   output: {
     filename: "bundle.js",
     path: path.resolve(__dirname, "output/chromeos"),
+    devtoolModuleFilenameTemplate: "[absolute-resource-path]",
   },
 };
