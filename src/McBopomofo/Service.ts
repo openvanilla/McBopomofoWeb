@@ -17,13 +17,18 @@ export class Service {
   private convertText(
     input: string,
     readingCallback: (reading: string, value: string) => string,
-    nonReadingCallback: (input: string) => string
+    nonReadingCallback: (input: string) => string,
+    addingSpace = false // Braille needs additional space between Chinese characters, letters and digits.
   ): string {
     let output: string = "";
     let converted = ChineseConvert.cn2tw(input);
     let length = converted.length;
     let readHead = 0;
     let pendingText = "";
+
+    let isASCII = (input: string): boolean => {
+      return /^[\x00-\x7F]*$/.test(input);
+    };
 
     while (readHead < length) {
       let targetLength = Math.min(6, length - readHead);
@@ -34,10 +39,26 @@ export class Service {
         let reading = this.lm_.getReading(subString);
         if (reading != undefined) {
           if (reading.startsWith("_")) {
+            if (
+              addingSpace &&
+              output.length > 0 &&
+              pendingText.length == 0 &&
+              isASCII(subString.charAt(0))
+            ) {
+              console.log("add 1");
+              pendingText += " ";
+            }
             pendingText += subString;
           } else {
             if (pendingText.length > 0) {
               output += nonReadingCallback(pendingText);
+              if (
+                addingSpace &&
+                isASCII(pendingText.charAt(pendingText.length - 1))
+              ) {
+                output += " ";
+                console.log("add 2");
+              }
               pendingText = "";
             }
 
@@ -60,12 +81,33 @@ export class Service {
       }
 
       if (!found) {
-        pendingText += converted.charAt(readHead);
+        let subString = converted.charAt(readHead);
+        if (
+          addingSpace &&
+          output.length > 0 &&
+          pendingText.length == 0 &&
+          isASCII(subString)
+        ) {
+          pendingText += " ";
+          console.log("add 3");
+        }
+
+        pendingText += subString;
         readHead += 1;
       }
     }
 
     if (pendingText.length > 0) {
+      if (
+        addingSpace &&
+        output.length > 0 &&
+        pendingText.length == 0 &&
+        isASCII(pendingText)
+      ) {
+        pendingText += " ";
+        console.log("add 4");
+      }
+
       output += nonReadingCallback(pendingText);
       pendingText = "";
     }
@@ -81,6 +123,7 @@ export class Service {
   public convertBrailleToText(input: string): string {
     let output: string = "";
     let tokens = BopomofoBrailleConverter.convertBrailleToTokens(input);
+    console.log(tokens);
     for (let token of tokens) {
       if (token instanceof BopomofoSyllable) {
         this.grid_.insertReading(token.bpmf);
@@ -115,7 +158,8 @@ export class Service {
       },
       (input: string) => {
         return BopomofoBrailleConverter.convertBpmfToBraille(input);
-      }
+      },
+      true
     );
   }
 

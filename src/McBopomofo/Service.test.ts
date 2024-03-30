@@ -1,7 +1,7 @@
 import { Service } from "./Service";
 
 describe("Test service", () => {
-  test("Test convertBrailleToText", () => {
+  test("Test convertBrailleToText 1", () => {
     let service = new Service();
     let input = "由「小麥」的作者";
     let r1 = service.convertTextToBraille(input);
@@ -9,54 +9,90 @@ describe("Test service", () => {
     expect(r2).toBe(input);
   });
 
-  test("Test convertBrailleToText", () => {
+  test("Test convertBrailleToText 2 - 1", () => {
+    let service = new Service();
+    let input = "第1名";
+    let r1 = service.convertTextToBraille(input);
+    expect(r1).toBe("⠙⠡⠐ ⠼⠂ ⠍⠽⠂");
+    let r2 = service.convertBrailleToText(r1);
+    expect(r2).toBe("地 1 明");
+  });
+
+  test("Test convertBrailleToText 2 - 2", () => {
+    let service = new Service();
+    let input = "第A名";
+    let r1 = service.convertTextToBraille(input);
+    expect(r1).toBe("⠙⠡⠐ ⠠⠁ ⠍⠽⠂");
+    let r2 = service.convertBrailleToText(r1);
+    expect(r2).toBe("地 A 明");
+  });
+
+  test("Test convertBrailleToText 2 - 3", () => {
+    let service = new Service();
+    let input = "第A B名";
+    let r1 = service.convertTextToBraille(input);
+    expect(r1).toBe("⠙⠡⠐ ⠠⠁ ⠠⠃ ⠍⠽⠂");
+    let r2 = service.convertBrailleToText(r1);
+    expect(r2).toBe("地 A B 明");
+  });
+
+  test("Test convertBrailleToText 2 - 4", () => {
+    let service = new Service();
+    let input = "第AB名";
+    let r1 = service.convertTextToBraille(input);
+    expect(r1).toBe("⠙⠡⠐ ⠠⠁⠠⠃ ⠍⠽⠂");
+    let r2 = service.convertBrailleToText(r1);
+    expect(r2).toBe("地 AB 明");
+  });
+
+  test("Test convertBrailleToText 3", () => {
     let service = new Service();
     let result = service.convertBrailleToText("⠋⠞⠄⠚⠡⠐⠗⠩⠈");
     expect(result).toBe("天氣好");
   });
 
-  test("Test convertBrailleToText", () => {
+  test("Test convertBrailleToText 4", () => {
     let service = new Service();
     let result = service.convertBrailleToText("⠋⠞⠄⠚⠡⠐⠁⠥⠄⠙⠮⠁⠗⠥⠈⠗⠩⠈");
     expect(result).toBe("天氣真的很好");
   });
 
-  test("Test convertTextToBraille 1", () => {
+  test("Test convertTextToBraille 5", () => {
     let service = new Service();
     let result = service.convertTextToBraille("天氣好");
     expect(result).toBe("⠋⠞⠄⠚⠡⠐⠗⠩⠈");
   });
-  test("Test convertTextToBraille 2", () => {
+  test("Test convertTextToBraille 6", () => {
     let service = new Service();
     let result = service.convertTextToBraille("天氣真的很好");
     expect(result).toBe("⠋⠞⠄⠚⠡⠐⠁⠥⠄⠙⠮⠁⠗⠥⠈⠗⠩⠈");
   });
 
-  test("Test convertTextToBraille 3", () => {
+  test("Test convertTextToBraille 7", () => {
     let service = new Service();
     let result = service.convertTextToBraille("今天天氣好清爽");
     expect(result).toBe("⠅⠹⠄⠋⠞⠄⠋⠞⠄⠚⠡⠐⠗⠩⠈⠚⠽⠄⠊⠸⠈");
   });
 
-  test("Test convertTextToBraille 4", () => {
+  test("Test convertTextToBraille 8", () => {
     let service = new Service();
     let result = service.convertTextToBraille("，");
     expect(result).toBe("⠆");
   });
 
-  test("Test convertTextToBraille 5", () => {
+  test("Test convertTextToBraille 9", () => {
     let service = new Service();
     let result = service.convertTextToBraille("同樣");
     expect(result).toBe("⠋⠯⠂⠨⠐");
   });
 
-  test("Test convertTextToBraille 6", () => {
+  test("Test convertTextToBraille 10", () => {
     let service = new Service();
     let result = service.convertTextToBraille("，，，");
     expect(result).toBe("⠆⠆⠆");
   });
 
-  test("Test convertTextToBraille 7", () => {
+  test("Test convertTextToBraille 11", () => {
     let service = new Service();
     let result = service.convertTextToBraille("除了在");
     expect(result).toBe("⠃⠌⠂⠉⠮⠁⠓⠺⠐");
