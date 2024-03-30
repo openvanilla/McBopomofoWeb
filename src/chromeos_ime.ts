@@ -543,9 +543,6 @@ chrome.input?.ime.onKeyEvent.addListener((engineID, keyData) => {
     return false;
   }
 
-  // console.log("keyData.ctrlKey " + keyData.ctrlKey);
-  // console.log("keyData.key " + keyData.key);
-
   // We always prevent handling Ctrl + Space so we can switch input methods.
   if (keyData.ctrlKey && keyData.code === "Space") {
     chromeMcBopomofo.inputController.reset();
@@ -757,36 +754,42 @@ chrome.contextMenus.onClicked.addListener((event, tab) => {
     return;
   }
 
-  try {
-    chrome.tabs.executeScript(
-      { code: "window.getSelection().toString();" },
-      (selection) => {
-        let selected = selection[0];
-        if (selected === undefined) {
-          return;
-        }
-        handle(selected, menuItemId as string, tabId as number);
-      }
-    );
-  } catch {
-    chrome.scripting
-      .executeScript<any[], string | undefined>({
-        target: {
-          tabId: tabId as number,
-        },
-        func: () => {
-          return window?.getSelection()?.toString();
-        },
-      })
-      .then((selection) => {
-        const { result } = selection[0];
-        let selected = result;
-        if (selected === undefined) {
-          return;
-        }
-        handle(selected as string, menuItemId as string, tabId as number);
-      });
+  let selected = event.selectionText;
+  if (selected === undefined) {
+    return;
   }
+  handle(selected, menuItemId as string, tabId as number);
+
+  // try {
+  //   chrome.tabs.executeScript(
+  //     { code: "window.getSelection().toString();" },
+  //     (selection) => {
+  //       let selected = selection[0];
+  //       if (selected === undefined) {
+  //         return;
+  //       }
+  //       handle(selected, menuItemId as string, tabId as number);
+  //     }
+  //   );
+  // } catch {
+  //   chrome.scripting
+  //     .executeScript<any[], string | undefined>({
+  //       target: {
+  //         tabId: tabId as number,
+  //       },
+  //       func: () => {
+  //         return window?.getSelection()?.toString();
+  //       },
+  //     })
+  //     .then((selection) => {
+  //       const { result } = selection[0];
+  //       let selected = result;
+  //       if (selected === undefined) {
+  //         return;
+  //       }
+  //       handle(selected as string, menuItemId as string, tabId as number);
+  //     });
+  // }
 });
 
 chrome.contextMenus.create({

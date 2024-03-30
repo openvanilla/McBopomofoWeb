@@ -59,8 +59,7 @@
     "storage",
     "notifications",
     "tabs",
-    "contextMenus",
-    "scripting"
+    "contextMenus"
   ],
   "host_permissions": ["<all_urls>"],
   "commands": {
