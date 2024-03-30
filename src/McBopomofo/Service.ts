@@ -37,7 +37,7 @@ export class Service {
         let end = readHead + i;
         let subString = converted.substring(readHead, end);
         let reading = this.lm_.getReading(subString);
-        if (reading != undefined) {
+        if (reading !== undefined) {
           if (reading.startsWith("_")) {
             if (
               addingSpace &&
