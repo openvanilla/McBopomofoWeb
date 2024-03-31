@@ -113,9 +113,6 @@ class PimeMcBopomofo {
       let command = `start ${url}`;
       child_process.exec(command);
     });
-    // this.mcInputController.setOnPhraseChange((map: Map<string, string[]>) => {
-    //   this.writeUserPhrases(map);
-    // });
     this.inputController.setOnPhraseAdded((key: string, phrase: string) => {
       this.addPhrase(key, phrase);
     });
@@ -196,8 +193,6 @@ class PimeMcBopomofo {
             map.set(key, phrases);
           }
         }
-        // console.log("load user phrases");
-        // console.log(map);
         this.inputController.setUserPhrases(map);
       } catch {
         console.error("Failed to parse user phrases");
