@@ -4,7 +4,7 @@ body {
 }
 
 #edit_area {
-  height: 85%;
+  border: 2px solid #000;
 }
 
 .navi {
@@ -38,16 +38,28 @@ textarea#text_area {
   font-size: 14pt;
   color: #fff;
   border: 0;
+  margin: 0;
   width: 100%;
-  height: calc(100% - 2em);
+  height: 70%;
+  /* max-height: 100%; */
   ime-mode: disabled;
   -webkit-ime-mode: disabled;
   -moz-ime-mode: disabled;
   -ms-ime-mode: disabled;
 }
 
+textarea#text_area::placeholder {
+  color: #003;
+}
+
 textarea#text_area:focus {
   background-color: blue;
+  border: 0;
+  outline: none;
+}
+
+textarea#feature_user_phrases_text_area {
+  height: 70%;
 }
 
 .function {
@@ -81,13 +93,15 @@ textarea#text_area:focus {
 .left {
   width: 70%;
   float: left;
-  height: 90%;
+  min-height: 90%;
+  overflow: auto !important;
 }
 
 .right {
   width: 28%;
   float: right;
   height: 90%;
+  overflow: auto !important;
 }
 
 .right p,
@@ -195,4 +209,10 @@ div.braille_to_text_output {
 
 .credit {
   font-size: 10pt;
+}
+
+blockquote {
+  background-color: #eee;
+  margin: 0;
+  padding: 20px;
 }

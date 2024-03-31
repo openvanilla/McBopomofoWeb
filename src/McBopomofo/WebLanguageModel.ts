@@ -104,7 +104,32 @@ export class WebLanguageModel implements LanguageModel {
   }
 
   /** Sets the user phrases. */
-  public setUserPhrases(map: Map<string, string[]>): void {
+  public setUserPhrases(input: Map<string, string[]> | string): void {
+    let map: Map<string, string[]> = new Map();
+    if (typeof input === "string") {
+      let lines = input.split("\n");
+      for (let line of lines) {
+        line = line.trim();
+        let parts = line.split(" ");
+        if (parts.length < 2) {
+          continue;
+        }
+        let key = parts[0];
+        let value = parts[1];
+        let list = map.get(key);
+        if (list != undefined) {
+          list.push(value);
+          map.set(key, list);
+        } else {
+          list = [];
+          list.push(value);
+          map.set(key, list);
+        }
+      }
+    } else {
+      map = input;
+    }
+
     this.userPhrases_.setUserPhrases(map);
   }
 

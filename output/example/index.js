@@ -298,43 +298,21 @@ function applySettings(settings) {
   }
 }
 
-function parseUserPhrases(result) {
+function loadUserPhrases() {
+  let result = window.localStorage.getItem("user_phrases");
   if (result === undefined || result === null || result.length === 0) {
     result = "";
   }
-  let userPheases = {};
-  let lines = result.split("\n");
-  for (let line of lines) {
-    line = line.trim();
-    if (line.startsWith("#")) {
-      continue;
-    }
-    let parts = line.split(" ");
-    if (parts.length < 2) {
-      continue;
-    }
-    let key = parts[0];
-    let phrase = parts[1];
-    let phrases = userPheases[key];
-    if (phrases === undefined || phrases === null || phrases.length === 0) {
-      phrases = [];
-    }
-    phrases.push(phrase);
-    userPheases[key] = phrases;
-  }
-}
-
-function loadUserPhrases() {
-  let result = window.localStorage.getItem("user_phrases");
   document.getElementById("feature_user_phrases_text_area").value = result;
-  let userPhrases = parseUserPhrases(result);
-  controller.setUserPhrases(userPhrases);
+  console.log("userPhrases:\n" + result);
+  controller.setUserPhrases(result);
+  service.setUserPhrases(result);
 }
 
 function saveUserPhrases(result) {
   window.localStorage.setItem("user_phrases", result);
-  let userPhrases = parseUserPhrases(result);
-  controller.setUserPhrases(userPhrases);
+  controller.setUserPhrases(result);
+  service.setUserPhrases(result);
   document.getElementById("feature_user_phrases_text_area").value = result;
 }
 
@@ -591,7 +569,14 @@ function addBpmf() {
     document.getElementById("add_bpmf_text_area").focus();
     return;
   }
-  let output = service.convertTextToHtmlRuby(text);
+  let output = "";
+  if (document.getElementById("convert_to_reading").checked) {
+    output = service.convertTextToBpmfReadings(text);
+  } else if (document.getElementById("add_reading").checked) {
+    output = service.appendBpmfReadingsToText(text);
+  } else {
+    output = service.convertTextToHtmlRuby(text);
+  }
   let lines = output.split("\n");
   let html = "<h2>轉換結果如下</h2>";
   for (let line of lines) {

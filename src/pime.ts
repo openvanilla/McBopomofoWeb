@@ -174,26 +174,8 @@ class PimeMcBopomofo {
         return;
       }
       try {
-        let map = new Map<string, string[]>();
-
         let string = data.toString("utf8");
-        let lines = string.split("\n");
-        // console.log("load user phrases");
-        for (let line of lines) {
-          console.log(line);
-          let components = line.split(" ");
-          if (components.length >= 2) {
-            let key = components[0];
-            let phrase = components[1];
-            let phrases = map.get(key);
-            if (phrases === undefined) {
-              phrases = [];
-            }
-            phrases.push(phrase);
-            map.set(key, phrases);
-          }
-        }
-        this.inputController.setUserPhrases(map);
+        this.inputController.setUserPhrases(string);
       } catch {
         console.error("Failed to parse user phrases");
       }
