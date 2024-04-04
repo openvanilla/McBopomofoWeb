@@ -9,6 +9,7 @@ import process from "process";
 
 /** The McBopomofo Settings. */
 interface Settings {
+  candidate_font_size: number;
   /** The keyboard layout. Valid options: "Standard", "Hsu", "ETen", "ETen26",
    * "IBM", "HanyuPinyin" */
   layout: string;
@@ -56,6 +57,7 @@ interface UiState {
 
 /**  The default settings. */
 const defaultSettings: Settings = {
+  candidate_font_size: 16,
   layout: "standard",
   select_phrase: "before_cursor",
   candidate_keys: "123456789",
@@ -439,12 +441,20 @@ class PimeMcBopomofo {
   }
 
   public customUiResponse(): any {
+    let fontSize = this.settings.candidate_font_size;
+    if (fontSize == undefined) {
+      fontSize = 16;
+    } else if (fontSize < 10) {
+      fontSize = 10;
+    } else if (fontSize > 32) {
+      fontSize = 32;
+    }
+
     return {
       openKeyboard: this.isOpened,
       customizeUI: {
         candPerRow: 1,
-        candFontSize: 16,
-        // candFontName: "MingLiu",
+        candFontSize: fontSize,
         candFontName: "Microsoft YaHei",
         candUseCursor: true,
       },

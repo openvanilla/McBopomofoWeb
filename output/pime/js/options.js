@@ -1,6 +1,7 @@
 window.onload = () => {
   let settings = {};
   const defaultSettings = {
+    candidate_font_size: 16,
     layout: "standard",
     select_phrase: "before_cursor",
     candidate_keys: "123456789",
@@ -18,6 +19,19 @@ window.onload = () => {
   };
 
   function applySettings(settings) {
+    {
+      let select = document.getElementById("font_size");
+      let options = select.getElementsByTagName("option");
+      if (settings.candidate_font_size == undefined) {
+        settings.candidate_font_size = 16;
+      }
+      for (let option of options) {
+        if (+option.value === settings.candidate_font_size) {
+          option.selected = "selected";
+          break;
+        }
+      }
+    }
     {
       let select = document.getElementById("layout");
       let options = select.getElementsByTagName("option");
@@ -140,6 +154,12 @@ window.onload = () => {
     xhttp.open("GET", "/config");
     xhttp.send();
   })();
+
+  document.getElementById("font_size").onchange = (event) => {
+    let value = document.getElementById("font_size").value;
+    settings.candidate_font_size = +value;
+    saveSettings(settings);
+  };
 
   document.getElementById("layout").onchange = (event) => {
     let value = document.getElementById("layout").value;
