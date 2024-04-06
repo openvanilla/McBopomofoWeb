@@ -52,9 +52,10 @@ let ui = (function () {
 
   that.commitString = function (string) {
     var selectionStart = document.getElementById("text_area").selectionStart;
+    var selectionEnd = document.getElementById("text_area").selectionEnd;
     var text = document.getElementById("text_area").value;
     var head = text.substring(0, selectionStart);
-    var tail = text.substring(selectionStart);
+    var tail = text.substring(selectionEnd);
     document.getElementById("text_area").value = head + string + tail;
     let start = selectionStart + string.length;
     document.getElementById("text_area").setSelectionRange(start, start);
