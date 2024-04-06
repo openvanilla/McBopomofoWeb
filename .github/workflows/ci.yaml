@@ -75,7 +75,7 @@ jobs:
         uses: microsoft/setup-msbuild@v1.1
         if: runner.os == 'Windows'
       - name: Install WiX
-        run: dotnet tool install --global wix
+        run: dotnet tool install --global wix --version 4.0.4
         if: runner.os == 'Windows'
       - run: .\build_pime_installer.bat
       - name: Add generated binary to artifact
