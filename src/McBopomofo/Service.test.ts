@@ -1,6 +1,7 @@
 import { Service } from "./Service";
 
 describe("Test service", () => {
+  
   test("Test convertBrailleToText 1", () => {
     let service = new Service();
     let input = "由「小麥」的作者";
@@ -49,6 +50,12 @@ describe("Test service", () => {
     let service = new Service();
     let result = service.convertBrailleToText("⠋⠞⠄⠚⠡⠐⠗⠩⠈");
     expect(result).toBe("天氣好");
+  });
+
+  test("Test convertBrailleToText with punctuation", () => {
+    let service = new Service();
+    let result = service.convertBrailleToText("⠋⠞⠄⠚⠡⠐⠗⠩⠈⠂");
+    expect(result).toBe("天氣好,");
   });
 
   test("Test convertBrailleToText 4", () => {

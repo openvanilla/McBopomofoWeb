@@ -5,6 +5,15 @@ import { WebLanguageModel } from "./WebLanguageModel";
 
 const ChineseConvert = require("chinese_convert");
 
+/**
+ * The text conversion service.
+ *
+ * The service provides the following functions:
+ *  - Convert Taiwanese Braille to text
+ *  - Convert text to Bopomofo readings
+ *  - Convert text to HTML Ruby
+ *  - Convert text to Taiwanese Braille
+ */
 export class Service {
   private lm_: WebLanguageModel;
   private grid_: ReadingGrid;
@@ -12,6 +21,14 @@ export class Service {
   constructor() {
     this.lm_ = new WebLanguageModel(webData);
     this.grid_ = new ReadingGrid(this.lm_);
+  }
+
+  /**
+   * Sets the user phrases to the language model.
+   * @param input The map of user phrases.
+   */
+  public setUserPhrases(input: Map<string, string[]> | string): void {
+    this.lm_.setUserPhrases(input);
   }
 
   private convertText(

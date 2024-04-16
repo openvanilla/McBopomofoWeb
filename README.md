@@ -86,4 +86,7 @@ powershell -noexit %COMMAND%
 
 ## 感謝
 
-特別感謝 William Wang 的技術支援。
+特別感謝：
+
+- William Wang 在 Node 與 WebPack 方面的技術支援
+- [視覺障礙輔助科技筆記本](https://class.kh.edu.tw/19061/page/view/27) 在點字領域的支援

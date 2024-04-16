@@ -4,6 +4,7 @@ var composingBuffer = "";
 function toggle_feature(id) {
   let features = [
     "feature_input",
+    "feature_user_phrases",
     "feature_text_to_braille",
     "feature_braille_to_text",
     "feature_add_bpmf",
@@ -15,6 +16,9 @@ function toggle_feature(id) {
   if (id === "feature_input") {
     document.getElementById("text_area").focus();
     document.title = "輸入功能";
+  } else if (id === "feature_user_phrases") {
+    // document.getElementById("text_to_braille_text_area").focus();
+    document.title = "自定詞管理";
   } else if (id === "feature_text_to_braille") {
     document.getElementById("text_to_braille_text_area").focus();
     document.title = "中文轉注音點字";
@@ -48,9 +52,10 @@ let ui = (function () {
 
   that.commitString = function (string) {
     var selectionStart = document.getElementById("text_area").selectionStart;
+    var selectionEnd = document.getElementById("text_area").selectionEnd;
     var text = document.getElementById("text_area").value;
     var head = text.substring(0, selectionStart);
-    var tail = text.substring(selectionStart);
+    var tail = text.substring(selectionEnd);
     document.getElementById("text_area").value = head + string + tail;
     let start = selectionStart + string.length;
     document.getElementById("text_area").setSelectionRange(start, start);
@@ -114,16 +119,27 @@ let ui = (function () {
 
 const { InputController, Service } = window.mcbopomofo;
 let controller = new InputController(ui);
-let service = new Service();
+controller.setOnPhraseAdded(function (key, phrase) {
+  let result = window.localStorage.getItem("user_phrases");
+  if (result === undefined || result === null || result.length === 0) {
+    result = "";
+  }
+  let lastChar = result.substring(result.length - 1);
+  if (lastChar != "\n") {
+    result += "\n";
+  }
+  result += key + " " + phrase + "\n";
+  saveUserPhrases(result);
+});
 controller.setOnOpenUrl(function (url) {
   window.open(url);
 });
 controller.setOnError(function () {
-  // console.log("on error");
   if (settings.beep_on_error) {
     beep();
   }
 });
+let service = new Service();
 
 let defaultSettings = {
   trad_mode: false,
@@ -224,7 +240,7 @@ function applySettings(settings) {
     let select = document.getElementById("keys_count");
     let options = select.getElementsByTagName("option");
     for (let option of options) {
-      if (option.value == settings.candidate_keys_count) {
+      if (option.value === settings.candidate_keys_count) {
         option.selected = "selected";
         break;
       }
@@ -275,7 +291,7 @@ function applySettings(settings) {
     let select = document.getElementById("ctrl_enter_option");
     let options = select.getElementsByTagName("option");
     for (let option of options) {
-      if (option.value == settings.ctrl_enter_option) {
+      if (option.value === settings.ctrl_enter_option) {
         option.selected = "selected";
         break;
       }
@@ -285,27 +301,25 @@ function applySettings(settings) {
 
 function loadUserPhrases() {
   let result = window.localStorage.getItem("user_phrases");
-  try {
-    let obj = JSON.parse(result);
-    if (result !== undefined && result !== null) {
-      let userPhrases = new Map(Object.entries(obj));
-      controller.setUserPhrases(userPhrases);
-    } else {
-      controller.setUserPhrases(new Map());
-    }
-  } catch (e) {}
+  if (result === undefined || result === null || result.length === 0) {
+    result = "";
+  }
+  document.getElementById("feature_user_phrases_text_area").value = result;
+  console.log("userPhrases:\n" + result);
+  controller.setUserPhrases(result);
+  service.setUserPhrases(result);
 }
 
-function saveUserPhrases(userPhrases) {
-  const obj = Object.fromEntries(userPhrases);
-  const s = JSON.stringify(obj);
-  window.localStorage.setItem("user_phrases", s);
+function saveUserPhrases(result) {
+  window.localStorage.setItem("user_phrases", result);
+  controller.setUserPhrases(result);
+  service.setUserPhrases(result);
+  document.getElementById("feature_user_phrases_text_area").value = result;
 }
 
 settings = loadSettings();
 applySettings(settings);
 loadUserPhrases();
-controller.setOnPhraseChange(saveUserPhrases);
 
 let shiftKeyIsPressed = false;
 
@@ -507,7 +521,7 @@ setTimeout(function () {
 resetUI();
 document.getElementById("text_area").focus();
 
-function text_to_braille() {
+function textToBraille() {
   let text = document.getElementById("text_to_braille_text_area").value;
   text = text.trim();
   if (text.length === 0) {
@@ -527,7 +541,7 @@ function text_to_braille() {
   document.getElementById("text_to_braille_text_area").focus();
 }
 
-function braille_to_text() {
+function brailleToText() {
   let text = document.getElementById("braille_to_text_text_area").value;
   text = text.trim();
   if (text.length === 0) {
@@ -547,7 +561,7 @@ function braille_to_text() {
   document.getElementById("braille_to_text_text_area").focus();
 }
 
-function add_bpmf() {
+function addBpmf() {
   let text = document.getElementById("add_bpmf_text_area").value;
   text = text.trim();
   if (text.length === 0) {
@@ -556,7 +570,14 @@ function add_bpmf() {
     document.getElementById("add_bpmf_text_area").focus();
     return;
   }
-  let output = service.convertTextToHtmlRuby(text);
+  let output = "";
+  if (document.getElementById("convert_to_reading").checked) {
+    output = service.convertTextToBpmfReadings(text);
+  } else if (document.getElementById("add_reading").checked) {
+    output = service.appendBpmfReadingsToText(text);
+  } else {
+    output = service.convertTextToHtmlRuby(text);
+  }
   let lines = output.split("\n");
   let html = "<h2>轉換結果如下</h2>";
   for (let line of lines) {

@@ -1,3 +1,5 @@
+@REM Helps to dump log from PIME
+
 @echo off
 cls
 

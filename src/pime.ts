@@ -9,6 +9,7 @@ import process from "process";
 
 /** The McBopomofo Settings. */
 interface Settings {
+  candidate_font_size: number;
   /** The keyboard layout. Valid options: "Standard", "Hsu", "ETen", "ETen26",
    * "IBM", "HanyuPinyin" */
   layout: string;
@@ -56,6 +57,7 @@ interface UiState {
 
 /**  The default settings. */
 const defaultSettings: Settings = {
+  candidate_font_size: 16,
   layout: "standard",
   select_phrase: "before_cursor",
   candidate_keys: "123456789",
@@ -113,9 +115,6 @@ class PimeMcBopomofo {
       let command = `start ${url}`;
       child_process.exec(command);
     });
-    // this.mcInputController.setOnPhraseChange((map: Map<string, string[]>) => {
-    //   this.writeUserPhrases(map);
-    // });
     this.inputController.setOnPhraseAdded((key: string, phrase: string) => {
       this.addPhrase(key, phrase);
     });
@@ -177,28 +176,8 @@ class PimeMcBopomofo {
         return;
       }
       try {
-        let map = new Map<string, string[]>();
-
         let string = data.toString("utf8");
-        let lines = string.split("\n");
-        // console.log("load user phrases");
-        for (let line of lines) {
-          console.log(line);
-          let components = line.split(" ");
-          if (components.length >= 2) {
-            let key = components[0];
-            let phrase = components[1];
-            let phrases = map.get(key);
-            if (phrases === undefined) {
-              phrases = [];
-            }
-            phrases.push(phrase);
-            map.set(key, phrases);
-          }
-        }
-        // console.log("load user phrases");
-        // console.log(map);
-        this.inputController.setUserPhrases(map);
+        this.inputController.setUserPhrases(string);
       } catch {
         console.error("Failed to parse user phrases");
       }
@@ -462,12 +441,20 @@ class PimeMcBopomofo {
   }
 
   public customUiResponse(): any {
+    let fontSize = this.settings.candidate_font_size;
+    if (fontSize == undefined) {
+      fontSize = 16;
+    } else if (fontSize < 10) {
+      fontSize = 10;
+    } else if (fontSize > 32) {
+      fontSize = 32;
+    }
+
     return {
       openKeyboard: this.isOpened,
       customizeUI: {
         candPerRow: 1,
-        candFontSize: 16,
-        // candFontName: "MingLiu",
+        candFontSize: fontSize,
         candFontName: "Microsoft YaHei",
         candUseCursor: true,
       },

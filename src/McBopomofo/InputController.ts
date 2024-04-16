@@ -290,10 +290,10 @@ export class InputController {
 
   /**
    * Sets the user phrases to the language model.
-   * @param map The map of user phrases.
+   * @param input The map of user phrases.
    */
-  public setUserPhrases(map: Map<string, string[]>): void {
-    this.lm_.setUserPhrases(map);
+  public setUserPhrases(input: Map<string, string[]> | string): void {
+    this.lm_.setUserPhrases(input);
   }
 
   /**

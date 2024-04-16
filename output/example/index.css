@@ -1,10 +1,10 @@
 body {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: Helvetica, Arial, sans-serif;
   font-size: 14pt;
 }
 
 #edit_area {
-  height: 85%;
+  border: 2px solid #000;
 }
 
 .navi {
@@ -38,16 +38,28 @@ textarea#text_area {
   font-size: 14pt;
   color: #fff;
   border: 0;
+  margin: 0;
   width: 100%;
-  height: calc(100% - 2em);
+  height: 70%;
+  /* max-height: 100%; */
   ime-mode: disabled;
   -webkit-ime-mode: disabled;
   -moz-ime-mode: disabled;
   -ms-ime-mode: disabled;
 }
 
+textarea#text_area::placeholder {
+  color: #003;
+}
+
 textarea#text_area:focus {
   background-color: blue;
+  border: 0;
+  outline: none;
+}
+
+textarea#feature_user_phrases_text_area {
+  height: 70%;
 }
 
 .function {
@@ -65,7 +77,7 @@ textarea#text_area:focus {
 }
 
 .function table td {
-  font-size: 12pt !important;
+  font-size: 10pt !important;
   color: #fff;
 }
 
@@ -81,23 +93,40 @@ textarea#text_area:focus {
 .left {
   width: 70%;
   float: left;
-  height: 100%;
+  min-height: 90%;
+  overflow: auto !important;
 }
 
 .right {
   width: 28%;
   float: right;
-  height: 100%;
+  height: 90%;
+  overflow: auto !important;
+}
+
+.right table {
+  font-size: 12pt;
+}
+
+.right table td {
+  padding: 2px 0;
 }
 
 .right p,
 .right li {
+  margin: 5px 0;
   font-size: 10pt;
+}
+
+.right select {
+  font-size: 12pt;
+  min-width: 60%;
 }
 
 .option_title {
   text-align: right;
   vertical-align: top;
+  white-space: nowrap;
 }
 
 .main {
@@ -167,6 +196,10 @@ div#feature_input {
   user-select: none;
 }
 
+div#feature_user_phrases {
+  display: none;
+}
+
 div#feature_text_to_braille {
   display: none;
 }
@@ -191,4 +224,23 @@ div.braille_to_text_output {
 
 .credit {
   font-size: 10pt;
+}
+
+blockquote {
+  background-color: #eee;
+  margin: 0;
+  padding: 20px;
+}
+
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #333;
+    color: #eee;
+  }
+
+  a {
+    color: #9999ff;
+    text-decoration: none;
+  }
 }

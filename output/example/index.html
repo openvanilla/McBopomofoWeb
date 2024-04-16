@@ -40,10 +40,11 @@
       正在載入小麥注音輸入法，請稍候</p>
 
     <p class="navi">功能展示：
-      <a href="#feature_input">輸入功能</a>
-      <a href="#feature_text_to_braille">國字轉注音點字</a>
-      <a href="#feature_braille_to_text">注音點字轉國字</a>
-      <a href="#feature_add_bpmf">國字加注音</a>
+      <a href="#feature_input" title="可以直接在網頁中使用的小麥注音輸入法">輸入功能</a>
+      <a href="#feature_user_phrases" title="自行添加自訂詞">自訂詞管理</a>
+      <a href="#feature_text_to_braille" title="將國字轉換成點字">國字轉注音點字</a>
+      <a href="#feature_braille_to_text" title="將點字轉換成國字">注音點字轉國字</a>
+      <a href="#feature_add_bpmf" title="將國字加上注音">國字加注音</a>
     </p>
 
     <div id="feature_input">
@@ -103,7 +104,8 @@
                   <option value="ETen26">倚天 26</option>
                   <option value="HanyuPinyin">漢語拼音</option>
                   <option value="IBM">IBM</option>
-                </select>
+                </select><br/>
+                <p>關於各種鍵盤配置的差異，請參見 <a href="https://zh.wikipedia.org/zh-tw/%E6%B3%A8%E9%9F%B3%E8%BC%B8%E5%85%A5%E6%B3%95" target="_blank">Wikipedia</a>。</p>
               </td>
             </tr>
             <tr>
@@ -117,7 +119,7 @@
               </td>
             </tr>
             <tr>
-              <td class="option_title">選字按键数量：</td>
+              <td class="option_title">選字键数量：</td>
               <td>
                 <select id="keys_count" title="選字按鍵">
                   <option value="4">4</option>
@@ -227,30 +229,83 @@
       </div>
     </div>
 
+    <div id="feature_user_phrases">
+      <div class="left">
+        <textarea placeholder="ㄒㄧㄠˇ-ㄇㄞˋ-ㄓㄨˋ-ㄧㄣ 小麥注音" id="feature_user_phrases_text_area" rows="10" cols="50"
+          title="輸入區"></textarea>
+      </div>
+      <div class="right">
+        <p>
+          <input type="button" value="重新載入" onclick="loadUserPhrases();alert('已重新載入之前儲存的詞庫');return false; ">
+          <input type="button" value="更新詞庫"
+            onclick="saveUserPhrases(document.getElementById('feature_user_phrases_text_area').value); alert('已經儲存更新的詞庫，並更新到輸入法與轉換功能中'); return false;">
+        </p>
+
+        <h2>自訂詞管理</h2>
+        <p>您可以在這裡添加自訂詞，加入自訂詞之後，請按下「更新」按鈕，這些自訂詞彙加入到線上輸入法功能以及其他文字轉換功能中。</p>
+        <p>這些自訂詞會儲存在瀏覽器本機資料中，不會同步到其他電腦，也不會備份，請自行保存這些自訂詞。</p>
+        <h3>詞庫格式</h3>
+        <p>小麥網頁版本的詞庫格式就和其他平台一樣，每行一筆，前面是用「-」連接的注音，一個空格之後是對應的國字。範例如下</p>
+        <blockquote>
+          <p>ㄒㄧㄠˇ-ㄇㄞˋ-ㄓㄨˋ-ㄧㄣ 小麥注音</p>
+        </blockquote>
+      </div>
+    </div>
+
     <div id="feature_text_to_braille">
-      <h1>國字轉點字</h1>
-      <p>請在底下的輸入框中輸入中文，按下「轉換」即可轉換成台灣六點點字。</p>
-      <p>範例：「小麥注音輸入法」可以轉換成「⠑⠪⠈⠍⠺⠐⠁⠌⠐⠹⠄⠊⠌⠄⠛⠌⠐⠟⠜⠈」</p>
-      <textarea placeholder="請在此輸入國字" id="text_to_braille_text_area" rows="10" cols="50" title="輸入區"></textarea>
-      <p><input type="button" value="轉換" onclick="text_to_braille();"></p>
-      <div id="text_to_braille_output"></div>
+      <div class="left">
+        <textarea placeholder="請在此輸入國字" id="text_to_braille_text_area" rows="10" cols="50" title="輸入區"></textarea>
+        <p><input type="button" value="轉換" onclick="textToBraille();"></p>
+        <div id="text_to_braille_output"></div>
+      </div>
+      <div class="right">
+        <h2>國字轉點字</h2>
+        <p>請在輸入框中輸入中文，按下「轉換」即可轉換成台灣六點點字。</p>
+        <p>範例：「小麥注音輸入法」可以轉換成「⠑⠪⠈⠍⠺⠐⠁⠌⠐⠹⠄⠊⠌⠄⠛⠌⠐⠟⠜⠈」</p>
+      </div>
     </div>
 
     <div id="feature_braille_to_text">
-      <h1>點字轉國字</h1>
-      <p>請在底下的輸入框中輸入六點注音點字（Unicode），按下「轉換」即可轉換成中文。</p>
-      <p>範例：「⠑⠪⠈⠍⠺⠐⠁⠌⠐⠹⠄⠊⠌⠄⠛⠌⠐⠟⠜⠈」可以轉換成「小麥注音輸入法」</p>
-      <textarea placeholder="請在此輸入六點注音" id="braille_to_text_text_area" rows="10" cols="50" title="輸入區"></textarea>
-      <p> <input type="button" value="轉換" onclick="braille_to_text();"></p>
-      <div id="braille_to_text_output"></div>
+      <div class="left">
+        <textarea placeholder="請在此輸入六點注音" id="braille_to_text_text_area" rows="10" cols="50" title="輸入區"></textarea>
+        <p> <input type="button" value="轉換" onclick="brailleToText();"></p>
+        <div id="braille_to_text_output"></div>
+      </div>
+      <div class="right">
+        <h2>點字轉國字</h2>
+        <p>請在輸入框中輸入六點注音點字（Unicode），按下「轉換」即可轉換成中文。</p>
+        <p>範例：「⠑⠪⠈⠍⠺⠐⠁⠌⠐⠹⠄⠊⠌⠄⠛⠌⠐⠟⠜⠈」可以轉換成「小麥注音輸入法」</p>
+      </div>
     </div>
 
     <div id="feature_add_bpmf">
-      <h1>國字加注音</h1>
-      <p>請在底下的輸入框中輸入國字，按下「轉換」就可以加上注音。</p>
-      <textarea placeholder="請在此輸入國字" id="add_bpmf_text_area" rows="10" cols="50" title="輸入區"></textarea>
-      <p> <input type="button" value="轉換" onclick="add_bpmf();"></p>
-      <div id="add_bpmf_output"></div>
+      <div class="left">
+        <textarea placeholder="請在此輸入國字" id="add_bpmf_text_area" rows="10" cols="50" title="輸入區"></textarea>
+        <p><input type="button" value="轉換" onclick="addBpmf();"></p>
+        <div id="add_bpmf_output"></div>
+      </div>
+      <div class="right">
+        <h2>國字加注音</h2>
+        <p>請在輸入框中輸入國字，按下「轉換」就可以加上注音。</p>
+        <h3>轉換選項</h3>
+        <form>
+          <table>
+            <tr>
+              <td><input type="radio" name="bpomofo_mode" value="html_ruby" id="html_ruby" checked="checked"></td>
+              <td><label for="html_ruby">以 HTML Ruby 方式加上注音</label></td>
+            </tr>
+            <tr>
+              <td><input type="radio" name="bpomofo_mode" value="convert_to_reading" id="convert_to_reading"></td>
+              <td><label for="convert_to_reading">國字轉換成注音</label></td>
+            </tr>
+            <tr>
+              <td><input type="radio" name="bpomofo_mode" value="add_reading" id="add_reading"></td>
+              <td><label for="add_reading">國字加上注音</label></td>
+            </tr>
+          </table>
+        </form>
+      </div>
+
     </div>
 
     <p class="credit">Copyright (c) 2022 and onwards The McBopomofo Authors. This code is released under the MIT
@@ -259,7 +314,6 @@
 
 
 </bodY>
-
 
 <script lang="javascript" src="bundle.js"></script>
 <script lang="javascript" src="index.js"></script>
