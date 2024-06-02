@@ -18,7 +18,7 @@
     "webpack-cli": "^5.1.4"
   },
   "name": "mcbopomofoweb",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "description": "McBopomofo input method built with TypeScript and other Web technologies",
   "scripts": {
     "ts-build": "tsc",
