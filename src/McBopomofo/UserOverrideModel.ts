@@ -50,10 +50,13 @@ function FormObservationKey(nodes: Node[], head: number, end: number): string {
   // observation for *before* the user override, and when we provide
   // a suggestion, this head node is never overridden yet.
 
-  let headStr = CombineReadingValue(
-    nodes[head].reading,
-    nodes[head].unigrams[0].value
-  );
+  let headStr = "";
+  if (nodes[head] != undefined) {
+    headStr = CombineReadingValue(
+      nodes[head].reading,
+      nodes[head].unigrams[0].value
+    );
+  }
 
   // For the next two nodes, use their current unigram values. If it's a
   // punctuation, we ignore the reading and the value altogether and treat
@@ -66,7 +69,7 @@ function FormObservationKey(nodes: Node[], head: number, end: number): string {
     prevIsPunctuation = IsPunctuation(nodes[head]);
     if (prevIsPunctuation) {
       prevStr = kEmptyNodeString;
-    } else {
+    } else if (nodes[head] != undefined) {
       prevStr = CombineReadingValue(
         nodes[head].reading,
         nodes[head].currentUnigram.value
@@ -81,7 +84,7 @@ function FormObservationKey(nodes: Node[], head: number, end: number): string {
     --head;
     if (IsPunctuation(nodes[head])) {
       anteriorStr = kEmptyNodeString;
-    } else {
+    } else if (nodes[head] != undefined) {
       anteriorStr = CombineReadingValue(
         nodes[head].reading,
         nodes[head].currentUnigram.value
