@@ -7,6 +7,9 @@ import fs from "fs";
 import path from "path";
 import process from "process";
 
+const CtrlAltG_KeyGuid = "fd8b1ba5-08b9-4988-9001-1de7bc390f2a";
+const CtrlAltH_KeyGuid = "bcda6d88-3f09-4820-90e0-3f16212178c9";
+
 /** The McBopomofo Settings. */
 interface Settings {
   candidate_font_size: number;
@@ -106,6 +109,7 @@ class PimeMcBopomofo {
   isLastFilterKeyDownHandled: boolean = false;
   isOpened: boolean = true;
   isShiftHold: boolean = false;
+  isCapsLockHold: boolean = false;
   isAlphabetMode: boolean = false;
 
   constructor() {
@@ -621,7 +625,9 @@ module.exports = {
       let { isWindows8Above } = request;
       pimeMcBopomofo.isWindows8Above = isWindows8Above;
       let customUi = pimeMcBopomofo.customUiResponse();
-      let response = Object.assign({}, responseTemplate, customUi);
+      let response = Object.assign({}, responseTemplate, customUi, {
+        removeButton: ["windows-mode-icon", "switch-lang", "settings"],
+      });
       return response;
     }
     if (request.method === "close") {
@@ -635,15 +641,35 @@ module.exports = {
     if (request.method === "onActivate") {
       let customUi = pimeMcBopomofo.customUiResponse();
       let buttonUi = pimeMcBopomofo.buttonUiResponse();
-      let response = Object.assign({}, responseTemplate, customUi, buttonUi);
+      let response = Object.assign({}, responseTemplate, customUi, buttonUi, {
+        addPreservedKey: [
+          {
+            guid: CtrlAltG_KeyGuid,
+            keyCode: 0x47,
+            modifiers: 0x0011,
+          },
+          {
+            guid: CtrlAltH_KeyGuid,
+            keyCode: 0x48,
+            modifiers: 0x0011,
+          },
+        ],
+      });
       return response;
     }
 
     if (request.method === "onDeactivate") {
       let response = Object.assign({}, responseTemplate, {
         removeButton: ["windows-mode-icon", "switch-lang", "settings"],
+        removePreservedKey: [CtrlAltG_KeyGuid, CtrlAltH_KeyGuid],
       });
       pimeMcBopomofo.alreadyAddButton = false;
+      return response;
+    }
+
+    if (request.method === "onPreservedKey") {
+      console.log(request);
+      let response = Object.assign({}, responseTemplate);
       return response;
     }
 
@@ -697,9 +723,15 @@ module.exports = {
 
       let { keyCode, charCode, keyStates } = request;
       // Ignores caps lock.
-      if ((keyStates[VK_Keys.VK_CAPITAL] & (1 << 7)) != 0) {
+      if ((keyStates[VK_Keys.VK_CAPITAL] & 1) != 0) {
         pimeMcBopomofo.resetController();
-        return false;
+        pimeMcBopomofo.isCapsLockHold = true;
+        let response = Object.assign({}, responseTemplate, {
+          return: false,
+        });
+        return response;
+      } else {
+        pimeMcBopomofo.isCapsLockHold = false;
       }
 
       let key = KeyFromKeyboardEvent(
@@ -731,6 +763,15 @@ module.exports = {
     }
 
     if (request.method === "onKeyDown") {
+      // Ignores caps lock.
+      if (pimeMcBopomofo.isCapsLockHold) {
+        pimeMcBopomofo.resetController();
+        let response = Object.assign({}, responseTemplate, {
+          return: false,
+        });
+        return response;
+      }
+
       if (
         lastRequest &&
         lastRequest.method === "onKeyDown" &&
@@ -828,10 +869,6 @@ module.exports = {
           text: "編輯使用者詞庫 (&U)",
           id: PimeMcBopomofoCommand.EditUserPhrase,
         },
-        // {
-        //   text: "重新載入使用者詞庫 (&U)",
-        //   id: PimeMcBopomofoCommand.reloadUserPhrase,
-        // },
         {
           text: "打開使用者資料夾",
           id: PimeMcBopomofoCommand.OpenMcBopomofoUserDataFolder,
