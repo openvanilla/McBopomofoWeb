@@ -6,7 +6,11 @@ import { Letter } from "./Tokens/Letter";
 
 /**
  * The state of the converter.
-
+ * - initial: The initial state
+ * - bpmf: The converter is converting Bopomofo syllables to Braille, and vice
+ *   versa.
+ * - digits: The converter is converting digits to Braille, and vice versa.
+ * - letters: The converter is converting letters to Braille, and vice versa.
  * @internal
  */
 const enum ConverterState {

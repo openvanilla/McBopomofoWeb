@@ -65,6 +65,18 @@ set COMMAND="powershell Get-Content -Tail 10 -Wait %LOG_FILE%"
 powershell -noexit %COMMAND%
 ```
 
+## 其他
+
+在 others 目錄中，我們提供了一個 Word Add-in，方便在 Microsoft Word 中使用國字轉換點字的相關功能。使用方式如下：
+
+``` sh
+cd others/WordAddin
+npm install
+npm run start:desktop
+```
+
+如果您的電腦（Windows 或 macOS）上裝了 Microsoft Word，那麼就會自動開啟 Word，並且在 Word 中啟用這個 Add-in。如果您想在網頁版本的 Word 當中測試，請參考微軟的文件 [Sideload Office Add-ins to Office on the web](https://learn.microsoft.com/en-us/office/dev/add-ins/testing/sideload-office-add-ins-for-testing)。
+
 ## 第三方套件
 
 本軟體使用了下套件
