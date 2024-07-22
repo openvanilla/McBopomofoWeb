@@ -165,9 +165,39 @@ export function KeyFromKeyboardEvent(event: KeyboardEvent) {
       if (event.key.length === 1) {
         keyName = KeyName.ASCII;
         isNumpadKey = true;
+      } else {
+        console.log(event.key);
+        switch (event.key) {
+          case "ArrowLeft":
+            keyName = KeyName.LEFT;
+            break;
+          case "ArrowRight":
+            keyName = KeyName.RIGHT;
+            break;
+          case "ArrowUp":
+            keyName = KeyName.UP;
+            break;
+          case "ArrowDown":
+            keyName = KeyName.DOWN;
+            break;
+          case "Home":
+            keyName = KeyName.HOME;
+            break;
+          case "End":
+            keyName = KeyName.END;
+            break;
+          case "PageUp":
+            keyName = KeyName.PAGE_UP;
+            break;
+          case "PageDown":
+            keyName = KeyName.PAGE_DOWN;
+            break;
+          default:
+            break;
+        }
       }
     default:
-      keyName = KeyName.ASCII;
+      keyName = keyName;
       break;
   }
   let key = new Key(
