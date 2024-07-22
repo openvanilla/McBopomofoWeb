@@ -33,7 +33,7 @@ import {
   InputUIState,
 } from "./InputUI";
 
-import { Key, KeyName } from "./Key";
+import { Key, KeyFromKeyboardEvent, KeyName } from "./Key";
 import { KeyHandler } from "./KeyHandler";
 import { webData } from "./WebData";
 import { WebLanguageModel } from "./WebLanguageModel";
@@ -737,57 +737,4 @@ export class InputController {
     this.ui_.setCursorIndex(composingBuffer.length);
     this.ui_.update();
   }
-}
-
-function KeyFromKeyboardEvent(event: KeyboardEvent) {
-  let keyName = KeyName.UNKNOWN;
-  switch (event.code) {
-    case "ArrowLeft":
-      keyName = KeyName.LEFT;
-      break;
-    case "ArrowRight":
-      keyName = KeyName.RIGHT;
-      break;
-    case "ArrowUp":
-      keyName = KeyName.UP;
-      break;
-    case "ArrowDown":
-      keyName = KeyName.DOWN;
-      break;
-    case "Home":
-      keyName = KeyName.HOME;
-      break;
-    case "End":
-      keyName = KeyName.END;
-      break;
-    case "Backspace":
-      keyName = KeyName.BACKSPACE;
-      break;
-    case "Delete":
-      keyName = KeyName.DELETE;
-      break;
-    case "Enter":
-      keyName = KeyName.RETURN;
-      break;
-    case "Escape":
-      keyName = KeyName.ESC;
-      break;
-    case "Space":
-      keyName = KeyName.SPACE;
-      break;
-    case "Tab":
-      keyName = KeyName.TAB;
-      break;
-    case "PageUp":
-      keyName = KeyName.PAGE_UP;
-      break;
-    case "PageDown":
-      keyName = KeyName.PAGE_DOWN;
-      break;
-    default:
-      keyName = KeyName.ASCII;
-      break;
-  }
-  let key = new Key(event.key, keyName, event.shiftKey, event.ctrlKey);
-  return key;
 }

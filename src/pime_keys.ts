@@ -189,6 +189,7 @@ export function KeyFromKeyboardEvent(
   ascii: string,
   charCode: number
 ) {
+  let isNumpadKey = false;
   let keyName = KeyName.UNKNOWN;
   switch (keyCode) {
     case VK_Keys.VK_LEFT:
@@ -247,6 +248,46 @@ export function KeyFromKeyboardEvent(
       keyName = KeyName.PAGE_DOWN;
       ascii = "PageDown";
       break;
+    case VK_Keys.VK_NUMPAD0:
+      isNumpadKey = true;
+      ascii = "0";
+      break;
+    case VK_Keys.VK_NUMPAD1:
+      isNumpadKey = true;
+      ascii = "1";
+      break;
+    case VK_Keys.VK_NUMPAD2:
+      isNumpadKey = true;
+      ascii = "2";
+      break;
+    case VK_Keys.VK_NUMPAD3:
+      isNumpadKey = true;
+      ascii = "3";
+      break;
+    case VK_Keys.VK_NUMPAD4:
+      isNumpadKey = true;
+      ascii = "4";
+      break;
+    case VK_Keys.VK_NUMPAD5:
+      isNumpadKey = true;
+      ascii = "5";
+      break;
+    case VK_Keys.VK_NUMPAD6:
+      isNumpadKey = true;
+      ascii = "6";
+      break;
+    case VK_Keys.VK_NUMPAD7:
+      isNumpadKey = true;
+      ascii = "7";
+      break;
+    case VK_Keys.VK_NUMPAD8:
+      isNumpadKey = true;
+      ascii = "8";
+      break;
+    case VK_Keys.VK_NUMPAD9:
+      isNumpadKey = true;
+      ascii = "9";
+      break;
     default:
       keyName = KeyName.ASCII;
       break;
@@ -261,6 +302,6 @@ export function KeyFromKeyboardEvent(
     ascii = "Alt";
   }
 
-  let key = new Key(ascii, keyName, shiftKey, ctrlKey);
+  let key = new Key(ascii, keyName, shiftKey, ctrlKey, isNumpadKey);
   return key;
 }

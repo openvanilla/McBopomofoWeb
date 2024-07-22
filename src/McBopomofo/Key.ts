@@ -53,16 +53,23 @@ export class Key {
     return this.ctrlPressed_;
   }
 
+  private isNumpadKey_: boolean = false;
+  get isNumpadKey(): boolean {
+    return this.isNumpadKey_;
+  }
+
   constructor(
     c: string = "",
     n: KeyName = KeyName.UNKNOWN,
-    isShift: boolean = false,
-    isCtrl: boolean = false
+    shiftPressed: boolean = false,
+    ctrlPressed: boolean = false,
+    isNumpadKey: boolean = false
   ) {
     this.ascii_ = c;
     this.name_ = n;
-    this.shiftPressed_ = isShift;
-    this.ctrlPressed_ = isCtrl;
+    this.shiftPressed_ = shiftPressed;
+    this.ctrlPressed_ = ctrlPressed;
+    this.isNumpadKey_ = isNumpadKey;
   }
 
   static asciiKey(
@@ -81,7 +88,7 @@ export class Key {
     return new Key("", name, shiftPressed, ctrlPressed);
   }
 
-  get isCursorKeys(): boolean {
+  get isCursorKey(): boolean {
     return (
       this.name_ === KeyName.LEFT ||
       this.name_ === KeyName.RIGHT ||
@@ -90,11 +97,85 @@ export class Key {
     );
   }
 
-  get isDeleteKeys(): boolean {
+  get isDeleteKey(): boolean {
     return this.name === KeyName.BACKSPACE || this.name === KeyName.DELETE;
   }
 
   toString(): string {
     return `Key{ascii: ${this.ascii_}, name: ${this.name_}, shift: ${this.shiftPressed_}, ctrl: ${this.ctrlPressed_}}`;
   }
+}
+
+export function KeyFromKeyboardEvent(event: KeyboardEvent) {
+  let isNumpadKey = false;
+  let keyName = KeyName.UNKNOWN;
+  switch (event.code) {
+    case "ArrowLeft":
+      keyName = KeyName.LEFT;
+      break;
+    case "ArrowRight":
+      keyName = KeyName.RIGHT;
+      break;
+    case "ArrowUp":
+      keyName = KeyName.UP;
+      break;
+    case "ArrowDown":
+      keyName = KeyName.DOWN;
+      break;
+    case "Home":
+      keyName = KeyName.HOME;
+      break;
+    case "End":
+      keyName = KeyName.END;
+      break;
+    case "Backspace":
+      keyName = KeyName.BACKSPACE;
+      break;
+    case "Delete":
+      keyName = KeyName.DELETE;
+      break;
+    case "Enter":
+      keyName = KeyName.RETURN;
+      break;
+    case "Escape":
+      keyName = KeyName.ESC;
+      break;
+    case "Space":
+      keyName = KeyName.SPACE;
+      break;
+    case "Tab":
+      keyName = KeyName.TAB;
+      break;
+    case "PageUp":
+      keyName = KeyName.PAGE_UP;
+      break;
+    case "PageDown":
+      keyName = KeyName.PAGE_DOWN;
+      break;
+    case "Numpad0":
+    case "Numpad1":
+    case "Numpad2":
+    case "Numpad3":
+    case "Numpad4":
+    case "Numpad5":
+    case "Numpad6":
+    case "Numpad7":
+    case "Numpad8":
+    case "Numpad9":
+      if (event.key.length === 1) {
+        keyName = KeyName.ASCII;
+        isNumpadKey = true;
+      }
+    default:
+      keyName = KeyName.ASCII;
+      break;
+  }
+  let key = new Key(
+    event.key,
+    keyName,
+    event.shiftKey,
+    event.ctrlKey,
+    isNumpadKey
+  );
+  return key;
 }

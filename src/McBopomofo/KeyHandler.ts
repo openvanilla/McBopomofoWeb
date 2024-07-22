@@ -217,6 +217,28 @@ export class KeyHandler {
       return this.handleChineseNumber(key, state, stateCallback, errorCallback);
     }
 
+    // Numpad
+    if (key.isNumpadKey) {
+      // Space hit: see if we should enter the candidate choosing state.
+      let maybeNotEmptyState = state as NotEmpty;
+
+      // If current state is *not* NonEmpty, it must be Empty.
+      if (maybeNotEmptyState instanceof NotEmpty === false) {
+        // We don't need to handle this key.
+        return false;
+      }
+
+      // First, commit what's already in the composing buffer.
+      let inputtingState = this.buildInputtingState();
+      // Steal the composingBuffer built by the inputting state.
+      let committingState = new Committing(
+        inputtingState.composingBuffer + simpleAscii
+      );
+      stateCallback(committingState);
+      this.reset();
+      return true;
+    }
+
     // See if it's valid BPMF reading.
     let keyConsumedByReading = false;
     let skipBpmfHandling = key.ctrlPressed;
@@ -377,12 +399,12 @@ export class KeyHandler {
     }
 
     // Cursor keys.
-    if (key.isCursorKeys) {
+    if (key.isCursorKey) {
       return this.handleCursorKeys(key, state, stateCallback, errorCallback);
     }
 
     // Backspace and Del.
-    if (key.isDeleteKeys) {
+    if (key.isDeleteKey) {
       return this.handleDeleteKeys(key, state, stateCallback, errorCallback);
     }
 
@@ -515,8 +537,8 @@ export class KeyHandler {
       return true;
     }
 
-    if (key.ascii != "") {
-      let chrStr = key.ascii;
+    if (simpleAscii != "") {
+      // let chrStr = key.ascii;
       let unigram = "";
 
       let prefix = kPunctuationKeyPrefix;
@@ -531,13 +553,13 @@ export class KeyHandler {
         prefix +
         GetKeyboardLayoutName(this.reading_.keyboardLayout) +
         "_" +
-        chrStr;
+        simpleAscii;
       if (this.handlePunctuation(unigram, stateCallback, errorCallback)) {
         return true;
       }
 
       // Not handled, try generic punctuations.
-      unigram = prefix + chrStr;
+      unigram = prefix + simpleAscii;
       if (this.handlePunctuation(unigram, stateCallback, errorCallback)) {
         return true;
       }
@@ -549,7 +571,7 @@ export class KeyHandler {
         simpleAscii <= "Z"
       ) {
         if (this.putLowercaseLettersToComposingBuffer_) {
-          unigram = kLetterPrefix + chrStr;
+          unigram = kLetterPrefix + simpleAscii;
 
           // Ignore return value, since we always return true below.
           this.handlePunctuation(unigram, stateCallback, errorCallback);
@@ -564,7 +586,7 @@ export class KeyHandler {
           let inputtingState = this.buildInputtingState();
           // Steal the composingBuffer built by the inputting state.
           let committingState = new Committing(
-            inputtingState.composingBuffer + chrStr
+            inputtingState.composingBuffer + simpleAscii
           );
           stateCallback(committingState);
           this.reset();
@@ -1002,7 +1024,7 @@ export class KeyHandler {
       stateCallback(new Empty());
       return true;
     }
-    if (key.isDeleteKeys) {
+    if (key.isDeleteKey) {
       let number = state.number;
       if (number.length > 0) {
         number = number.substring(number.length - 1);
