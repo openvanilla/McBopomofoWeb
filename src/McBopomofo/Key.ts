@@ -140,6 +140,7 @@ export function KeyFromKeyboardEvent(event: KeyboardEvent) {
     case "Delete":
       keyName = KeyName.DELETE;
       break;
+    case "NumpadEnter":
     case "Enter":
       keyName = KeyName.RETURN;
       break;
@@ -157,6 +158,14 @@ export function KeyFromKeyboardEvent(event: KeyboardEvent) {
       break;
     case "PageDown":
       keyName = KeyName.PAGE_DOWN;
+      break;
+    case "NumpadAdd":
+    case "NumpadSubtract":
+    case "NumpadMultiply":
+    case "NumpadDivide":
+    case "NumpadDecimal":
+      keyName = KeyName.ASCII;
+      isNumpadKey = true;
       break;
     case "Numpad0":
     case "Numpad1":
