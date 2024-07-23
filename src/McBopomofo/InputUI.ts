@@ -7,13 +7,17 @@
 
 import { CandidateWrapper } from "./CandidateController";
 
+/** The style used in {@link ComposingBufferText}. */
 export enum ComposingBufferTextStyle {
   Normal = "normal",
   Highlighted = "highlighted",
 }
 
+/** Represents the composing buffer. */
 export class ComposingBufferText {
+  /** The text contained in the composing buffer. */
   private text: string;
+  /** The text style. */
   private style: ComposingBufferTextStyle;
 
   constructor(
