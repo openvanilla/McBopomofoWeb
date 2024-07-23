@@ -308,14 +308,6 @@ export function KeyFromKeyboardEvent(
       isNumpadKey = true;
       ascii = ".";
       break;
-
-    // VK_MULTIPLY = 0x6a,
-    // VK_ADD = 0x6b,
-    // VK_SEPARATOR = 0x6c,
-    // VK_SUBTRACT = 0x6d,
-    // VK_DECIMAL = 0x6e,
-    // VK_DIVIDE = 0x6f,
-
     default:
       keyName = KeyName.ASCII;
       break;

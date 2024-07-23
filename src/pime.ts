@@ -241,6 +241,7 @@ class PimeMcBopomofo {
 
   public toggleAlphabetMode(): void {
     this.isAlphabetMode = !this.isAlphabetMode;
+    this.resetController();
   }
 
   public applySettings(): void {
@@ -687,8 +688,9 @@ module.exports = {
         return response;
       }
       if (pimeMcBopomofo.isShiftHold) {
+        // Should commit current composition string.
         pimeMcBopomofo.toggleAlphabetMode();
-        pimeMcBopomofo.resetController();
+        // pimeMcBopomofo.resetController();
         let uiState = pimeMcBopomofo.uiState;
         let customUi = pimeMcBopomofo.customUiResponse();
         let buttonUi = pimeMcBopomofo.buttonUiResponse();

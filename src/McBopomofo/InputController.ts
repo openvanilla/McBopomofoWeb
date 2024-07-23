@@ -148,8 +148,10 @@ export class InputController {
   /** Resets to empty state. */
   public reset(): void {
     console.log("reset");
+    this.enterNewState(new Empty());
+    this.ui_.update();
     this.keyHandler_.reset();
-    this.enterNewState(new EmptyIgnoringPrevious());
+    // this.ui_.update();
   }
 
   /** Sets the UI component. */
