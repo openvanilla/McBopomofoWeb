@@ -44,16 +44,19 @@ export class Key {
   }
 
   private shiftPressed_: boolean = false;
+  /** If the Shift modifier is pressed. */
   get shiftPressed(): boolean {
     return this.shiftPressed_;
   }
 
   private ctrlPressed_: boolean = false;
+  /** If the Control modifier is pressed. */
   get ctrlPressed(): boolean {
     return this.ctrlPressed_;
   }
 
   private isNumpadKey_: boolean = false;
+  /** If the key is on the Numpad. */
   get isNumpadKey(): boolean {
     return this.isNumpadKey_;
   }
@@ -88,6 +91,7 @@ export class Key {
     return new Key("", name, shiftPressed, ctrlPressed);
   }
 
+  /** If the key is for moving the input cursor. */
   get isCursorKey(): boolean {
     return (
       this.name_ === KeyName.LEFT ||
@@ -97,6 +101,7 @@ export class Key {
     );
   }
 
+  /** If the key is for deleting the previous character. */
   get isDeleteKey(): boolean {
     return this.name === KeyName.BACKSPACE || this.name === KeyName.DELETE;
   }
@@ -106,6 +111,7 @@ export class Key {
   }
 }
 
+/** Converts a keyboard event in the web browser to a key defined by McBopomofo. */
 export function KeyFromKeyboardEvent(event: KeyboardEvent) {
   let isNumpadKey = false;
   let keyName = KeyName.UNKNOWN;
