@@ -93,6 +93,7 @@ enum PimeMcBopomofoCommand {
 
 /** Wraps InputController and required states.  */
 class PimeMcBopomofo {
+  /** The input controller. */
   readonly inputController: InputController;
   uiState: UiState = {
     commitString: "",
@@ -104,13 +105,21 @@ class PimeMcBopomofo {
     showMessage: {},
     hideMessage: true,
   };
+  /** The settings in memory. */
   settings: Settings = defaultSettings;
+  /**  Whether the input method is in Alphabet mode or Chinese mode. True for
+   * Alphabet mode, false for Chinese mode. */
+  isAlphabetMode: boolean = false;
   lastRequest: any = {};
   isLastFilterKeyDownHandled: boolean = false;
   isOpened: boolean = true;
+  /** Helps to remember if Shift key is pressed on when key down event is
+   * triggered. It would be reset on key on. */
   isShiftHold: boolean = false;
+  /** Helps to remember if Caps Lock is on when key down event is triggered. It
+   * would be reset on key on. */
   isCapsLockHold: boolean = false;
-  isAlphabetMode: boolean = false;
+  isScheduledToToggleAlphabetModeOnKeyUp: boolean = false;
 
   constructor() {
     this.inputController = new InputController(this.makeUI(this));
@@ -133,7 +142,6 @@ class PimeMcBopomofo {
   }
 
   public resetBeforeHandlingKey(): void {
-    // console.log("resetAfterHandlingKey called");
     this.isLastFilterKeyDownHandled = false;
     this.uiState = {
       commitString: "",
@@ -148,7 +156,6 @@ class PimeMcBopomofo {
   }
 
   public resetController(): void {
-    // console.log("resetController called");
     this.inputController.reset();
   }
 
@@ -240,6 +247,7 @@ class PimeMcBopomofo {
   }
 
   public toggleAlphabetMode(): void {
+    // Changes the alphabet mode, also commits current composing buffer.
     this.isAlphabetMode = !this.isAlphabetMode;
     this.resetController();
   }
@@ -687,25 +695,31 @@ module.exports = {
         });
         return response;
       }
+      // Single Shift to toggle alphabet mode.
       if (pimeMcBopomofo.isShiftHold) {
-        // Should commit current composition string.
-        pimeMcBopomofo.toggleAlphabetMode();
-        // pimeMcBopomofo.resetController();
-        let uiState = pimeMcBopomofo.uiState;
-        let customUi = pimeMcBopomofo.customUiResponse();
-        let buttonUi = pimeMcBopomofo.buttonUiResponse();
-        let response = Object.assign(
-          {},
-          responseTemplate,
-          uiState,
-          customUi,
-          buttonUi
-        );
-        return response;
+        pimeMcBopomofo.isScheduledToToggleAlphabetModeOnKeyUp = true;
       }
 
       let response = Object.assign({}, responseTemplate, { return: true });
       return response;
+    }
+
+    if (request.method === "onKeyUp") {
+      if (pimeMcBopomofo.isScheduledToToggleAlphabetModeOnKeyUp) {
+        pimeMcBopomofo.isScheduledToToggleAlphabetModeOnKeyUp = false;
+        pimeMcBopomofo.toggleAlphabetMode();
+        let uiState = pimeMcBopomofo.uiState;
+        let customUi = pimeMcBopomofo.customUiResponse();
+        let buttonUi = pimeMcBopomofo.buttonUiResponse();
+        let response = Object.assign(
+          responseTemplate,
+          uiState,
+          customUi,
+          buttonUi,
+          { return: true }
+        );
+        return response;
+      }
     }
 
     if (request.method === "filterKeyDown") {
@@ -755,7 +769,6 @@ module.exports = {
         return response;
       }
 
-      // console.log(key.toString());
       let handled = pimeMcBopomofo.inputController.mcbopomofoKeyEvent(key);
       pimeMcBopomofo.isLastFilterKeyDownHandled = handled;
       let response = Object.assign({}, responseTemplate, {
@@ -765,7 +778,7 @@ module.exports = {
     }
 
     if (request.method === "onKeyDown") {
-      // Ignores caps lock.
+      // Ignore caps lock.
       if (pimeMcBopomofo.isCapsLockHold) {
         pimeMcBopomofo.resetController();
         let response = Object.assign({}, responseTemplate, {
