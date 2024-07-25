@@ -1,20 +1,46 @@
 import { Empty, InputState } from "./InputState";
 import { LocalizedStrings } from "./LocalizedStrings";
 
+/**
+ * Represents a dictionary service.
+ *
+ * When a user select a candidate in the candidate window, or marks a range in
+ * the composing buffer, the user can press the query key to select a dictionary
+ * service to know better about the candidate or the marked range.
+ */
 abstract class DictionaryService {
+  /** Name if the dictionary service. */
   abstract readonly name: string;
+  /**
+   * Look up the phrase in the dictionary service
+   * @param phrase The phrase to look up
+   * @param state The current input state. The dictionary service can use it to
+   * ask the input controller to go to the previous input state if the user
+   * cancels the action to look up a phrase.
+   * @param serviceIndex The index of the dictionary service in a list.
+   * @param stateCallback The function to call when the dictionary service wants
+   * to change the input state.
+   */
   abstract lookUp(
     phrase: string,
     state: InputState,
     serviceIndex: number,
     stateCallback: (state: InputState) => void
   ): boolean;
+  /**
+   * The text displayed in the menu that let the users to choose a dictionary
+   * service.
+   * @param selectedString The phrase to look up.
+   * @param localizedStrings The object as a container that contains the
+   * localized strings.
+   */
   abstract textForMenu(
     selectedString: string,
     localizedStrings: LocalizedStrings
   ): string;
 }
 
+/** The dictionary services that launch the web browser and open a URL.  */
 class HttpBasedDictionary implements DictionaryService {
   readonly name: string;
   readonly urlTemplate: string;
@@ -51,6 +77,14 @@ class HttpBasedDictionary implements DictionaryService {
   }
 }
 
+/*
+ * The list of the dictionary services.
+ *
+ * In the macOS version, we put the list into a JSON file so the users can
+ * easily edit the file. However, the TypeScript version of McBopomofo will be
+ * compiled with Webpack, we want to put as much stuff into the compiled file as
+ * possible.
+ */
 let httpBasedDictionaryServices = {
   services: [
     {
@@ -122,11 +156,12 @@ let httpBasedDictionaryServices = {
   ],
 };
 
+/** Helps to manage the dictionary service */
 export class DictionaryServices {
-  readonly localizedStrings: LocalizedStrings;
-  onOpenUrl?: ((input: string) => void) | undefined;
-
+  public readonly localizedStrings: LocalizedStrings;
+  public onOpenUrl?: ((input: string) => void) | undefined;
   protected services: DictionaryService[] = [];
+
   constructor(localizedStrings: LocalizedStrings) {
     this.localizedStrings = localizedStrings;
     for (let info of httpBasedDictionaryServices.services) {
