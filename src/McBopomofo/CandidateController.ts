@@ -31,11 +31,17 @@ export class CandidateWrapper {
   }
 }
 
+/** Helps to control the candidate window. */
 export class CandidateController {
   private candidates_: Candidate[] = [];
   private keyCaps_: string[] = [];
   private currentSelectedIndex_: number = 0;
 
+  /**
+   * Pass a key and return the corresponding candidate.
+   * @param key The key from the keyboard, such as "1", "2", "a" and so on.
+   * @returns The corresponding candidate or the undefined value.
+   */
   selectedCandidateWithKey(key: string): Candidate | undefined {
     let selectedIndex = -1;
     for (let i = 0; i < this.keyCaps_.length; i++) {
@@ -52,32 +58,43 @@ export class CandidateController {
     return this.candidates_[offset + selectedIndex];
   }
 
+  /** Returns the selected candidate. */
   get selectedCandidate(): Candidate {
     return this.candidates_[this.currentSelectedIndex_];
   }
 
+  /** Returns the selected index. */
   get selectedIndex(): number {
     return this.currentSelectedIndex_;
   }
 
+  /** Sets the selected index. */
   set selectedIndex(input: number) {
     this.currentSelectedIndex_ = input;
   }
 
+  /** Returns the current page index. */
   get currentPageIndex(): number {
     return Math.floor(this.currentSelectedIndex_ / this.keyCaps_.length);
   }
 
+  /** Returns the total page count. */
   get totalPageCount(): number {
     return Math.ceil(this.candidates_.length / this.keyCaps_.length);
   }
 
+  /**
+   * Updates the content of the candidate window.
+   * @param candidates All candidates.
+   * @param keyCaps The key caps such as "123456789", "asdfghjkl" and so on.
+   */
   update(candidates: Candidate[], keyCaps: string[]) {
     this.candidates_ = candidates;
     this.keyCaps_ = keyCaps;
     this.currentSelectedIndex_ = 0;
   }
 
+  /** Returns in candidate in the current page. */
   get currentPage(): CandidateWrapper[] {
     let startPage = Math.floor(
       this.currentSelectedIndex_ / this.keyCaps_.length
@@ -100,15 +117,18 @@ export class CandidateController {
     return list;
   }
 
+  /** Moves to the first one of all candidates. */
   goToFirst(): void {
     this.currentSelectedIndex_ = 0;
   }
 
+  /** Moves to the last one of all candidates. */
   goToLast(): void {
     if (this.candidates_.length === 0) return;
     this.currentSelectedIndex_ = this.candidates_.length - 1;
   }
 
+  /** Moves to the previous candidate. */
   goToPreviousItem(): void {
     if (this.currentSelectedIndex_ <= 0) {
       return;
@@ -116,6 +136,7 @@ export class CandidateController {
     this.currentSelectedIndex_--;
   }
 
+  /** Moves to the next candidate. */
   goToNextItem(): void {
     if (this.currentSelectedIndex_ >= this.candidates_.length - 1) {
       return;
@@ -123,6 +144,7 @@ export class CandidateController {
     this.currentSelectedIndex_++;
   }
 
+  /** Moves to the previous page. */
   goToPreviousPage(): void {
     let current = Math.floor(this.currentSelectedIndex_ / this.keyCaps_.length);
     if (current === 0) {
@@ -132,6 +154,7 @@ export class CandidateController {
     this.currentSelectedIndex_ = current * this.keyCaps_.length;
   }
 
+  /** Moves to the next page. */
   goToNextPage(): void {
     let current = Math.floor(this.currentSelectedIndex_ / this.keyCaps_.length);
     let last = Math.floor(this.candidates_.length / this.keyCaps_.length);
@@ -142,6 +165,8 @@ export class CandidateController {
     this.currentSelectedIndex_ = current * this.keyCaps_.length;
   }
 
+  /** Moves to the next page. If it is already at the last page, moves to the
+   * first page. */
   goToNextPageButFistWhenAtEnd(): void {
     let current = Math.floor(this.currentSelectedIndex_ / this.keyCaps_.length);
     let last = Math.floor(this.candidates_.length / this.keyCaps_.length);

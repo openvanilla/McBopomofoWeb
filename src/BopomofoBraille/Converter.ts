@@ -33,6 +33,7 @@ export class BopomofoBrailleConverter {
    * ``` ts
    * BopomofoBrailleConverter.convertBpmfToBraille("ㄒㄧㄠˇㄇㄞˋㄓㄨˋㄧㄣ");
    * ```
+   * It should return converted Taiwanese Braille in Unicode.
    */
   public static convertBpmfToBraille(bopomofo: string): string {
     let state: ConverterState = ConverterState.initial;

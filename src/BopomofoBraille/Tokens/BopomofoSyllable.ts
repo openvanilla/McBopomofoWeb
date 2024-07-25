@@ -1,6 +1,9 @@
 const kMinimalBopomofoLength = 1;
 const kMinimalBrailleLength = 2;
 
+/**
+ * Represents the Consonants in Bopomofo.
+ */
 enum Consonant {
   ㄅ = "ㄅ",
   ㄆ = "ㄆ",
@@ -101,6 +104,7 @@ namespace Consonant {
   }
 }
 
+/** Represents the middle vowels in Bopomofo. */
 enum MiddleVowel {
   ㄧ = "ㄧ",
   ㄨ = "ㄨ",
@@ -162,6 +166,9 @@ namespace MiddleVowel {
   }
 }
 
+/**
+ * Represents the vowels in Bopomofo.
+ */
 enum Vowel {
   ㄚ = "ㄚ",
   ㄛ = "ㄛ",
@@ -410,6 +417,7 @@ enum Tone {
   tone5 = "˙",
 }
 
+/** Represents the tones in Bopomofo. */
 namespace Tone {
   const map = new Map<Tone, string[]>([
     [Tone.tone1, ["⠄", "3"]],

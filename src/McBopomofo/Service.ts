@@ -136,6 +136,11 @@ export class Service {
    * Convert Taiwanese Braille to text
    * @param input The Braille input
    * @returns The text output
+   * ``` typescript
+   * let service = new Service();
+   * let input = "⠑⠪⠈⠍⠺⠐⠁⠌⠐⠹⠄⠊⠌⠄⠛⠌⠐⠟⠜⠈";
+   * let output = service.convertTextToBraille(input);
+   * ```
    */
   public convertBrailleToText(input: string): string {
     let output: string = "";
@@ -166,6 +171,11 @@ export class Service {
    * Converts text to Taiwanese Braille
    * @param input The text input
    * @returns The Braille output
+   * ``` typescript
+   * let service = new Service();
+   * let input = "小麥注音輸入法";
+   * let output = service.convertTextToBraille(input);
+   * ```
    */
   public convertTextToBraille(input: string): string {
     return this.convertText(
@@ -184,6 +194,12 @@ export class Service {
    * Converts text to HTML Ruby
    * @param input The text input
    * @returns The HTML Ruby output
+   * @example
+   * ``` typescript
+   * let service = new Service();
+   * let input = "小麥注音輸入法";
+   * let output = service.convertTextToHtmlRuby(input);
+   * ```
    */
   public convertTextToHtmlRuby(input: string): string {
     return this.convertText(
@@ -205,6 +221,12 @@ export class Service {
    * Converts text to Bopomofo readings.
    * @param input The text input
    * @returns The Bopomofo output
+   * @example
+   * ``` typescript
+   * let service = new Service();
+   * let input = "小麥注音輸入法";
+   * let output = service.convertTextToBpmfReadings(input);
+   * ```
    */
   public convertTextToBpmfReadings(input: string): string {
     return this.convertText(
@@ -218,6 +240,17 @@ export class Service {
     );
   }
 
+  /**
+   * Appends Bopomofo readings to the input text.
+   * @param input The input text.
+   * @returns The text with Bopomofo readings appended.
+   * @example
+   * ``` typescript
+   * let service = new Service();
+   * let input = "小麥注音輸入法";
+   * let output = service.appendBpmfReadingsToText(input);
+   * ```
+   */
   public appendBpmfReadingsToText(input: string): string {
     return this.convertText(
       input,

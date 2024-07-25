@@ -1,3 +1,4 @@
+/** Represents the digits. */
 export enum Digit {
   zero = "0",
   one = "1",
