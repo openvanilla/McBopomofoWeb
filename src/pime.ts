@@ -7,8 +7,8 @@ import fs from "fs";
 import path from "path";
 import process from "process";
 
-const CtrlAltG_KeyGuid = "fd8b1ba5-08b9-4988-9001-1de7bc390f2a";
-const CtrlAltH_KeyGuid = "bcda6d88-3f09-4820-90e0-3f16212178c9";
+// const CtrlAltG_KeyGuid = "fd8b1ba5-08b9-4988-9001-1de7bc390f2a";
+// const CtrlAltH_KeyGuid = "bcda6d88-3f09-4820-90e0-3f16212178c9";
 
 /** The McBopomofo Settings. */
 interface Settings {
@@ -304,7 +304,7 @@ class PimeMcBopomofo {
   }
 
   /** Write settings to disk */
-  private writeSettings() {
+  public writeSettings() {
     if (!fs.existsSync(this.mcBopomofoUserDataPath)) {
       console.log(
         "User data folder not found, creating " + this.mcBopomofoUserDataPath
@@ -650,27 +650,13 @@ module.exports = {
     if (request.method === "onActivate") {
       let customUi = pimeMcBopomofo.customUiResponse();
       let buttonUi = pimeMcBopomofo.buttonUiResponse();
-      let response = Object.assign({}, responseTemplate, customUi, buttonUi, {
-        addPreservedKey: [
-          {
-            guid: CtrlAltG_KeyGuid,
-            keyCode: 0x47,
-            modifiers: 0x0011,
-          },
-          {
-            guid: CtrlAltH_KeyGuid,
-            keyCode: 0x48,
-            modifiers: 0x0011,
-          },
-        ],
-      });
+      let response = Object.assign({}, responseTemplate, customUi, buttonUi);
       return response;
     }
 
     if (request.method === "onDeactivate") {
       let response = Object.assign({}, responseTemplate, {
         removeButton: ["windows-mode-icon", "switch-lang", "settings"],
-        removePreservedKey: [CtrlAltG_KeyGuid, CtrlAltH_KeyGuid],
       });
       pimeMcBopomofo.alreadyAddButton = false;
       return response;
@@ -756,6 +742,31 @@ module.exports = {
         String.fromCharCode(charCode),
         charCode
       );
+
+      console.log(key);
+      if (
+        key.ctrlPressed &&
+        key.shiftPressed &&
+        key.ascii >= "A" &&
+        key.ascii <= "Z"
+      ) {
+        if (key.ascii === "G") {
+          pimeMcBopomofo.settings.chineseConversion =
+            !pimeMcBopomofo.settings.chineseConversion;
+          pimeMcBopomofo.applySettings();
+          pimeMcBopomofo.writeSettings();
+        } else if (key.ascii === "H") {
+          pimeMcBopomofo.settings.half_width_punctuation =
+            !pimeMcBopomofo.settings.half_width_punctuation;
+          pimeMcBopomofo.applySettings();
+          pimeMcBopomofo.writeSettings();
+        }
+        pimeMcBopomofo.isLastFilterKeyDownHandled = true;
+        let response = Object.assign({}, responseTemplate, {
+          return: true,
+        });
+        return response;
+      }
 
       let shouldHandleShift =
         pimeMcBopomofo.settings.shift_key_toggle_alphabet_mode === true;
