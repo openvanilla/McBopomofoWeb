@@ -106,12 +106,12 @@ let httpBasedDictionaryServices = {
     {
       name: "教育部重編國語詞典修訂本",
       url_template:
-        "https://dict.revised.moe.edu.tw/search.jsp?md=1&word=(encoded)",
+        "https://dict.revised.moe.edu.tw/search.jsp?md=1&word=(encoded)&qMd=0&qCol=1",
     },
     {
       name: "教育部國語詞典簡編本",
       url_template:
-        "https://dict.concised.moe.edu.tw/search.jsp?md=1&word=(encoded)",
+        "https://dict.concised.moe.edu.tw/search.jsp?md=1&word=(encoded)&qMd=0&qCol=0",
     },
     {
       name: "教育部成語典",
