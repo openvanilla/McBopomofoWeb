@@ -156,6 +156,7 @@ export class Marking extends NotEmpty {
   }
 }
 
+/** Represents that the user is selecting a dictionary service. */
 export class SelectingDictionary extends NotEmpty {
   readonly previousState: NotEmpty;
   readonly selectedPrase: string;
@@ -180,12 +181,26 @@ export class SelectingDictionary extends NotEmpty {
   }
 }
 
+/** Represents that the user is inputting a enclosed number. */
+export class EnclosingNumber implements InputState {
+  readonly number: string;
+
+  constructor(number: string) {
+    this.number = number;
+  }
+
+  get composingBuffer(): string {
+    return "[標題數字] " + this.number;
+  }
+}
+
 export enum ChineseNumberStyle {
   Lowercase,
   Uppercase,
   Suzhou,
 }
 
+/** Represents that the user is inputting a Chinese number. */
 export class ChineseNumber implements InputState {
   readonly number: string;
   readonly style: ChineseNumberStyle;
@@ -260,6 +275,7 @@ export class Feature {
 export class SelectingFeature implements InputState {
   readonly features: Feature[] = [
     new Feature("日期與時間", () => new SelectingDateMacro(this.converter)),
+    new Feature("標題數字", () => new EnclosingNumber("")),
     new Feature(
       "中文數字",
       () => new ChineseNumber("", ChineseNumberStyle.Lowercase)
