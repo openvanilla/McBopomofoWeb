@@ -14,6 +14,7 @@ import {
   Committing,
   Empty,
   EmptyIgnoringPrevious,
+  EnclosingNumber,
   InputState,
   Inputting,
   Marking,
@@ -215,6 +216,15 @@ export class KeyHandler {
 
     if (state instanceof ChineseNumber) {
       return this.handleChineseNumber(key, state, stateCallback, errorCallback);
+    }
+
+    if (state instanceof EnclosingNumber) {
+      return this.handleEnclosingNumber(
+        key,
+        state,
+        stateCallback,
+        errorCallback
+      );
     }
 
     // Numpad
@@ -1012,6 +1022,77 @@ export class KeyHandler {
       candidates,
       originalCursorIndex
     );
+  }
+
+  private handleEnclosingNumber(
+    key: Key,
+    state: EnclosingNumber,
+    stateCallback: (state: InputState) => void,
+    errorCallback: () => void
+  ): boolean {
+    if (key.name === KeyName.ESC) {
+      stateCallback(new Empty());
+      return true;
+    }
+    if (key.isDeleteKey) {
+      let number = state.number;
+      if (number.length > 0) {
+        number = number.substring(number.length - 1);
+      } else {
+        errorCallback();
+        return true;
+      }
+      let newState = new EnclosingNumber(number);
+      stateCallback(newState);
+      return true;
+    }
+    if (key.name === KeyName.RETURN) {
+      let key = "_number_" + state.number;
+
+      if (this.languageModel_.hasUnigrams(key)) {
+        if (this.reading_.isEmpty) {
+          let unigrams = this.languageModel_.getUnigrams(key);
+          if (unigrams.length == 1) {
+            let unigram = unigrams[0];
+            let string = unigram.value;
+            let committing = new Committing(string);
+            stateCallback(committing);
+            let empty = new Empty();
+            stateCallback(empty);
+            return true;
+          }
+
+          this.grid_.insertReading(key);
+          this.walk();
+          let originalCursorIndex = this.grid_.cursor;
+          if (this.selectPhraseAfterCursorAsCandidate_) {
+            this.grid_.cursor = originalCursorIndex - 1;
+          }
+          let choosingCandidateState =
+            this.buildChoosingCandidateState(originalCursorIndex);
+          stateCallback(choosingCandidateState);
+        } else {
+          // Punctuation ignored if a bopomofo reading is active..
+          errorCallback();
+        }
+      } else {
+        errorCallback();
+      }
+      return true;
+    }
+    if (key.ascii >= "0" && key.ascii <= "9") {
+      if (state.number.length > 2) {
+        errorCallback();
+        return true;
+      }
+      let number = state.number + key.ascii;
+      let newState = new EnclosingNumber(number);
+      stateCallback(newState);
+    } else {
+      errorCallback();
+    }
+
+    return true;
   }
 
   private handleChineseNumber(
