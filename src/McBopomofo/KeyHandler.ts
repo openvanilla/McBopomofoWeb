@@ -8,6 +8,7 @@
 import { BopomofoKeyboardLayout, BopomofoReadingBuffer } from "../Mandarin";
 import { UserOverrideModel } from "./UserOverrideModel";
 import {
+  Big5,
   ChineseNumber,
   ChineseNumberStyle,
   ChoosingCandidate,
@@ -216,6 +217,10 @@ export class KeyHandler {
 
     if (state instanceof ChineseNumber) {
       return this.handleChineseNumber(key, state, stateCallback, errorCallback);
+    }
+
+    if (state instanceof Big5) {
+      return this.handleBig5(key, state, stateCallback, errorCallback);
     }
 
     if (state instanceof EnclosingNumber) {
@@ -1024,77 +1029,6 @@ export class KeyHandler {
     );
   }
 
-  private handleEnclosingNumber(
-    key: Key,
-    state: EnclosingNumber,
-    stateCallback: (state: InputState) => void,
-    errorCallback: () => void
-  ): boolean {
-    if (key.name === KeyName.ESC) {
-      stateCallback(new Empty());
-      return true;
-    }
-    if (key.isDeleteKey) {
-      let number = state.number;
-      if (number.length > 0) {
-        number = number.substring(number.length - 1);
-      } else {
-        errorCallback();
-        return true;
-      }
-      let newState = new EnclosingNumber(number);
-      stateCallback(newState);
-      return true;
-    }
-    if (key.name === KeyName.RETURN) {
-      let key = "_number_" + state.number;
-
-      if (this.languageModel_.hasUnigrams(key)) {
-        if (this.reading_.isEmpty) {
-          let unigrams = this.languageModel_.getUnigrams(key);
-          if (unigrams.length == 1) {
-            let unigram = unigrams[0];
-            let string = unigram.value;
-            let committing = new Committing(string);
-            stateCallback(committing);
-            let empty = new Empty();
-            stateCallback(empty);
-            return true;
-          }
-
-          this.grid_.insertReading(key);
-          this.walk();
-          let originalCursorIndex = this.grid_.cursor;
-          if (this.selectPhraseAfterCursorAsCandidate_) {
-            this.grid_.cursor = originalCursorIndex - 1;
-          }
-          let choosingCandidateState =
-            this.buildChoosingCandidateState(originalCursorIndex);
-          stateCallback(choosingCandidateState);
-        } else {
-          // Punctuation ignored if a bopomofo reading is active..
-          errorCallback();
-        }
-      } else {
-        errorCallback();
-      }
-      return true;
-    }
-    if (key.ascii >= "0" && key.ascii <= "9") {
-      if (state.number.length > 2) {
-        errorCallback();
-        return true;
-      }
-      let number = state.number + key.ascii;
-      let newState = new EnclosingNumber(number);
-      stateCallback(newState);
-    } else {
-      errorCallback();
-    }
-
-    return true;
-  }
-
   private handleChineseNumber(
     key: Key,
     state: ChineseNumber,
@@ -1108,7 +1042,7 @@ export class KeyHandler {
     if (key.isDeleteKey) {
       let number = state.number;
       if (number.length > 0) {
-        number = number.substring(number.length - 1);
+        number = number.substring(0, number.length - 1);
       } else {
         errorCallback();
         return true;
@@ -1174,6 +1108,133 @@ export class KeyHandler {
       }
       let number = state.number + key.ascii;
       let newState = new ChineseNumber(number, state.style);
+      stateCallback(newState);
+    } else {
+      errorCallback();
+    }
+
+    return true;
+  }
+
+  private handleBig5(
+    key: Key,
+    state: Big5,
+    stateCallback: (state: InputState) => void,
+    errorCallback: () => void
+  ): boolean {
+    if (key.name === KeyName.ESC) {
+      stateCallback(new Empty());
+      return true;
+    }
+    if (key.isDeleteKey) {
+      let code = state.code;
+      if (code.length > 0) {
+        code = code.substring(0, code.length - 1);
+      } else {
+        errorCallback();
+        return true;
+      }
+      let newState = new Big5(code);
+      stateCallback(newState);
+      return true;
+    }
+    if (
+      (key.ascii >= "0" && key.ascii <= "9") ||
+      (key.ascii >= "a" && key.ascii <= "f")
+    ) {
+      let appended = state.code + key.ascii;
+      if (appended.length == 4) {
+        let bytes = [];
+        for (let i = 0; i < 4; i++) {
+          let char = appended.charCodeAt(i);
+          if (char >= 48 && char <= 57) {
+            bytes.push(char - 48);
+          } else if (char >= 97 && char <= 122) {
+            bytes.push(char - 97 + 10);
+          }
+        }
+        let textDecoder = new TextDecoder("big5");
+        let uint8array = new Uint8Array([
+          (bytes[0] << 4) | bytes[1],
+          (bytes[2] << 4) | bytes[3],
+        ]);
+        let result = textDecoder.decode(uint8array);
+        stateCallback(new Committing(result));
+        stateCallback(new Empty());
+      } else {
+        let newState = new Big5(appended);
+        stateCallback(newState);
+      }
+    } else {
+      errorCallback();
+    }
+
+    return true;
+  }
+
+  private handleEnclosingNumber(
+    key: Key,
+    state: EnclosingNumber,
+    stateCallback: (state: InputState) => void,
+    errorCallback: () => void
+  ): boolean {
+    if (key.name === KeyName.ESC) {
+      stateCallback(new Empty());
+      return true;
+    }
+    if (key.isDeleteKey) {
+      let number = state.number;
+      if (number.length > 0) {
+        number = number.substring(0, number.length - 1);
+      } else {
+        errorCallback();
+        return true;
+      }
+      let newState = new EnclosingNumber(number);
+      stateCallback(newState);
+      return true;
+    }
+    if (key.name === KeyName.RETURN) {
+      let key = "_number_" + state.number;
+
+      if (this.languageModel_.hasUnigrams(key)) {
+        if (this.reading_.isEmpty) {
+          let unigrams = this.languageModel_.getUnigrams(key);
+          if (unigrams.length == 1) {
+            let unigram = unigrams[0];
+            let string = unigram.value;
+            let committing = new Committing(string);
+            stateCallback(committing);
+            let empty = new Empty();
+            stateCallback(empty);
+            return true;
+          }
+
+          this.grid_.insertReading(key);
+          this.walk();
+          let originalCursorIndex = this.grid_.cursor;
+          if (this.selectPhraseAfterCursorAsCandidate_) {
+            this.grid_.cursor = originalCursorIndex - 1;
+          }
+          let choosingCandidateState =
+            this.buildChoosingCandidateState(originalCursorIndex);
+          stateCallback(choosingCandidateState);
+        } else {
+          // Punctuation ignored if a bopomofo reading is active..
+          errorCallback();
+        }
+      } else {
+        errorCallback();
+      }
+      return true;
+    }
+    if (key.ascii >= "0" && key.ascii <= "9") {
+      if (state.number.length > 2) {
+        errorCallback();
+        return true;
+      }
+      let number = state.number + key.ascii;
+      let newState = new EnclosingNumber(number);
       stateCallback(newState);
     } else {
       errorCallback();

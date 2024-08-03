@@ -181,19 +181,6 @@ export class SelectingDictionary extends NotEmpty {
   }
 }
 
-/** Represents that the user is inputting a enclosed number. */
-export class EnclosingNumber implements InputState {
-  readonly number: string;
-
-  constructor(number: string) {
-    this.number = number;
-  }
-
-  get composingBuffer(): string {
-    return "[標題數字] " + this.number;
-  }
-}
-
 export enum ChineseNumberStyle {
   Lowercase,
   Uppercase,
@@ -223,6 +210,31 @@ export class ChineseNumber implements InputState {
     }
 
     return "";
+  }
+}
+
+export class Big5 implements InputState {
+  readonly code: string;
+
+  constructor(code: string = "") {
+    this.code = code;
+  }
+
+  get composingBuffer(): string {
+    return "[內碼] " + this.code;
+  }
+}
+
+/** Represents that the user is inputting a enclosed number. */
+export class EnclosingNumber implements InputState {
+  readonly number: string;
+
+  constructor(number: string = "") {
+    this.number = number;
+  }
+
+  get composingBuffer(): string {
+    return "[標題數字] " + this.number;
   }
 }
 
@@ -273,22 +285,41 @@ export class Feature {
 }
 
 export class SelectingFeature implements InputState {
-  readonly features: Feature[] = [
-    new Feature("日期與時間", () => new SelectingDateMacro(this.converter)),
-    new Feature("標題數字", () => new EnclosingNumber("")),
-    new Feature(
-      "中文數字",
-      () => new ChineseNumber("", ChineseNumberStyle.Lowercase)
-    ),
-    new Feature(
-      "大寫數字",
-      () => new ChineseNumber("", ChineseNumberStyle.Uppercase)
-    ),
-    new Feature(
-      "蘇州碼",
-      () => new ChineseNumber("", ChineseNumberStyle.Suzhou)
-    ),
-  ];
+  readonly features: Feature[] = (() => {
+    var features: Feature[] = [];
+
+    try {
+      // Note: old JS engines may not support big5 encoding.
+      let _ = new TextDecoder("big5");
+      features.push(new Feature("Big5 內碼輸入", () => new Big5()));
+    } catch (e) {
+      // bypass
+    }
+
+    features.push(
+      new Feature("日期與時間", () => new SelectingDateMacro(this.converter))
+    );
+    features.push(new Feature("標題數字", () => new EnclosingNumber()));
+    features.push(
+      new Feature(
+        "中文數字",
+        () => new ChineseNumber("", ChineseNumberStyle.Lowercase)
+      )
+    );
+    features.push(
+      new Feature(
+        "大寫數字",
+        () => new ChineseNumber("", ChineseNumberStyle.Uppercase)
+      )
+    );
+    features.push(
+      new Feature(
+        "蘇州碼",
+        () => new ChineseNumber("", ChineseNumberStyle.Suzhou)
+      )
+    );
+    return features;
+  })();
 
   converter: (input: string) => string;
   constructor(converter: (input: string) => string) {
