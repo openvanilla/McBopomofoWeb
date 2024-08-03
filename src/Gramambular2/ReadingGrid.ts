@@ -624,9 +624,17 @@ export class WalkResult {
   }
 }
 
+/** Represents a candidate which has a reading and a value. */
 export class Candidate {
+  /** The reading of the candidate. For example, when a user tries to input "你
+    ", the reading is "ㄋㄧˇ" */
   readonly reading: string;
+  /** The value of the candidate. For example, when a user tries to input "你"
+   * with "ㄋㄧˇ", "你" is the value.  */
   readonly value: string;
+  /** The exact text displayed in the candidate windows. For example, we may
+   * have multiple duplicated candidate whose value is "你", but the displayed
+   * text could be "你 1", "你 2" and so on. */
   readonly displayedText: string;
 
   constructor(reading: string, value: string, displayedText: string) {
