@@ -46,6 +46,7 @@ export class EmptyIgnoringPrevious implements InputState {
 
 /**  The state for committing text into the desired application. */
 export class Committing implements InputState {
+  /** The text to commit. */
   readonly text: string;
 
   constructor(text: string) {
@@ -93,7 +94,9 @@ export class Inputting extends NotEmpty {
 
 /** Candidate selecting state with a non-empty composing buffer. */
 export class ChoosingCandidate extends NotEmpty {
+  /** The candidates to choose from. */
   readonly candidates: Candidate[];
+  /** The index of the cursor when the user starts to choose for candidates. */
   readonly originalCursorIndex: number;
 
   constructor(
@@ -124,11 +127,18 @@ export class ChoosingCandidate extends NotEmpty {
  * cursor index.
  */
 export class Marking extends NotEmpty {
+  /** The index of the cursor that the user starts to make a marked range. It
+   * helps to restore the position of the cursor. */
   readonly markStartGridCursorIndex: number;
+  /** THe text before the marked text. */
   readonly head: string;
+  /** The marked text. */
   readonly markedText: string;
+  /** The text after the marked text. */
   readonly tail: string;
+  /** The Bopomofo reading of the marked text. */
   readonly reading: string;
+  /** Whether the marked text could be saved to the user phrases. */
   readonly acceptable: boolean;
 
   toString(): string {
@@ -158,9 +168,13 @@ export class Marking extends NotEmpty {
 
 /** Represents that the user is selecting a dictionary service. */
 export class SelectingDictionary extends NotEmpty {
+  /** The previous input state. */
   readonly previousState: NotEmpty;
+  /** The selected phrase. */
   readonly selectedPrase: string;
+  /** The index of the selected phrase. */
   readonly selectedIndex: number;
+  /** The menu of dictionary services. */
   readonly menu: string[];
 
   constructor(
@@ -189,7 +203,9 @@ export enum ChineseNumberStyle {
 
 /** Represents that the user is inputting a Chinese number. */
 export class ChineseNumber implements InputState {
+  /** The user inputted number. */
   readonly number: string;
+  /** The style of the Chinese number. */
   readonly style: ChineseNumberStyle;
 
   constructor(number: string, style: ChineseNumberStyle) {
@@ -213,7 +229,9 @@ export class ChineseNumber implements InputState {
   }
 }
 
+/** Represents that the user is inputting a Big5 code. */
 export class Big5 implements InputState {
+  /** The user inputted code. */
   readonly code: string;
 
   constructor(code: string = "") {
@@ -227,6 +245,7 @@ export class Big5 implements InputState {
 
 /** Represents that the user is inputting a enclosed number. */
 export class EnclosingNumber implements InputState {
+  /** The user inputted number. */
   readonly number: string;
 
   constructor(number: string = "") {
