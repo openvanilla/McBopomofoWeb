@@ -21,8 +21,9 @@ table {
 }
 
 td {
-  min-width: 3em;
+  min-width: 5em;
   text-align: center;
+  padding: 0px, 4px 0px, 4px;
 }
 
 select {
