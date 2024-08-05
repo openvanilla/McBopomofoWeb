@@ -125,7 +125,7 @@ class PimeMcBopomofo {
     this.inputController = new InputController(this.makeUI(this));
     this.inputController.setUserVerticalCandidates(true);
     this.inputController.setOnOpenUrl((url: string) => {
-      let command = `start ${url}`;
+      let command = `start "" "${url}"`;
       child_process.exec(command);
     });
     this.inputController.setOnPhraseAdded((key: string, phrase: string) => {
