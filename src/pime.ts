@@ -6,6 +6,7 @@ import child_process from "child_process";
 import fs from "fs";
 import path from "path";
 import process from "process";
+import { Empty } from "./McBopomofo/InputState";
 
 // const CtrlAltG_KeyGuid = "fd8b1ba5-08b9-4988-9001-1de7bc390f2a";
 // const CtrlAltH_KeyGuid = "bcda6d88-3f09-4820-90e0-3f16212178c9";
@@ -120,6 +121,7 @@ class PimeMcBopomofo {
    * would be reset on key on. */
   isCapsLockHold: boolean = false;
   isScheduledToToggleAlphabetModeOnKeyUp: boolean = false;
+  isScheduledToUpdateUI = false;
 
   constructor() {
     this.inputController = new InputController(this.makeUI(this));
@@ -692,8 +694,11 @@ module.exports = {
       if (pimeMcBopomofo.isShiftHold) {
         pimeMcBopomofo.isScheduledToToggleAlphabetModeOnKeyUp = true;
       }
+      let state = pimeMcBopomofo.inputController.state;
+      let handled = state instanceof Empty === false;
+      console.log("handled ?" + handled);
 
-      let response = Object.assign({}, responseTemplate, { return: true });
+      let response = Object.assign({}, responseTemplate, { return: handled });
       return response;
     }
 
@@ -758,6 +763,7 @@ module.exports = {
         }
         pimeMcBopomofo.resetController();
         pimeMcBopomofo.isLastFilterKeyDownHandled = true;
+        pimeMcBopomofo.isScheduledToUpdateUI = true;
         let response = Object.assign({}, responseTemplate, {
           return: true,
         });
@@ -772,9 +778,12 @@ module.exports = {
         pimeMcBopomofo.isShiftHold = isPressingShiftOnly;
       }
       if (isPressingShiftOnly) {
-        pimeMcBopomofo.isLastFilterKeyDownHandled = true;
+        let state = pimeMcBopomofo.inputController.state;
+        let handled = state instanceof Empty === false;
+        console.log("handled ?" + handled);
+        pimeMcBopomofo.isLastFilterKeyDownHandled = handled;
         let response = Object.assign({}, responseTemplate, {
-          return: true,
+          return: handled,
         });
         return response;
       }
@@ -785,6 +794,7 @@ module.exports = {
         // Ignores caps lock.
         pimeMcBopomofo.resetController();
         pimeMcBopomofo.isCapsLockHold = true;
+        pimeMcBopomofo.isLastFilterKeyDownHandled = false;
         let response = Object.assign({}, responseTemplate, {
           return: false,
         });
@@ -828,11 +838,16 @@ module.exports = {
         });
         return response;
       }
-
       let uiState: any = pimeMcBopomofo.uiState;
       let response = Object.assign({}, responseTemplate, uiState, {
         return: pimeMcBopomofo.isLastFilterKeyDownHandled,
       });
+      if (pimeMcBopomofo.isScheduledToUpdateUI) {
+        pimeMcBopomofo.isScheduledToUpdateUI = false;
+        let customUi = pimeMcBopomofo.customUiResponse();
+        let buttonUi = pimeMcBopomofo.buttonUiResponse();
+        response = Object.assign({}, response, customUi, buttonUi);
+      }
       return response;
     }
 

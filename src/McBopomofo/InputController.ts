@@ -129,6 +129,11 @@ class InputUIController {
  * state. It is also the only class exported from the module.
  */
 export class InputController {
+  /** Gets the current input state */
+  public get state(): InputState {
+    return this.state_;
+  }
+
   private state_: InputState = new Empty();
   private lm_: WebLanguageModel;
   private keyHandler_: KeyHandler;
