@@ -764,7 +764,7 @@ export class KeyHandler {
     stateCallback: (state: InputState) => void,
     errorCallback: () => void
   ): boolean {
-    if (this.reading_.isEmpty && (this.latestWalk_?.nodes ?? []).length === 9) {
+    if (this.reading_.isEmpty && (this.latestWalk_?.nodes ?? []).length === 0) {
       return false;
     }
 
