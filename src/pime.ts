@@ -631,6 +631,10 @@ module.exports = {
       seqNum: request.seqNum,
     };
     if (request.method === "init") {
+      console.log(
+        "init ======================================================================================"
+      );
+
       let { isWindows8Above } = request;
       pimeMcBopomofo.isWindows8Above = isWindows8Above;
       let customUi = pimeMcBopomofo.customUiResponse();
@@ -640,6 +644,9 @@ module.exports = {
       return response;
     }
     if (request.method === "close") {
+      console.log(
+        "Close ======================================================================================"
+      );
       let response = Object.assign({}, responseTemplate, {
         removeButton: ["windows-mode-icon", "switch-lang", "settings"],
       });
@@ -721,20 +728,8 @@ module.exports = {
         });
         return response;
       }
-      pimeMcBopomofo.resetBeforeHandlingKey();
 
       let { keyCode, charCode, keyStates } = request;
-      // Ignores caps lock.
-      if ((keyStates[VK_Keys.VK_CAPITAL] & 1) != 0) {
-        pimeMcBopomofo.resetController();
-        pimeMcBopomofo.isCapsLockHold = true;
-        let response = Object.assign({}, responseTemplate, {
-          return: false,
-        });
-        return response;
-      } else {
-        pimeMcBopomofo.isCapsLockHold = false;
-      }
 
       let key = KeyFromKeyboardEvent(
         keyCode,
@@ -743,7 +738,7 @@ module.exports = {
         charCode
       );
 
-      console.log(key);
+      // console.log(key);
       if (
         key.ctrlPressed &&
         key.shiftPressed &&
@@ -761,6 +756,7 @@ module.exports = {
           pimeMcBopomofo.applySettings();
           pimeMcBopomofo.writeSettings();
         }
+        pimeMcBopomofo.resetController();
         pimeMcBopomofo.isLastFilterKeyDownHandled = true;
         let response = Object.assign({}, responseTemplate, {
           return: true,
@@ -771,8 +767,30 @@ module.exports = {
       let shouldHandleShift =
         pimeMcBopomofo.settings.shift_key_toggle_alphabet_mode === true;
 
+      var isPressingShiftOnly = key.ascii === "Shift";
       if (shouldHandleShift) {
-        pimeMcBopomofo.isShiftHold = key.ascii === "Shift";
+        pimeMcBopomofo.isShiftHold = isPressingShiftOnly;
+      }
+      if (isPressingShiftOnly) {
+        pimeMcBopomofo.isLastFilterKeyDownHandled = true;
+        let response = Object.assign({}, responseTemplate, {
+          return: true,
+        });
+        return response;
+      }
+
+      pimeMcBopomofo.resetBeforeHandlingKey();
+
+      if ((keyStates[VK_Keys.VK_CAPITAL] & 1) != 0) {
+        // Ignores caps lock.
+        pimeMcBopomofo.resetController();
+        pimeMcBopomofo.isCapsLockHold = true;
+        let response = Object.assign({}, responseTemplate, {
+          return: false,
+        });
+        return response;
+      } else {
+        pimeMcBopomofo.isCapsLockHold = false;
       }
 
       if (pimeMcBopomofo.isAlphabetMode) {
