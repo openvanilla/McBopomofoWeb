@@ -749,6 +749,7 @@ module.exports = {
         key.ascii >= "A" &&
         key.ascii <= "Z"
       ) {
+        pimeMcBopomofo.isShiftHold = false;
         if (key.ascii === "G") {
           pimeMcBopomofo.settings.chineseConversion =
             !pimeMcBopomofo.settings.chineseConversion;
@@ -793,6 +794,8 @@ module.exports = {
           return: handled,
         });
         return response;
+      } else {
+        pimeMcBopomofo.isShiftHold = false;
       }
 
       pimeMcBopomofo.resetBeforeHandlingKey();
