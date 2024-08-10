@@ -62,7 +62,6 @@ export class Service {
               pendingText.length == 0 &&
               isASCII(subString.charAt(0))
             ) {
-              console.log("add 1");
               pendingText += " ";
             }
             pendingText += subString;
@@ -74,7 +73,6 @@ export class Service {
                 isASCII(pendingText.charAt(pendingText.length - 1))
               ) {
                 output += " ";
-                console.log("add 2");
               }
               pendingText = "";
             }
@@ -106,7 +104,6 @@ export class Service {
           isASCII(subString)
         ) {
           pendingText += " ";
-          console.log("add 3");
         }
 
         pendingText += subString;
@@ -122,7 +119,6 @@ export class Service {
         isASCII(pendingText)
       ) {
         pendingText += " ";
-        console.log("add 4");
       }
 
       output += nonReadingCallback(pendingText);

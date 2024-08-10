@@ -861,7 +861,6 @@ module.exports = {
     }
 
     if (request.method === "onMenu") {
-      // console.log(request);
       let menu = [
         {
           text: "小麥注音輸入法網站",

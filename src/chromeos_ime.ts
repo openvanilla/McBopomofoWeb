@@ -514,7 +514,6 @@ chrome.input?.ime.onDeactivated.addListener((context) => {
 // Called when the current text input is focused. We reload the settings this
 // time.
 chrome.input?.ime.onFocus.addListener((context) => {
-  // console.log("onFocus");
   chromeMcBopomofo.context = context;
   if (chromeMcBopomofo.deferredResetTimeout != null) {
     clearTimeout(chromeMcBopomofo.deferredResetTimeout);

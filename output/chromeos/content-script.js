@@ -49,6 +49,5 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 
   let text = request.text;
   let isHtml = request.isHtml;
-  console.log(text);
   replaceSelectedText(text, isHtml);
 });

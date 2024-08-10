@@ -197,7 +197,6 @@ window.onload = () => {
   };
 
   document.getElementById("ctrl_enter_option").onchange = (event) => {
-    console.log("ctrl_enter_option");
     let value = document.getElementById("ctrl_enter_option").value;
     value = +value;
     settings.ctrl_enter_option = value;
