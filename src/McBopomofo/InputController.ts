@@ -12,11 +12,13 @@ import { CtrlEnterOption } from "./CtrlEnterOption";
 import { inputMacroController } from "./InputMacro";
 
 import {
+  Big5,
   ChineseNumber,
   ChoosingCandidate,
   Committing,
   Empty,
   EmptyIgnoringPrevious,
+  EnclosingNumber,
   InputState,
   Inputting,
   Marking,
@@ -639,6 +641,10 @@ export class InputController {
       this.handleChoosingCandidate(prev, state);
     } else if (state instanceof ChineseNumber) {
       this.handleChineseNumber(prev, state);
+    } else if (state instanceof Big5) {
+      this.handleBig5(prev, state);
+    } else if (state instanceof EnclosingNumber) {
+      this.handleEnclosingNumber(prev, state);
     }
     this.state_ = state;
   }
@@ -732,6 +738,21 @@ export class InputController {
   }
 
   private handleChineseNumber(prev: InputState, state: ChineseNumber) {
+    this.ui_.reset();
+    let composingBuffer = state.composingBuffer;
+    this.ui_.append(new ComposingBufferText(composingBuffer));
+    this.ui_.setCursorIndex(composingBuffer.length);
+    this.ui_.update();
+  }
+
+  private handleBig5(prev: InputState, state: Big5) {
+    this.ui_.reset();
+    let composingBuffer = state.composingBuffer;
+    this.ui_.append(new ComposingBufferText(composingBuffer));
+    this.ui_.setCursorIndex(composingBuffer.length);
+    this.ui_.update();
+  }
+  private handleEnclosingNumber(prev: InputState, state: EnclosingNumber) {
     this.ui_.reset();
     let composingBuffer = state.composingBuffer;
     this.ui_.append(new ComposingBufferText(composingBuffer));

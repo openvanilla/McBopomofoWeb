@@ -7,8 +7,17 @@
 
 import dayjs from "dayjs";
 
+/**
+ * The interface of input macros.
+ *
+ * Input macros are a kind of formatted text that can be converted when the
+ * input method is running, For example, "MACRO@DATE_TODAY_SHORT" would be
+ * converted to the exact date of today.
+ */
 abstract class InputMacro {
+  /** The name of the macro. */
   abstract get name(): string;
+  /** The dynamic content to replace the content of the macro. */
   abstract get replacement(): string;
 }
 

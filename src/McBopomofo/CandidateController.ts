@@ -7,9 +7,13 @@
 
 import { Candidate } from "../Gramambular2";
 
+/** Helps to associate a candidate with a key cap. */
 export class CandidateWrapper {
+  /** The key cap. */
   readonly keyCap: string = "";
+  /** The candidate. */
   readonly candidate: Candidate = new Candidate("", "", "");
+  /** If the candidate is selected. */
   readonly selected: boolean = false;
 
   constructor(keyCap: string, candidate: Candidate, selected: boolean) {
@@ -18,14 +22,17 @@ export class CandidateWrapper {
     this.selected = selected;
   }
 
+  /** Returns the reading of the candidate. */
   public get reading(): string {
     return this.candidate.reading;
   }
 
+  /** Returns the value of the candidate. */
   public get value(): string {
     return this.candidate.value;
   }
 
+  /** Returns the displayed text of the candidate. */
   public get displayedText(): string {
     return this.candidate.displayedText;
   }

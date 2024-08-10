@@ -11,7 +11,6 @@ export enum FullWidthPunctuation {
   slash = "—",
   bookNameMark = "﹏",
   ellipsis = "…",
-  // referenceMark = "※",
   doubleRing = "◎",
   singleQuotationMarkLeft = "「",
   singleQuotationMarkRight = "」",

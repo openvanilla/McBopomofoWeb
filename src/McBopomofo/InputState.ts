@@ -46,6 +46,7 @@ export class EmptyIgnoringPrevious implements InputState {
 
 /**  The state for committing text into the desired application. */
 export class Committing implements InputState {
+  /** The text to commit. */
   readonly text: string;
 
   constructor(text: string) {
@@ -93,7 +94,9 @@ export class Inputting extends NotEmpty {
 
 /** Candidate selecting state with a non-empty composing buffer. */
 export class ChoosingCandidate extends NotEmpty {
+  /** The candidates to choose from. */
   readonly candidates: Candidate[];
+  /** The index of the cursor when the user starts to choose for candidates. */
   readonly originalCursorIndex: number;
 
   constructor(
@@ -124,11 +127,18 @@ export class ChoosingCandidate extends NotEmpty {
  * cursor index.
  */
 export class Marking extends NotEmpty {
+  /** The index of the cursor that the user starts to make a marked range. It
+   * helps to restore the position of the cursor. */
   readonly markStartGridCursorIndex: number;
+  /** THe text before the marked text. */
   readonly head: string;
+  /** The marked text. */
   readonly markedText: string;
+  /** The text after the marked text. */
   readonly tail: string;
+  /** The Bopomofo reading of the marked text. */
   readonly reading: string;
+  /** Whether the marked text could be saved to the user phrases. */
   readonly acceptable: boolean;
 
   toString(): string {
@@ -156,10 +166,15 @@ export class Marking extends NotEmpty {
   }
 }
 
+/** Represents that the user is selecting a dictionary service. */
 export class SelectingDictionary extends NotEmpty {
+  /** The previous input state. */
   readonly previousState: NotEmpty;
+  /** The selected phrase. */
   readonly selectedPrase: string;
+  /** The index of the selected phrase. */
   readonly selectedIndex: number;
+  /** The menu of dictionary services. */
   readonly menu: string[];
 
   constructor(
@@ -186,8 +201,11 @@ export enum ChineseNumberStyle {
   Suzhou,
 }
 
+/** Represents that the user is inputting a Chinese number. */
 export class ChineseNumber implements InputState {
+  /** The user inputted number. */
   readonly number: string;
+  /** The style of the Chinese number. */
   readonly style: ChineseNumberStyle;
 
   constructor(number: string, style: ChineseNumberStyle) {
@@ -208,6 +226,34 @@ export class ChineseNumber implements InputState {
     }
 
     return "";
+  }
+}
+
+/** Represents that the user is inputting a Big5 code. */
+export class Big5 implements InputState {
+  /** The user inputted code. */
+  readonly code: string;
+
+  constructor(code: string = "") {
+    this.code = code;
+  }
+
+  get composingBuffer(): string {
+    return "[內碼] " + this.code;
+  }
+}
+
+/** Represents that the user is inputting a enclosed number. */
+export class EnclosingNumber implements InputState {
+  /** The user inputted number. */
+  readonly number: string;
+
+  constructor(number: string = "") {
+    this.number = number;
+  }
+
+  get composingBuffer(): string {
+    return "[標題數字] " + this.number;
   }
 }
 
@@ -258,21 +304,41 @@ export class Feature {
 }
 
 export class SelectingFeature implements InputState {
-  readonly features: Feature[] = [
-    new Feature("日期與時間", () => new SelectingDateMacro(this.converter)),
-    new Feature(
-      "中文數字",
-      () => new ChineseNumber("", ChineseNumberStyle.Lowercase)
-    ),
-    new Feature(
-      "大寫數字",
-      () => new ChineseNumber("", ChineseNumberStyle.Uppercase)
-    ),
-    new Feature(
-      "蘇州碼",
-      () => new ChineseNumber("", ChineseNumberStyle.Suzhou)
-    ),
-  ];
+  readonly features: Feature[] = (() => {
+    var features: Feature[] = [];
+
+    try {
+      // Note: old JS engines may not support big5 encoding.
+      let _ = new TextDecoder("big5");
+      features.push(new Feature("Big5 內碼輸入", () => new Big5()));
+    } catch (e) {
+      // bypass
+    }
+
+    features.push(
+      new Feature("日期與時間", () => new SelectingDateMacro(this.converter))
+    );
+    features.push(new Feature("標題數字", () => new EnclosingNumber()));
+    features.push(
+      new Feature(
+        "中文數字",
+        () => new ChineseNumber("", ChineseNumberStyle.Lowercase)
+      )
+    );
+    features.push(
+      new Feature(
+        "大寫數字",
+        () => new ChineseNumber("", ChineseNumberStyle.Uppercase)
+      )
+    );
+    features.push(
+      new Feature(
+        "蘇州碼",
+        () => new ChineseNumber("", ChineseNumberStyle.Suzhou)
+      )
+    );
+    return features;
+  })();
 
   converter: (input: string) => string;
   constructor(converter: (input: string) => string) {
