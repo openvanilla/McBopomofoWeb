@@ -8,9 +8,6 @@ import path from "path";
 import process from "process";
 import { Empty } from "./McBopomofo/InputState";
 
-// const CtrlAltG_KeyGuid = "fd8b1ba5-08b9-4988-9001-1de7bc390f2a";
-// const CtrlAltH_KeyGuid = "bcda6d88-3f09-4820-90e0-3f16212178c9";
-
 /** The McBopomofo Settings. */
 interface Settings {
   candidate_font_size: number;
@@ -120,8 +117,11 @@ class PimeMcBopomofo {
   /** Helps to remember if Caps Lock is on when key down event is triggered. It
    * would be reset on key on. */
   isCapsLockHold: boolean = false;
-  isScheduledToToggleAlphabetModeOnKeyUp: boolean = false;
-  isScheduledToUpdateUI = false;
+  // isScheduledToToggleAlphabetModeOnKeyUp: boolean = false;
+  /** If the user presses a shortcut key, such as the key to toggle
+   * Traditional/Simplifies Chinese, the flag should be set to true and then
+   * update the input UI. */
+  isScheduledToUpdateUi = false;
 
   constructor() {
     this.inputController = new InputController(this.makeUI(this));
@@ -483,7 +483,7 @@ class PimeMcBopomofo {
       case PimeMcBopomofoCommand.ModeIcon:
       case PimeMcBopomofoCommand.SwitchLanguage:
         {
-          if (this.isOpened == false) {
+          if (this.isOpened === false) {
             return;
           }
           this.toggleAlphabetMode();
@@ -633,9 +633,9 @@ module.exports = {
       seqNum: request.seqNum,
     };
     if (request.method === "init") {
-      console.log(
-        "init ======================================================================================"
-      );
+      // console.log(
+      //   "init ======================================================================================"
+      // );
 
       let { isWindows8Above } = request;
       pimeMcBopomofo.isWindows8Above = isWindows8Above;
@@ -646,9 +646,9 @@ module.exports = {
       return response;
     }
     if (request.method === "close") {
-      console.log(
-        "Close ======================================================================================"
-      );
+      // console.log(
+      //   "Close ======================================================================================"
+      // );
       let response = Object.assign({}, responseTemplate, {
         removeButton: ["windows-mode-icon", "switch-lang", "settings"],
       });
@@ -692,20 +692,19 @@ module.exports = {
       }
       // Single Shift to toggle alphabet mode.
       if (pimeMcBopomofo.isShiftHold) {
-        pimeMcBopomofo.isScheduledToToggleAlphabetModeOnKeyUp = true;
+        pimeMcBopomofo.isScheduledToUpdateUi = true;
+        pimeMcBopomofo.toggleAlphabetMode();
       }
-      let state = pimeMcBopomofo.inputController.state;
-      let handled = state instanceof Empty === false;
-      console.log("handled ?" + handled);
-
-      let response = Object.assign({}, responseTemplate, { return: handled });
+      let response = Object.assign({}, responseTemplate, { return: true });
       return response;
     }
 
     if (request.method === "onKeyUp") {
-      if (pimeMcBopomofo.isScheduledToToggleAlphabetModeOnKeyUp) {
-        pimeMcBopomofo.isScheduledToToggleAlphabetModeOnKeyUp = false;
-        pimeMcBopomofo.toggleAlphabetMode();
+      if (pimeMcBopomofo.isScheduledToUpdateUi) {
+        pimeMcBopomofo.isScheduledToUpdateUi = false;
+        let state = pimeMcBopomofo.inputController.state;
+        let handled = state instanceof Empty === false;
+
         let uiState = pimeMcBopomofo.uiState;
         let customUi = pimeMcBopomofo.customUiResponse();
         let buttonUi = pimeMcBopomofo.buttonUiResponse();
@@ -714,7 +713,7 @@ module.exports = {
           uiState,
           customUi,
           buttonUi,
-          { return: true }
+          { return: handled }
         );
         return response;
       }
@@ -763,7 +762,7 @@ module.exports = {
         }
         pimeMcBopomofo.resetController();
         pimeMcBopomofo.isLastFilterKeyDownHandled = true;
-        pimeMcBopomofo.isScheduledToUpdateUI = true;
+        pimeMcBopomofo.isScheduledToUpdateUi = true;
         let response = Object.assign({}, responseTemplate, {
           return: true,
         });
@@ -774,13 +773,21 @@ module.exports = {
         pimeMcBopomofo.settings.shift_key_toggle_alphabet_mode === true;
 
       var isPressingShiftOnly = key.ascii === "Shift";
+
+      // Note: The way we detect if a user is trying to press a single Shift key
+      // to toggle Alphabet/Chinese mode, is to check if there is any key other
+      // than the Shift key is received before the key up event.
+      //
+      // We set isShiftHold to true here. It means the user is pressing Shift
+      // key only. Then, if there is any other key coming, we will reset
+      // isShiftHold. Finally, if isShiftHold is still true in the key up event,
+      // we will toggle Alphabet/Chinese.
       if (shouldHandleShift) {
         pimeMcBopomofo.isShiftHold = isPressingShiftOnly;
       }
       if (isPressingShiftOnly) {
         let state = pimeMcBopomofo.inputController.state;
         let handled = state instanceof Empty === false;
-        console.log("handled ?" + handled);
         pimeMcBopomofo.isLastFilterKeyDownHandled = handled;
         let response = Object.assign({}, responseTemplate, {
           return: handled,
@@ -842,8 +849,8 @@ module.exports = {
       let response = Object.assign({}, responseTemplate, uiState, {
         return: pimeMcBopomofo.isLastFilterKeyDownHandled,
       });
-      if (pimeMcBopomofo.isScheduledToUpdateUI) {
-        pimeMcBopomofo.isScheduledToUpdateUI = false;
+      if (pimeMcBopomofo.isScheduledToUpdateUi) {
+        pimeMcBopomofo.isScheduledToUpdateUi = false;
         let customUi = pimeMcBopomofo.customUiResponse();
         let buttonUi = pimeMcBopomofo.buttonUiResponse();
         response = Object.assign({}, response, customUi, buttonUi);

@@ -8,9 +8,9 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
       sel = window.getSelection();
       let activeElement = document.activeElement;
       if (
-        activeElement.nodeName == "TEXTAREA" ||
-        (activeElement.nodeName == "INPUT" &&
-          activeElement.type.toLowerCase() == "text")
+        activeElement.nodeName === "TEXTAREA" ||
+        (activeElement.nodeName === "INPUT" &&
+          activeElement.type.toLowerCase() === "text")
       ) {
         let val = activeElement.value,
           start = activeElement.selectionStart,

@@ -1143,7 +1143,7 @@ export class KeyHandler {
       (key.ascii >= "a" && key.ascii <= "f")
     ) {
       let appended = state.code + key.ascii;
-      if (appended.length == 4) {
+      if (appended.length === 4) {
         let bytes = [];
         for (let i = 0; i < 4; i++) {
           let char = appended.charCodeAt(i);
@@ -1200,7 +1200,7 @@ export class KeyHandler {
       if (this.languageModel_.hasUnigrams(key)) {
         if (this.reading_.isEmpty) {
           let unigrams = this.languageModel_.getUnigrams(key);
-          if (unigrams.length == 1) {
+          if (unigrams.length === 1) {
             let unigram = unigrams[0];
             let string = unigram.value;
             let committing = new Committing(string);

@@ -59,7 +59,7 @@ export class Service {
             if (
               addingSpace &&
               output.length > 0 &&
-              pendingText.length == 0 &&
+              pendingText.length === 0 &&
               isASCII(subString.charAt(0))
             ) {
               pendingText += " ";
@@ -79,7 +79,7 @@ export class Service {
 
             let components = reading.split("-");
 
-            if (components.length == subString.length) {
+            if (components.length === subString.length) {
               for (let i = 0; i < components.length; i++) {
                 let component = components[i];
                 let char = subString.charAt(i);
@@ -100,7 +100,7 @@ export class Service {
         if (
           addingSpace &&
           output.length > 0 &&
-          pendingText.length == 0 &&
+          pendingText.length === 0 &&
           isASCII(subString)
         ) {
           pendingText += " ";
@@ -115,7 +115,7 @@ export class Service {
       if (
         addingSpace &&
         output.length > 0 &&
-        pendingText.length == 0 &&
+        pendingText.length === 0 &&
         isASCII(pendingText)
       ) {
         pendingText += " ";
