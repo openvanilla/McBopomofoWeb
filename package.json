@@ -1,6 +1,6 @@
 {
   "devDependencies": {
-    "@types/chrome": "^0.0.269",
+    "@types/chrome": "^0.0.270",
     "@types/jest": "^28.1.6",
     "@types/lodash": "^4.17.7",
     "@types/node": "^22.0.0",
