@@ -1,5 +1,8 @@
 # McBopomofoWeb - 使用網頁技術打造的小麥注音輸入法
 
+![Static Badge](https://img.shields.io/badge/platform-web-green)
+ ![ChromeOS](https://img.shields.io/badge/platform-chome_os-yellow) ![Static Badge](https://img.shields.io/badge/platform-windows-blue)
+
 本專案嘗試使用 JavaScript/TypeScript 與網頁相關技術實作小麥注音輸入法。小麥注音
 是一套自動選字的注音輸入法，提供多種常用鍵盤配置，以及各種方便快速輸入的功能。
 
@@ -69,7 +72,7 @@ powershell -noexit %COMMAND%
 
 在 others 目錄中，我們提供了一個 Word Add-in，方便在 Microsoft Word 中使用國字轉換點字的相關功能。使用方式如下：
 
-``` sh
+```sh
 cd others/WordAddin
 npm install
 npm run start:desktop
