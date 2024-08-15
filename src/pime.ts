@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright (c) 2022 and onwards The McBopomofo Authors.
+ * This code is released under the MIT license.
+ * SPDX-License-Identifier: MIT
+ * The main entrance of the IME for ChromeOS.
+ */
+
 import { InputController } from "./McBopomofo/InputController";
 import { InputUI } from "./McBopomofo/InputUI";
 import { KeyFromKeyboardEvent, VK_Keys } from "./pime_keys";

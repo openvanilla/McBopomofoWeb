@@ -758,37 +758,6 @@ chrome.contextMenus.onClicked.addListener((event, tab) => {
     return;
   }
   handle(selected, menuItemId as string, tabId as number);
-
-  // try {
-  //   chrome.tabs.executeScript(
-  //     { code: "window.getSelection().toString();" },
-  //     (selection) => {
-  //       let selected = selection[0];
-  //       if (selected === undefined) {
-  //         return;
-  //       }
-  //       handle(selected, menuItemId as string, tabId as number);
-  //     }
-  //   );
-  // } catch {
-  //   chrome.scripting
-  //     .executeScript<any[], string | undefined>({
-  //       target: {
-  //         tabId: tabId as number,
-  //       },
-  //       func: () => {
-  //         return window?.getSelection()?.toString();
-  //       },
-  //     })
-  //     .then((selection) => {
-  //       const { result } = selection[0];
-  //       let selected = result;
-  //       if (selected === undefined) {
-  //         return;
-  //       }
-  //       handle(selected as string, menuItemId as string, tabId as number);
-  //     });
-  // }
 });
 
 chrome.contextMenus.create({
