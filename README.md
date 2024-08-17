@@ -1,7 +1,7 @@
 # McBopomofoWeb - 使用網頁技術打造的小麥注音輸入法
 
 ![Static Badge](https://img.shields.io/badge/platform-web-green)
- ![ChromeOS](https://img.shields.io/badge/platform-chome_os-yellow) ![Static Badge](https://img.shields.io/badge/platform-windows-blue)
+![ChromeOS](https://img.shields.io/badge/platform-chome_os-yellow) ![Static Badge](https://img.shields.io/badge/platform-windows-blue)
 
 本專案嘗試使用 JavaScript/TypeScript 與網頁相關技術實作小麥注音輸入法。小麥注音
 是一套自動選字的注音輸入法，提供多種常用鍵盤配置，以及各種方便快速輸入的功能。
@@ -18,6 +18,21 @@
 - 國字加上注音，包括 HTML Ruby 形式
 - 國字轉換成台灣點字
 - 台灣點字轉換成國字
+
+## 目錄
+
+- [McBopomofoWeb - 使用網頁技術打造的小麥注音輸入法](#mcbopomofoweb---使用網頁技術打造的小麥注音輸入法)
+  - [目錄](#目錄)
+  - [使用](#使用)
+  - [編譯方式](#編譯方式)
+    - [編譯範例網頁](#編譯範例網頁)
+    - [編譯與測試 Chrome OS 版本](#編譯與測試-chrome-os-版本)
+    - [編譯與測試 Windows 上的 PIME 版本](#編譯與測試-windows-上的-pime-版本)
+  - [其他](#其他)
+  - [第三方套件](#第三方套件)
+  - [社群公約](#社群公約)
+  - [軟體授權](#軟體授權)
+  - [感謝](#感謝)
 
 ## 使用
 
@@ -38,7 +53,7 @@ npm run build:pime # 編譯 Windows PIME 版本
 
 這個指令會在 output，分別建立對應的檔案，通常叫做 bundle.js。
 
-### 範例網頁
+### 編譯範例網頁
 
 用 `npm run build` 編譯後，直接用瀏覽器打開 output/example/index.html ，就可以看到網頁版本的小麥輸入法功能展示。
 
