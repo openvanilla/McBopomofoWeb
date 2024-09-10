@@ -38,7 +38,7 @@ export class BopomofoReadingBuffer {
 
   isValidKey(k: string): boolean {
     if (!this.pinyinMode_) {
-      return this.layout_.keyToComponents(k).length > 0 ?? false;
+      return this.layout_.keyToComponents(k).length > 0;
     }
     if (k.length != 1) return false;
 
