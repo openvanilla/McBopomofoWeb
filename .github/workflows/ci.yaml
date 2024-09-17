@@ -101,6 +101,8 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - run: npm install
       - run: npm run build
+      - run: npx typedoc --entryPointStrategy expand ./src --exclude "**/*.test.ts"
+      - run: mv docs output/example/.
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4
         with:

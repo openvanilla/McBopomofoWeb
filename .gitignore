@@ -13,3 +13,4 @@ installer/wix/McBopomofo/*.msi
 *.wixpdb
 installer/wix/Bundle/bin
 .wix
+docs
