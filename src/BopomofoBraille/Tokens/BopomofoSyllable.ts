@@ -1,9 +1,7 @@
 const kMinimalBopomofoLength = 1;
 const kMinimalBrailleLength = 2;
 
-/**
- * Represents the Consonants in Bopomofo.
- */
+/** Represents the Consonants in Bopomofo. */
 enum Consonant {
   ㄅ = "ㄅ",
   ㄆ = "ㄆ",
@@ -462,8 +460,11 @@ namespace Tone {
   }
 }
 
+/** Represents the Bopomofo syllables.  */
 export class BopomofoSyllable {
+  /** The Bopomofo syllables in string representation. */
   bpmf: string;
+  /** The Braille in string representation. */
   braille: string;
 
   constructor(bpmf: string, braille: string) {
@@ -528,6 +529,11 @@ export class BopomofoSyllable {
     return output;
   }
 
+  /**
+   * Creates a new instance from a Bopomofo string.
+   * @param bpmf The Bopomofo string.
+   * @returns A new instance of BopomofoSyllable.
+   */
   static fromBpmf(bpmf: string): BopomofoSyllable {
     bpmf = bpmf.trim();
     if (bpmf.length < kMinimalBopomofoLength) {
@@ -604,6 +610,11 @@ export class BopomofoSyllable {
     return new BopomofoSyllable(bpmf, braille);
   }
 
+  /**
+   * Creates a new instance from a Braille string.
+   * @param braille The Braille string.
+   * @returns A new instance of BopomofoSyllable.
+   */
   static fromBraille(braille: string): BopomofoSyllable {
     braille = braille.trim();
     if (braille.length < kMinimalBrailleLength) {

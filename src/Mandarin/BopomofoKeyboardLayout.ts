@@ -309,7 +309,7 @@ export class BopomofoKeyboardLayout {
     return new BopomofoKeyboardLayout(ktcm, "Standard");
   }
 
-  static CreateIBMLayout_(): BopomofoKeyboardLayout {
+  private static CreateIBMLayout_(): BopomofoKeyboardLayout {
     let ktcm: BopomofoKeyToComponentMap = new Map([
       ["1", [BopomofoSyllable.B]],
       ["2", [BopomofoSyllable.P]],
@@ -403,7 +403,7 @@ export class BopomofoKeyboardLayout {
     return new BopomofoKeyboardLayout(ktcm, "ETen");
   }
 
-  static CreateHsuLayout_(): BopomofoKeyboardLayout {
+  private static CreateHsuLayout_(): BopomofoKeyboardLayout {
     let ktcm: BopomofoKeyToComponentMap = new Map([
       ["b", [BopomofoSyllable.B]],
       ["p", [BopomofoSyllable.P]],
@@ -434,7 +434,7 @@ export class BopomofoKeyboardLayout {
     return new BopomofoKeyboardLayout(ktcm, "Hsu");
   }
 
-  static CreateETen26Layout_(): BopomofoKeyboardLayout {
+  private static CreateETen26Layout_(): BopomofoKeyboardLayout {
     let ktcm: BopomofoKeyToComponentMap = new Map([
       ["b", [BopomofoSyllable.B]],
       ["p", [BopomofoSyllable.P, BopomofoSyllable.OU]],
@@ -466,7 +466,7 @@ export class BopomofoKeyboardLayout {
     return new BopomofoKeyboardLayout(ktcm, "ETen26");
   }
 
-  static CreateHanyuPinyinLayout_(): BopomofoKeyboardLayout {
+  private static CreateHanyuPinyinLayout_(): BopomofoKeyboardLayout {
     let ktcm: BopomofoKeyToComponentMap = new Map();
     return new BopomofoKeyboardLayout(ktcm, "HanyuPinyin");
   }

@@ -1,3 +1,4 @@
+/** Represents the full-width punctuations. */
 export enum FullWidthPunctuation {
   period = "。",
   dot = "·",

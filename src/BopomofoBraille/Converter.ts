@@ -191,8 +191,13 @@ export class BopomofoBrailleConverter {
   }
 
   /**
-   * Converts a Braille string to tokens. The tokens could be  BopomofoSyllable
+   * Converts a Braille string to tokens. The tokens could be BopomofoSyllable
    * objects or strings
+   *
+   * The method is part of the the feature to convert Braille to Chinese
+   * characters. After extracting the tokens, an application can then use a
+   * smart Bopomofo input method to convert the BopomofoSyllable objects to
+   * Chinese characters, then append the plain strings.
    *
    * @param braille Braille in Unicode.
    * @returns Tokens. A token could be a BopomofoSyllable object or a string.

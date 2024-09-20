@@ -1,3 +1,4 @@
+/** Represents the half-width punctuations. */
 export enum HalfWidthPunctuation {
   period = ".",
   comma = ",",

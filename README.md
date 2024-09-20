@@ -8,10 +8,10 @@
 
 在專案目錄下提供
 
-- src：使用 TypeScript 寫成的小麥輸入法核心
-- output/example：範例網頁
-- output/chromeos：Chrome OS 下的輸入法
-- output/pime：在 Windows 上的輸入法 (基於 [PIME](https://github.com/EasyIME/PIME) 框架)
+- [src](https://github.com/openvanilla/McBopomofoWeb/tree/main/src)：使用 TypeScript 寫成的小麥輸入法核心
+- [output/example](https://github.com/openvanilla/McBopomofoWeb/tree/main/output/example)：範例網頁
+- [output/chromeos](https://github.com/openvanilla/McBopomofoWeb/tree/main/output/chromeos)：Chrome OS 下的輸入法
+- [output/pime](https://github.com/openvanilla/McBopomofoWeb/tree/main/output/pime)：在 Windows 上的輸入法 (基於 [PIME](https://github.com/EasyIME/PIME) 框架)
 
 除了輸入法之外，這個專案中也提供以下的文字轉換服務：
 

@@ -34,8 +34,9 @@ class PinyinParseHelper {
   }
 }
 
+/** Represents the Bopomofo syllables. */
 export class BopomofoSyllable {
-  syllable_: Component;
+  private syllable_: Component;
 
   constructor(syllable: Component = 0) {
     this.syllable_ = syllable;
