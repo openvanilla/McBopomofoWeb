@@ -50,6 +50,8 @@ interface Settings {
   beep_on_error: boolean;
   /** The behavior for handling Ctrl+ Enter key. */
   ctrl_enter_option: number;
+  /** Whether to use vertical candidates layout. */
+  use_horizontal_candidates_layout: boolean;
 }
 
 /** A middle data structure between McBopomofo input controller and PIME. */
@@ -62,6 +64,7 @@ interface UiState {
   candidateCursor: number;
   showMessage: any;
   hideMessage: boolean;
+  useVerticalCandidatesLayout: boolean | undefined;
 }
 
 /**  The default settings. */
@@ -81,6 +84,7 @@ const defaultSettings: Settings = {
   beep_on_error: true,
   ctrl_enter_option: 0,
   use_jk_key_to_move_cursor: false,
+  use_horizontal_candidates_layout: false,
 };
 
 enum PimeMcBopomofoCommand {
@@ -110,6 +114,7 @@ class PimeMcBopomofo {
     candidateCursor: 0,
     showMessage: {},
     hideMessage: true,
+    useVerticalCandidatesLayout: undefined,
   };
   /** The settings in memory. */
   settings: Settings = defaultSettings;
@@ -134,6 +139,7 @@ class PimeMcBopomofo {
   constructor() {
     this.inputController = new InputController(this.makeUI(this));
     this.inputController.setUserVerticalCandidates(true);
+
     this.inputController.setOnOpenUrl((url: string) => {
       let command = `start "" "${url}"`;
       child_process.exec(command);
@@ -147,7 +153,6 @@ class PimeMcBopomofo {
       }
     });
     this.loadSettings();
-    this.isOpened = !this.settings.by_default_deactivated;
     this.loadUserPhrases();
   }
 
@@ -162,6 +167,7 @@ class PimeMcBopomofo {
       candidateCursor: 0,
       showMessage: {},
       hideMessage: true,
+      useVerticalCandidatesLayout: true,
     };
   }
 
@@ -285,6 +291,9 @@ class PimeMcBopomofo {
       this.settings.use_jk_key_to_move_cursor
     );
     this.inputController.setLanguageCode("zh-TW");
+    this.inputController.setUserVerticalCandidates(
+      this.settings.use_horizontal_candidates_layout == false
+    );
   }
 
   /** Load settings from disk */
@@ -306,8 +315,10 @@ class PimeMcBopomofo {
           "Loaded settings: " + JSON.stringify(this.settings, null, 2)
         );
         this.applySettings();
-      } catch {
+        this.isOpened = !this.settings.by_default_deactivated;
+      } catch (e) {
         console.error("Failed to parse settings");
+        console.error(e);
         this.writeSettings();
       }
     });
@@ -345,6 +356,7 @@ class PimeMcBopomofo {
           candidateCursor: 0,
           showMessage: {},
           hideMessage: true,
+          useVerticalCandidatesLayout: undefined,
         };
       },
       commitString(text: string) {
@@ -360,6 +372,7 @@ class PimeMcBopomofo {
           candidateCursor: 0,
           showMessage: {},
           hideMessage: true,
+          useVerticalCandidatesLayout: undefined,
         };
       },
       update(stateString: string) {
@@ -401,6 +414,7 @@ class PimeMcBopomofo {
           candidateCursor: selectedIndex,
           showMessage: showMessage,
           hideMessage: hideMessage,
+          useVerticalCandidatesLayout: state.candidateLayout != "horizontal",
         };
       },
     };
@@ -463,7 +477,7 @@ class PimeMcBopomofo {
     return object;
   }
 
-  public customUiResponse(): any {
+  public customUiResponse(uiState: UiState | undefined = undefined): any {
     let fontSize = this.settings.candidate_font_size;
     if (fontSize == undefined) {
       fontSize = 16;
@@ -472,11 +486,14 @@ class PimeMcBopomofo {
     } else if (fontSize > 32) {
       fontSize = 32;
     }
-
+    let candPerRow = 1;
+    if (uiState != undefined && uiState.useVerticalCandidatesLayout == false) {
+      candPerRow = 10;
+    }
     return {
       openKeyboard: this.isOpened,
       customizeUI: {
-        candPerRow: 1,
+        candPerRow: candPerRow,
         candFontSize: fontSize,
         candFontName: "Microsoft YaHei",
         candUseCursor: true,
@@ -714,8 +731,9 @@ module.exports = {
         let handled = state instanceof Empty === false;
 
         let uiState = pimeMcBopomofo.uiState;
-        let customUi = pimeMcBopomofo.customUiResponse();
+        let customUi = pimeMcBopomofo.customUiResponse(uiState);
         let buttonUi = pimeMcBopomofo.buttonUiResponse();
+
         let response = Object.assign(
           responseTemplate,
           uiState,
@@ -751,6 +769,8 @@ module.exports = {
       );
 
       // console.log(key);
+
+      // Keyboard shortcut to toggle Chinese conversion and half width
       if (
         key.ctrlPressed &&
         key.shiftPressed &&
@@ -758,12 +778,15 @@ module.exports = {
         key.ascii <= "Z"
       ) {
         pimeMcBopomofo.isShiftHold = false;
+
         if (key.ascii === "G") {
+          // Toggle Chinese conversion
           pimeMcBopomofo.settings.chineseConversion =
             !pimeMcBopomofo.settings.chineseConversion;
           pimeMcBopomofo.applySettings();
           pimeMcBopomofo.writeSettings();
         } else if (key.ascii === "H") {
+          // Toggle half width punctuation
           pimeMcBopomofo.settings.half_width_punctuation =
             !pimeMcBopomofo.settings.half_width_punctuation;
           pimeMcBopomofo.applySettings();
@@ -781,7 +804,7 @@ module.exports = {
       let shouldHandleShift =
         pimeMcBopomofo.settings.shift_key_toggle_alphabet_mode === true;
 
-      var isPressingShiftOnly = key.ascii === "Shift";
+      var isPressingSingleShiftOnly = key.ascii === "Shift";
 
       // Note: The way we detect if a user is trying to press a single Shift key
       // to toggle Alphabet/Chinese mode, is to check if there is any key other
@@ -792,9 +815,9 @@ module.exports = {
       // isShiftHold. Finally, if isShiftHold is still true in the key up event,
       // we will toggle Alphabet/Chinese.
       if (shouldHandleShift) {
-        pimeMcBopomofo.isShiftHold = isPressingShiftOnly;
+        pimeMcBopomofo.isShiftHold = isPressingSingleShiftOnly;
       }
-      if (isPressingShiftOnly) {
+      if (isPressingSingleShiftOnly) {
         let state = pimeMcBopomofo.inputController.state;
         let handled = state instanceof Empty === false;
         pimeMcBopomofo.isLastFilterKeyDownHandled = handled;
@@ -862,7 +885,7 @@ module.exports = {
       });
       if (pimeMcBopomofo.isScheduledToUpdateUi) {
         pimeMcBopomofo.isScheduledToUpdateUi = false;
-        let customUi = pimeMcBopomofo.customUiResponse();
+        let customUi = pimeMcBopomofo.customUiResponse(uiState);
         let buttonUi = pimeMcBopomofo.buttonUiResponse();
         response = Object.assign({}, response, customUi, buttonUi);
       }
@@ -882,7 +905,7 @@ module.exports = {
     if (request.method === "onCompositionTerminated") {
       pimeMcBopomofo.resetController();
       let uiState = pimeMcBopomofo.uiState;
-      let customUi = pimeMcBopomofo.customUiResponse();
+      let customUi = pimeMcBopomofo.customUiResponse(uiState);
       let buttonUi = pimeMcBopomofo.buttonUiResponse();
       let response = Object.assign(
         {},
@@ -899,7 +922,7 @@ module.exports = {
       let { id } = request;
       pimeMcBopomofo.handleCommand(id);
       let uiState = pimeMcBopomofo.uiState;
-      let customUi = pimeMcBopomofo.customUiResponse();
+      let customUi = pimeMcBopomofo.customUiResponse(uiState);
       let buttonUi = pimeMcBopomofo.buttonUiResponse();
       let response = Object.assign(
         {},

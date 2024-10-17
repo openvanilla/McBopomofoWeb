@@ -29,6 +29,7 @@ import {
 } from "./InputState";
 
 import {
+  CandidateLayout,
   ComposingBufferText,
   ComposingBufferTextStyle,
   InputUI,
@@ -53,6 +54,8 @@ class InputUIController {
   private composingBuffer: ComposingBufferText[] = [];
   private candidateTotalPageCount = 0;
   private candidateCurrentPageIndex = 0;
+  private defaultCandidateLayout = CandidateLayout.Vertical;
+  private candidateLayout = this.defaultCandidateLayout;
 
   constructor(ui: InputUI) {
     this.ui = ui;
@@ -67,6 +70,7 @@ class InputUIController {
     this.tooltip = "";
     this.candidates = [];
     this.composingBuffer = [];
+    this.candidateLayout = this.defaultCandidateLayout;
     this.ui.reset();
   }
 
@@ -109,6 +113,15 @@ class InputUIController {
     this.tooltip = tooltip;
   }
 
+  setDefaultCandidatesLayout(layout: CandidateLayout): void {
+    this.defaultCandidateLayout = layout;
+    this.candidateLayout = layout;
+  }
+
+  setTempCandidatesLayout(layout: CandidateLayout): void {
+    this.candidateLayout = layout;
+  }
+
   /** Updates the UI. */
   update(): void {
     let state = new InputUIState(
@@ -117,9 +130,12 @@ class InputUIController {
       this.candidates,
       this.tooltip,
       this.candidateTotalPageCount,
-      this.candidateCurrentPageIndex
+      this.candidateCurrentPageIndex,
+      this.candidateLayout
     );
     let json = JSON.stringify(state);
+    console.log("UI JSON");
+    console.log(json);
     this.ui.update(json);
   }
 }
@@ -285,7 +301,12 @@ export class InputController {
    * @param flag Use the vertical candidate window.
    */
   public setUserVerticalCandidates(flag: boolean): void {
+    console.log("setUserVerticalCandidates");
+    console.log(flag);
     this.useVerticalCandidates_ = flag;
+    this.ui_.setDefaultCandidatesLayout(
+      flag ? CandidateLayout.Vertical : CandidateLayout.Horizontal
+    );
   }
 
   /**
@@ -703,6 +724,12 @@ export class InputController {
     let candidates: Candidate[] = [];
     if (state instanceof ChoosingCandidate) {
       candidates = state.candidates;
+      for (let item of candidates) {
+        if (item.value.length > 8) {
+          this.ui_.setTempCandidatesLayout(CandidateLayout.Horizontal);
+          break;
+        }
+      }
     } else if (state instanceof SelectingFeature) {
       let index = 0;
       for (let item of state.features) {
@@ -710,11 +737,13 @@ export class InputController {
         candidates.push(candidate);
         index++;
       }
+      this.ui_.setTempCandidatesLayout(CandidateLayout.Horizontal);
     } else if (state instanceof SelectingDateMacro) {
       for (let item of state.menu) {
         let candidate = new Candidate("", item, item);
         candidates.push(candidate);
       }
+      this.ui_.setTempCandidatesLayout(CandidateLayout.Horizontal);
     } else if (state instanceof SelectingDictionary) {
       let index = 0;
       for (let item of state.menu) {
@@ -722,6 +751,7 @@ export class InputController {
         candidates.push(candidate);
         index++;
       }
+      this.ui_.setTempCandidatesLayout(CandidateLayout.Horizontal);
     }
 
     let keys: string[] = [];

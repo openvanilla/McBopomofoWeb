@@ -7,6 +7,11 @@
 
 import { CandidateWrapper } from "./CandidateController";
 
+export enum CandidateLayout {
+  Vertical = "vertical",
+  Horizontal = "horizontal",
+}
+
 /** The style used in {@link ComposingBufferText}. */
 export enum ComposingBufferTextStyle {
   Normal = "normal",
@@ -51,13 +56,17 @@ export class InputUIState {
   /** The tooltip. */
   readonly tooltip: string;
 
+  /** The candidate layout to use. */
+  readonly candidateLayout: CandidateLayout;
+
   constructor(
     composingBuffer: ComposingBufferText[],
     cursorIndex: number,
     candidates: CandidateWrapper[],
     tooltip: string,
     candidatePageCount: number,
-    candidatePageIndex: number
+    candidatePageIndex: number,
+    candidateLayout: CandidateLayout = CandidateLayout.Vertical
   ) {
     this.composingBuffer = composingBuffer;
     this.cursorIndex = cursorIndex;
@@ -65,6 +74,7 @@ export class InputUIState {
     this.tooltip = tooltip;
     this.candidatePageCount = candidatePageCount;
     this.candidatePageIndex = candidatePageIndex;
+    this.candidateLayout = candidateLayout;
   }
 }
 

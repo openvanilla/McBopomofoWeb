@@ -16,9 +16,27 @@ window.onload = () => {
     ctrl_enter_option: 0,
     by_default_deactivated: false,
     beep_on_error: true,
+    use_horizontal_candidates_layout: false,
   };
 
   function applySettings(settings) {
+    {
+      if (settings.use_horizontal_candidates_layout) {
+        document.getElementById(
+          "use_horizontal_candidates_layout"
+        ).checked = true;
+        document.getElementById(
+          "use_vertical_candidates_layout"
+        ).checked = false;
+      } else {
+        document.getElementById(
+          "use_horizontal_candidates_layout"
+        ).checked = false;
+        document.getElementById(
+          "use_vertical_candidates_layout"
+        ).checked = true;
+      }
+    }
     {
       let select = document.getElementById("font_size");
       let options = select.getElementsByTagName("option");
@@ -154,6 +172,20 @@ window.onload = () => {
     xhttp.open("GET", "/config");
     xhttp.send();
   })();
+
+  document.getElementById("use_horizontal_candidates_layout").onchange = (
+    event
+  ) => {
+    settings.use_horizontal_candidates_layout = true;
+    saveSettings(settings);
+  };
+
+  document.getElementById("use_vertical_candidates_layout").onchange = (
+    event
+  ) => {
+    settings.use_horizontal_candidates_layout = false;
+    saveSettings(settings);
+  };
 
   document.getElementById("font_size").onchange = (event) => {
     let value = document.getElementById("font_size").value;
