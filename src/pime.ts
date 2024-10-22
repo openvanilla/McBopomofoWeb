@@ -146,8 +146,10 @@ class PimeMcBopomofo {
         child_process.exec(`rundll32 user32.dll,MessageBeep`);
       }
     });
-    this.loadSettings();
-    this.isOpened = !this.settings.by_default_deactivated;
+    this.loadSettings(() => {
+      this.isOpened = !this.settings.by_default_deactivated;
+    });
+
     this.loadUserPhrases();
   }
 
@@ -288,7 +290,7 @@ class PimeMcBopomofo {
   }
 
   /** Load settings from disk */
-  public loadSettings(): void {
+  public loadSettings(callback: () => void): void {
     fs.readFile(this.userSettingsPath, (err, data) => {
       if (err) {
         console.log(
@@ -607,7 +609,7 @@ try {
 
   fs.watch(pimeMcBopomofo.userSettingsPath, (event, filename) => {
     if (filename) {
-      pimeMcBopomofo.loadSettings();
+      pimeMcBopomofo.loadSettings(() => {});
     }
   });
 
