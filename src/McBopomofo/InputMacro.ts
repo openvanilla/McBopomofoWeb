@@ -21,6 +21,9 @@ abstract class InputMacro {
   abstract get replacement(): string;
 }
 
+/**
+ * Macro to get the current year in plain format.
+ */
 class InputMacroThisYearPlain implements InputMacro {
   get name() {
     return "MACRO@THIS_YEAR_PLAIN";
@@ -32,6 +35,9 @@ class InputMacroThisYearPlain implements InputMacro {
   }
 }
 
+/**
+ * Macro to get the current year in plain format with the era.
+ */
 class InputMacroThisYearPlainWithEra implements InputMacro {
   get name() {
     return "MACRO@THIS_YEAR_PLAIN_WITH_ERA";
@@ -43,6 +49,9 @@ class InputMacroThisYearPlainWithEra implements InputMacro {
   }
 }
 
+/**
+ * Macro to get the current year in ROC format.
+ */
 class InputMacroThisYearRoc implements InputMacro {
   get name() {
     return "MACRO@THIS_YEAR_ROC";
@@ -54,7 +63,9 @@ class InputMacroThisYearRoc implements InputMacro {
   }
 }
 
-// note: not supported yet.
+/**
+ * Macro to get the current year in Japanese format (not supported yet).
+ */
 class InputMacroThisYearJapanese implements InputMacro {
   get name() {
     return "MACRO@THIS_YEAR_JAPANESE";
@@ -65,6 +76,9 @@ class InputMacroThisYearJapanese implements InputMacro {
   }
 }
 
+/**
+ * Macro to get the previous year in plain format.
+ */
 class InputMacroLastYearPlain implements InputMacro {
   get name() {
     return "MACRO@LAST_YEAR_PLAIN";
@@ -76,6 +90,9 @@ class InputMacroLastYearPlain implements InputMacro {
   }
 }
 
+/**
+ * Macro to get the previous year in plain format with the era.
+ */
 class InputMacroLastYearPlainWithEra implements InputMacro {
   get name() {
     return "MACRO@LAST_YEAR_PLAIN_WITH_ERA";
@@ -87,6 +104,9 @@ class InputMacroLastYearPlainWithEra implements InputMacro {
   }
 }
 
+/**
+ * Macro to get the previous year in ROC format.
+ */
 class InputMacroLastYearRoc implements InputMacro {
   get name() {
     return "MACRO@LAST_YEAR_ROC";
@@ -98,7 +118,9 @@ class InputMacroLastYearRoc implements InputMacro {
   }
 }
 
-// note: not supported yet.
+/**
+ * Macro to get the previous year in Japanese format (not supported yet).
+ */
 class InputMacroLastYearJapanese implements InputMacro {
   get name() {
     return "MACRO@LAST_YEAR_JAPANESE";
@@ -109,6 +131,9 @@ class InputMacroLastYearJapanese implements InputMacro {
   }
 }
 
+/**
+ * Macro to get the next year in plain format.
+ */
 class InputMacroNextYearPlain implements InputMacro {
   get name() {
     return "MACRO@NEXT_YEAR_PLAIN";
@@ -120,6 +145,9 @@ class InputMacroNextYearPlain implements InputMacro {
   }
 }
 
+/**
+ * Macro to get the next year in plain format with the era.
+ */
 class InputMacroNextYearPlainWithEra implements InputMacro {
   get name() {
     return "MACRO@NEXT_YEAR_PLAIN_WITH_ERA";
@@ -131,6 +159,9 @@ class InputMacroNextYearPlainWithEra implements InputMacro {
   }
 }
 
+/**
+ * Macro to get the next year in ROC format.
+ */
 class InputMacroNextYearRoc implements InputMacro {
   get name() {
     return "MACRO@NEXT_YEAR_ROC";
@@ -142,7 +173,9 @@ class InputMacroNextYearRoc implements InputMacro {
   }
 }
 
-// note: not supported yet.
+/**
+ * Macro to get the next year in Japanese format (not supported yet).
+ */
 class InputMacroNextYearJapanese implements InputMacro {
   get name() {
     return "MACRO@NEXT_YEAR_JAPANESE";
@@ -153,6 +186,9 @@ class InputMacroNextYearJapanese implements InputMacro {
   }
 }
 
+/**
+ * Macro to get today's date in short format.
+ */
 class InputMacroDateTodayShort implements InputMacro {
   get name() {
     return "MACRO@DATE_TODAY_SHORT";
@@ -164,6 +200,9 @@ class InputMacroDateTodayShort implements InputMacro {
   }
 }
 
+/**
+ * Macro to get yesterday's date in short format.
+ */
 class InputMacroDateYesterdayShort implements InputMacro {
   get name() {
     return "MACRO@DATE_YESTERDAY_SHORT";
@@ -175,6 +214,9 @@ class InputMacroDateYesterdayShort implements InputMacro {
   }
 }
 
+/**
+ * Macro to get tomorrow's date in short format.
+ */
 class InputMacroDateTomorrowShort implements InputMacro {
   get name() {
     return "MACRO@DATE_TOMORROW_SHORT";
@@ -186,6 +228,9 @@ class InputMacroDateTomorrowShort implements InputMacro {
   }
 }
 
+/**
+ * Macro to get today's date in medium format.
+ */
 class InputMacroDateTodayMedium implements InputMacro {
   get name() {
     return "MACRO@DATE_TODAY_MEDIUM";
@@ -197,6 +242,9 @@ class InputMacroDateTodayMedium implements InputMacro {
   }
 }
 
+/**
+ * Macro to get yesterday's date in medium format.
+ */
 class InputMacroDateYesterdayMedium implements InputMacro {
   get name() {
     return "MACRO@DATE_YESTERDAY_MEDIUM";
@@ -208,6 +256,9 @@ class InputMacroDateYesterdayMedium implements InputMacro {
   }
 }
 
+/**
+ * Macro to get tomorrow's date in medium format.
+ */
 class InputMacroDateTomorrowMedium implements InputMacro {
   get name() {
     return "MACRO@DATE_TOMORROW_MEDIUM";
@@ -219,6 +270,9 @@ class InputMacroDateTomorrowMedium implements InputMacro {
   }
 }
 
+/**
+ * Macro to get today's date in medium ROC format.
+ */
 class InputMacroDateTodayMediumRoc implements InputMacro {
   get name() {
     return "MACRO@DATE_TODAY_MEDIUM_ROC";
@@ -230,6 +284,9 @@ class InputMacroDateTodayMediumRoc implements InputMacro {
   }
 }
 
+/**
+ * Macro to get yesterday's date in medium ROC format.
+ */
 class InputMacroDateYesterdayMediumRoc implements InputMacro {
   get name() {
     return "MACRO@DATE_YESTERDAY_MEDIUM_ROC";
@@ -241,6 +298,9 @@ class InputMacroDateYesterdayMediumRoc implements InputMacro {
   }
 }
 
+/**
+ * Macro to get tomorrow's date in medium ROC format.
+ */
 class InputMacroDateTomorrowMediumRoc implements InputMacro {
   get name() {
     return "MACRO@DATE_TOMORROW_MEDIUM_ROC";
@@ -252,7 +312,9 @@ class InputMacroDateTomorrowMediumRoc implements InputMacro {
   }
 }
 
-// Note: not supported yet.
+/**
+ * Macro to get today's date in medium Chinese format (not supported yet).
+ */
 class InputMacroDateTodayMediumChinese implements InputMacro {
   get name() {
     return "MACRO@DATE_TODAY_MEDIUM_CHINESE";
@@ -263,6 +325,9 @@ class InputMacroDateTodayMediumChinese implements InputMacro {
   }
 }
 
+/**
+ * Macro to get today's date in medium Japanese format.
+ */
 class InputMacroDateTodayMediumJapanese implements InputMacro {
   get name() {
     return "MACRO@DATE_TODAY_MEDIUM_JAPANESE";
@@ -273,7 +338,9 @@ class InputMacroDateTodayMediumJapanese implements InputMacro {
   }
 }
 
-// Note: not supported yet.
+/**
+ * Macro to get yesterday's date in medium Chinese format (not supported yet).
+ */
 class InputMacroDateYesterdayMediumChinese implements InputMacro {
   get name() {
     return "MACRO@DATE_YESTERDAY_MEDIUM_CHINESE";
@@ -284,7 +351,9 @@ class InputMacroDateYesterdayMediumChinese implements InputMacro {
   }
 }
 
-// Note: not supported yet.
+/**
+ * Macro to get tomorrow's date in medium Chinese format (not supported yet).
+ */
 class InputMacroDateTomorrowMediumChinese implements InputMacro {
   get name() {
     return "MACRO@DATE_TOMORROW_MEDIUM_CHINESE";
@@ -295,7 +364,9 @@ class InputMacroDateTomorrowMediumChinese implements InputMacro {
   }
 }
 
-// Note: not supported yet.
+/**
+ * Macro to get tomorrow's date in medium Japanese format (not supported yet).
+ */
 class InputMacroDateTomorrowMediumJapanese implements InputMacro {
   get name() {
     return "MACRO@DATE_TOMORROW_MEDIUM_JAPANESE";
@@ -306,7 +377,9 @@ class InputMacroDateTomorrowMediumJapanese implements InputMacro {
   }
 }
 
-// Note: not supported yet.
+/**
+ * Macro to get yesterday's date in medium Japanese format (not supported yet).
+ */
 class InputMacroDateYesterdayMediumJapanese implements InputMacro {
   get name() {
     return "MACRO@DATE_YESTERDAY_MEDIUM_JAPANESE";
@@ -317,7 +390,9 @@ class InputMacroDateYesterdayMediumJapanese implements InputMacro {
   }
 }
 
-// Note: not supported yet.
+/**
+ * Macro to get tomorrow's date in full Japanese format (not supported yet).
+ */
 class InputMacroDateTomorrowFullJapanese implements InputMacro {
   get name() {
     return "MACRO@DATE_TOMORROW_FULL_JAPANESE";
@@ -328,6 +403,9 @@ class InputMacroDateTomorrowFullJapanese implements InputMacro {
   }
 }
 
+/**
+ * Macro to get the current time in short format.
+ */
 class InputMacroDateTimeNowShort implements InputMacro {
   get name() {
     return "MACRO@TIME_NOW_SHORT";
@@ -339,6 +417,9 @@ class InputMacroDateTimeNowShort implements InputMacro {
   }
 }
 
+/**
+ * Macro to get the current time in medium format.
+ */
 class InputMacroDateTimeNowMedium implements InputMacro {
   get name() {
     return "MACRO@TIME_NOW_MEDIUM";
@@ -350,7 +431,9 @@ class InputMacroDateTimeNowMedium implements InputMacro {
   }
 }
 
-// note: not supported yet.
+/**
+ * Macro to get the standard time zone (not supported yet).
+ */
 class InputMacroTimeZoneStandard implements InputMacro {
   get name() {
     return "MACRO@TIMEZONE_STANDARD";
@@ -361,7 +444,9 @@ class InputMacroTimeZoneStandard implements InputMacro {
   }
 }
 
-// note: not supported yet.
+/**
+ * Macro to get the short generic time zone (not supported yet).
+ */
 class InputMacroTimeZoneShortGeneric implements InputMacro {
   get name() {
     return "MACRO@TIMEZONE_GENERIC_SHORT";
@@ -405,6 +490,9 @@ function chineseZodiac(year: number): string {
   return gan[ganBase] + zhi[zhiBase] + "年";
 }
 
+/**
+ * Macro to get the current year in Ganzhi format.
+ */
 class InputMacroThisYearGanZhi implements InputMacro {
   get name() {
     return "MACRO@THIS_YEAR_GANZHI";
@@ -415,6 +503,9 @@ class InputMacroThisYearGanZhi implements InputMacro {
   }
 }
 
+/**
+ * Macro to get the previous year in Ganzhi format.
+ */
 class InputMacroLastYearGanZhi implements InputMacro {
   get name() {
     return "MACRO@LAST_YEAR_GANZHI";
@@ -425,6 +516,9 @@ class InputMacroLastYearGanZhi implements InputMacro {
   }
 }
 
+/**
+ * Macro to get the next year in Ganzhi format.
+ */
 class InputMacroNextYearGanZhi implements InputMacro {
   get name() {
     return "MACRO@NEXT_YEAR_GANZHI";
@@ -435,6 +529,9 @@ class InputMacroNextYearGanZhi implements InputMacro {
   }
 }
 
+/**
+ * Macro to get the current year in Chinese Zodiac format.
+ */
 class InputMacroThisYearChineseZodiac implements InputMacro {
   get name() {
     return "MACRO@THIS_YEAR_CHINESE_ZODIAC";
@@ -445,6 +542,9 @@ class InputMacroThisYearChineseZodiac implements InputMacro {
   }
 }
 
+/**
+ * Macro to get the previous year in Chinese Zodiac format.
+ */
 class InputMacroLastYearChineseZodiac implements InputMacro {
   get name() {
     return "MACRO@LAST_YEAR_CHINESE_ZODIAC";
@@ -455,6 +555,9 @@ class InputMacroLastYearChineseZodiac implements InputMacro {
   }
 }
 
+/**
+ * Macro to get the next year in Chinese Zodiac format.
+ */
 class InputMacroNextYearChineseZodiac implements InputMacro {
   get name() {
     return "MACRO@NEXT_YEAR_CHINESE_ZODIAC";
@@ -465,6 +568,9 @@ class InputMacroNextYearChineseZodiac implements InputMacro {
   }
 }
 
+/**
+ * Macro to get today's weekday in short format.
+ */
 class InputMacroWeekdayTodayShort implements InputMacro {
   get name() {
     return "MACRO@DATE_TODAY_WEEKDAY_SHORT";
@@ -476,6 +582,9 @@ class InputMacroWeekdayTodayShort implements InputMacro {
   }
 }
 
+/**
+ * Macro to get today's weekday in full format.
+ */
 class InputMacroWeekdayToday implements InputMacro {
   get name() {
     return "MACRO@DATE_TODAY_WEEKDAY";
@@ -487,6 +596,9 @@ class InputMacroWeekdayToday implements InputMacro {
   }
 }
 
+/**
+ * Macro to get today's weekday in an alternative format (not supported yet).
+ */
 class InputMacroWeekdayToday2 implements InputMacro {
   get name() {
     return "MACRO@DATE_TODAY2_WEEKDAY";
@@ -497,6 +609,9 @@ class InputMacroWeekdayToday2 implements InputMacro {
   }
 }
 
+/**
+ * Macro to get today's weekday in Japanese format.
+ */
 class InputMacroWeekdayTodayJapanese implements InputMacro {
   get name() {
     return "MACRO@DATE_TODAY_WEEKDAY_JAPANESE";
@@ -508,6 +623,9 @@ class InputMacroWeekdayTodayJapanese implements InputMacro {
   }
 }
 
+/**
+ * Macro to get yesterday's weekday in short format.
+ */
 class InputMacroWeekdayYesterdayShort implements InputMacro {
   get name() {
     return "MACRO@DATE_YESTERDAY_WEEKDAY_SHORT";
@@ -519,6 +637,9 @@ class InputMacroWeekdayYesterdayShort implements InputMacro {
   }
 }
 
+/**
+ * Macro to get yesterday's weekday in full format.
+ */
 class InputMacroWeekdayYesterday implements InputMacro {
   get name() {
     return "MACRO@DATE_YESTERDAY_WEEKDAY";
@@ -530,6 +651,9 @@ class InputMacroWeekdayYesterday implements InputMacro {
   }
 }
 
+/**
+ * Macro to get yesterday's weekday in an alternative format (not supported yet).
+ */
 class InputMacroWeekdayYesterday2 implements InputMacro {
   get name() {
     return "MACRO@DATE_YESTERDAY2_WEEKDAY";
@@ -540,6 +664,9 @@ class InputMacroWeekdayYesterday2 implements InputMacro {
   }
 }
 
+/**
+ * Macro to get yesterday's weekday in Japanese format.
+ */
 class InputMacroWeekdayYesterdayJapanese implements InputMacro {
   get name() {
     return "MACRO@DATE_YESTERDAY_WEEKDAY_JAPANESE";
@@ -551,6 +678,9 @@ class InputMacroWeekdayYesterdayJapanese implements InputMacro {
   }
 }
 
+/**
+ * Macro to get tomorrow's weekday in short format.
+ */
 class InputMacroWeekdayTomorrowShort implements InputMacro {
   get name() {
     return "MACRO@DATE_TOMORROW_WEEKDAY_SHORT";
@@ -562,6 +692,9 @@ class InputMacroWeekdayTomorrowShort implements InputMacro {
   }
 }
 
+/**
+ * Macro to get tomorrow's weekday in full format.
+ */
 class InputMacroWeekdayTomorrow implements InputMacro {
   get name() {
     return "MACRO@DATE_TOMORROW_WEEKDAY";
@@ -573,6 +706,9 @@ class InputMacroWeekdayTomorrow implements InputMacro {
   }
 }
 
+/**
+ * Macro to get tomorrow's weekday in an alternative format (not supported yet).
+ */
 class InputMacroWeekdayTomorrow2 implements InputMacro {
   get name() {
     return "MACRO@DATE_TOMORROW2_WEEKDAY";
@@ -583,6 +719,9 @@ class InputMacroWeekdayTomorrow2 implements InputMacro {
   }
 }
 
+/**
+ * Macro to get tomorrow's weekday in Japanese format.
+ */
 class InputMacroWeekdayTomorrowJapanese implements InputMacro {
   get name() {
     return "MACRO@DATE_TOMORROW_WEEKDAY_JAPANESE";
