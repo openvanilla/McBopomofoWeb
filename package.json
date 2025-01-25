@@ -30,6 +30,7 @@
     "build:dev": "webpack --mode development",
     "build:watch": "webpack --mode development --watch",
     "test": "./node_modules/jest/bin/jest.js",
+    "test:coverage": "./node_modules/jest/bin/jest.js --coverage",
     "eslint": "eslint src --ext .ts"
   },
   "repository": {

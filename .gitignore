@@ -14,3 +14,4 @@ installer/wix/McBopomofo/*.msi
 installer/wix/Bundle/bin
 .wix
 docs
+coverage
