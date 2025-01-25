@@ -688,6 +688,8 @@ module.exports = {
     }
 
     if (request.method === "filterKeyUp") {
+      let state = pimeMcBopomofo.inputController.state;
+      let handled = state instanceof Empty === false;
       if (
         lastRequest &&
         lastRequest.method === "filterKeyUp" &&
@@ -696,7 +698,7 @@ module.exports = {
         // NOTE: Some app, like MS Word, may send repeated key up event.
         // We should ignore such events.
         let response = Object.assign({}, responseTemplate, {
-          return: true,
+          return: handled,
         });
         return response;
       }
@@ -704,8 +706,9 @@ module.exports = {
       if (pimeMcBopomofo.isShiftHold) {
         pimeMcBopomofo.isScheduledToUpdateUi = true;
         pimeMcBopomofo.toggleAlphabetMode();
+        handled = true;
       }
-      let response = Object.assign({}, responseTemplate, { return: true });
+      let response = Object.assign({}, responseTemplate, { return: handled });
       return response;
     }
 
@@ -788,7 +791,7 @@ module.exports = {
       // Note: The way we detect if a user is trying to press a single Shift key
       // to toggle Alphabet/Chinese mode, is to check if there is any key other
       // than the Shift key is received before the key up event.
-      // 
+      //
       // We set isShiftHold to true here. It means the user is pressing Shift
       // key only. Then, if there is any other key coming, we will reset
       // isShiftHold. Finally, if isShiftHold is still true in the key up event,
@@ -800,9 +803,11 @@ module.exports = {
         let state = pimeMcBopomofo.inputController.state;
         let handled = state instanceof Empty === false;
         pimeMcBopomofo.isLastFilterKeyDownHandled = handled;
+        console.log("single shift key");
         let response = Object.assign({}, responseTemplate, {
           return: handled,
         });
+        console.log(response);
         return response;
       } else {
         pimeMcBopomofo.isShiftHold = false;
