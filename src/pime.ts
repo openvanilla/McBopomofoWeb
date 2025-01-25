@@ -125,7 +125,6 @@ class PimeMcBopomofo {
   /** Helps to remember if Caps Lock is on when key down event is triggered. It
    * would be reset on key on. */
   isCapsLockHold: boolean = false;
-  // isScheduledToToggleAlphabetModeOnKeyUp: boolean = false;
   /** If the user presses a shortcut key, such as the key to toggle
    * Traditional/Simplifies Chinese, the flag should be set to true and then
    * update the input UI. */
@@ -634,6 +633,7 @@ module.exports = {
     // NIME to call it.
     return preState;
   },
+
   response(request: any, _: any) {
     let lastRequest = pimeMcBopomofo.lastRequest;
     pimeMcBopomofo.lastRequest = request;
@@ -752,25 +752,25 @@ module.exports = {
         charCode
       );
 
-      // console.log(key);
+      // Handles special key combinations for toggling input settings:
+      // - Ctrl + Shift + G: Toggles Chinese conversion mode (between
+      //   traditional and simplified Chinese)
+      // - Ctrl + Shift + H: Toggles half-width punctuation mode
       if (
         key.ctrlPressed &&
         key.shiftPressed &&
-        key.ascii >= "A" &&
-        key.ascii <= "Z"
+        (key.ascii === "G" || key.ascii === "H")
       ) {
         pimeMcBopomofo.isShiftHold = false;
         if (key.ascii === "G") {
           pimeMcBopomofo.settings.chineseConversion =
             !pimeMcBopomofo.settings.chineseConversion;
-          pimeMcBopomofo.applySettings();
-          pimeMcBopomofo.writeSettings();
         } else if (key.ascii === "H") {
           pimeMcBopomofo.settings.half_width_punctuation =
             !pimeMcBopomofo.settings.half_width_punctuation;
-          pimeMcBopomofo.applySettings();
-          pimeMcBopomofo.writeSettings();
         }
+        pimeMcBopomofo.applySettings();
+        pimeMcBopomofo.writeSettings();
         pimeMcBopomofo.resetController();
         pimeMcBopomofo.isLastFilterKeyDownHandled = true;
         pimeMcBopomofo.isScheduledToUpdateUi = true;
@@ -788,7 +788,7 @@ module.exports = {
       // Note: The way we detect if a user is trying to press a single Shift key
       // to toggle Alphabet/Chinese mode, is to check if there is any key other
       // than the Shift key is received before the key up event.
-      //
+      // 
       // We set isShiftHold to true here. It means the user is pressing Shift
       // key only. Then, if there is any other key coming, we will reset
       // isShiftHold. Finally, if isShiftHold is still true in the key up event,
