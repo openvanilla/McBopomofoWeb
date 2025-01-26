@@ -11,6 +11,10 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+        checks: write
+        pull-requests: write
+        contents: write
     strategy:
       matrix:
         node-version: [21.x, 20.x, 19.x, 18.x]
