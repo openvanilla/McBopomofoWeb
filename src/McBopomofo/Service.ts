@@ -141,7 +141,7 @@ export class Service {
   public convertBrailleToText(input: string): string {
     let output: string = "";
     let tokens = BopomofoBrailleConverter.convertBrailleToTokens(input);
-    console.log(tokens);
+    // console.log(tokens);
     for (let token of tokens) {
       if (token instanceof BopomofoSyllable) {
         this.grid_.insertReading(token.bpmf);
