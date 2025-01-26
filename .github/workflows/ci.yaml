@@ -23,7 +23,7 @@ jobs:
       - run: npm install -D typescript@5.3.3
       - run: npm install
       - run: npm run build
-      - run: npm run test
+      - run: npx jest --ci --json --coverage --testLocationInResults --outputFile=report.json
       - uses: ArtiomTr/jest-coverage-report-action@v2
 
 
