@@ -63,8 +63,17 @@ export class Committing implements InputState {
  * frameworks).
  */
 export class NotEmpty implements InputState {
+  /**
+   * A string buffer that stores the current composing text. This represents the
+   * text that is currently being typed but not yet committed.
+   */
   readonly composingBuffer: string;
+  /**
+   * The current cursor position in the composition buffer. Represents the index
+   * where new input will be inserted.
+   */
   readonly cursorIndex: number;
+  /** The tooltip to display for this input state */
   readonly tooltip: string;
 
   constructor(buf: string, index: number, tooltipText: string = "") {
@@ -238,6 +247,11 @@ export class Big5 implements InputState {
     this.code = code;
   }
 
+  /**
+   * Gets the composition buffer string with "[內碼]" prefix and the current
+   * input code.
+   * @returns A string that combines "[內碼]" and the current input code.
+   */
   get composingBuffer(): string {
     return "[內碼] " + this.code;
   }
@@ -289,8 +303,13 @@ export class SelectingDateMacro implements InputState {
   }
 }
 
+/**
+ * Represents a feature with a name and a function to determine the next input state.
+ */
 export class Feature {
+  /** The name of the feature. */
   readonly name: string;
+  /** A function that returns the next input state.  */
   readonly nextState: () => InputState;
 
   constructor(name: string, nextState: () => InputState) {
@@ -303,6 +322,11 @@ export class Feature {
   }
 }
 
+/**
+ * Represents a state for selecting special input features in McBopomofo. This
+ * class manages various input features including Big5 encoding, date/time
+ * macros, enclosing numbers, and different styles of Chinese numerals.
+ */
 export class SelectingFeature implements InputState {
   readonly features: Feature[] = (() => {
     var features: Feature[] = [];

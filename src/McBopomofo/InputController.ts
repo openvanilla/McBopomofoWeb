@@ -125,8 +125,33 @@ class InputUIController {
 }
 
 /**
- * The major class that receives the keyboard events and stores the input method
- * state. It is also the only class exported from the module.
+ * Controller class that manages the input method's state and handles keyboard
+ * events. This class serves as the main coordinator between different
+ * components of the input method, including the UI, language model, and
+ * keyboard handler.
+ *
+ * The controller is responsible for:
+ * - Managing input states (empty, inputting, choosing candidates, etc.)
+ * - Handling keyboard events and routing them to appropriate handlers
+ * - Managing candidate selection and display
+ * - Coordinating between the UI and the language model
+ * - Handling various input method configurations
+ *
+ * Key features:
+ * - Supports multiple keyboard layouts (Standard, ETen, Hsu, etc.)
+ * - Handles both traditional and simplified Chinese input
+ * - Supports customizable candidate key selection
+ * - Manages vertical and horizontal candidate window layouts
+ * - Handles various input states and transitions
+ * - Supports user phrases and dictionary lookups
+ *
+ * @example
+ * ```typescript
+ * const ui = new InputUI();
+ * const controller = new InputController(ui);
+ * controller.setKeyboardLayout("Standard");
+ * controller.setTraditionalMode(true);
+ * ```
  */
 export class InputController {
   /** Gets the current input state */
@@ -242,7 +267,7 @@ export class InputController {
 
   /**
    * Sets the candidate keys
-   * @param keys The candidate keys.
+   * @param keys The candidate keys, such "123456789".
    */
   public setCandidateKeys(keys: string): void {
     if (keys == undefined) {
@@ -262,12 +287,23 @@ export class InputController {
     this.candidateKeys_ = list;
   }
 
+  /**
+   * Sets the number of candidate selection keys.
+   * @param count - The number of candidate selection keys to set. Must be
+   * between 4 and 15 inclusive.
+   */
   public setCandidateKeysCount(count: number): void {
     if (count < 4) return;
     if (count > 15) return;
     this.candidateKeysCount_ = count;
   }
 
+  /**
+   * Sets whether to enable cursor movement using 'J' and 'K' keys when the
+   * candidate window is visible. When enabled, users can navigate through
+   * candidates using these keys similar to vim-style navigation.
+   * @param flag - True to enable J/K cursor movement, false to disable
+   */
   public setUseJKToMoveCursor(flag: boolean): void {
     this.useJKToMoveCursor_ = flag;
   }
@@ -342,6 +378,10 @@ export class InputController {
     );
   }
 
+  /**
+   * Sets the error handler function for the input controller.
+   * @param onError - The callback function to handle errors
+   */
   public setOnError(onError: Function): void {
     this.onError_ = onError;
   }
