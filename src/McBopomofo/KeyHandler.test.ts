@@ -369,7 +369,6 @@ describe("Test KeyHandler.test", () => {
         () => {}
       );
     }
-    console.log(currentState);
     if (commit === undefined) {
       fail("Committing state not found");
     } else {
