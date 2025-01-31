@@ -10,6 +10,8 @@ import { WebLanguageModel } from "./WebLanguageModel";
 import { webData } from "./WebData";
 import {
   Big5,
+  ChineseNumber,
+  ChineseNumberStyle,
   ChoosingCandidate,
   Committing,
   Empty,
@@ -92,6 +94,28 @@ describe("Test KeyHandler.test", () => {
     expect(choosingCandidate.candidates[2].value).toBe("你");
   });
 
+  test("Test choose candidate", () => {
+    keyHandler.selectPhraseAfterCursorAsCandidate = false;
+    expect(keyHandler.selectPhraseAfterCursorAsCandidate).toBe(false);
+    let keys = asciiKey(["s", "u", "3", "c", "l", "3"]);
+    let leftKey = Key.namedKey(KeyName.LEFT);
+    let spaceKey = Key.namedKey(KeyName.SPACE);
+    keys.push(leftKey);
+    keys.push(spaceKey);
+    let state = handleKeySequence(keyHandler, keys);
+    let choosingCandidate = state as ChoosingCandidate;
+    keyHandler.candidateSelected(
+      choosingCandidate.candidates[4],
+      1,
+      (newState) => {
+        state = newState;
+      }
+    );
+    expect(state instanceof Inputting).toBe(true);
+    let buffer = (state as Inputting).composingBuffer;
+    expect(buffer).toBe("擬好");
+  });
+
   test("Test escKeyClearsEntireComposingBuffer", () => {
     keyHandler.escKeyClearsEntireComposingBuffer = true;
     expect(keyHandler.escKeyClearsEntireComposingBuffer).toBe(true);
@@ -133,7 +157,6 @@ describe("Test KeyHandler.test", () => {
     let esc = Key.namedKey(KeyName.ESC);
     keys.push(esc);
     let state = handleKeySequence(keyHandler, keys);
-    console.log(state);
     expect(state instanceof EmptyIgnoringPrevious).toBe(true);
   });
 
@@ -317,11 +340,69 @@ describe("Test KeyHandler.test", () => {
         () => {}
       );
     }
-    console.log(currentState);
     if (commit === undefined) {
       fail("Committing state not found");
     } else {
       expect((commit as Committing).text).toBe("。");
+    }
+  });
+
+  test("Test Chinese Number 1", () => {
+    let currentState: InputState = new ChineseNumber(
+      "",
+      ChineseNumberStyle.Lowercase
+    );
+    let commit: Committing | undefined = undefined;
+    let keys = asciiKey(["1", "2", "3", "5"]);
+    let enter = Key.namedKey(KeyName.RETURN);
+    keys.push(enter);
+    for (let key of keys) {
+      keyHandler.handle(
+        key,
+        currentState,
+        (state) => {
+          if (state instanceof Committing) {
+            commit = state;
+          }
+          currentState = state;
+        },
+        () => {}
+      );
+    }
+    console.log(currentState);
+    if (commit === undefined) {
+      fail("Committing state not found");
+    } else {
+      expect((commit as Committing).text).toBe("一千二百三十五");
+    }
+  });
+
+  test("Test Chinese Number 2", () => {
+    let currentState: InputState = new ChineseNumber(
+      "",
+      ChineseNumberStyle.Lowercase
+    );
+    let commit: Committing | undefined = undefined;
+    let keys = asciiKey(["8", "0", "0", "5", "3", ".", "4"]);
+    let enter = Key.namedKey(KeyName.RETURN);
+    keys.push(enter);
+    for (let key of keys) {
+      keyHandler.handle(
+        key,
+        currentState,
+        (state) => {
+          if (state instanceof Committing) {
+            commit = state;
+          }
+          currentState = state;
+        },
+        () => {}
+      );
+    }
+    if (commit === undefined) {
+      fail("Committing state not found");
+    } else {
+      expect((commit as Committing).text).toBe("八萬〇五十三點四");
     }
   });
 });
