@@ -15,3 +15,4 @@ installer/wix/Bundle/bin
 .wix
 docs
 coverage
+junit.xml
