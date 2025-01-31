@@ -2,5 +2,6 @@ module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
   collectCoverage: true,
-  coverageReporters: ["json", "html",  "clover"],
+  reporters: ["default", "jest-junit"],
+  coverageReporters: ["json", "html",  "clover", " json-summary"],
 };

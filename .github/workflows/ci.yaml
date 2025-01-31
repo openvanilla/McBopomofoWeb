@@ -27,8 +27,12 @@ jobs:
       - run: npm install -D typescript@5.3.3
       - run: npm install
       - run: npm run build
-      - run: npx jest --ci --json --coverage --testLocationInResults --outputFile=report.json
-      - uses: ArtiomTr/jest-coverage-report-action@v2
+      - run: npx run test:coverage
+      - name: Jest Coverage Report
+        uses: ArtiomTr/jest-coverage-report-action@v2
+      - name: Jest Coverage Comment
+        id: coverageComment
+        uses: MishaKav/jest-coverage-comment@main
 
 
   build_chromeos:
