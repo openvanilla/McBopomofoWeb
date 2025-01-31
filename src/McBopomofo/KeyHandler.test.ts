@@ -9,16 +9,19 @@ import { KeyHandler } from "./KeyHandler";
 import { WebLanguageModel } from "./WebLanguageModel";
 import { webData } from "./WebData";
 import {
+  Big5,
   ChoosingCandidate,
   Committing,
   Empty,
   EmptyIgnoringPrevious,
   InputState,
   Inputting,
+  Marking,
 } from "./InputState";
 import { Key, KeyName } from "./Key";
 import exp from "constants";
 import { BopomofoKeyboardLayout } from "../Mandarin";
+import { cp } from "fs";
 
 function asciiKey(input: string[]): Key[] {
   let keys: Key[] = [];
@@ -96,8 +99,50 @@ describe("Test KeyHandler.test", () => {
     let esc = Key.namedKey(KeyName.ESC);
     keys.push(esc);
     let state = handleKeySequence(keyHandler, keys);
+    expect(state instanceof EmptyIgnoringPrevious).toBe(true);
+  });
+
+  test("Test ESC Key 1", () => {
+    keyHandler.escKeyClearsEntireComposingBuffer = false;
+    expect(keyHandler.escKeyClearsEntireComposingBuffer).toBe(false);
+    let keys = asciiKey(["s", "u", "3", "c", "l", "3", "c", "8"]);
+    let esc = Key.namedKey(KeyName.ESC);
+    keys.push(esc);
+    let state = handleKeySequence(keyHandler, keys);
+    expect(state instanceof Inputting).toBe(true);
+    let inputting = state as Inputting;
+    expect(inputting.composingBuffer).toBe("你好");
+  });
+
+  test("Test ESC Key 2", () => {
+    keyHandler.escKeyClearsEntireComposingBuffer = false;
+    expect(keyHandler.escKeyClearsEntireComposingBuffer).toBe(false);
+    let keys = asciiKey(["s", "u", "3", "c", "l", "3"]);
+    let esc = Key.namedKey(KeyName.ESC);
+    keys.push(esc);
+    let state = handleKeySequence(keyHandler, keys);
+    expect(state instanceof Inputting).toBe(true);
+    let inputting = state as Inputting;
+    expect(inputting.composingBuffer).toBe("你好");
+  });
+
+  test("Test ESC Key 3", () => {
+    keyHandler.escKeyClearsEntireComposingBuffer = false;
+    expect(keyHandler.escKeyClearsEntireComposingBuffer).toBe(false);
+    let keys = asciiKey(["s", "u"]);
+    let esc = Key.namedKey(KeyName.ESC);
+    keys.push(esc);
+    let state = handleKeySequence(keyHandler, keys);
     console.log(state);
     expect(state instanceof EmptyIgnoringPrevious).toBe(true);
+  });
+
+  test("Test ESC key 4", () => {
+    let keys = [];
+    let esc = Key.namedKey(KeyName.ESC);
+    keys.push(esc);
+    let state = handleKeySequence(keyHandler, keys);
+    expect(state instanceof Empty).toBe(true);
   });
 
   test("Test keyboardLayout", () => {
@@ -156,6 +201,22 @@ describe("Test KeyHandler.test", () => {
     let inputting = state as Inputting;
     expect(inputting.composingBuffer).toBe("你好");
     expect(inputting.cursorIndex).toBe(2);
+    expect(keyHandler.gridLength).toBe(2);
+    expect(keyHandler.cursor).toBe(2);
+  });
+
+  test("Test invalid input 1", () => {
+    let keys = asciiKey(["r", "j", "3"]);
+    let state = handleKeySequence(keyHandler, keys);
+    expect(state instanceof EmptyIgnoringPrevious).toBe(true);
+  });
+
+  test("Test invalid input 1", () => {
+    let keys = asciiKey(["s", "u", "3", "r", "j", "3"]);
+    let state = handleKeySequence(keyHandler, keys);
+    expect(state instanceof Inputting).toBe(true);
+    let inputting = state as Inputting;
+    expect(inputting.composingBuffer).toBe("你");
   });
 
   test("Test commit", () => {
@@ -166,9 +227,11 @@ describe("Test KeyHandler.test", () => {
     expect(state instanceof Committing).toBe(true);
     let committing = state as Committing;
     expect(committing.text).toBe("你好");
+    expect(keyHandler.gridLength).toBe(0);
+    expect(keyHandler.cursor).toBe(0);
   });
 
-  test("Test Punctuation", () => {
+  test("Test Punctuation 1", () => {
     let keys = asciiKey(["s", "u", "3", "c", "l", "3"]);
     let comma = new Key("<", KeyName.UNKNOWN, true, false, false);
     keys.push(comma);
@@ -176,6 +239,24 @@ describe("Test KeyHandler.test", () => {
     expect(state instanceof Inputting).toBe(true);
     let inputting = state as Inputting;
     expect(inputting.composingBuffer).toBe("你好，");
+  });
+
+  test("Test Punctuation 2", () => {
+    let keys = asciiKey(["s", "u", "3", "c", "l", "3"]);
+    let comma = new Key(",", KeyName.UNKNOWN, false, true, false);
+    keys.push(comma);
+    let state = handleKeySequence(keyHandler, keys);
+    expect(state instanceof Inputting).toBe(true);
+    let inputting = state as Inputting;
+    expect(inputting.composingBuffer).toBe("你好，");
+  });
+
+  test("Test Punctuation 2", () => {
+    let keys = asciiKey(["`"]);
+    let state = handleKeySequence(keyHandler, keys);
+    expect(state instanceof ChoosingCandidate).toBe(true);
+    let inputting = state as ChoosingCandidate;
+    expect(inputting.composingBuffer).toBe("　");
   });
 
   test("Test Tab 1", () => {
@@ -202,5 +283,45 @@ describe("Test KeyHandler.test", () => {
     keys.push(tab);
     let state = handleKeySequence(keyHandler, keys);
     expect(state instanceof Inputting).toBe(true);
+  });
+
+  test("Test marking", () => {
+    let keys = asciiKey(["s", "u", "3", "c", "l", "3"]);
+    let left = Key.namedKey(KeyName.LEFT, true, false);
+    keys.push(left);
+    keys.push(left);
+    let state = handleKeySequence(keyHandler, keys);
+    expect(state instanceof Marking).toBe(true);
+    let marking = state as Marking;
+    expect(marking.composingBuffer).toBe("你好");
+    expect(marking.cursorIndex).toBe(0);
+    expect(marking.head).toBe("");
+    expect(marking.markedText).toBe("你好");
+    expect(marking.tail).toBe("");
+  });
+
+  test("Test Big5", () => {
+    let currentState: InputState = new Big5();
+    let commit: Committing | undefined = undefined;
+    let keys = asciiKey(["a", "1", "4", "3"]);
+    for (let key of keys) {
+      keyHandler.handle(
+        key,
+        currentState,
+        (state) => {
+          if (state instanceof Committing) {
+            commit = state;
+          }
+          currentState = state;
+        },
+        () => {}
+      );
+    }
+    console.log(currentState);
+    if (commit === undefined) {
+      fail("Committing state not found");
+    } else {
+      expect((commit as Committing).text).toBe("。");
+    }
   });
 });
