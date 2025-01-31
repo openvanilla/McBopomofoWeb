@@ -82,11 +82,17 @@ export class CandidateController {
 
   /** Returns the current page index. */
   get currentPageIndex(): number {
+    if (this.keyCaps_.length === 0) {
+      return 0;
+    }
     return Math.floor(this.currentSelectedIndex_ / this.keyCaps_.length);
   }
 
   /** Returns the total page count. */
   get totalPageCount(): number {
+    if (this.keyCaps_.length === 0) {
+      return 0;
+    }
     return Math.ceil(this.candidates_.length / this.keyCaps_.length);
   }
 

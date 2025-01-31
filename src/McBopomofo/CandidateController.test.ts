@@ -6,7 +6,7 @@
  */
 
 import { Candidate } from "../Gramambular2";
-import { CandidateController } from "./CandidateController";
+import { CandidateController, CandidateWrapper } from "./CandidateController";
 
 describe("Test CandidateController", () => {
   let controller = new CandidateController();
@@ -158,5 +158,160 @@ describe("Test CandidateController", () => {
     expect(candidate2.keyCap).toBe("2");
     expect(candidate2.candidate.value).toBe("二");
     expect(candidate2.selected).toBe(false);
+  });
+
+  test("Test edge case with no candidates", () => {
+    let emptyController = new CandidateController();
+    emptyController.update([], []);
+    let result = emptyController.currentPage;
+    expect(result.length).toBe(0);
+  });
+
+  test("Test if new candidates reset selection", () => {
+    let newCandidatesController = new CandidateController();
+    newCandidatesController.update([new Candidate("", "A", "A")], ["1"]);
+    newCandidatesController.goToNextItem();
+    newCandidatesController.update([new Candidate("", "B", "B")], ["1"]);
+    let result = newCandidatesController.currentPage;
+    expect(result[0].candidate.value).toBe("B");
+    expect(result[0].selected).toBe(true);
+  });
+
+  test("Test selectedCandidateWithKey", () => {
+    let result = controller.selectedCandidateWithKey("2");
+    expect(result?.value).toBe("二");
+
+    controller.goToNextPage();
+    result = controller.selectedCandidateWithKey("2");
+    expect(result?.value).toBe("貳");
+
+    result = controller.selectedCandidateWithKey("9");
+    expect(result).toBeUndefined();
+  });
+
+  test("Test selectedCandidate getter", () => {
+    expect(controller.selectedCandidate.value).toBe("一");
+
+    controller.goToNextItem();
+    expect(controller.selectedCandidate.value).toBe("二");
+
+    controller.goToNextPage();
+    expect(controller.selectedCandidate.value).toBe("壹");
+
+    controller.goToLast();
+    expect(controller.selectedCandidate.value).toBe("貳");
+
+    controller.goToFirst();
+    expect(controller.selectedCandidate.value).toBe("一");
+  });
+
+  test("Test selectedIndex getter and setter", () => {
+    expect(controller.selectedIndex).toBe(0);
+
+    controller.selectedIndex = 1;
+    expect(controller.selectedIndex).toBe(1);
+    expect(controller.selectedCandidate.value).toBe("二");
+
+    controller.selectedIndex = 9;
+    expect(controller.selectedIndex).toBe(9);
+    expect(controller.selectedCandidate.value).toBe("壹");
+
+    controller.selectedIndex = 0;
+    expect(controller.selectedIndex).toBe(0);
+    expect(controller.selectedCandidate.value).toBe("一");
+  });
+
+  test("Test currentPageIndex getter", () => {
+    expect(controller.currentPageIndex).toBe(0);
+
+    controller.goToNextPage();
+    expect(controller.currentPageIndex).toBe(1);
+
+    controller.goToPreviousPage();
+    expect(controller.currentPageIndex).toBe(0);
+
+    controller.selectedIndex = 8; // Last item on first page
+    expect(controller.currentPageIndex).toBe(0);
+
+    controller.selectedIndex = 9; // First item on second page
+    expect(controller.currentPageIndex).toBe(1);
+
+    controller.goToFirst();
+    expect(controller.currentPageIndex).toBe(0);
+
+    controller.goToLast();
+    expect(controller.currentPageIndex).toBe(1);
+  });
+
+  test("Test totalPageCount getter", () => {
+    expect(controller.totalPageCount).toBe(2);
+
+    let testController = new CandidateController();
+    testController.update([], []);
+    expect(testController.totalPageCount).toBe(0);
+
+    testController.update([new Candidate("", "A", "A")], ["1"]);
+    expect(testController.totalPageCount).toBe(1);
+
+    // Test with exactly one full page
+    let fullPage = [
+      new Candidate("", "一", "一"),
+      new Candidate("", "二", "二"),
+      new Candidate("", "三", "三"),
+    ];
+    testController.update(fullPage, ["1", "2", "3"]);
+    expect(testController.totalPageCount).toBe(1);
+
+    // Test with partial pages
+    let partialPages = [
+      new Candidate("", "一", "一"),
+      new Candidate("", "二", "二"),
+      new Candidate("", "三", "三"),
+      new Candidate("", "四", "四"),
+    ];
+    testController.update(partialPages, ["1", "2", "3"]);
+    expect(testController.totalPageCount).toBe(2);
+  });
+
+  test("Test goToNextPageButFistWhenAtEnd", () => {
+    expect(controller.currentPageIndex).toBe(0);
+
+    // Go to next page normally
+    controller.goToNextPageButFistWhenAtEnd();
+    expect(controller.currentPageIndex).toBe(1);
+    expect(controller.selectedCandidate.value).toBe("壹");
+
+    // When at last page, should cycle to first page
+    controller.goToNextPageButFistWhenAtEnd();
+    expect(controller.currentPageIndex).toBe(0);
+    expect(controller.selectedCandidate.value).toBe("一");
+
+    // Test cycling multiple times
+    controller.goToNextPageButFistWhenAtEnd();
+    controller.goToNextPageButFistWhenAtEnd();
+    expect(controller.currentPageIndex).toBe(0);
+    expect(controller.selectedCandidate.value).toBe("一");
+  });
+});
+
+describe("Test CandidateWrapper", () => {
+  test("Test constructor and getters", () => {
+    const candidate = new Candidate("reading", "value", "displayedText");
+    const wrapper = new CandidateWrapper("1", candidate, true);
+
+    expect(wrapper.keyCap).toBe("1");
+    expect(wrapper.candidate).toBe(candidate);
+    expect(wrapper.selected).toBe(true);
+    expect(wrapper.reading).toBe("reading");
+    expect(wrapper.value).toBe("value");
+    expect(wrapper.displayedText).toBe("displayedText");
+  });
+
+  test("Test immutability", () => {
+    const candidate = new Candidate("reading", "value", "displayedText");
+    const wrapper = new CandidateWrapper("1", candidate, true);
+    expect(wrapper.candidate).toBe(candidate);
+    expect(wrapper.reading).toBe(candidate.reading);
+    expect(wrapper.value).toBe(candidate.value);
   });
 });
