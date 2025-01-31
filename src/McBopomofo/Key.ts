@@ -93,6 +93,15 @@ export class Key {
 
   /** If the key is for moving the input cursor. */
   get isCursorKey(): boolean {
+    if (this.ctrlPressed) {
+      return (
+        this.ascii_ === "a" ||
+        this.ascii_ === "e" ||
+        this.ascii_ === "f" ||
+        this.ascii_ === "b"
+      );
+    }
+
     return (
       this.name_ === KeyName.LEFT ||
       this.name_ === KeyName.RIGHT ||
@@ -103,6 +112,9 @@ export class Key {
 
   /** If the key is for deleting the previous character. */
   get isDeleteKey(): boolean {
+    if (this.ctrlPressed) {
+      return this.ascii_ === "h" || this.ascii_ === "d";
+    }
     return this.name === KeyName.BACKSPACE || this.name === KeyName.DELETE;
   }
 

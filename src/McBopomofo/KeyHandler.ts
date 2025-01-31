@@ -894,32 +894,23 @@ export class KeyHandler {
     }
 
     let isValidMove = false;
-    switch (key.name) {
-      case KeyName.LEFT:
-        if (this.grid_.cursor > 0) {
-          this.grid_.cursor -= 1;
-          isValidMove = true;
-        }
-        break;
-      case KeyName.RIGHT:
-        if (this.grid_.cursor < this.grid_.length) {
-          this.grid_.cursor += 1;
-          isValidMove = true;
-        }
-        break;
-      case KeyName.HOME:
-        this.grid_.cursor = 0;
+    if (key.name == KeyName.LEFT || key.ascii == "b") {
+      if (this.grid_.cursor > 0) {
+        this.grid_.cursor -= 1;
         isValidMove = true;
-        break;
-      case KeyName.END:
-        this.grid_.cursor = this.grid_.length;
+      }
+    } else if (key.name == KeyName.RIGHT || key.ascii == "f") {
+      if (this.grid_.cursor < this.grid_.length) {
+        this.grid_.cursor += 1;
         isValidMove = true;
-        break;
-      default:
-        // Ignored.
-        break;
+      }
+    } else if (key.name == KeyName.HOME || key.ascii == "a") {
+      this.grid_.cursor = 0;
+      isValidMove = true;
+    } else if (key.name == KeyName.END || key.ascii == "e") {
+      this.grid_.cursor = this.grid_.length;
+      isValidMove = true;
     }
-
     if (!isValidMove) {
       errorCallback();
     }
@@ -947,11 +938,14 @@ export class KeyHandler {
     } else if (this.reading_.isEmpty) {
       let isValidDelete = false;
 
-      if (key.name === KeyName.BACKSPACE && this.grid_.cursor > 0) {
+      if (
+        (key.name === KeyName.BACKSPACE || key.ascii === "h") &&
+        this.grid_.cursor > 0
+      ) {
         this.grid_.deleteReadingBeforeCursor();
         isValidDelete = true;
       } else if (
-        key.name === KeyName.DELETE &&
+        (key.name === KeyName.DELETE || key.ascii === "d") &&
         this.grid_.cursor < this.grid_.length
       ) {
         this.grid_.deleteReadingAfterCursor();

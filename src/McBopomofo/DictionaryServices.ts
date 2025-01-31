@@ -178,6 +178,14 @@ export class DictionaryServices {
     }
   }
 
+  /**
+   * Builds a menu by generating text items from all available dictionary
+   * services for a given phrase.
+   *
+   * @param phrase - The input phrase to look up in the dictionary services
+   * @returns An array of strings representing menu items for the phrase lookup
+   * results
+   */
   buildMenu(phrase: string): string[] {
     let output: string[] = [];
     for (let service of this.services) {
@@ -186,6 +194,16 @@ export class DictionaryServices {
     return output;
   }
 
+  /**
+   * Performs a dictionary lookup using the specified service at the given
+   * index.
+   * @param phrase - The text string to look up in the dictionary
+   * @param index - The index of the dictionary service to use
+   * @param state - The current input state
+   * @param stateCallback - Callback function to handle state updates
+   * @returns {boolean} True if lookup was performed, false if index is out of
+   * bounds
+   */
   lookup(
     phrase: string,
     index: number,
