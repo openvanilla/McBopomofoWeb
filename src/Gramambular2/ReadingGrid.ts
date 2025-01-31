@@ -96,7 +96,7 @@ export class ReadingGrid {
    * Delete the reading after the cursor, like Del. Cursor is unmoved.
    */
   deleteReadingAfterCursor(): boolean {
-    if (this.cursor_ === this.readings_.length) {
+    if (this.cursor_ >= this.readings_.length) {
       return false;
     }
     this.readings_.splice(this.cursor_, 1);
