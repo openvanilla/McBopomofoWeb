@@ -29,10 +29,11 @@ jobs:
       - run: npm run build
       - run: npm run test:coverage
       - name: Jest Coverage Report
+        if: matrix.node-version == '21.x'
         uses: ArtiomTr/jest-coverage-report-action@v2
-      - name: Jest Coverage Comment
-        id: coverageComment
-        uses: MishaKav/jest-coverage-comment@main
+      # - name: Jest Coverage Comment
+      #   id: coverageComment
+      #   uses: MishaKav/jest-coverage-comment@main
 
 
   build_chromeos:
@@ -49,7 +50,6 @@ jobs:
       - run: npm install -D typescript@5.3.3
       - run: npm install
       - run: npm run build:chromeos
-      - run: npm run test
 
   build_pime:
     runs-on: ubuntu-latest
@@ -65,7 +65,6 @@ jobs:
       - run: npm install -D typescript@5.3.3
       - run: npm install
       - run: npm run build:pime
-      - run: npm run test
 
   build_windows_installer:
     runs-on: windows-latest
