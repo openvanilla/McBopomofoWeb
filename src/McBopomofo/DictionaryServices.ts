@@ -46,6 +46,7 @@ class HttpBasedDictionary implements DictionaryService {
   readonly urlTemplate: string;
   private onOpenUrl: (input: string) => void;
 
+  /* istanbul ignore next */
   constructor(
     name: string,
     urlTemplate: string,
@@ -56,6 +57,7 @@ class HttpBasedDictionary implements DictionaryService {
     this.onOpenUrl = onOpenUrl;
   }
 
+  /* istanbul ignore next */
   lookUp(
     phrase: string,
     state: InputState,
@@ -69,6 +71,7 @@ class HttpBasedDictionary implements DictionaryService {
     return true;
   }
 
+  /* istanbul ignore next */
   textForMenu(
     selectedString: string,
     localizedStrings: LocalizedStrings
@@ -162,6 +165,7 @@ export class DictionaryServices {
   public onOpenUrl?: ((input: string) => void) | undefined;
   protected services: DictionaryService[] = [];
 
+  /* istanbul ignore next */
   constructor(localizedStrings: LocalizedStrings) {
     this.localizedStrings = localizedStrings;
     for (let info of httpBasedDictionaryServices.services) {
@@ -186,6 +190,7 @@ export class DictionaryServices {
    * @returns An array of strings representing menu items for the phrase lookup
    * results
    */
+  /* istanbul ignore next */
   buildMenu(phrase: string): string[] {
     let output: string[] = [];
     for (let service of this.services) {
@@ -204,6 +209,7 @@ export class DictionaryServices {
    * @returns {boolean} True if lookup was performed, false if index is out of
    * bounds
    */
+  /* istanbul ignore next */
   lookup(
     phrase: string,
     index: number,

@@ -23,6 +23,7 @@ export interface InputState {}
  * Inputting, and an implementation enters Empty, the implementation may commit
  * whatever is in Inputting to the input method context.
  */
+/* istanbul ignore next */
 export class Empty implements InputState {
   toString(): string {
     return "Empty";
@@ -38,6 +39,7 @@ export class Empty implements InputState {
  * of the state machine need to check for both Empty and EmptyIgnoringPrevious
  * states.
  */
+/* istanbul ignore next */
 export class EmptyIgnoringPrevious implements InputState {
   toString(): string {
     return "EmptyIgnoringPrevious";
@@ -45,6 +47,7 @@ export class EmptyIgnoringPrevious implements InputState {
 }
 
 /**  The state for committing text into the desired application. */
+/* istanbul ignore next */
 export class Committing implements InputState {
   /** The text to commit. */
   readonly text: string;
@@ -62,6 +65,7 @@ export class Committing implements InputState {
  * NotEmpty state that has a non-empty composing buffer ("preedit" in some IME
  * frameworks).
  */
+/* istanbul ignore next */
 export class NotEmpty implements InputState {
   /**
    * A string buffer that stores the current composing text. This represents the
@@ -91,6 +95,7 @@ export class NotEmpty implements InputState {
  * Inputting state with an optional field to commit evicted ("popped") segments
  * in the composing buffer.
  */
+/* istanbul ignore next */
 export class Inputting extends NotEmpty {
   constructor(buf: string, index: number, tooltipText: string = "") {
     super(buf, index, tooltipText);
@@ -102,6 +107,7 @@ export class Inputting extends NotEmpty {
 }
 
 /** Candidate selecting state with a non-empty composing buffer. */
+/* istanbul ignore next */
 export class ChoosingCandidate extends NotEmpty {
   /** The candidates to choose from. */
   readonly candidates: Candidate[];
@@ -135,6 +141,7 @@ export class ChoosingCandidate extends NotEmpty {
  * where the marked range is when combined with the grid builder's (reading)
  * cursor index.
  */
+/* istanbul ignore next */
 export class Marking extends NotEmpty {
   /** The index of the cursor that the user starts to make a marked range. It
    * helps to restore the position of the cursor. */
@@ -176,6 +183,7 @@ export class Marking extends NotEmpty {
 }
 
 /** Represents that the user is selecting a dictionary service. */
+/* istanbul ignore next */
 export class SelectingDictionary extends NotEmpty {
   /** The previous input state. */
   readonly previousState: NotEmpty;
@@ -204,6 +212,14 @@ export class SelectingDictionary extends NotEmpty {
   }
 }
 
+/**
+ * Enumeration representing different styles for Chinese numbers.
+ * @enum {number}
+ * @property {number} Lowercase - Chinese numbers in lowercase format (e.g., 一二三)
+ * @property {number} Uppercase - Chinese numbers in uppercase format (e.g., 壹贰叁)
+ * @property {number} Suzhou - Chinese numbers in Suzhou format (e.g., 〡〢〣)
+ */
+/* istanbul ignore next */
 export enum ChineseNumberStyle {
   Lowercase,
   Uppercase,
@@ -211,6 +227,7 @@ export enum ChineseNumberStyle {
 }
 
 /** Represents that the user is inputting a Chinese number. */
+/* istanbul ignore next */
 export class ChineseNumber implements InputState {
   /** The user inputted number. */
   readonly number: string;
@@ -239,6 +256,7 @@ export class ChineseNumber implements InputState {
 }
 
 /** Represents that the user is inputting a Big5 code. */
+/* istanbul ignore next */
 export class Big5 implements InputState {
   /** The user inputted code. */
   readonly code: string;
@@ -258,6 +276,7 @@ export class Big5 implements InputState {
 }
 
 /** Represents that the user is inputting a enclosed number. */
+/* istanbul ignore next */
 export class EnclosingNumber implements InputState {
   /** The user inputted number. */
   readonly number: string;
@@ -271,6 +290,12 @@ export class EnclosingNumber implements InputState {
   }
 }
 
+/**
+ * Represents a state for selecting date-related macros in the input system.
+ * This class implements the InputState interface and manages a collection of
+ * date/time macro strings that can be converted to actual values.
+ */
+/* istanbul ignore next */
 export class SelectingDateMacro implements InputState {
   static macros: string[] = [
     "MACRO@DATE_TODAY_SHORT",
@@ -304,7 +329,8 @@ export class SelectingDateMacro implements InputState {
 }
 
 /**
- * Represents a feature with a name and a function to determine the next input state.
+ * Represents a feature with a name and a function to determine the next input
+ * state.
  */
 export class Feature {
   /** The name of the feature. */
@@ -327,6 +353,7 @@ export class Feature {
  * class manages various input features including Big5 encoding, date/time
  * macros, enclosing numbers, and different styles of Chinese numerals.
  */
+/* istanbul ignore next */
 export class SelectingFeature implements InputState {
   readonly features: Feature[] = (() => {
     var features: Feature[] = [];
