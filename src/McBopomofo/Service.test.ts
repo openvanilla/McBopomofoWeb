@@ -156,4 +156,48 @@ describe("Test service", () => {
     let r1 = service.convertTextToPinyin(input);
     expect(r1).toEqual("xiao mai zhu yin shu ru fa");
   });
+
+  test("Test convertTextToBpmfReadings", () => {
+    let service = new Service();
+    let input = "小麥注音輸入法";
+    let result = service.convertTextToBpmfReadings(input);
+    expect(result).toBe("ㄒㄧㄠˇㄇㄞˋㄓㄨˋㄧㄣㄕㄨㄖㄨˋㄈㄚˇ");
+
+    input = "天氣好";
+    result = service.convertTextToBpmfReadings(input);
+    expect(result).toBe("ㄊㄧㄢㄑㄧˋㄏㄠˇ");
+
+    input = "今天天氣好清爽";
+    result = service.convertTextToBpmfReadings(input);
+    expect(result).toBe("ㄐㄧㄣㄊㄧㄢㄊㄧㄢㄑㄧˋㄏㄠˇㄑㄧㄥㄕㄨㄤˇ");
+
+    input = "第1名";
+    result = service.convertTextToBpmfReadings(input);
+    expect(result).toBe("ㄉㄧˋ1ㄇㄧㄥˊ");
+
+    input = "第AB名";
+    result = service.convertTextToBpmfReadings(input);
+    expect(result).toBe("ㄉㄧˋABㄇㄧㄥˊ");
+  });
+
+  test("Test appendBpmfReadingsToText", () => {
+    let service = new Service();
+    let input = "小麥注音輸入法";
+    let result = service.appendBpmfReadingsToText(input);
+    expect(result).toBe(
+      "小(ㄒㄧㄠˇ)麥(ㄇㄞˋ)注(ㄓㄨˋ)音(ㄧㄣ)輸(ㄕㄨ)入(ㄖㄨˋ)法(ㄈㄚˇ)"
+    );
+
+    input = "天氣好";
+    result = service.appendBpmfReadingsToText(input);
+    expect(result).toBe("天(ㄊㄧㄢ)氣(ㄑㄧˋ)好(ㄏㄠˇ)");
+
+    input = "第1名";
+    result = service.appendBpmfReadingsToText(input);
+    expect(result).toBe("第(ㄉㄧˋ)1名(ㄇㄧㄥˊ)");
+
+    input = "第AB名";
+    result = service.appendBpmfReadingsToText(input);
+    expect(result).toBe("第(ㄉㄧˋ)AB名(ㄇㄧㄥˊ)");
+  });
 });
