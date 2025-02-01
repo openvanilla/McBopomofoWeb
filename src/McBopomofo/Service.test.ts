@@ -154,6 +154,6 @@ describe("Test service", () => {
     let service = new Service();
     let input = "小麥注音輸入法";
     let r1 = service.convertTextToPinyin(input);
-    expect(r1).toStrictEqual("xiao mai zhu yīn shu ru fa");
+    expect(r1).toEqual("xiao mai zhu yin shu ru fa");
   });
 });

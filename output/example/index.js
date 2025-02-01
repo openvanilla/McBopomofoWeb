@@ -608,8 +608,8 @@ function convertHanyuPinyin() {
     html += "<p>" + line + "</p>";
   }
 
-  document.getElementById("add_bpmf_output").innerHTML = html;
-  document.getElementById("add_bpmf_text_area").focus();
+  document.getElementById("convert_hanyupnyin_output").innerHTML = html;
+  document.getElementById("convert_hanyupnyin_text_area").focus();
 }
 
 function onHashChange() {
