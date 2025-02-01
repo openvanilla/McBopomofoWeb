@@ -8,6 +8,7 @@ function toggle_feature(id) {
     "feature_text_to_braille",
     "feature_braille_to_text",
     "feature_add_bpmf",
+    "feature_convert_hanyupnyin",
   ];
   for (let feature of features) {
     document.getElementById(feature).style.display = "none";
@@ -17,7 +18,6 @@ function toggle_feature(id) {
     document.getElementById("text_area").focus();
     document.title = "輸入功能";
   } else if (id === "feature_user_phrases") {
-    // document.getElementById("text_to_braille_text_area").focus();
     document.title = "自定詞管理";
   } else if (id === "feature_text_to_braille") {
     document.getElementById("text_to_braille_text_area").focus();
@@ -28,7 +28,11 @@ function toggle_feature(id) {
   } else if (id === "feature_add_bpmf") {
     document.getElementById("add_bpmf_text_area").focus();
     document.title = "國字加注音";
+  } else if (id === "feature_convert_hanyupnyin") {
+    document.getElementById("convert_hanyupnyin_text_area").focus();
+    document.title = "國字轉拼音";
   }
+
 }
 
 function resetUI() {
@@ -586,6 +590,26 @@ function addBpmf() {
 
   document.getElementById("add_bpmf_output").innerHTML = html;
   document.getElementById("add_bpmf_text_area").focus();
+}
+
+function convertHanyuPinyin() {
+  let text = document.getElementById("convert_hanyupnyin_text_area").value;
+  text = text.trim();
+  if (text.length === 0) {
+    document.getElementById("convert_hanyupnyin_output").innerHTML =
+      "<p>您沒有輸入任何內容！</p>";
+    document.getElementById("convert_hanyupnyin_text_area").focus();
+    return;
+  }
+  let output = service.convertTextToPinyin(text);
+  let lines = output.split("\n");
+  let html = "<h2>轉換結果如下</h2>";
+  for (let line of lines) {
+    html += "<p>" + line + "</p>";
+  }
+
+  document.getElementById("convert_hanyupnyin_output").innerHTML = html;
+  document.getElementById("convert_hanyupnyin_text_area").focus();
 }
 
 function onHashChange() {

@@ -217,6 +217,10 @@ div#feature_add_bpmf {
   display: none;
 }
 
+div#feature_convert_hanyupnyin {
+  display: none;
+}
+
 div.braille_to_text_output {
   width: 100%;
   max-width: 100%;
@@ -231,7 +235,6 @@ blockquote {
   margin: 0;
   padding: 20px;
 }
-
 
 @media (prefers-color-scheme: dark) {
   body {
