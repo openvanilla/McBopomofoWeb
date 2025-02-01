@@ -40,9 +40,7 @@ function handleKeySequence(keyHandler: KeyHandler, keys: Key[]): InputState {
     keyHandler.handle(
       key,
       currentState,
-      (state) => {
-        currentState = state;
-      },
+      (state) => (currentState = state),
       () => {}
     );
   }
@@ -76,7 +74,7 @@ describe("Test KeyHandler.test", () => {
       keys.push(leftKey);
       keys.push(spaceKey);
       let state = handleKeySequence(keyHandler, keys);
-      expect(state instanceof ChoosingCandidate).toBe(true);
+      expect(state).toBeInstanceOf(ChoosingCandidate);
       let choosingCandidate = state as ChoosingCandidate;
       expect(choosingCandidate.candidates[2].value).toBe("好");
     });
@@ -90,9 +88,29 @@ describe("Test KeyHandler.test", () => {
       keys.push(leftKey);
       keys.push(spaceKey);
       let state = handleKeySequence(keyHandler, keys);
-      expect(state instanceof ChoosingCandidate).toBe(true);
+      expect(state).toBeInstanceOf(ChoosingCandidate);
       let choosingCandidate = state as ChoosingCandidate;
       expect(choosingCandidate.candidates[2].value).toBe("你");
+    });
+  });
+
+  describe("Empty State", () => {
+    test("Enter", () => {
+      let keys = [Key.namedKey(KeyName.RETURN)];
+      let state = handleKeySequence(keyHandler, keys);
+      expect(state).toBeInstanceOf(Empty);
+    });
+
+    test("Tab", () => {
+      let keys = [Key.namedKey(KeyName.TAB)];
+      let state = handleKeySequence(keyHandler, keys);
+      expect(state).toBeInstanceOf(Empty);
+    });
+
+    test("Esc", () => {
+      let keys = [Key.namedKey(KeyName.ESC)];
+      let state = handleKeySequence(keyHandler, keys);
+      expect(state).toBeInstanceOf(Empty);
     });
   });
 
@@ -107,7 +125,7 @@ describe("Test KeyHandler.test", () => {
       // Test typing with ETen layout
       let keys = asciiKey(["n", "e", "3"]); // ETen layout keys for "你"
       let state = handleKeySequence(keyHandler, keys);
-      expect(state instanceof Inputting).toBe(true);
+      expect(state).toBeInstanceOf(Inputting);
       let inputting = state as Inputting;
       expect(inputting.composingBuffer).toBe("你");
       expect(inputting.cursorIndex).toBe(1);
@@ -118,7 +136,7 @@ describe("Test KeyHandler.test", () => {
       // Test typing with Hsu layout
       keys = asciiKey(["n", "e", "f"]); // Hsu layout keys for "你"
       state = handleKeySequence(keyHandler, keys);
-      expect(state instanceof Inputting).toBe(true);
+      expect(state).toBeInstanceOf(Inputting);
       inputting = state as Inputting;
       expect(inputting.composingBuffer).toBe("你你");
       expect(inputting.cursorIndex).toBe(2);
@@ -137,7 +155,7 @@ describe("Test KeyHandler.test", () => {
         // Test typing with ETen layout
         let keys = asciiKey(["n", "i", "3"]); // ETen layout keys for "你"
         let state = handleKeySequence(keyHandler, keys);
-        expect(state instanceof Inputting).toBe(true);
+        expect(state).toBeInstanceOf(Inputting);
         let inputting = state as Inputting;
         expect(inputting.composingBuffer).toBe("你");
         expect(inputting.cursorIndex).toBe(1);
@@ -155,7 +173,7 @@ describe("Test KeyHandler.test", () => {
         // Test typing with ETen layout
         let keys = asciiKey(["y", "a", "n", "g", "2"]);
         let state = handleKeySequence(keyHandler, keys);
-        expect(state instanceof Inputting).toBe(true);
+        expect(state).toBeInstanceOf(Inputting);
         let inputting = state as Inputting;
         expect(inputting.composingBuffer).toBe("陽");
         expect(inputting.cursorIndex).toBe(1);
@@ -175,11 +193,44 @@ describe("Test KeyHandler.test", () => {
         let deleteKey = Key.namedKey(KeyName.BACKSPACE);
         keys.push(deleteKey);
         let state = handleKeySequence(keyHandler, keys);
-        expect(state instanceof Inputting).toBe(true);
+        expect(state).toBeInstanceOf(Inputting);
         let inputting = state as Inputting;
         expect(inputting.composingBuffer).toBe("yan");
         expect(inputting.cursorIndex).toBe(3);
       });
+    });
+  });
+
+  describe("Letters", () => {
+    test("Normal letter", () => {
+      keyHandler.keyboardLayout = BopomofoKeyboardLayout.StandardLayout;
+      let currentState: InputState = new Empty();
+      let key = new Key("A", KeyName.UNKNOWN, true, false, false);
+      let result = keyHandler.handle(
+        key,
+        currentState,
+        (state) => (currentState = state),
+        () => {}
+      );
+      expect(result).toBe(false);
+      expect(currentState).toBeInstanceOf(Empty);
+    });
+
+    test("Test putLowercaseLettersToComposingBuffer", () => {
+      keyHandler.putLowercaseLettersToComposingBuffer = true;
+      expect(keyHandler.putLowercaseLettersToComposingBuffer).toBe(true);
+      let currentState: InputState = new Empty();
+      let key = new Key("A", KeyName.UNKNOWN, true, false, false);
+      let result = keyHandler.handle(
+        key,
+        currentState,
+        (state) => (currentState = state),
+        () => {}
+      );
+      expect(result).toBe(true);
+      expect(currentState).toBeInstanceOf(Inputting);
+      let inputting = currentState as Inputting;
+      expect(inputting.composingBuffer).toBe("a");
     });
   });
 
@@ -201,7 +252,7 @@ describe("Test KeyHandler.test", () => {
           state = newState;
         }
       );
-      expect(state instanceof Inputting).toBe(true);
+      expect(state).toBeInstanceOf(Inputting);
       let buffer = (state as Inputting).composingBuffer;
       expect(buffer).toBe("擬好");
     });
@@ -217,9 +268,34 @@ describe("Test KeyHandler.test", () => {
       keys.push(spaceKey);
       keys.push(esc);
       let state = handleKeySequence(keyHandler, keys);
-      expect(state instanceof Inputting).toBe(true);
+      expect(state).toBeInstanceOf(Inputting);
       let buffer = (state as Inputting).composingBuffer;
       expect(buffer).toBe("你好");
+    });
+
+    test("Traditional Mode #1", () => {
+      keyHandler.traditionalMode = true;
+      expect(keyHandler.traditionalMode).toBe(true);
+      let keys = asciiKey(["s", "u", "3"]);
+      let state = handleKeySequence(keyHandler, keys);
+      expect(state).toBeInstanceOf(ChoosingCandidate);
+      let choosingCandidate = state as ChoosingCandidate;
+      let candidate = choosingCandidate.candidates[0];
+      keyHandler.candidateSelected(candidate, 0, (newState) => {
+        state = newState;
+      });
+      expect(state).toBeInstanceOf(Committing);
+      let committing = state as Committing;
+      expect(committing.text).toBe("你");
+    });
+
+    test("Traditional Mode #2", () => {
+      keyHandler.traditionalMode = true;
+      expect(keyHandler.traditionalMode).toBe(true);
+      let keys = asciiKey(["x", "u"]);
+      keys.push(Key.namedKey(KeyName.SPACE));
+      let state = handleKeySequence(keyHandler, keys);
+      expect(state).toBeInstanceOf(Empty);
     });
   });
 
@@ -231,7 +307,7 @@ describe("Test KeyHandler.test", () => {
       let esc = Key.namedKey(KeyName.ESC);
       keys.push(esc);
       let state = handleKeySequence(keyHandler, keys);
-      expect(state instanceof EmptyIgnoringPrevious).toBe(true);
+      expect(state).toBeInstanceOf(EmptyIgnoringPrevious);
     });
 
     test("ESC Key scenario #1", () => {
@@ -241,7 +317,7 @@ describe("Test KeyHandler.test", () => {
       let esc = Key.namedKey(KeyName.ESC);
       keys.push(esc);
       let state = handleKeySequence(keyHandler, keys);
-      expect(state instanceof Inputting).toBe(true);
+      expect(state).toBeInstanceOf(Inputting);
       let inputting = state as Inputting;
       expect(inputting.composingBuffer).toBe("你好");
     });
@@ -253,7 +329,7 @@ describe("Test KeyHandler.test", () => {
       let esc = Key.namedKey(KeyName.ESC);
       keys.push(esc);
       let state = handleKeySequence(keyHandler, keys);
-      expect(state instanceof Inputting).toBe(true);
+      expect(state).toBeInstanceOf(Inputting);
       let inputting = state as Inputting;
       expect(inputting.composingBuffer).toBe("你好");
     });
@@ -265,7 +341,7 @@ describe("Test KeyHandler.test", () => {
       let esc = Key.namedKey(KeyName.ESC);
       keys.push(esc);
       let state = handleKeySequence(keyHandler, keys);
-      expect(state instanceof EmptyIgnoringPrevious).toBe(true);
+      expect(state).toBeInstanceOf(EmptyIgnoringPrevious);
     });
 
     test("ESC Key scenario #4", () => {
@@ -273,7 +349,7 @@ describe("Test KeyHandler.test", () => {
       let esc = Key.namedKey(KeyName.ESC);
       keys.push(esc);
       let state = handleKeySequence(keyHandler, keys);
-      expect(state instanceof Empty).toBe(true);
+      expect(state).toBeInstanceOf(Empty);
     });
   });
 
@@ -294,7 +370,7 @@ describe("Test KeyHandler.test", () => {
     test("Typing su3 leads to '你'", () => {
       let keys = asciiKey(["s", "u", "3"]);
       let state = handleKeySequence(keyHandler, keys);
-      expect(state instanceof Inputting).toBe(true);
+      expect(state).toBeInstanceOf(Inputting);
       let inputting = state as Inputting;
       expect(inputting.composingBuffer).toBe("你");
       expect(inputting.cursorIndex).toBe(1);
@@ -305,13 +381,13 @@ describe("Test KeyHandler.test", () => {
       expect(keyHandler.traditionalMode).toBe(true);
       let keys = asciiKey(["s", "u", "3"]);
       let state = handleKeySequence(keyHandler, keys);
-      expect(state instanceof ChoosingCandidate).toBe(true);
+      expect(state).toBeInstanceOf(ChoosingCandidate);
     });
 
     test("Typing su3cl3 leads to '你好'", () => {
       let keys = asciiKey(["s", "u", "3", "c", "l", "3"]);
       let state = handleKeySequence(keyHandler, keys);
-      expect(state instanceof Inputting).toBe(true);
+      expect(state).toBeInstanceOf(Inputting);
       let inputting = state as Inputting;
       expect(inputting.composingBuffer).toBe("你好");
       expect(inputting.cursorIndex).toBe(2);
@@ -322,13 +398,13 @@ describe("Test KeyHandler.test", () => {
     test("Discard invalid input #1", () => {
       let keys = asciiKey(["r", "j", "3"]);
       let state = handleKeySequence(keyHandler, keys);
-      expect(state instanceof EmptyIgnoringPrevious).toBe(true);
+      expect(state).toBeInstanceOf(EmptyIgnoringPrevious);
     });
 
     test("Discard invalid input #2", () => {
       let keys = asciiKey(["s", "u", "3", "r", "j", "3"]);
       let state = handleKeySequence(keyHandler, keys);
-      expect(state instanceof Inputting).toBe(true);
+      expect(state).toBeInstanceOf(Inputting);
       let inputting = state as Inputting;
       expect(inputting.composingBuffer).toBe("你");
     });
@@ -338,7 +414,7 @@ describe("Test KeyHandler.test", () => {
       let enter = Key.namedKey(KeyName.RETURN);
       keys.push(enter);
       let state = handleKeySequence(keyHandler, keys);
-      expect(state instanceof Committing).toBe(true);
+      expect(state).toBeInstanceOf(Committing);
       let committing = state as Committing;
       expect(committing.text).toBe("你好");
       expect(keyHandler.gridLength).toBe(0);
@@ -352,7 +428,7 @@ describe("Test KeyHandler.test", () => {
       let comma = new Key("<", KeyName.UNKNOWN, true, false, false);
       keys.push(comma);
       let state = handleKeySequence(keyHandler, keys);
-      expect(state instanceof Inputting).toBe(true);
+      expect(state).toBeInstanceOf(Inputting);
       let inputting = state as Inputting;
       expect(inputting.composingBuffer).toBe("你好，");
     });
@@ -362,7 +438,7 @@ describe("Test KeyHandler.test", () => {
       let comma = new Key(",", KeyName.UNKNOWN, false, true, false);
       keys.push(comma);
       let state = handleKeySequence(keyHandler, keys);
-      expect(state instanceof Inputting).toBe(true);
+      expect(state).toBeInstanceOf(Inputting);
       let inputting = state as Inputting;
       expect(inputting.composingBuffer).toBe("你好，");
     });
@@ -372,7 +448,7 @@ describe("Test KeyHandler.test", () => {
       let comma = new Key("!", KeyName.UNKNOWN, true, false, false);
       keys.push(comma);
       let state = handleKeySequence(keyHandler, keys);
-      expect(state instanceof Inputting).toBe(true);
+      expect(state).toBeInstanceOf(Inputting);
       let inputting = state as Inputting;
       expect(inputting.composingBuffer).toBe("你好！");
     });
@@ -383,9 +459,55 @@ describe("Test KeyHandler.test", () => {
       let comma = new Key("!", KeyName.UNKNOWN, true, false, false);
       let keys = [comma];
       let state = handleKeySequence(keyHandler, keys);
-      expect(state instanceof Committing).toBe(true);
+      expect(state).toBeInstanceOf(Committing);
       let committing = state as Committing;
       expect(committing.text).toBe("！");
+    });
+
+    test("Typing punctuation with Hanyu Pinyin", () => {
+      keyHandler.keyboardLayout = BopomofoKeyboardLayout.HanyuPinyinLayout;
+      expect(keyHandler.keyboardLayout).toBe(
+        BopomofoKeyboardLayout.HanyuPinyinLayout
+      );
+      let comma = new Key(",", KeyName.UNKNOWN, false, false, false);
+      let keys = [comma];
+      let state = handleKeySequence(keyHandler, keys);
+      expect(state).toBeInstanceOf(Inputting);
+      let inputting = state as Inputting;
+      expect(inputting.composingBuffer).toBe("，");
+    });
+
+    test("Typing punctuation with Hsu", () => {
+      keyHandler.keyboardLayout = BopomofoKeyboardLayout.HsuLayout;
+      expect(keyHandler.keyboardLayout).toBe(BopomofoKeyboardLayout.HsuLayout);
+      let comma = new Key(",", KeyName.UNKNOWN, false, false, false);
+      let keys = [comma];
+      let state = handleKeySequence(keyHandler, keys);
+      expect(state).toBeInstanceOf(Inputting);
+      let inputting = state as Inputting;
+      expect(inputting.composingBuffer).toBe("，");
+    });
+
+    test("Typing punctuation with Half-width #1", () => {
+      keyHandler.halfWidthPunctuation = true;
+      expect(keyHandler.halfWidthPunctuation).toBe(true);
+      let comma = new Key("<", KeyName.UNKNOWN, true, false, false);
+      let keys = [comma];
+      let state = handleKeySequence(keyHandler, keys);
+      expect(state).toBeInstanceOf(Inputting);
+      let inputting = state as Inputting;
+      expect(inputting.composingBuffer).toBe(",");
+    });
+
+    test("Typing punctuation with Half-width #2", () => {
+      keyHandler.halfWidthPunctuation = true;
+      expect(keyHandler.halfWidthPunctuation).toBe(true);
+      let comma = new Key(",", KeyName.UNKNOWN, false, true, false);
+      let keys = [comma];
+      let state = handleKeySequence(keyHandler, keys);
+      expect(state).toBeInstanceOf(Inputting);
+      let inputting = state as Inputting;
+      expect(inputting.composingBuffer).toBe("，");
     });
   });
 
@@ -393,7 +515,7 @@ describe("Test KeyHandler.test", () => {
     test("Typing backtick triggers candidate list", () => {
       let keys = asciiKey(["`"]);
       let state = handleKeySequence(keyHandler, keys);
-      expect(state instanceof ChoosingCandidate).toBe(true);
+      expect(state).toBeInstanceOf(ChoosingCandidate);
       let inputting = state as ChoosingCandidate;
       expect(inputting.composingBuffer).toBe("　");
     });
@@ -403,7 +525,7 @@ describe("Test KeyHandler.test", () => {
       let enter = Key.namedKey(KeyName.TAB);
       keys.push(enter);
       let state = handleKeySequence(keyHandler, keys);
-      expect(state instanceof Inputting).toBe(true);
+      expect(state).toBeInstanceOf(Inputting);
       let inputting = state as Inputting;
       expect(inputting.composingBuffer).toBe("妳好");
     });
@@ -413,7 +535,7 @@ describe("Test KeyHandler.test", () => {
       let tab = Key.namedKey(KeyName.TAB);
       keys.push(tab);
       let state = handleKeySequence(keyHandler, keys);
-      expect(state instanceof Empty).toBe(true);
+      expect(state).toBeInstanceOf(Empty);
     });
 
     test("Tab key #3", () => {
@@ -421,7 +543,7 @@ describe("Test KeyHandler.test", () => {
       let tab = Key.namedKey(KeyName.TAB);
       keys.push(tab);
       let state = handleKeySequence(keyHandler, keys);
-      expect(state instanceof Inputting).toBe(true);
+      expect(state).toBeInstanceOf(Inputting);
     });
   });
 
@@ -432,7 +554,7 @@ describe("Test KeyHandler.test", () => {
       keys.push(left);
       keys.push(left);
       let state = handleKeySequence(keyHandler, keys);
-      expect(state instanceof Marking).toBe(true);
+      expect(state).toBeInstanceOf(Marking);
       let marking = state as Marking;
       expect(marking.composingBuffer).toBe("你好");
       expect(marking.cursorIndex).toBe(0);
@@ -486,7 +608,7 @@ describe("Test KeyHandler.test", () => {
           () => {}
         );
       }
-      expect(currentState instanceof Big5).toBe(true);
+      expect(currentState).toBeInstanceOf(Big5);
       let big5 = currentState as Big5;
       expect(big5.code).toBe("a1");
     });
@@ -628,7 +750,7 @@ describe("Test KeyHandler.test", () => {
           () => {}
         );
       }
-      expect(currentState instanceof ChineseNumber).toBe(true);
+      expect(currentState).toBeInstanceOf(ChineseNumber);
       let chineseNumber = currentState as ChineseNumber;
       expect(chineseNumber.number).toBe("");
     });
@@ -654,7 +776,7 @@ describe("Test KeyHandler.test", () => {
           () => {}
         );
       }
-      expect(currentState instanceof ChineseNumber).toBe(true);
+      expect(currentState).toBeInstanceOf(ChineseNumber);
       let chineseNumber = currentState as ChineseNumber;
       expect(chineseNumber.number).toBe("");
     });
@@ -677,7 +799,7 @@ describe("Test KeyHandler.test", () => {
           () => {}
         );
       }
-      expect(currentState instanceof Empty).toBe(true);
+      expect(currentState).toBeInstanceOf(Empty);
     });
   });
 
@@ -697,7 +819,7 @@ describe("Test KeyHandler.test", () => {
           () => {}
         );
       }
-      expect(currentState instanceof ChoosingCandidate).toBe(true);
+      expect(currentState).toBeInstanceOf(ChoosingCandidate);
     });
 
     test("Enclosing number #2", () => {
@@ -715,7 +837,7 @@ describe("Test KeyHandler.test", () => {
           () => {}
         );
       }
-      expect(currentState instanceof Empty).toBe(true);
+      expect(currentState).toBeInstanceOf(Empty);
     });
 
     test("Enclosing number #2", () => {
@@ -734,7 +856,7 @@ describe("Test KeyHandler.test", () => {
           () => {}
         );
       }
-      expect(currentState instanceof EnclosingNumber).toBe(true);
+      expect(currentState).toBeInstanceOf(EnclosingNumber);
     });
 
     test("Enclosing number #2", () => {
@@ -752,7 +874,7 @@ describe("Test KeyHandler.test", () => {
           () => {}
         );
       }
-      expect(currentState instanceof Empty).toBe(true);
+      expect(currentState).toBeInstanceOf(Empty);
     });
   });
 
@@ -761,7 +883,7 @@ describe("Test KeyHandler.test", () => {
       let tab = new Key("\\", KeyName.UNKNOWN, false, true, false);
       let keys = [tab];
       let state = handleKeySequence(keyHandler, keys);
-      expect(state instanceof SelectingFeature).toBe(true);
+      expect(state).toBeInstanceOf(SelectingFeature);
     });
   });
 
