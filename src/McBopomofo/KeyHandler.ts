@@ -5,7 +5,11 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { BopomofoKeyboardLayout, BopomofoReadingBuffer } from "../Mandarin";
+import {
+  BopomofoKeyboardLayout,
+  BopomofoReadingBuffer,
+  BopomofoSyllable,
+} from "../Mandarin";
 import { UserOverrideModel } from "./UserOverrideModel";
 import {
   Big5,
@@ -481,6 +485,25 @@ export class KeyHandler {
             }
           }
 
+          let committing = new Committing(composed);
+          stateCallback(committing);
+          this.reset();
+          return true;
+        } else if (this.ctrlEnterOption_ === CtrlEnterOption.hanyuPinyin) {
+          let pinyinComponents = [];
+          for (let node of this.latestWalk_?.nodes ?? []) {
+            let reading = node.reading;
+            for (let component of reading.split(kJoinSeparator)) {
+              let syllable = BopomofoSyllable.FromComposedString(component);
+              let pinyin = syllable.HanyuPinyinString(false, false);
+              if (pinyin.length > 0) {
+                pinyinComponents.push(pinyin);
+              } else {
+                pinyinComponents.push(node.value);
+              }
+            }
+          }
+          let composed = pinyinComponents.join(" ");
           let committing = new Committing(composed);
           stateCallback(committing);
           this.reset();

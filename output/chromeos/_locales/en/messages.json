@@ -60,6 +60,7 @@
   "ctrl_enter_bpmf_reading": { "message": "Input Bopomofo Reading" },
   "ctrl_enter_html_ruby": { "message": "Input HTML Ruby" },
   "ctrl_enter_taiwanese_braille": { "message": "Input Taiwanese Braille" },
+  "ctrl_enter_hanyu_pinyin": { "message": "Hanyu Pinyin" },
   "candidate_keys_count": { "message": "Candidate Keys Count:" },
   "use_jk_key": {
     "message": "Use J/K keys to move cursor when choosing candidates "

@@ -1,7 +1,11 @@
-import { BopomofoBrailleConverter, BopomofoSyllable } from "../BopomofoBraille";
+import {
+  BopomofoBrailleConverter,
+  BopomofoSyllable as BrailleBopomofoSyllable,
+} from "../BopomofoBraille";
 import { ReadingGrid } from "../Gramambular2";
 import { webData } from "./WebData";
 import { WebLanguageModel } from "./WebLanguageModel";
+import { BopomofoSyllable as MandarinBopomofoSyllable } from "../Mandarin";
 
 const ChineseConvert = require("chinese_convert");
 
@@ -35,7 +39,8 @@ export class Service {
     input: string,
     readingCallback: (reading: string, value: string) => string,
     nonReadingCallback: (input: string) => string,
-    addingSpace = false // Braille needs additional space between Chinese characters, letters and digits.
+    addingSpaceBetweenChineseAndOtherTypes = false, // Braille needs additional space between Chinese characters, letters and digits.
+    addingSpaceBetweenChinese = false
   ): string {
     let output: string = "";
     let converted = ChineseConvert.cn2tw(input);
@@ -56,8 +61,9 @@ export class Service {
         let reading = this.lm_.getReading(subString);
         if (reading !== undefined) {
           if (reading.startsWith("_")) {
+            // Punctuation
             if (
-              addingSpace &&
+              addingSpaceBetweenChineseAndOtherTypes &&
               output.length > 0 &&
               pendingText.length === 0 &&
               isASCII(subString.charAt(0))
@@ -69,7 +75,7 @@ export class Service {
             if (pendingText.length > 0) {
               output += nonReadingCallback(pendingText);
               if (
-                addingSpace &&
+                addingSpaceBetweenChineseAndOtherTypes &&
                 isASCII(pendingText.charAt(pendingText.length - 1))
               ) {
                 output += " ";
@@ -79,12 +85,18 @@ export class Service {
 
             let components = reading.split("-");
 
+            if (addingSpaceBetweenChinese && readHead > 0) {
+              output += " ";
+            }
+
             if (components.length === subString.length) {
+              let converted = [];
               for (let i = 0; i < components.length; i++) {
                 let component = components[i];
                 let char = subString.charAt(i);
-                output += readingCallback(component, char);
+                converted.push(readingCallback(component, char));
               }
+              output += converted.join(addingSpaceBetweenChinese ? " " : "");
             } else {
               output += readingCallback(components.join(" "), subString);
             }
@@ -98,7 +110,7 @@ export class Service {
       if (!found) {
         let subString = converted.charAt(readHead);
         if (
-          addingSpace &&
+          addingSpaceBetweenChineseAndOtherTypes &&
           output.length > 0 &&
           pendingText.length === 0 &&
           isASCII(subString)
@@ -113,7 +125,7 @@ export class Service {
 
     if (pendingText.length > 0) {
       if (
-        addingSpace &&
+        addingSpaceBetweenChineseAndOtherTypes &&
         output.length > 0 &&
         pendingText.length === 0 &&
         isASCII(pendingText)
@@ -143,7 +155,7 @@ export class Service {
     let tokens = BopomofoBrailleConverter.convertBrailleToTokens(input);
     // console.log(tokens);
     for (let token of tokens) {
-      if (token instanceof BopomofoSyllable) {
+      if (token instanceof BrailleBopomofoSyllable) {
         this.grid_.insertReading(token.bpmf);
       } else {
         let result = this.grid_.walk();
@@ -256,6 +268,46 @@ export class Service {
       (input: string) => {
         return input;
       }
+    );
+  }
+
+  /**
+   * Converts Chinese text to Hanyu Pinyin representation.
+   *
+   * This method takes Chinese text as input and returns its romanized form in
+   * Hanyu Pinyin. The conversion processes each character individually,
+   * converting Bopomofo readings to Pinyin syllables.
+   *
+   * @param input - The Chinese text string to be converted to Pinyin
+   * @returns A string containing the Hanyu Pinyin representation of the input
+   *          text, with syllables separated by spaces
+   *
+   * @example
+   * ``` typescript
+   * const service = new Service();
+   * const pinyin = service.convertTextToPinyin("中文");
+   * // Returns: "zhong wen"
+   * ```
+   */
+  public convertTextToPinyin(input: string): string {
+    return this.convertText(
+      input,
+      (reading: string, _: string) => {
+        let pinyinComponents = [];
+        let components = reading.split("-");
+        for (let i = 0; i < components.length; i++) {
+          let component = components[i];
+          let syllable = MandarinBopomofoSyllable.FromComposedString(component);
+          let pinyin = syllable.HanyuPinyinString(false, false);
+          pinyinComponents.push(pinyin);
+        }
+        return pinyinComponents.join(" ");
+      },
+      (input: string) => {
+        return input;
+      },
+      true,
+      true
     );
   }
 }

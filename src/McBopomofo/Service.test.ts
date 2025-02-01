@@ -1,7 +1,6 @@
 import { Service } from "./Service";
 
 describe("Test service", () => {
-  
   test("Test convertBrailleToText 1", () => {
     let service = new Service();
     let input = "由「小麥」的作者";
@@ -149,5 +148,12 @@ describe("Test service", () => {
     let expected =
       "<ruby>小<rp>(</rp><rt>ㄒㄧㄠˇ</rt><rp>)</rp></ruby><ruby>麥<rp>(</rp><rt>ㄇㄞˋ</rt><rp>)</rp></ruby><ruby>注<rp>(</rp><rt>ㄓㄨˋ</rt><rp>)</rp></ruby><ruby>音<rp>(</rp><rt>ㄧㄣ</rt><rp>)</rp></ruby><ruby>輸<rp>(</rp><rt>ㄕㄨ</rt><rp>)</rp></ruby><ruby>入<rp>(</rp><rt>ㄖㄨˋ</rt><rp>)</rp></ruby><ruby>法<rp>(</rp><rt>ㄈㄚˇ</rt><rp>)</rp></ruby>";
     expect(result).toBe(expected);
+  });
+
+  test("Test Pinyin", () => {
+    let service = new Service();
+    let input = "小麥注音輸入法";
+    let r1 = service.convertTextToPinyin(input);
+    expect(r1).toStrictEqual("xiao mai zhu yīn shu ru fa");
   });
 });

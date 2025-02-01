@@ -20,11 +20,10 @@ import {
   InputState,
   Inputting,
   Marking,
+  SelectingFeature,
 } from "./InputState";
 import { Key, KeyName } from "./Key";
-import exp from "constants";
 import { BopomofoKeyboardLayout } from "../Mandarin";
-import { cp } from "fs";
 
 function asciiKey(input: string[]): Key[] {
   let keys: Key[] = [];
@@ -212,6 +211,62 @@ describe("Test KeyHandler.test", () => {
     expect(inputting.cursorIndex).toBe(2);
   });
 
+  test("Hanyu Pinyin 1", () => {
+    expect(keyHandler.keyboardLayout).toBe(
+      BopomofoKeyboardLayout.StandardLayout
+    ); // StandardLayout is 0
+    keyHandler.keyboardLayout = BopomofoKeyboardLayout.HanyuPinyinLayout; // ETenLayout is 1
+    expect(keyHandler.keyboardLayout).toBe(
+      BopomofoKeyboardLayout.HanyuPinyinLayout
+    );
+
+    // Test typing with ETen layout
+    let keys = asciiKey(["n", "i", "3"]); // ETen layout keys for "你"
+    let state = handleKeySequence(keyHandler, keys);
+    expect(state instanceof Inputting).toBe(true);
+    let inputting = state as Inputting;
+    expect(inputting.composingBuffer).toBe("你");
+    expect(inputting.cursorIndex).toBe(1);
+  });
+
+  test("Hanyu Pinyin 2", () => {
+    expect(keyHandler.keyboardLayout).toBe(
+      BopomofoKeyboardLayout.StandardLayout
+    ); // StandardLayout is 0
+    keyHandler.keyboardLayout = BopomofoKeyboardLayout.HanyuPinyinLayout; // ETenLayout is 1
+    expect(keyHandler.keyboardLayout).toBe(
+      BopomofoKeyboardLayout.HanyuPinyinLayout
+    );
+
+    // Test typing with ETen layout
+    let keys = asciiKey(["y", "a", "n", "g", "2"]);
+    let state = handleKeySequence(keyHandler, keys);
+    expect(state instanceof Inputting).toBe(true);
+    let inputting = state as Inputting;
+    expect(inputting.composingBuffer).toBe("陽");
+    expect(inputting.cursorIndex).toBe(1);
+  });
+
+  test("Hanyu Pinyin 3", () => {
+    expect(keyHandler.keyboardLayout).toBe(
+      BopomofoKeyboardLayout.StandardLayout
+    ); // StandardLayout is 0
+    keyHandler.keyboardLayout = BopomofoKeyboardLayout.HanyuPinyinLayout;
+    expect(keyHandler.keyboardLayout).toBe(
+      BopomofoKeyboardLayout.HanyuPinyinLayout
+    );
+
+    // Test typing with ETen layout
+    let keys = asciiKey(["y", "a", "n", "g"]);
+    let deleteKey = Key.namedKey(KeyName.BACKSPACE);
+    keys.push(deleteKey);
+    let state = handleKeySequence(keyHandler, keys);
+    expect(state instanceof Inputting).toBe(true);
+    let inputting = state as Inputting;
+    expect(inputting.composingBuffer).toBe("yan");
+    expect(inputting.cursorIndex).toBe(3);
+  });
+
   test("Handling empty key input", () => {
     let stateCallbackCalled = false;
     let errorCallbackCalled = false;
@@ -232,6 +287,22 @@ describe("Test KeyHandler.test", () => {
     let inputting = state as Inputting;
     expect(inputting.composingBuffer).toBe("你");
     expect(inputting.cursorIndex).toBe(1);
+  });
+
+  test("Typing su3 leads to '你' in Traditional mode", () => {
+    keyHandler.traditionalMode = true;
+    expect(keyHandler.traditionalMode).toBe(true);
+    let keys = asciiKey(["s", "u", "3"]);
+    let state = handleKeySequence(keyHandler, keys);
+    expect(state instanceof ChoosingCandidate).toBe(true);
+  });
+
+  test("Typing su3 leads to '你' in Traditional mode", () => {
+    keyHandler.traditionalMode = true;
+    expect(keyHandler.traditionalMode).toBe(true);
+    let keys = asciiKey(["s", "u", "3"]);
+    let state = handleKeySequence(keyHandler, keys);
+    expect(state instanceof ChoosingCandidate).toBe(true);
   });
 
   test("Typing su3cl3 leads to '你好'", () => {
@@ -289,6 +360,28 @@ describe("Test KeyHandler.test", () => {
     expect(state instanceof Inputting).toBe(true);
     let inputting = state as Inputting;
     expect(inputting.composingBuffer).toBe("你好，");
+  });
+
+  test("Typing punctuation #3", () => {
+    let keys = asciiKey(["s", "u", "3", "c", "l", "3"]);
+    let comma = new Key("!", KeyName.UNKNOWN, true, false, false);
+    keys.push(comma);
+    let state = handleKeySequence(keyHandler, keys);
+    expect(state instanceof Inputting).toBe(true);
+    let inputting = state as Inputting;
+    expect(inputting.composingBuffer).toBe("你好！");
+  });
+
+  test("Typing punctuation #4", () => {
+    keyHandler.traditionalMode = true;
+    expect(keyHandler.traditionalMode).toBe(true);
+    let comma = new Key("!", KeyName.UNKNOWN, true, false, false);
+    let keys = [comma];
+    let state = handleKeySequence(keyHandler, keys);
+    console.log(state);
+    expect(state instanceof Committing).toBe(true);
+    let committing = state as Committing;
+    expect(committing.text).toBe("！");
   });
 
   test("Typing backtick triggers candidate list", () => {
@@ -580,5 +673,49 @@ describe("Test KeyHandler.test", () => {
       );
     }
     expect(currentState instanceof Empty).toBe(true);
+  });
+
+  test("Enclosing number #2", () => {
+    let currentState: InputState = new EnclosingNumber();
+    let keys = asciiKey(["3", "0"]);
+    let deleteKey = Key.namedKey(KeyName.DELETE);
+    keys.push(deleteKey);
+    keys.push(deleteKey);
+    for (let key of keys) {
+      keyHandler.handle(
+        key,
+        currentState,
+        (state) => {
+          currentState = state;
+        },
+        () => {}
+      );
+    }
+    expect(currentState instanceof EnclosingNumber).toBe(true);
+  });
+
+  test("Enclosing number #2", () => {
+    let currentState: InputState = new EnclosingNumber();
+    let keys = asciiKey(["3", "0"]);
+    let escapeKey = Key.namedKey(KeyName.ESC);
+    keys.push(escapeKey);
+    for (let key of keys) {
+      keyHandler.handle(
+        key,
+        currentState,
+        (state) => {
+          currentState = state;
+        },
+        () => {}
+      );
+    }
+    expect(currentState instanceof Empty).toBe(true);
+  });
+
+  test("Test features", () => {
+    let tab = new Key("\\", KeyName.UNKNOWN, false, true, false);
+    let keys = [tab];
+    let state = handleKeySequence(keyHandler, keys);
+    expect(state instanceof SelectingFeature).toBe(true);
   });
 });

@@ -44,6 +44,7 @@
       <a href="#feature_text_to_braille" title="將國字轉換成點字">國字轉注音點字</a>
       <a href="#feature_braille_to_text" title="將點字轉換成國字">注音點字轉國字</a>
       <a href="#feature_add_bpmf" title="將國字加上注音">國字加注音</a>
+      <a href="#feature_convert_pinyin" title="將國字轉換成漢語拼音">國字轉拼音</a>
       <a href="https://openvanilla.github.io/McBopomofoWeb/docs/" target="_top" title="API Reference">API Reference</a>
     </p>
 
@@ -167,6 +168,7 @@
                   <option value="1">輸入注音符號</option>
                   <option value="2">輸入 HTML Ruby</option>
                   <option value="3">輸入台灣點字</option>
+                  <option value="4">輸入漢語拼音</option>
                 </select>
               </td>
             </tr>
@@ -300,7 +302,18 @@
           </table>
         </form>
       </div>
+    </div>
 
+    <div id="feature_convert_hanyupnyin">
+      <div class="left">
+        <textarea placeholder="請在此輸入國字" id="convert_hanyupnyin_text_area" rows="10" cols="50" title="輸入區"></textarea>
+        <p><input type="button" value="轉換" onclick="convertHanyuPinyin();"></p>
+        <div id="convert_hanyupnyin_output"></div>
+      </div>
+      <div class="right">
+        <h2>國字轉漢語拼音</h2>
+        <p>請在輸入框中輸入國字，按下「轉換」就可以轉換成漢語拼音。</p>
+      </div>
     </div>
 
     <p class="credit">Copyright (c) 2022 and onwards The McBopomofo Authors. This code is released under the MIT

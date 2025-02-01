@@ -16,3 +16,4 @@ installer/wix/Bundle/bin
 docs
 coverage
 junit.xml
+report.json
