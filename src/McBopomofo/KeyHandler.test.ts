@@ -283,8 +283,6 @@ describe("Test KeyHandler.test", () => {
       expect(keyHandler.cursor).toBe(2);
     });
 
-    // ;ion
-
     test("Cancelling candidate selection", () => {
       keyHandler.selectPhraseAfterCursorAsCandidate = false;
       expect(keyHandler.selectPhraseAfterCursorAsCandidate).toBe(false);
@@ -450,6 +448,38 @@ describe("Test KeyHandler.test", () => {
       expect(committing.text).toBe("你好");
       expect(keyHandler.gridLength).toBe(0);
       expect(keyHandler.cursor).toBe(0);
+    });
+  });
+
+  describe("Shift + Space", () => {
+    test("Test Shift + Space #1", () => {
+      let shiftSpace = new Key(" ", KeyName.SPACE, true, false, false);
+      let keys = [shiftSpace];
+      let state = handleKeySequence(keyHandler, keys);
+      expect(state).toBeInstanceOf(Empty);
+    });
+
+    test("Test Shift + Space #2", () => {
+      let keys = asciiKey(["s", "u", "3", "c", "l", "3"]);
+      let shiftSpace = new Key(" ", KeyName.SPACE, true, false, false);
+      keys.push(shiftSpace);
+      let state = handleKeySequence(keyHandler, keys);
+      expect(state).toBeInstanceOf(Committing);
+      let committing = state as Committing;
+      expect(committing.text).toBe(" ");
+    });
+
+    test("Test Shift + Space #3", () => {
+      keyHandler.putLowercaseLettersToComposingBuffer = true;
+      expect(keyHandler.putLowercaseLettersToComposingBuffer).toBe(true);
+      let keys = asciiKey(["s", "u", "3", "c", "l", "3"]);
+      let shiftSpace = new Key(" ", KeyName.SPACE, true, false, false);
+      keys.push(shiftSpace);
+      let state = handleKeySequence(keyHandler, keys);
+      expect(state).toBeInstanceOf(Inputting);
+      let inputting = state as Inputting;
+      console.log(inputting);
+      expect(inputting.composingBuffer).toBe("你好 ");
     });
   });
 

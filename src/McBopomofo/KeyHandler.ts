@@ -348,18 +348,25 @@ export class KeyHandler {
 
     // Shift + Space.
     if (key.name === KeyName.SPACE && key.shiftPressed) {
+      if (!this.grid_.length) {
+        return false;
+      }
+      if (!this.reading_.isEmpty) {
+        errorCallback();
+        return true;
+      }
+
       if (this.putLowercaseLettersToComposingBuffer_) {
         this.grid_.insertReading(" ");
+        this.walk();
         let inputtingState = this.buildInputtingState();
         stateCallback(inputtingState);
       } else {
-        if (this.grid_.length) {
-          let inputtingState = this.buildInputtingState();
-          // Steal the composingBuffer built by the inputting state.
-          let committingState = new Committing(inputtingState.composingBuffer);
-          stateCallback(committingState);
-        }
-        let committingState = new Committing(" ");
+        let inputtingState = this.buildInputtingState();
+        // Steal the composingBuffer built by the inputting state.
+        let committingState = new Committing(inputtingState.composingBuffer);
+        stateCallback(committingState);
+        committingState = new Committing(" ");
         stateCallback(committingState);
         this.reset();
       }

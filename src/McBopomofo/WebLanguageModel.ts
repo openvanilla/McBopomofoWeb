@@ -49,6 +49,10 @@ export class UserPhrases implements LanguageModel {
   }
 
   getUnigrams(key: string): Unigram[] {
+    if (key === " ") {
+      return [];
+    }
+
     let result: Unigram[] = [];
     let list = this.map_.get(key);
     if (list != undefined) {
@@ -61,6 +65,9 @@ export class UserPhrases implements LanguageModel {
   }
 
   hasUnigrams(key: string): boolean {
+    if (key === " ") {
+      return true;
+    }
     let list = this.map_.get(key);
     if (list === undefined) return false;
     return list.length > 0;
