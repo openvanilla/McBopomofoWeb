@@ -1,6 +1,4 @@
-To encode the data:
+# Data Updater
 
-```
-make
-cat data.txt | ./encode | python3 txt_to_map.py
-```
+To update the phrases database, place the latest `data.txt` from the upstream
+McBopomofo project and run `make`.
