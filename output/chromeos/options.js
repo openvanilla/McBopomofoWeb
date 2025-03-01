@@ -268,7 +268,7 @@ window.onload = () => {
     chrome.i18n.getMessage("ctrl_enter_html_ruby");
   document.getElementById("ctrl_enter_option_3").innerText =
     chrome.i18n.getMessage("ctrl_enter_taiwanese_braille");
-  document.getElementById("ctrl_enter_option_3").innerText =
+  document.getElementById("ctrl_enter_option_4").innerText =
     chrome.i18n.getMessage("ctrl_enter_hanyu_pinyin");
   
   document.getElementById("others_title").innerText =
