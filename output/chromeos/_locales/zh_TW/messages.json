@@ -73,5 +73,6 @@
   "append_taiwanese_braille": { "message": "將國字加上台灣點字" },
   "convert_text_to_taiwanese_braille": { "message": "將國字轉為台灣點字" },
   "convert_taiwanese_braille_to_text": { "message": "將台灣點字轉為國字" },
+  "convert_text_to_hanyu_pinyin": { "message": "將國字轉換為漢語拼音" },
   "menuHelp": { "message": "輔助說明" }
 }

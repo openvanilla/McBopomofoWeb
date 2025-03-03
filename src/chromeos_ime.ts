@@ -738,6 +738,16 @@ chrome.contextMenus.onClicked.addListener((event, tab) => {
         convertedLines.push(convertedLine);
       }
       converted = convertedLines.join("\n");
+    } else if (menuItemId === "convert_text_to_hanyu_pinyin") {
+      let lines = selectionText.split("\n");
+      let convertedLines = [];
+      for (let line of lines) {
+        let convertedLine = ChineseConvert.cn2tw(line);
+        convertedLine =
+          chromeMcBopomofo.service.convertTextToPinyin(convertedLine);
+        convertedLines.push(convertedLine);
+      }
+      converted = convertedLines.join("\n");
     }
 
     chrome.tabs.sendMessage(tabId, {
@@ -793,6 +803,12 @@ chrome.contextMenus.create({
 chrome.contextMenus.create({
   id: "convert_taiwanese_braille_to_text",
   title: chrome.i18n.getMessage("convert_taiwanese_braille_to_text"),
+  contexts: ["selection", "editable"],
+});
+
+chrome.contextMenus.create({
+  id: "convert_text_to_hanyu_pinyin",
+  title: chrome.i18n.getMessage("convert_text_to_hanyu_pinyin"),
   contexts: ["selection", "editable"],
 });
 

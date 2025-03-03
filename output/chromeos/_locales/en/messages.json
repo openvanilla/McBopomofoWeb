@@ -87,5 +87,6 @@
   "convert_taiwanese_braille_to_text": {
     "message": "Convert Taiwanese Braille to text"
   },
+  "convert_text_to_hanyu_pinyin": { "message": "Convert text to Hanyu Pinyin" },
   "menuHelp": { "message": "Help..." }
 }
