@@ -15,19 +15,33 @@ const ChineseConvert = require("chinese_convert");
 let largeSync = new LargeSync();
 
 type ChromeMcBopomofoSettings = {
+  /** The keyboard layout. */
   layout: string;
+  /** Whether to select the phrase before or after the cursor. */
   select_phrase: string;
+  /** The keys to select candidates. */
   candidate_keys: string;
+  /** The number of candidate keys. */
   candidate_keys_count: number;
+  /** Whether to clear the entire buffer when the Esc key is pressed. */
   esc_key_clear_entire_buffer: boolean;
+  /** Whether to toggle alphabet mode when the Shift key is pressed. */
   shift_key_toggle_alphabet_mode: boolean;
+  /** Whether to enable Chinese conversion. */
   chinese_conversion: boolean;
+  /** Whether to move the cursor after selection. */
   move_cursor: boolean;
+  /** The letter mode. */
   letter_mode: string;
+  /** The Ctrl+Enter option. */
   ctrl_enter_option: number;
+  /** Whether to enable half-width punctuation. */
   half_width_punctuation_enabled: boolean;
+  /** Whether to use J/K keys to move the cursor when the candidate window appears. */
   use_jk_key_to_move_cursor: boolean;
+  /** Whether to use notification. */
   use_notification: boolean;
+  /** Whether to use repeated punctuation to choose candidate. */
   repeated_punctuation_choose_candidate: boolean;
 };
 

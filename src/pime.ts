@@ -648,10 +648,6 @@ module.exports = {
       seqNum: request.seqNum,
     };
     if (request.method === "init") {
-      // console.log(
-      //   "init ======================================================================================"
-      // );
-
       let { isWindows8Above } = request;
       pimeMcBopomofo.isWindows8Above = isWindows8Above;
       let customUi = pimeMcBopomofo.customUiResponse();
@@ -661,9 +657,6 @@ module.exports = {
       return response;
     }
     if (request.method === "close") {
-      // console.log(
-      //   "Close ======================================================================================"
-      // );
       let response = Object.assign({}, responseTemplate, {
         removeButton: ["windows-mode-icon", "switch-lang", "settings"],
       });
