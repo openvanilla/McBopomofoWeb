@@ -163,6 +163,14 @@ export class KeyHandler {
     this.ctrlEnterOption_ = flag;
   }
 
+  private repeatedPunctuationToSelectCandidateEnabled_: boolean = false;
+  public get repeatedPunctuationToSelectCandidateEnabled(): boolean {
+    return this.repeatedPunctuationToSelectCandidateEnabled_;
+  }
+  public set repeatedPunctuationToSelectCandidateEnabled(flag: boolean) {
+    this.repeatedPunctuationToSelectCandidateEnabled_ = flag;
+  }
+
   private languageModel_: LanguageModel;
   private grid_: ReadingGrid;
   private reading_: BopomofoReadingBuffer;
@@ -599,13 +607,29 @@ export class KeyHandler {
         GetKeyboardLayoutName(this.reading_.keyboardLayout) +
         "_" +
         simpleAscii;
-      if (this.handlePunctuation(unigram, stateCallback, errorCallback)) {
+      if (
+        this.handlePunctuation(
+          unigram,
+          key,
+          state,
+          stateCallback,
+          errorCallback
+        )
+      ) {
         return true;
       }
 
       // Not handled, try generic punctuations.
       unigram = prefix + simpleAscii;
-      if (this.handlePunctuation(unigram, stateCallback, errorCallback)) {
+      if (
+        this.handlePunctuation(
+          unigram,
+          key,
+          state,
+          stateCallback,
+          errorCallback
+        )
+      ) {
         return true;
       }
 
@@ -619,7 +643,13 @@ export class KeyHandler {
           unigram = kLetterPrefix + simpleAscii;
 
           // Ignore return value, since we always return true below.
-          this.handlePunctuation(unigram, stateCallback, errorCallback);
+          this.handlePunctuation(
+            unigram,
+            key,
+            state,
+            stateCallback,
+            errorCallback
+          );
         } else {
           // If current state is *not* NonEmpty, it must be Empty.
           if (maybeNotEmptyState instanceof NotEmpty === false) {
@@ -1007,11 +1037,35 @@ export class KeyHandler {
 
   private handlePunctuation(
     punctuationUnigramKey: string,
+    key: Key,
+    state: InputState,
     stateCallback: (state: InputState) => void,
     errorCallback: () => void
   ): boolean {
     if (!this.languageModel_.hasUnigrams(punctuationUnigramKey)) {
       return false;
+    }
+
+    // zonble
+    if (this.repeatedPunctuationToSelectCandidateEnabled) {
+      let prefixCursorIndex = this.grid_.cursor;
+      let actualPrefixCursorIndex =
+        prefixCursorIndex > 0 ? prefixCursorIndex - 1 : 0;
+      let result = this.latestWalk_?.findNodeAt(actualPrefixCursorIndex);
+      let currentNode = result ? result[0] : undefined;
+
+      if (currentNode && currentNode.reading === punctuationUnigramKey) {
+        let candidates = this.grid_.candidatesAt(actualPrefixCursorIndex);
+        if (candidates.length > 1) {
+          if (this.selectPhraseAfterCursorAsCandidate) {
+            this.grid_.cursor = actualPrefixCursorIndex;
+          }
+          this.handleTabKey(key, state, stateCallback, errorCallback);
+          this.grid_.cursor = prefixCursorIndex;
+          stateCallback(this.buildInputtingState());
+          return true;
+        }
+      }
     }
 
     if (!this.reading_.isEmpty) {
