@@ -28,6 +28,7 @@ type ChromeMcBopomofoSettings = {
   half_width_punctuation_enabled: boolean;
   use_jk_key_to_move_cursor: boolean;
   use_notification: boolean;
+  repeated_punctuation_choose_candidate: boolean;
 };
 
 class ChromeMcBopomofo {
@@ -52,6 +53,7 @@ class ChromeMcBopomofo {
     half_width_punctuation_enabled: false,
     use_jk_key_to_move_cursor: false,
     use_notification: true,
+    repeated_punctuation_choose_candidate: false,
   };
   settings: ChromeMcBopomofoSettings = {
     layout: "standard",
@@ -67,6 +69,7 @@ class ChromeMcBopomofo {
     half_width_punctuation_enabled: false,
     use_jk_key_to_move_cursor: false,
     use_notification: true,
+    repeated_punctuation_choose_candidate: false,
   };
   lang = "en";
   isShiftHold = false;
@@ -141,6 +144,9 @@ class ChromeMcBopomofo {
       );
       this.inputController.setUseJKToMoveCursor(
         this.settings.use_jk_key_to_move_cursor
+      );
+      this.inputController.setRepeatedPunctuationChooseCandidate(
+        this.settings.repeated_punctuation_choose_candidate
       );
     });
   }
