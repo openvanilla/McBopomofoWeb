@@ -676,6 +676,10 @@ export class KeyHandler {
       if (key.ctrlPressed) {
         shouldPromptAlert = false;
       }
+      if (key.ascii === "Shift") {
+        shouldPromptAlert = false;
+      }
+
       if (shouldPromptAlert) {
         errorCallback();
       }
@@ -1046,7 +1050,6 @@ export class KeyHandler {
       return false;
     }
 
-    // zonble
     if (this.repeatedPunctuationToSelectCandidateEnabled) {
       let prefixCursorIndex = this.grid_.cursor;
       let actualPrefixCursorIndex =

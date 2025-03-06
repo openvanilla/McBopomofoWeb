@@ -32,7 +32,6 @@ function toggle_feature(id) {
     document.getElementById("convert_hanyupnyin_text_area").focus();
     document.title = "國字轉拼音";
   }
-
 }
 
 function resetUI() {
@@ -159,6 +158,7 @@ let defaultSettings = {
   ctrl_enter_option: 0,
   use_jk_key_to_move_cursor: false,
   beep_on_error: true,
+  repeated_punctuation_choose_candidate: false,
 };
 let settings = {};
 
@@ -265,6 +265,13 @@ function applySettings(settings) {
     controller.setEscClearEntireBuffer(settings.esc_key_clear_entire_buffer);
     document.getElementById("esc_key").checked =
       settings.esc_key_clear_entire_buffer;
+  }
+  {
+    controller.setRepeatedPunctuationChooseCandidate(
+      settings.repeated_punctuation_choose_candidate
+    );
+    document.getElementById("repeated_punctuation_choose_candidate").checked =
+      settings.repeated_punctuation_choose_candidate;
   }
   {
     controller.setUseJKToMoveCursor(settings.use_jk_key_to_move_cursor);
@@ -452,6 +459,17 @@ document.getElementById("esc_key").onchange = function (event) {
   saveSettings(settings);
   document.getElementById("text_area").focus();
 };
+
+document.getElementById("repeated_punctuation_choose_candidate").onchange =
+  function (event) {
+    let checked = document.getElementById(
+      "repeated_punctuation_choose_candidate"
+    ).checked;
+    controller.setRepeatedPunctuationChooseCandidate(checked);
+    settings.repeated_punctuation_choose_candidate = checked;
+    saveSettings(settings);
+    document.getElementById("text_area").focus();
+  };
 
 document.getElementById("jk_key").onchange = function (event) {
   let checked = document.getElementById("jk_key").checked;
