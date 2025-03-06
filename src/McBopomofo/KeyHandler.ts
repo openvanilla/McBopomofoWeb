@@ -429,7 +429,12 @@ export class KeyHandler {
 
     // Tab key.
     if (key.name === KeyName.TAB) {
-      return this.handleTabKey(key, state, stateCallback, errorCallback);
+      return this.handleTabKey(
+        key.shiftPressed,
+        state,
+        stateCallback,
+        errorCallback
+      );
     }
 
     // Cursor keys.
@@ -838,7 +843,8 @@ export class KeyHandler {
   }
 
   private handleTabKey(
-    key: Key,
+    // key: Key,
+    shiftPressed: boolean,
     state: InputState,
     stateCallback: (state: InputState) => void,
     errorCallback: () => void
@@ -851,8 +857,6 @@ export class KeyHandler {
       errorCallback();
       return true;
     }
-
-    let inputting: Inputting = state as Inputting;
 
     if (!this.reading_.isEmpty) {
       errorCallback();
@@ -895,7 +899,7 @@ export class KeyHandler {
         //     candidates[0].value === currentNode.value) {
         // If the first candidate is the value of the current node, we use next
         // one.
-        if (key.shiftPressed) {
+        if (shiftPressed) {
           currentIndex = candidates.length - 1;
         } else {
           currentIndex = 1;
@@ -907,7 +911,7 @@ export class KeyHandler {
           candidate.reading === currentNode.reading &&
           candidate.value === currentNode.value
         ) {
-          if (key.shiftPressed) {
+          if (shiftPressed) {
             currentIndex === 0
               ? (currentIndex = candidates.length - 1)
               : currentIndex--;
@@ -1063,7 +1067,7 @@ export class KeyHandler {
           if (this.selectPhraseAfterCursorAsCandidate) {
             this.grid_.cursor = actualPrefixCursorIndex;
           }
-          this.handleTabKey(key, state, stateCallback, errorCallback);
+          this.handleTabKey(false, state, stateCallback, errorCallback);
           this.grid_.cursor = prefixCursorIndex;
           stateCallback(this.buildInputtingState());
           return true;
