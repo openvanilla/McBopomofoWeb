@@ -32,7 +32,7 @@
   "optionSelectCandidateMoveCursor": { "message": "選字之後自動移動游標位置" },
   "optionEscKeyTitle": { "message": "ESC 按鍵：" },
   "optionEscKeyLabel": { "message": "ESC 按鍵會清除整個輸入緩衝區的內容" },
-  "optionShiftKeyTitle": { "message": "Shift 按鍵:" },
+  "optionShiftKeyTitle": { "message": "Shift 按鍵：" },
   "optionShiftKeyLabel": { "message": "使用 Shift 按鍵切換中英文" },
   "optionShiftLetterTitle": { "message": "Shift + 字母按鍵：" },
   "optionShiftLetterUppercase": { "message": "輸入大寫字母" },
@@ -57,7 +57,7 @@
   "ctrl_enter_html_ruby": { "message": "輸入 HTML Ruby" },
   "ctrl_enter_taiwanese_braille": { "message": "輸入台灣點字" },
   "ctrl_enter_hanyu_pinyin": { "message": "輸入漢語拼音" },
-  "candidate_keys_count": { "message": "選字按鍵數量" },
+  "candidate_keys_count": { "message": "選字按鍵數量：" },
   "use_jk_key": { "message": "使用 JK 按鍵在選字時移動游標" },
   "system": { "message": "系統：" },
   "use_notification": { "message": "使用系統提示通知" },
@@ -74,5 +74,8 @@
   "convert_text_to_taiwanese_braille": { "message": "將國字轉為台灣點字" },
   "convert_taiwanese_braille_to_text": { "message": "將台灣點字轉為國字" },
   "convert_text_to_hanyu_pinyin": { "message": "將國字轉換為漢語拼音" },
-  "menuHelp": { "message": "輔助說明" }
+  "menuHelp": { "message": "輔助說明" },
+  "repeated_punctuation_choose_candidate_title": {"message": "標點符號："},
+  "repeated_punctuation_choose_candidate_label": {"message": "重複輸入標點符號時，會輸入下一個候選的標點"}
+
 }
