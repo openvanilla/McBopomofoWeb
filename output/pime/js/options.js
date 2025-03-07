@@ -16,6 +16,7 @@ window.onload = () => {
     ctrl_enter_option: 0,
     by_default_deactivated: false,
     beep_on_error: true,
+    repeated_punctuation_choose_candidate: false,
   };
 
   function applySettings(settings) {
@@ -97,6 +98,10 @@ window.onload = () => {
         settings.ctrl_enter_option = value;
         saveSettings(settings);
       };
+    }
+    {
+      document.getElementById("repeated_punctuation_choose_candidate").checked =
+        settings.repeated_punctuation_choose_candidate;
     }
 
     {
@@ -232,6 +237,16 @@ window.onload = () => {
   document.getElementById("beep_on_error").onchange = (event) => {
     let checked = document.getElementById("beep_on_error").checked;
     settings.by_default_deactivated = checked;
+    saveSettings(settings);
+  };
+
+  document.getElementById("repeated_punctuation_choose_candidate").onchange = (
+    event
+  ) => {
+    let checked = document.getElementById(
+      "repeated_punctuation_choose_candidate"
+    ).checked;
+    settings.repeated_punctuation_choose_candidate = checked;
     saveSettings(settings);
   };
 };

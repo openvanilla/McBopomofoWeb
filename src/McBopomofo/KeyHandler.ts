@@ -163,6 +163,14 @@ export class KeyHandler {
     this.ctrlEnterOption_ = flag;
   }
 
+  private repeatedPunctuationToSelectCandidateEnabled_: boolean = false;
+  public get repeatedPunctuationToSelectCandidateEnabled(): boolean {
+    return this.repeatedPunctuationToSelectCandidateEnabled_;
+  }
+  public set repeatedPunctuationToSelectCandidateEnabled(flag: boolean) {
+    this.repeatedPunctuationToSelectCandidateEnabled_ = flag;
+  }
+
   private languageModel_: LanguageModel;
   private grid_: ReadingGrid;
   private reading_: BopomofoReadingBuffer;
@@ -421,7 +429,12 @@ export class KeyHandler {
 
     // Tab key.
     if (key.name === KeyName.TAB) {
-      return this.handleTabKey(key, state, stateCallback, errorCallback);
+      return this.handleTabKey(
+        key.shiftPressed,
+        state,
+        stateCallback,
+        errorCallback
+      );
     }
 
     // Cursor keys.
@@ -599,13 +612,29 @@ export class KeyHandler {
         GetKeyboardLayoutName(this.reading_.keyboardLayout) +
         "_" +
         simpleAscii;
-      if (this.handlePunctuation(unigram, stateCallback, errorCallback)) {
+      if (
+        this.handlePunctuation(
+          unigram,
+          key,
+          state,
+          stateCallback,
+          errorCallback
+        )
+      ) {
         return true;
       }
 
       // Not handled, try generic punctuations.
       unigram = prefix + simpleAscii;
-      if (this.handlePunctuation(unigram, stateCallback, errorCallback)) {
+      if (
+        this.handlePunctuation(
+          unigram,
+          key,
+          state,
+          stateCallback,
+          errorCallback
+        )
+      ) {
         return true;
       }
 
@@ -619,7 +648,13 @@ export class KeyHandler {
           unigram = kLetterPrefix + simpleAscii;
 
           // Ignore return value, since we always return true below.
-          this.handlePunctuation(unigram, stateCallback, errorCallback);
+          this.handlePunctuation(
+            unigram,
+            key,
+            state,
+            stateCallback,
+            errorCallback
+          );
         } else {
           // If current state is *not* NonEmpty, it must be Empty.
           if (maybeNotEmptyState instanceof NotEmpty === false) {
@@ -646,6 +681,10 @@ export class KeyHandler {
       if (key.ctrlPressed) {
         shouldPromptAlert = false;
       }
+      if (key.ascii === "Shift") {
+        shouldPromptAlert = false;
+      }
+
       if (shouldPromptAlert) {
         errorCallback();
       }
@@ -804,7 +843,8 @@ export class KeyHandler {
   }
 
   private handleTabKey(
-    key: Key,
+    // key: Key,
+    shiftPressed: boolean,
     state: InputState,
     stateCallback: (state: InputState) => void,
     errorCallback: () => void
@@ -817,8 +857,6 @@ export class KeyHandler {
       errorCallback();
       return true;
     }
-
-    let inputting: Inputting = state as Inputting;
 
     if (!this.reading_.isEmpty) {
       errorCallback();
@@ -861,7 +899,7 @@ export class KeyHandler {
         //     candidates[0].value === currentNode.value) {
         // If the first candidate is the value of the current node, we use next
         // one.
-        if (key.shiftPressed) {
+        if (shiftPressed) {
           currentIndex = candidates.length - 1;
         } else {
           currentIndex = 1;
@@ -873,7 +911,7 @@ export class KeyHandler {
           candidate.reading === currentNode.reading &&
           candidate.value === currentNode.value
         ) {
-          if (key.shiftPressed) {
+          if (shiftPressed) {
             currentIndex === 0
               ? (currentIndex = candidates.length - 1)
               : currentIndex--;
@@ -1007,11 +1045,34 @@ export class KeyHandler {
 
   private handlePunctuation(
     punctuationUnigramKey: string,
+    key: Key,
+    state: InputState,
     stateCallback: (state: InputState) => void,
     errorCallback: () => void
   ): boolean {
     if (!this.languageModel_.hasUnigrams(punctuationUnigramKey)) {
       return false;
+    }
+
+    if (this.repeatedPunctuationToSelectCandidateEnabled) {
+      let prefixCursorIndex = this.grid_.cursor;
+      let actualPrefixCursorIndex =
+        prefixCursorIndex > 0 ? prefixCursorIndex - 1 : 0;
+      let result = this.latestWalk_?.findNodeAt(actualPrefixCursorIndex);
+      let currentNode = result ? result[0] : undefined;
+
+      if (currentNode && currentNode.reading === punctuationUnigramKey) {
+        let candidates = this.grid_.candidatesAt(actualPrefixCursorIndex);
+        if (candidates.length > 1) {
+          if (this.selectPhraseAfterCursorAsCandidate) {
+            this.grid_.cursor = actualPrefixCursorIndex;
+          }
+          this.handleTabKey(false, state, stateCallback, errorCallback);
+          this.grid_.cursor = prefixCursorIndex;
+          stateCallback(this.buildInputtingState());
+          return true;
+        }
+      }
     }
 
     if (!this.reading_.isEmpty) {

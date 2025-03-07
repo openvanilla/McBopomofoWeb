@@ -316,6 +316,17 @@ export class InputController {
   }
 
   /**
+   * Enables or disables the feature that allows repeated punctuation to select
+   * a candidate.
+   *
+   * @param flag - A boolean value indicating whether the feature should be
+   * enabled (true) or disabled (false).
+   */
+  public setRepeatedPunctuationChooseCandidate(flag: boolean): void {
+    this.keyHandler_.repeatedPunctuationToSelectCandidateEnabled = flag;
+  }
+
+  /**
    * Sets if we want to use vertical or horizontal candidate window.
    * @param flag Use the vertical candidate window.
    */

@@ -50,6 +50,7 @@ interface Settings {
   beep_on_error: boolean;
   /** The behavior for handling Ctrl+ Enter key. */
   ctrl_enter_option: number;
+  repeated_punctuation_choose_candidate: boolean;
 }
 
 /** A middle data structure between McBopomofo input controller and PIME. */
@@ -81,6 +82,7 @@ const defaultSettings: Settings = {
   beep_on_error: true,
   ctrl_enter_option: 0,
   use_jk_key_to_move_cursor: false,
+  repeated_punctuation_choose_candidate: false,
 };
 
 enum PimeMcBopomofoCommand {
@@ -284,6 +286,9 @@ class PimeMcBopomofo {
     this.inputController.setCtrlEnterOption(this.settings.ctrl_enter_option);
     this.inputController.setUseJKToMoveCursor(
       this.settings.use_jk_key_to_move_cursor
+    );
+    this.inputController.setRepeatedPunctuationChooseCandidate(
+      this.settings.repeated_punctuation_choose_candidate
     );
     this.inputController.setLanguageCode("zh-TW");
   }
@@ -643,10 +648,6 @@ module.exports = {
       seqNum: request.seqNum,
     };
     if (request.method === "init") {
-      // console.log(
-      //   "init ======================================================================================"
-      // );
-
       let { isWindows8Above } = request;
       pimeMcBopomofo.isWindows8Above = isWindows8Above;
       let customUi = pimeMcBopomofo.customUiResponse();
@@ -656,9 +657,6 @@ module.exports = {
       return response;
     }
     if (request.method === "close") {
-      // console.log(
-      //   "Close ======================================================================================"
-      // );
       let response = Object.assign({}, responseTemplate, {
         removeButton: ["windows-mode-icon", "switch-lang", "settings"],
       });

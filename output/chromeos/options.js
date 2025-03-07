@@ -14,6 +14,7 @@ window.onload = () => {
     letter_mode: "upper",
     ctrl_enter_option: 0,
     use_notification: true,
+    repeated_punctuation_choose_candidate: false,
   };
 
   function applySettings(settings) {
@@ -66,6 +67,8 @@ window.onload = () => {
       document.getElementById("move_cursor").checked = settings.move_cursor;
       document.getElementById("use_notification").checked =
         settings.use_notification;
+      document.getElementById("repeated_punctuation_choose_candidate").checked =
+        settings.repeated_punctuation_choose_candidate;
     }
     {
       if (settings.letter_mode === "upper") {
@@ -175,6 +178,16 @@ window.onload = () => {
     saveSettings(settings);
   };
 
+  document.getElementById("repeated_punctuation_choose_candidate").onchange = (
+    event
+  ) => {
+    let checked = document.getElementById(
+      "repeated_punctuation_choose_candidate"
+    ).checked;
+    settings.repeated_punctuation_choose_candidate = checked;
+    saveSettings(settings);
+  };
+
   document.getElementById("others_manage_user_phrases").onclick = (event) => {
     function tryOpen(url) {
       chrome.tabs.query({ url: url }).then((tabs) => {
@@ -270,7 +283,7 @@ window.onload = () => {
     chrome.i18n.getMessage("ctrl_enter_taiwanese_braille");
   document.getElementById("ctrl_enter_option_4").innerText =
     chrome.i18n.getMessage("ctrl_enter_hanyu_pinyin");
-  
+
   document.getElementById("others_title").innerText =
     chrome.i18n.getMessage("optionOthersTitle");
   document.getElementById("others_manage_user_phrases").innerText =
@@ -283,4 +296,16 @@ window.onload = () => {
     chrome.i18n.getMessage("system");
   document.getElementById("use_notification_label").innerText =
     chrome.i18n.getMessage("use_notification");
+
+  document.getElementById(
+    "repeated_punctuation_choose_candidate_title"
+  ).innerText = chrome.i18n.getMessage(
+    "repeated_punctuation_choose_candidate_title"
+  );
+
+  document.getElementById(
+    "repeated_punctuation_choose_candidate_label"
+  ).innerText = chrome.i18n.getMessage(
+    "repeated_punctuation_choose_candidate_label"
+  );
 };
