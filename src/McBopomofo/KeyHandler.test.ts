@@ -707,8 +707,16 @@ describe("Test KeyHandler.test", () => {
         "c",
         "l",
         "3",
+        "s",
+        "u",
+        "3",
+        "c",
+        "l",
+        "3",
       ]);
       let shiftLeft = Key.namedKey(KeyName.LEFT, true, false);
+      keys.push(shiftLeft);
+      keys.push(shiftLeft);
       keys.push(shiftLeft);
       keys.push(shiftLeft);
       keys.push(shiftLeft);
@@ -720,7 +728,7 @@ describe("Test KeyHandler.test", () => {
       let state = handleKeySequence(keyHandler, keys);
       expect(state).toBeInstanceOf(Marking);
       let marking = state as Marking;
-      expect(marking.composingBuffer).toBe("你好你好你好你好");
+      expect(marking.composingBuffer).toBe("你好你好你好你好你好");
       expect(marking.cursorIndex).toBe(0);
       expect(marking.acceptable).toBe(false);
     });

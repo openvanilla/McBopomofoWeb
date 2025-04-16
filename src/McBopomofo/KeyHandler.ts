@@ -63,7 +63,7 @@ const kCtrlPunctuationPrefix = "_ctrl_punctuation_";
 const kHalfPunctuationPrefix = "_half_punctuation_";
 
 const kMinValidMarkingReadingCount = 2;
-const kMaxValidMarkingReadingCount = 6;
+const kMaxValidMarkingReadingCount = 8;
 const kUserOverrideModelCapacity = 500;
 const kObservedOverrideHalfLife = 5400.0; // 1.5 hr.
 

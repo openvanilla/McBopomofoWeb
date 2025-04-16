@@ -105,7 +105,7 @@ export class ReadingGrid {
     return false;
   }
 
-  static kMaximumSpanLength: number = 6;
+  static kMaximumSpanLength: number = 8;
   static kDefaultSeparator: string = "-";
 
   /**
