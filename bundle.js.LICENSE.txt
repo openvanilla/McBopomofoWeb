@@ -1,14 +1,4 @@
 /**
- * @file
- * The states for the input method module.
- *
- * @license
- * Copyright (c) 2022 and onwards The McBopomofo Authors.
- * This code is released under the MIT license.
- * SPDX-License-Identifier: MIT
- */
-
-/**
  * @license
  * Copyright (c) 2022 and onwards The McBopomofo Authors.
  * This code is released under the MIT license.
@@ -30,4 +20,13 @@
  * Released under MIT license <https://lodash.com/license>
  * Based on Underscore.js 1.8.3 <http://underscorejs.org/LICENSE>
  * Copyright Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ */
+
+/**
+ * The states for the input method module.
+ *
+ * @license
+ * Copyright (c) 2022 and onwards The McBopomofo Authors.
+ * This code is released under the MIT license.
+ * SPDX-License-Identifier: MIT
  */
