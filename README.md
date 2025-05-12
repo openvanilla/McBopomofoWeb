@@ -77,7 +77,7 @@ npm run build:pime # 編譯 Windows PIME 版本
 
 除錯：在開發 PIME 版本的過程中，可以透過 PIME 本身的 Debug Log 除錯。您可以從 Windows 系統列上的 PIME Launcher 圖示上按下右鍵，點開右鍵選單，當中就可以看到開啟以及查看 Log 的選項。另外，您也可以使用以下 PowerShell 命令查看即時的 Log：
 
-```bat
+```
 set LOG_FILE="%localappdata%\\PIME\Log\\PIMELauncher.log"
 set COMMAND="powershell Get-Content -Tail 10 -Wait %LOG_FILE%"
 powershell -noexit %COMMAND%

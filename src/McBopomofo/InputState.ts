@@ -1,5 +1,4 @@
 /**
- * @file
  * The states for the input method module.
  *
  * @license
