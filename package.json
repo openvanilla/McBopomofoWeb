@@ -1,16 +1,16 @@
 {
   "devDependencies": {
-    "@types/chrome": "^0.0.322",
+    "@types/chrome": "^0.0.323",
     "@types/jest": "^29.5.14",
     "@types/lodash": "^4.17.16",
-    "@types/node": "^22.15.3",
+    "@types/node": "^22.15.19",
     "@typescript-eslint/eslint-plugin": "^8.32.1",
     "@typescript-eslint/parser": "^8.32.1",
-    "eslint": "^9.26.0",
+    "eslint": "^9.27.0",
     "jest": "^29.7.0",
     "jest-junit": "^16.0.0",
     "minimatch": ">=10.0.1",
-    "nodemon": "^3.1.9",
+    "nodemon": "^3.1.10",
     "ts-jest": "^29.3.4",
     "ts-loader": "^9.5.2",
     "ts-node": "^10.9.2",
@@ -20,7 +20,7 @@
     "webpack-cli": "^6.0.1"
   },
   "name": "mcbopomofoweb",
-  "version": "1.7.0",
+  "version": "1.8.0",
   "description": "McBopomofo input method built with TypeScript and other Web technologies",
   "scripts": {
     "ts-build": "tsc",
