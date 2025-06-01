@@ -179,9 +179,9 @@ export class InputController {
 
   /** Resets to empty state. */
   public reset(): void {
-    this.keyHandler_.reset();
     this.enterNewState(new Empty());
     this.ui_.update();
+    this.keyHandler_.reset();
   }
 
   /** Sets the UI component. */

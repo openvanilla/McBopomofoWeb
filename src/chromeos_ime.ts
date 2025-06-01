@@ -229,16 +229,20 @@ class ChromeMcBopomofo {
   }
 
   toggleAlphabetMode() {
+    if (this.engineID === undefined) return;
     this.isAlphabetMode = !this.isAlphabetMode;
 
     if (this.settings.use_notification) {
-      chrome.notifications.create("mcbopomofo-alphabet-mode" + Date.now(), {
-        title: this.isAlphabetMode
-          ? chrome.i18n.getMessage("alphabet_mode")
-          : chrome.i18n.getMessage("chinese_mode"),
-        message: "",
-        type: "basic",
-        iconUrl: "icons/icon48.png",
+      const notificationId = "mcbopomofo-alphabet-mode";
+      chrome.notifications.clear(notificationId, () => {
+        chrome.notifications.create(notificationId, {
+          title: this.isAlphabetMode
+            ? chrome.i18n.getMessage("alphabet_mode")
+            : chrome.i18n.getMessage("chinese_mode"),
+          message: "",
+          type: "basic",
+          iconUrl: "icons/icon48.png",
+        });
       });
     }
   }
@@ -250,9 +254,9 @@ class ChromeMcBopomofo {
     this.inputController.setChineseConversionEnabled(checked);
 
     if (this.settings.use_notification) {
-      chrome.notifications.create(
-        "mcbopomofo-chinese-conversion" + Date.now(),
-        {
+      const notificationId = "mcbopomofo-chinese-conversion";
+      chrome.notifications.clear(notificationId, () => {
+        chrome.notifications.create(notificationId, {
           title: checked
             ? chrome.i18n.getMessage("chinese_conversion_on")
             : chrome.i18n.getMessage("chinese_conversion_off"),
@@ -260,8 +264,8 @@ class ChromeMcBopomofo {
           message: "",
           type: "basic",
           iconUrl: "icons/icon48.png",
-        }
-      );
+        });
+      });
     }
 
     chrome.storage.sync.set({ settings: this.settings }, () => {
@@ -336,7 +340,6 @@ class ChromeMcBopomofo {
     }
 
     this.deferredResetTimeout = setTimeout(() => {
-      this.context = undefined;
       this.inputController.reset();
       this.deferredResetTimeout = null;
     }, 5000);
@@ -406,10 +409,14 @@ class ChromeMcBopomofo {
           }
           index += item.text.length;
         }
+        let localCursorIndex = state.cursorIndex;
+        if (localCursorIndex > text.length) {
+          localCursorIndex = text.length;
+        }
 
         chrome.input.ime.setComposition({
           contextID: this.context.contextID,
-          cursor: state.cursorIndex,
+          cursor: localCursorIndex,
           segments: segments,
           text: text,
           selectionStart: selectionStart,
@@ -544,6 +551,7 @@ chrome.input?.ime.onFocus.addListener((context) => {
 
 // The main keyboard event handler.
 chrome.input?.ime.onKeyEvent.addListener((engineID, keyData) => {
+  chromeMcBopomofo.engineID = engineID;
   if (keyData.type === "keyup") {
     // If we have a shift in a key down event, then a key up event with the
     // shift key, and there is no other key down event between them, it means it
@@ -688,7 +696,7 @@ keepAlive();
 
 chrome.contextMenus.onClicked.addListener((event, tab) => {
   function handle(selectionText: string, menuItemId: string, tabId: number) {
-    console.log(selectionText);
+    // console.log(selectionText);
     if (selectionText.length === 0) {
       return;
     }
