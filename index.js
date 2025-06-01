@@ -131,7 +131,7 @@ controller.setOnPhraseAdded(function (key, phrase) {
   if (lastChar != "\n") {
     result += "\n";
   }
-  result += key + " " + phrase + "\n";
+  result += phrase + " " + key + "\n";
   saveUserPhrases(result);
 });
 controller.setOnOpenUrl(function (url) {
