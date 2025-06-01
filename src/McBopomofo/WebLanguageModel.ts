@@ -121,8 +121,8 @@ export class WebLanguageModel implements LanguageModel {
         if (parts.length < 2) {
           continue;
         }
-        let key = parts[0];
-        let value = parts[1];
+        let key = parts[1];
+        let value = parts[0];
         let list = map.get(key);
         if (list != undefined) {
           list.push(value);

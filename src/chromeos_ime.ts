@@ -167,8 +167,9 @@ class ChromeMcBopomofo {
 
   loadUserPhrases() {
     largeSync.get(["user_phrase"], (value) => {
+      // On ChromeOS, we store the user phrases in JSON format, but
+      // the editor convert the JSON to phrases per line.
       let jsonString = value.user_phrase;
-
       if (jsonString !== undefined) {
         try {
           let obj = JSON.parse(jsonString);

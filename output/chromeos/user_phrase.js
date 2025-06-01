@@ -1,4 +1,6 @@
 window.onload = () => {
+  // On ChromeOS, we store the user phrases in JSON format, but
+  // the editor convert the JSON to phrases per line.
   function mapToText(map) {
     let text = "";
     for (let k in map) {

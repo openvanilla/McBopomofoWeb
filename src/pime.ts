@@ -218,7 +218,7 @@ class PimeMcBopomofo {
     }
 
     fs.readFile(this.userPhrasesPath, (err, data) => {
-      let lineToWrite = key + " " + phrase + "\n";
+      let lineToWrite = phrase + " " + key + "\n";
       if (data) {
         let string = data.toString();
         if (string[string.length - 1] !== "\n") {
