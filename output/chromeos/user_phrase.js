@@ -72,6 +72,7 @@ window.onload = () => {
   };
 
   window.document.title = chrome.i18n.getMessage("userPhrasesPageTitle");
+
   document.getElementById("user_phrases_title").innerText =
     chrome.i18n.getMessage("userPhrasesPageTitle");
 
@@ -80,6 +81,10 @@ window.onload = () => {
 
   document.getElementById("save").innerText = chrome.i18n.getMessage("btnSave");
 
+  document.getElementById("text_area").placeholder =
+    chrome.i18n.getMessage("placeholder");
+
   load();
+
   document.getElementById("text_area").focus();
 };

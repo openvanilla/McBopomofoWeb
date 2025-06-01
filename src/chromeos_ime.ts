@@ -559,9 +559,9 @@ chrome.input?.ime.onKeyEvent.addListener((engineID, keyData) => {
     // toggle between Bopomofo mode and alphabet mode.
     if (keyData.key === "Shift" && chromeMcBopomofo.isShiftHold) {
       chromeMcBopomofo.isShiftHold = false;
-      chromeMcBopomofo.toggleAlphabetMode();
       chromeMcBopomofo.inputController.reset();
-      return;
+      chromeMcBopomofo.toggleAlphabetMode();
+      return true;
     }
     return false;
   }
@@ -597,11 +597,13 @@ chrome.input?.ime.onKeyEvent.addListener((engineID, keyData) => {
 
 chrome.input?.ime.onMenuItemActivated.addListener((engineID, name) => {
   if (name === "mcbopomofo-toggle-alphabet-mode") {
+    chromeMcBopomofo.inputController.reset();
     chromeMcBopomofo.toggleAlphabetMode();
     return;
   }
 
   if (name === "mcbopomofo-chinese-conversion") {
+    chromeMcBopomofo.inputController.reset();
     chromeMcBopomofo.toggleChineseConversion();
     return;
   }
@@ -638,7 +640,8 @@ chrome.input?.ime.onMenuItemActivated.addListener((engineID, name) => {
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   // Reloads the user phrases by the message sent from "user_phrase.html".
   if (request.command === "reload_user_phrase") {
-    loadUserPhrases();
+    //zonble
+    chromeMcBopomofo.loadUserPhrases();
     sendResponse({ status: "ok" });
   }
 });

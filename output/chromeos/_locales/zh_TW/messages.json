@@ -75,7 +75,11 @@
   "convert_taiwanese_braille_to_text": { "message": "將台灣點字轉為國字" },
   "convert_text_to_hanyu_pinyin": { "message": "將國字轉換為漢語拼音" },
   "menuHelp": { "message": "輔助說明" },
-  "repeated_punctuation_choose_candidate_title": {"message": "標點符號："},
-  "repeated_punctuation_choose_candidate_label": {"message": "重複輸入標點符號時，會輸入下一個候選的標點"}
-
+  "repeated_punctuation_choose_candidate_title": { "message": "標點符號：" },
+  "repeated_punctuation_choose_candidate_label": {
+    "message": "重複輸入標點符號時，會輸入下一個候選的標點"
+  },
+  "placeholder": {
+    "message": "# 一個詞彙一行。範例如下：\n輸入範例 ㄕㄨ-ㄖㄨˋ-ㄈㄢˋ-ㄌㄧˋ"
+  }
 }

@@ -89,6 +89,13 @@
   },
   "convert_text_to_hanyu_pinyin": { "message": "Convert text to Hanyu Pinyin" },
   "menuHelp": { "message": "Help..." },
-  "repeated_punctuation_choose_candidate_title": {"message": "Punctuation Symbols:"},
-  "repeated_punctuation_choose_candidate_label": {"message": "Repeated punctuation keys choose next candidate"}
+  "repeated_punctuation_choose_candidate_title": {
+    "message": "Punctuation Symbols:"
+  },
+  "repeated_punctuation_choose_candidate_label": {
+    "message": "Repeated punctuation keys choose next candidate"
+  },
+  "placeholder": {
+    "message": "# Each phrase per line. Example:\n輸入範例 ㄕㄨ-ㄖㄨˋ-ㄈㄢˋ-ㄌㄧˋ"
+  }
 }
