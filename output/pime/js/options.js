@@ -134,6 +134,19 @@ window.onload = () => {
     }
   }
 
+  function openUserDataFolder() {
+    console.log("Open user data folder");
+    const xhttp = new XMLHttpRequest();
+    xhttp.open("GET", "/open_user_data_folder");
+    xhttp.send("");
+    xhttp.onload = function () {
+      console.log("User data folder opened" + this.responseText);
+    };
+    xhttp.onerror = function () {
+      console.error("Failed to open user data folder");
+    };
+  }
+
   function saveSettings(settings) {
     console.log("saving settings: " + settings);
     const xhttp = new XMLHttpRequest();
@@ -248,5 +261,10 @@ window.onload = () => {
     ).checked;
     settings.repeated_punctuation_choose_candidate = checked;
     saveSettings(settings);
+  };
+
+  document.getElementById("open_data_folder").onclick = () => {
+    openUserDataFolder();
+    return false;
   };
 };

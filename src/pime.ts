@@ -221,7 +221,7 @@ class PimeMcBopomofo {
       let lineToWrite = phrase + " " + key + "\n";
       if (data) {
         let string = data.toString();
-        if (string[string.length - 1] !== "\n") {
+        if (string.length > 0 && string[string.length - 1] !== "\n") {
           string += "\n";
         }
         string += lineToWrite;
@@ -537,7 +537,15 @@ class PimeMcBopomofo {
         }
         break;
       case PimeMcBopomofoCommand.EditUserPhrase: {
+        if (!fs.existsSync(pimeMcBopomofo.mcBopomofoUserDataPath)) {
+          fs.mkdirSync(pimeMcBopomofo.mcBopomofoUserDataPath);
+        }
+
         let url = pimeMcBopomofo.userPhrasesPath;
+        if (!fs.existsSync(url)) {
+          fs.writeFileSync(url, "");
+          console.log("Created empty user phrase file at " + url);
+        }
         let command = `start ${url}`;
         console.log("Run " + command);
         child_process.exec(command);

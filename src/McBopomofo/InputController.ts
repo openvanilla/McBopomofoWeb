@@ -347,6 +347,7 @@ export class InputController {
    * @param input The map of user phrases.
    */
   public setUserPhrases(input: Map<string, string[]> | string): void {
+    // If the input is a string or a map, we send it to the language model.
     this.lm_.setUserPhrases(input);
   }
 

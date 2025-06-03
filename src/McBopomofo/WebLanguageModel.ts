@@ -117,6 +117,9 @@ export class WebLanguageModel implements LanguageModel {
       let lines = input.split("\n");
       for (let line of lines) {
         line = line.trim();
+        if (line.startsWith("#") || line.length === 0) {
+          continue; // skip comments and empty lines
+        }
         let parts = line.split(" ");
         if (parts.length < 2) {
           continue;

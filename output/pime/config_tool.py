@@ -42,6 +42,23 @@ class KeepAliveHandler(BaseHandler):
         self.write('{"return":true}')
 
 
+class OpenUserDataFolderHandler(BaseHandler):
+
+    @tornado.web.authenticated
+    def get(self):
+        my_dir = config_dir
+        os.makedirs(my_dir, exist_ok=True)
+        # Open the user data folder in Windows File Explorer
+        try:
+            os.startfile(my_dir)
+            response = """{"return": true, "path":"%s"}""" % my_dir
+            self.write(response)
+        except Exception as e:
+            print(e)
+            response = """{"return": false, "error":"%s"}""" % str(e)
+            self.write(response)
+
+
 class ConfigHandler(BaseHandler):
 
     def get_current_user(self):  # override the login check
@@ -117,6 +134,7 @@ class ConfigApp(tornado.web.Application):
             (r"/config", ConfigHandler),  # main configuration handler
             (r"/keep_alive", KeepAliveHandler),  # keep the api server alive
             (r"/login/(.*)", LoginHandler),  # authentication
+            (r"/open_user_data_folder", OpenUserDataFolderHandler),
         ]
         super().__init__(handlers, **settings)
         self.timeout_handler = None
