@@ -13,7 +13,8 @@ body {
   margin-right: auto;
 }
 
-p {
+p,
+li {
   font-size: 12pt;
 }
 

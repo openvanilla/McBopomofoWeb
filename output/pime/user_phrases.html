@@ -1,0 +1,42 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>小麥注音使用者詞彙</title>
+    <link rel="icon" type="image/x-icon" href="images/icon16.png">
+    <link rel="stylesheet" href="css/options.css">
+    <style>
+        body {
+            max-width: 700px;
+        }
+    </style>
+    <script src="js/user_phrases.js"></script>
+</head>
+
+<body>
+    <h1 id="user_phrases_title">
+        <img src="images/icon48.png" alt="小麥注音輸入法" style="float: right" />
+        小麥注音使用者詞彙
+    </h1>
+    <p>您可以在這裡管理小麥注音的使用者詞彙。</p>
+    <div id="user_phrases_container">
+        <p>
+            <button id="save">儲存詞彙</button>
+            <button id="reload">重新載入</button>
+            <button id="open" style="float: right;">直接開啟詞彙文字檔</button>
+        </p>
+        <textarea style="width: 100%; min-height: 300px;" id="user_phrases" rows="10" cols="50"
+            placeholder="請在此輸入您的使用者詞彙，每行一個詞彙。"></textarea>
+        <h2>說明</h2>
+        <ul>
+            <li>平常在使用小麥注音打字的時候，您可以使用 Shift + 左右按鍵，拉出一個範圍，之後按下 Enter 就可以加入詞彙。</li>
+            <li>小麥注音的自訂詞其實也只是一個純文字檔案（使用 UTF-8 編碼，檔名叫做
+                data.txt），您可以使用任何純文字編輯軟體（記事本、VSCode、VIM、Emacs…）開啟、修改。您也可以用自己喜歡的方式備份這些自訂詞的內容。
+            </li>
+        </ul>
+
+
+    </div>
+</body>
+
+</html>
