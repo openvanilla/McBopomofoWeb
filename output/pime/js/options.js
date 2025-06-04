@@ -137,14 +137,14 @@ window.onload = () => {
   function openUserDataFolder() {
     console.log("Open user data folder");
     const xhttp = new XMLHttpRequest();
-    xhttp.open("GET", "/open_user_data_folder");
-    xhttp.send("");
     xhttp.onload = function () {
       console.log("User data folder opened" + this.responseText);
     };
     xhttp.onerror = function () {
       console.error("Failed to open user data folder");
     };
+    xhttp.open("GET", "/open_user_data_folder");
+    xhttp.send();
   }
 
   function saveSettings(settings) {
@@ -170,7 +170,7 @@ window.onload = () => {
       applySettings(settings);
     };
     xhttp.open("GET", "/config");
-    xhttp.send();
+    xhttp.send("");
   })();
 
   document.getElementById("font_size").onchange = (event) => {

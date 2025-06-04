@@ -47,9 +47,10 @@ class OpenUserDataFolderHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self):
         my_dir = config_dir
-        os.makedirs(my_dir, exist_ok=True)
+
         # Open the user data folder in Windows File Explorer
         try:
+            os.makedirs(my_dir, exist_ok=True)
             os.startfile(my_dir)
             response = """{"return": true, "path":"%s"}""" % my_dir
             self.write(response)
@@ -57,6 +58,58 @@ class OpenUserDataFolderHandler(BaseHandler):
             print(e)
             response = """{"return": false, "error":"%s"}""" % str(e)
             self.write(response)
+
+
+class OpenUserPhrasesHandler(BaseHandler):
+
+    @tornado.web.authenticated
+    def get(self):
+        my_dir = config_dir
+        file_path = os.path.join(my_dir, "data.txt")
+        # Open the user data folder in Windows File Explorer
+        try:
+            os.makedirs(my_dir, exist_ok=True)
+            # Create data.txt if it doesn't exist
+            if not os.path.exists(file_path):
+                with open(file_path, "w", encoding="UTF-8") as f:
+                    f.write("")  # Create an empty text file
+            os.startfile(file_path)
+            response = """{"return": true, "path":"%s"}""" % my_dir
+            self.write(response)
+        except Exception as e:
+            print(e)
+            response = """{"return": false, "error":"%s"}""" % str(e)
+            self.write(response)
+
+
+class UserPhrasesHandler(BaseHandler):
+    def get_current_user(self):  # override the login check
+        return self.get_cookie(COOKIE_ID)
+
+    @tornado.web.authenticated
+    def get(self):  # get config
+        data = ""
+        try:
+            file_path = os.path.join(config_dir, "data.txt")
+            with open(file_path, "r", encoding="UTF-8") as f:
+                data = f.read()
+        except:
+            pass
+        self.write(data)
+
+    @tornado.web.authenticated
+    def post(self):  # save config
+        data = self.request.body.decode("utf-8")
+        try:
+            # print(data)
+            os.makedirs(config_dir, exist_ok=True)
+            file_path = os.path.join(config_dir, "data.txt")
+            with open(file_path, "w", encoding="UTF-8") as f:
+                f.write(data)
+            self.write('{"return":true}')
+        except Exception as e:
+            print(e)
+            self.write('{"return":false, "error":"%s"}' % str(e))
 
 
 class ConfigHandler(BaseHandler):
@@ -76,10 +129,14 @@ class ConfigHandler(BaseHandler):
     @tornado.web.authenticated
     def post(self):  # save config
         data = tornado.escape.json_decode(self.request.body)
-        # print(data)
-        os.makedirs(config_dir, exist_ok=True)
-        self.save_file("config.json", json.dumps(data, indent=2))
-        self.write('{"return":true}')
+        try:
+            # print(data)
+            os.makedirs(config_dir, exist_ok=True)
+            self.save_file("config.json", json.dumps(data, indent=2))
+            self.write('{"return":true}')
+        except Exception as e:
+            print(e)
+            self.write('{"return":false, "error":"%s"}' % str(e))
 
     def save_file(self, filename, json_data):
         filepath = os.path.join(config_dir, filename)
@@ -135,6 +192,8 @@ class ConfigApp(tornado.web.Application):
             (r"/keep_alive", KeepAliveHandler),  # keep the api server alive
             (r"/login/(.*)", LoginHandler),  # authentication
             (r"/open_user_data_folder", OpenUserDataFolderHandler),
+            (r"/open_user_phrases", OpenUserPhrasesHandler),
+            (r"/user_phrases", UserPhrasesHandler),
         ]
         super().__init__(handlers, **settings)
         self.timeout_handler = None
