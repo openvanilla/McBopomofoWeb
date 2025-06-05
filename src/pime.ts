@@ -136,7 +136,7 @@ class PimeMcBopomofo {
     this.inputController = new InputController(this.makeUI(this));
     this.inputController.setUserVerticalCandidates(true);
     this.inputController.setOnOpenUrl((url: string) => {
-      let command = `start "" "${url}"`;
+      const command = `start "" "${url}"`;
       child_process.exec(command);
     });
     this.inputController.setOnPhraseAdded((key: string, phrase: string) => {
@@ -200,7 +200,7 @@ class PimeMcBopomofo {
         return;
       }
       try {
-        let string = data.toString("utf8");
+        const string = data.toString("utf8");
         this.inputController.setUserPhrases(string);
       } catch {
         console.error("Failed to parse user phrases");
@@ -574,8 +574,8 @@ class PimeMcBopomofo {
             "python3",
             "python.exe"
           );
-          let script = path.join(__dirname, "config_tool.py");
-          let command = `"${python3}" "${script}" help`;
+          const script = path.join(__dirname, "config_tool.py");
+          const command = `"${python3}" "${script}" help`;
           console.log("Run " + command);
           child_process.exec(command);
         }
@@ -584,8 +584,8 @@ class PimeMcBopomofo {
         if (!fs.existsSync(pimeMcBopomofo.mcBopomofoUserDataPath)) {
           fs.mkdirSync(pimeMcBopomofo.mcBopomofoUserDataPath);
         }
-        let url = pimeMcBopomofo.mcBopomofoUserDataPath;
-        let command = `start ${url}`;
+        const url = pimeMcBopomofo.mcBopomofoUserDataPath;
+        const command = `start ${url}`;
         console.log("Run " + command);
         child_process.exec(command);
         break;
@@ -648,7 +648,7 @@ module.exports = {
   },
 
   response(request: any, _: any) {
-    let lastRequest = pimeMcBopomofo.lastRequest;
+    const lastRequest = pimeMcBopomofo.lastRequest;
     pimeMcBopomofo.lastRequest = request;
     const responseTemplate = {
       return: false,
@@ -656,16 +656,16 @@ module.exports = {
       seqNum: request.seqNum,
     };
     if (request.method === "init") {
-      let { isWindows8Above } = request;
+      const { isWindows8Above } = request;
       pimeMcBopomofo.isWindows8Above = isWindows8Above;
-      let customUi = pimeMcBopomofo.customUiResponse();
-      let response = Object.assign({}, responseTemplate, customUi, {
+      const customUi = pimeMcBopomofo.customUiResponse();
+      const response = Object.assign({}, responseTemplate, customUi, {
         removeButton: ["windows-mode-icon", "switch-lang", "settings"],
       });
       return response;
     }
     if (request.method === "close") {
-      let response = Object.assign({}, responseTemplate, {
+      const response = Object.assign({}, responseTemplate, {
         removeButton: ["windows-mode-icon", "switch-lang", "settings"],
       });
       pimeMcBopomofo.alreadyAddButton = false;
@@ -673,14 +673,14 @@ module.exports = {
     }
 
     if (request.method === "onActivate") {
-      let customUi = pimeMcBopomofo.customUiResponse();
-      let buttonUi = pimeMcBopomofo.buttonUiResponse();
-      let response = Object.assign({}, responseTemplate, customUi, buttonUi);
+      const customUi = pimeMcBopomofo.customUiResponse();
+      const buttonUi = pimeMcBopomofo.buttonUiResponse();
+      const response = Object.assign({}, responseTemplate, customUi, buttonUi);
       return response;
     }
 
     if (request.method === "onDeactivate") {
-      let response = Object.assign({}, responseTemplate, {
+      const response = Object.assign({}, responseTemplate, {
         removeButton: ["windows-mode-icon", "switch-lang", "settings"],
       });
       pimeMcBopomofo.alreadyAddButton = false;
@@ -689,12 +689,12 @@ module.exports = {
 
     if (request.method === "onPreservedKey") {
       console.log(request);
-      let response = Object.assign({}, responseTemplate);
+      const response = Object.assign({}, responseTemplate);
       return response;
     }
 
     if (request.method === "filterKeyUp") {
-      let state = pimeMcBopomofo.inputController.state;
+      const state = pimeMcBopomofo.inputController.state;
       let handled = state instanceof Empty === false;
       if (
         lastRequest &&
@@ -703,7 +703,7 @@ module.exports = {
       ) {
         // NOTE: Some app, like MS Word, may send repeated key up event.
         // We should ignore such events.
-        let response = Object.assign({}, responseTemplate, {
+        const response = Object.assign({}, responseTemplate, {
           return: handled,
         });
         return response;
@@ -714,20 +714,20 @@ module.exports = {
         pimeMcBopomofo.toggleAlphabetMode();
         handled = true;
       }
-      let response = Object.assign({}, responseTemplate, { return: handled });
+      const response = Object.assign({}, responseTemplate, { return: handled });
       return response;
     }
 
     if (request.method === "onKeyUp") {
       if (pimeMcBopomofo.isScheduledToUpdateUi) {
         pimeMcBopomofo.isScheduledToUpdateUi = false;
-        let state = pimeMcBopomofo.inputController.state;
+        const state = pimeMcBopomofo.inputController.state;
         let handled = state instanceof Empty === false;
 
-        let uiState = pimeMcBopomofo.uiState;
-        let customUi = pimeMcBopomofo.customUiResponse();
-        let buttonUi = pimeMcBopomofo.buttonUiResponse();
-        let response = Object.assign(
+        const uiState = pimeMcBopomofo.uiState;
+        const customUi = pimeMcBopomofo.customUiResponse();
+        const buttonUi = pimeMcBopomofo.buttonUiResponse();
+        const response = Object.assign(
           responseTemplate,
           uiState,
           customUi,
@@ -752,9 +752,9 @@ module.exports = {
         return response;
       }
 
-      let { keyCode, charCode, keyStates } = request;
+      const { keyCode, charCode, keyStates } = request;
 
-      let key = KeyFromKeyboardEvent(
+      const key = KeyFromKeyboardEvent(
         keyCode,
         keyStates,
         String.fromCharCode(charCode),
@@ -783,16 +783,16 @@ module.exports = {
         pimeMcBopomofo.resetController();
         pimeMcBopomofo.isLastFilterKeyDownHandled = true;
         pimeMcBopomofo.isScheduledToUpdateUi = true;
-        let response = Object.assign({}, responseTemplate, {
+        const response = Object.assign({}, responseTemplate, {
           return: true,
         });
         return response;
       }
 
-      let shouldHandleShift =
+      const shouldHandleShift =
         pimeMcBopomofo.settings.shift_key_toggle_alphabet_mode === true;
 
-      var isPressingShiftOnly = key.ascii === "Shift";
+      const isPressingShiftOnly = key.ascii === "Shift";
 
       // Note: The way we detect if a user is trying to press a single Shift key
       // to toggle Alphabet/Chinese mode, is to check if there is any key other
@@ -806,11 +806,11 @@ module.exports = {
         pimeMcBopomofo.isShiftHold = isPressingShiftOnly;
       }
       if (isPressingShiftOnly) {
-        let state = pimeMcBopomofo.inputController.state;
-        let handled = state instanceof Empty === false;
+        const state = pimeMcBopomofo.inputController.state;
+        const handled = state instanceof Empty === false;
         pimeMcBopomofo.isLastFilterKeyDownHandled = handled;
         console.log("single shift key");
-        let response = Object.assign({}, responseTemplate, {
+        const response = Object.assign({}, responseTemplate, {
           return: handled,
         });
         console.log(response);
@@ -826,7 +826,7 @@ module.exports = {
         pimeMcBopomofo.resetController();
         pimeMcBopomofo.isCapsLockHold = true;
         pimeMcBopomofo.isLastFilterKeyDownHandled = false;
-        let response = Object.assign({}, responseTemplate, {
+        const response = Object.assign({}, responseTemplate, {
           return: false,
         });
         return response;
@@ -835,13 +835,13 @@ module.exports = {
       }
 
       if (pimeMcBopomofo.isAlphabetMode) {
-        let response = Object.assign({}, responseTemplate, { return: false });
+        const response = Object.assign({}, responseTemplate, { return: false });
         return response;
       }
 
-      let handled = pimeMcBopomofo.inputController.mcbopomofoKeyEvent(key);
+      const handled = pimeMcBopomofo.inputController.mcbopomofoKeyEvent(key);
       pimeMcBopomofo.isLastFilterKeyDownHandled = handled;
-      let response = Object.assign({}, responseTemplate, {
+      const response = Object.assign({}, responseTemplate, {
         return: handled,
       });
       return response;
@@ -851,7 +851,7 @@ module.exports = {
       // Ignore caps lock.
       if (pimeMcBopomofo.isCapsLockHold) {
         pimeMcBopomofo.resetController();
-        let response = Object.assign({}, responseTemplate, {
+        const response = Object.assign({}, responseTemplate, {
           return: false,
         });
         return response;
@@ -864,40 +864,40 @@ module.exports = {
       ) {
         // NOTE: Some app, like MS Word, may send repeated key up event.
         // We should ignore such events.
-        let response = Object.assign({}, responseTemplate, {
+        const response = Object.assign({}, responseTemplate, {
           return: true,
         });
         return response;
       }
-      let uiState: any = pimeMcBopomofo.uiState;
+      const uiState: any = pimeMcBopomofo.uiState;
       let response = Object.assign({}, responseTemplate, uiState, {
         return: pimeMcBopomofo.isLastFilterKeyDownHandled,
       });
       if (pimeMcBopomofo.isScheduledToUpdateUi) {
         pimeMcBopomofo.isScheduledToUpdateUi = false;
-        let customUi = pimeMcBopomofo.customUiResponse();
-        let buttonUi = pimeMcBopomofo.buttonUiResponse();
+        const customUi = pimeMcBopomofo.customUiResponse();
+        const buttonUi = pimeMcBopomofo.buttonUiResponse();
         response = Object.assign({}, response, customUi, buttonUi);
       }
       return response;
     }
 
     if (request.method === "onKeyboardStatusChanged") {
-      let { opened } = request;
+      const { opened } = request;
       pimeMcBopomofo.isOpened = opened;
       pimeMcBopomofo.resetController();
-      let customUi = pimeMcBopomofo.customUiResponse();
-      let buttonUi = pimeMcBopomofo.buttonUiResponse();
-      let response = Object.assign({}, responseTemplate, customUi, buttonUi);
+      const customUi = pimeMcBopomofo.customUiResponse();
+      const buttonUi = pimeMcBopomofo.buttonUiResponse();
+      const response = Object.assign({}, responseTemplate, customUi, buttonUi);
       return response;
     }
 
     if (request.method === "onCompositionTerminated") {
       pimeMcBopomofo.resetController();
-      let uiState = pimeMcBopomofo.uiState;
-      let customUi = pimeMcBopomofo.customUiResponse();
-      let buttonUi = pimeMcBopomofo.buttonUiResponse();
-      let response = Object.assign(
+      const uiState = pimeMcBopomofo.uiState;
+      const customUi = pimeMcBopomofo.customUiResponse();
+      const buttonUi = pimeMcBopomofo.buttonUiResponse();
+      const response = Object.assign(
         {},
         responseTemplate,
         uiState,
@@ -909,12 +909,12 @@ module.exports = {
     }
 
     if (request.method === "onCommand") {
-      let { id } = request;
+      const { id } = request;
       pimeMcBopomofo.handleCommand(id);
-      let uiState = pimeMcBopomofo.uiState;
-      let customUi = pimeMcBopomofo.customUiResponse();
-      let buttonUi = pimeMcBopomofo.buttonUiResponse();
-      let response = Object.assign(
+      const uiState = pimeMcBopomofo.uiState;
+      const customUi = pimeMcBopomofo.customUiResponse();
+      const buttonUi = pimeMcBopomofo.buttonUiResponse();
+      const response = Object.assign(
         {},
         responseTemplate,
         uiState,
@@ -925,7 +925,7 @@ module.exports = {
     }
 
     if (request.method === "onMenu") {
-      let menu = [
+      const menu = [
         {
           text: "小麥注音輸入法網站",
           id: PimeMcBopomofoCommand.OpenHomepage,
@@ -963,7 +963,7 @@ module.exports = {
           id: PimeMcBopomofoCommand.OpenMcBopomofoUserDataFolder,
         },
       ];
-      let response = Object.assign({}, responseTemplate, { return: menu });
+      const response = Object.assign({}, responseTemplate, { return: menu });
       return response;
     }
 

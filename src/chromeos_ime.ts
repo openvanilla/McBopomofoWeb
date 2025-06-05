@@ -12,7 +12,7 @@ import { Key, KeyName } from "./McBopomofo/Key";
 import { LargeSync } from "./LargeSync/LargeSync";
 const ChineseConvert = require("chinese_convert");
 
-let largeSync = new LargeSync();
+const largeSync = new LargeSync();
 
 type ChromeMcBopomofoSettings = {
   /** The keyboard layout. */
@@ -169,12 +169,12 @@ class ChromeMcBopomofo {
     largeSync.get(["user_phrase"], (value) => {
       // On ChromeOS, we store the user phrases in JSON format, but
       // the editor convert the JSON to phrases per line.
-      let jsonString = value.user_phrase;
+      const jsonString = value.user_phrase;
       if (jsonString !== undefined) {
         try {
-          let obj = JSON.parse(jsonString);
+          const obj = JSON.parse(jsonString);
           if (obj) {
-            let userPhrases = new Map<string, string[]>(Object.entries(obj));
+            const userPhrases = new Map<string, string[]>(Object.entries(obj));
             this.inputController.setUserPhrases(userPhrases);
           }
         } catch (e) {
@@ -186,7 +186,7 @@ class ChromeMcBopomofo {
 
   updateMenu() {
     if (this.engineID === undefined) return;
-    let menus = [
+    const menus = [
       {
         id: "mcbopomofo-toggle-alphabet-mode",
         label: chrome.i18n.getMessage("menuAlphabetMode"),
@@ -319,7 +319,7 @@ class ChromeMcBopomofo {
           return;
         }
 
-        let tabId = tabs[0].id;
+        const tabId = tabs[0].id;
         if (tabId !== undefined) {
           chrome.tabs.update(tabId, { selected: true });
         }
@@ -380,11 +380,11 @@ class ChromeMcBopomofo {
         if (this.context === undefined) return;
         if (this.engineID === undefined) return;
 
-        let state = JSON.parse(stateString);
-        let buffer = state.composingBuffer;
-        let candidates = state.candidates;
+        const state = JSON.parse(stateString);
+        const buffer = state.composingBuffer;
+        const candidates = state.candidates;
 
-        let segments = [];
+        const segments = [];
         let text = "";
         let selectionStart: number | undefined = undefined;
         let selectionEnd: number | undefined = undefined;
@@ -410,6 +410,9 @@ class ChromeMcBopomofo {
           }
           index += item.text.length;
         }
+
+        // This shall not happen, but we make sure the cursor index to be not
+        // larger than the text length.
         let localCursorIndex = state.cursorIndex;
         if (localCursorIndex > text.length) {
           localCursorIndex = text.length;
@@ -441,9 +444,9 @@ class ChromeMcBopomofo {
             chromeCandidates.push(item);
           }
 
-          let candidatePageCount = state.candidatePageCount;
-          let candidatePageIndex = state.candidatePageIndex;
-          let auxiliaryText = candidatePageIndex + "/" + candidatePageCount;
+          const candidatePageCount = state.candidatePageCount;
+          const candidatePageIndex = state.candidatePageIndex;
+          const auxiliaryText = candidatePageIndex + "/" + candidatePageCount;
 
           chrome.input.ime.setCandidateWindowProperties({
             engineID: this.engineID,
@@ -577,7 +580,7 @@ chrome.input?.ime.onKeyEvent.addListener((engineID, keyData) => {
     return false;
   }
 
-  let shouldHandleShift =
+  const shouldHandleShift =
     chromeMcBopomofo.settings.shift_key_toggle_alphabet_mode === true;
 
   if (shouldHandleShift) {
@@ -592,7 +595,7 @@ chrome.input?.ime.onKeyEvent.addListener((engineID, keyData) => {
     return false;
   }
 
-  let keyEvent = KeyFromKeyboardEvent(keyData);
+  const keyEvent = KeyFromKeyboardEvent(keyData);
   return chromeMcBopomofo.inputController.mcbopomofoKeyEvent(keyEvent);
 });
 
@@ -615,19 +618,19 @@ chrome.input?.ime.onMenuItemActivated.addListener((engineID, name) => {
   }
 
   if (name === "mcbopomofo-options") {
-    let page = "options.html";
+    const page = "options.html";
     chromeMcBopomofo.tryOpen(chrome.runtime.getURL(page));
     return;
   }
 
   if (name === "mcbopomofo-user-phrase") {
-    let page = "user_phrase.html";
+    const page = "user_phrase.html";
     chromeMcBopomofo.tryOpen(chrome.runtime.getURL(page));
     return;
   }
 
   if (name === "mcbopomofo-help") {
-    let page = "help/index.html";
+    const page = "help/index.html";
     chromeMcBopomofo.tryOpen(chrome.runtime.getURL(page));
     return;
   }
@@ -674,7 +677,7 @@ async function keepAlive() {
   if (lifeline) return;
   for (const tab of await chrome.tabs.query({ url: "*://*/*" })) {
     try {
-      let args = {
+      const args = {
         target: { tabId: tab.id ?? 9 },
         func: () => chrome.runtime.connect({ name: "keepAlive" }),
       };
@@ -708,7 +711,7 @@ chrome.contextMenus.onClicked.addListener((event, tab) => {
     let isHtml = false;
 
     if (menuItemId === "convert_text_to_bpmf_syllables") {
-      let lines = selectionText.split("\n");
+      const lines = selectionText.split("\n");
       let convertedLines = [];
       for (let line of lines) {
         let convertedLine = ChineseConvert.cn2tw(line);
@@ -718,7 +721,7 @@ chrome.contextMenus.onClicked.addListener((event, tab) => {
       }
       converted = convertedLines.join("\n");
     } else if (menuItemId === "append_bpmf_syllables_to_text") {
-      let lines = selectionText.split("\n");
+      const lines = selectionText.split("\n");
       let convertedLines = [];
       for (let line of lines) {
         let convertedLine = ChineseConvert.cn2tw(line);
@@ -728,7 +731,7 @@ chrome.contextMenus.onClicked.addListener((event, tab) => {
       }
       converted = convertedLines.join("\n");
     } else if (menuItemId === "convert_text_to_html_ruby") {
-      let lines = selectionText.split("\n");
+      const lines = selectionText.split("\n");
       let convertedLines = [];
       for (let line of lines) {
         let convertedLine = ChineseConvert.cn2tw(line);
@@ -742,7 +745,7 @@ chrome.contextMenus.onClicked.addListener((event, tab) => {
 
       isHtml = true;
     } else if (menuItemId === "append_taiwanese_braille") {
-      let lines = selectionText.split("\n");
+      const lines = selectionText.split("\n");
       let convertedLines = [];
       for (let line of lines) {
         let convertedLine = ChineseConvert.cn2tw(line);
@@ -754,7 +757,7 @@ chrome.contextMenus.onClicked.addListener((event, tab) => {
       }
       converted = convertedLines.join("\n");
     } else if (menuItemId === "convert_text_to_taiwanese_braille") {
-      let lines = selectionText.split("\n");
+      const lines = selectionText.split("\n");
       let convertedLines = [];
       for (let line of lines) {
         let convertedLine = ChineseConvert.cn2tw(line);
@@ -763,15 +766,16 @@ chrome.contextMenus.onClicked.addListener((event, tab) => {
       }
       converted = convertedLines.join("\n");
     } else if (menuItemId === "convert_taiwanese_braille_to_text") {
-      let lines = selectionText.split("\n");
+      const lines = selectionText.split("\n");
       let convertedLines = [];
       for (let line of lines) {
-        let convertedLine = chromeMcBopomofo.service.convertBrailleToText(line);
+        const convertedLine =
+          chromeMcBopomofo.service.convertBrailleToText(line);
         convertedLines.push(convertedLine);
       }
       converted = convertedLines.join("\n");
     } else if (menuItemId === "convert_text_to_hanyu_pinyin") {
-      let lines = selectionText.split("\n");
+      const lines = selectionText.split("\n");
       let convertedLines = [];
       for (let line of lines) {
         let convertedLine = ChineseConvert.cn2tw(line);
@@ -790,12 +794,12 @@ chrome.contextMenus.onClicked.addListener((event, tab) => {
   }
 
   const menuItemId = event.menuItemId;
-  let tabId = (tab as chrome.tabs.Tab).id;
+  const tabId = (tab as chrome.tabs.Tab).id;
   if (tabId === undefined) {
     return;
   }
 
-  let selected = event.selectionText;
+  const selected = event.selectionText;
   if (selected === undefined) {
     return;
   }
@@ -893,6 +897,6 @@ function KeyFromKeyboardEvent(event: chrome.input.ime.KeyboardEvent) {
       keyName = KeyName.ASCII;
       break;
   }
-  let key = new Key(event.key, keyName, event.shiftKey, event.ctrlKey);
+  const key = new Key(event.key, keyName, event.shiftKey, event.ctrlKey);
   return key;
 }
