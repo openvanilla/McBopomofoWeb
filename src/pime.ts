@@ -92,11 +92,12 @@ enum PimeMcBopomofoCommand {
   OpenBugReport = 3,
   OpenOptions = 4,
   EditUserPhrase = 5,
-  ToggleChineseConversion = 6,
-  ToggleHalfWidthPunctuation = 7,
-  Help = 8,
-  OpenMcBopomofoUserDataFolder = 9,
-  ReloadUserPhrase = 10,
+  OpenUserPhrase = 6,
+  ToggleChineseConversion = 7,
+  ToggleHalfWidthPunctuation = 8,
+  Help = 9,
+  OpenMcBopomofoUserDataFolder = 10,
+  ReloadUserPhrase = 11,
 }
 
 /** Wraps InputController and required states.  */
@@ -492,6 +493,25 @@ class PimeMcBopomofo {
     };
   }
 
+  public createUserPhrasesIfNotExists(): void {
+    if (!fs.existsSync(pimeMcBopomofo.pimeUserDataPath)) {
+      fs.mkdirSync(pimeMcBopomofo.pimeUserDataPath);
+    }
+
+    if (!fs.existsSync(pimeMcBopomofo.mcBopomofoUserDataPath)) {
+      fs.mkdirSync(pimeMcBopomofo.mcBopomofoUserDataPath);
+    }
+
+    const url = pimeMcBopomofo.userPhrasesPath;
+    if (!fs.existsSync(url)) {
+      fs.writeFileSync(
+        url,
+        "# 一個詞彙一行，格式為：\n# 詞彙 促因\n# 例如：\n# 小麥注音 ㄒㄧㄠˇ-ㄇㄞˋ-ㄓㄨˋ-ㄧㄣ\n"
+      );
+      console.log("Created empty user phrase file at " + url);
+    }
+  }
+
   public handleCommand(id: PimeMcBopomofoCommand): void {
     switch (id) {
       case PimeMcBopomofoCommand.ModeIcon:
@@ -521,6 +541,7 @@ class PimeMcBopomofo {
         break;
       case PimeMcBopomofoCommand.OpenOptions:
         {
+          this.createUserPhrasesIfNotExists();
           let python3 = path.join(
             __dirname,
             "..",
@@ -536,21 +557,33 @@ class PimeMcBopomofo {
           child_process.exec(command);
         }
         break;
-      case PimeMcBopomofoCommand.EditUserPhrase: {
-        if (!fs.existsSync(pimeMcBopomofo.mcBopomofoUserDataPath)) {
-          fs.mkdirSync(pimeMcBopomofo.mcBopomofoUserDataPath);
+      case PimeMcBopomofoCommand.EditUserPhrase:
+        {
+          this.createUserPhrasesIfNotExists();
+          let python3 = path.join(
+            __dirname,
+            "..",
+            "..",
+            "..",
+            "python",
+            "python3",
+            "python.exe"
+          );
+          let script = path.join(__dirname, "config_tool.py");
+          let command = `"${python3}" "${script}" user_phrases`;
+          console.log("Run " + command);
+          child_process.exec(command);
         }
-
-        let url = pimeMcBopomofo.userPhrasesPath;
-        if (!fs.existsSync(url)) {
-          fs.writeFileSync(url, "");
-          console.log("Created empty user phrase file at " + url);
-        }
-        let command = `start ${url}`;
-        console.log("Run " + command);
-        child_process.exec(command);
         break;
-      }
+      case PimeMcBopomofoCommand.OpenUserPhrase:
+        {
+          this.createUserPhrasesIfNotExists();
+          const url = pimeMcBopomofo.userPhrasesPath;
+          let command = `start ${url}`;
+          console.log("Run " + command);
+          child_process.exec(command);
+        }
+        break;
       case PimeMcBopomofoCommand.ToggleChineseConversion:
         pimeMcBopomofo.settings.chineseConversion =
           !pimeMcBopomofo.settings.chineseConversion;
@@ -604,13 +637,7 @@ class PimeMcBopomofo {
 const pimeMcBopomofo = new PimeMcBopomofo();
 
 try {
-  if (!fs.existsSync(pimeMcBopomofo.pimeUserDataPath)) {
-    fs.mkdirSync(pimeMcBopomofo.pimeUserDataPath);
-  }
-
-  if (!fs.existsSync(pimeMcBopomofo.mcBopomofoUserDataPath)) {
-    fs.mkdirSync(pimeMcBopomofo.mcBopomofoUserDataPath);
-  }
+  pimeMcBopomofo.createUserPhrasesIfNotExists();
 
   if (!fs.existsSync(pimeMcBopomofo.userSettingsPath)) {
     fs.writeFileSync(
@@ -624,10 +651,6 @@ try {
       pimeMcBopomofo.loadSettings(() => {});
     }
   });
-
-  if (!fs.existsSync(pimeMcBopomofo.userPhrasesPath)) {
-    fs.writeFileSync(pimeMcBopomofo.userPhrasesPath, "");
-  }
 
   fs.watch(pimeMcBopomofo.userPhrasesPath, (event, filename) => {
     if (filename) {
@@ -957,6 +980,10 @@ module.exports = {
         {
           text: "編輯使用者詞庫 (&U)",
           id: PimeMcBopomofoCommand.EditUserPhrase,
+        },
+        {
+          text: "用編輯器打開使用者詞庫 (&U)",
+          id: PimeMcBopomofoCommand.OpenUserPhrase,
         },
         {
           text: "打開使用者資料夾",

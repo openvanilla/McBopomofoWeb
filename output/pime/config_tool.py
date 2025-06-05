@@ -231,7 +231,6 @@ class ConfigApp(tornado.web.Application):
             ):  # it's possible that the port we want to use is already in use
                 continue
         self.port = port
-
         self.launch_browser(tool_name)
 
         # setup the main event loop
@@ -254,8 +253,8 @@ class ConfigApp(tornado.web.Application):
 def main():
     app = ConfigApp()
     if len(sys.argv) >= 2:
-        if sys.argv[1] == "user_phrase_editor":
-            tool_name = "user_phrase_editor"
+        if sys.argv[1] == "user_phrases":
+            tool_name = "user_phrases"
         elif sys.argv[1] == "help":
             tool_name = "help"
         else:
