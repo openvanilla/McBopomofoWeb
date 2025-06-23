@@ -351,6 +351,11 @@ export class InputController {
     this.lm_.setUserPhrases(input);
   }
 
+  public setExcludedPhrases(input: Map<string, string[]> | string): void {
+    // If the input is a string or a map, we send it to the language model.
+    this.lm_.setExcludedPhrases(input);
+  }
+
   /**
    * Sets the callback function that would be called when the user phrase model is changed.
    * @param callback The callback function.

@@ -110,41 +110,52 @@ export class WebLanguageModel implements LanguageModel {
     this.addUserPhraseConverter = converter;
   }
 
+  private convertTextToMap(input: String): Map<string, string[]> {
+    let map: Map<string, string[]> = new Map();
+    let lines = input.split("\n");
+    for (let line of lines) {
+      line = line.trim();
+      if (line.startsWith("#") || line.length === 0) {
+        continue; // skip comments and empty lines
+      }
+      let parts = line.split(" ");
+      if (parts.length < 2) {
+        continue;
+      }
+      let key = parts[1];
+      let value = parts[0];
+      let list = map.get(key);
+      if (list != undefined) {
+        list.push(value);
+        map.set(key, list);
+      } else {
+        list = [];
+        list.push(value);
+        map.set(key, list);
+      }
+    }
+    return map;
+  }
+
   /** Sets the user phrases. */
   public setUserPhrases(input: Map<string, string[]> | string): void {
-    let map: Map<string, string[]> = new Map();
+    let map: Map<string, string[]> | undefined = undefined;
     if (typeof input === "string") {
-      let lines = input.split("\n");
-      for (let line of lines) {
-        line = line.trim();
-        if (line.startsWith("#") || line.length === 0) {
-          continue; // skip comments and empty lines
-        }
-        let parts = line.split(" ");
-        if (parts.length < 2) {
-          continue;
-        }
-        let key = parts[1];
-        let value = parts[0];
-        let list = map.get(key);
-        if (list != undefined) {
-          list.push(value);
-          map.set(key, list);
-        } else {
-          list = [];
-          list.push(value);
-          map.set(key, list);
-        }
-      }
+      map = this.convertTextToMap(input);
     } else {
       map = input;
     }
-
     this.userPhrases_.setUserPhrases(map);
   }
 
   /** Sets the excluded phrases. */
-  public setExcludedPhrases(map: Map<string, string[]>): void {
+  public setExcludedPhrases(input: Map<string, string[]> | string): void {
+    let map: Map<string, string[]> | undefined = undefined;
+    if (typeof input === "string") {
+      map = this.convertTextToMap(input);
+    } else {
+      map = input;
+    }
     this.excludedPhrases_.setUserPhrases(map);
   }
 

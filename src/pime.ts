@@ -93,11 +93,12 @@ enum PimeMcBopomofoCommand {
   OpenOptions = 4,
   EditUserPhrase = 5,
   OpenUserPhrase = 6,
-  ToggleChineseConversion = 7,
-  ToggleHalfWidthPunctuation = 8,
-  Help = 9,
-  OpenMcBopomofoUserDataFolder = 10,
-  ReloadUserPhrase = 11,
+  OpenExcludedPhrase = 7,
+  ToggleChineseConversion = 8,
+  ToggleHalfWidthPunctuation = 9,
+  Help = 10,
+  OpenMcBopomofoUserDataFolder = 11,
+  ReloadUserPhrase = 12,
 }
 
 /** Wraps InputController and required states.  */
@@ -187,6 +188,12 @@ class PimeMcBopomofo {
     this.mcBopomofoUserDataPath,
     "data.txt"
   );
+
+  readonly excludedPhrasesPath: string = path.join(
+    this.mcBopomofoUserDataPath,
+    "exclude-phrases.txt"
+  );
+
   readonly userSettingsPath: string = path.join(
     this.mcBopomofoUserDataPath,
     "config.json"
@@ -203,6 +210,21 @@ class PimeMcBopomofo {
       try {
         const string = data.toString("utf8");
         this.inputController.setUserPhrases(string);
+      } catch {
+        console.error("Failed to parse user phrases");
+      }
+    });
+
+    fs.readFile(this.excludedPhrasesPath, (err, data) => {
+      if (err) {
+        console.error(
+          "Unable to read excluded phrases from " + this.excludedPhrasesPath
+        );
+        return;
+      }
+      try {
+        const string = data.toString("utf8");
+        this.inputController.setExcludedPhrases(string);
       } catch {
         console.error("Failed to parse user phrases");
       }
@@ -231,34 +253,34 @@ class PimeMcBopomofo {
     });
   }
 
-  private writeUserPhrases(map: Map<string, string[]>): void {
-    if (!fs.existsSync(this.mcBopomofoUserDataPath)) {
-      console.log(
-        "User data folder not found, creating " + this.mcBopomofoUserDataPath
-      );
-      console.log("Creating one");
-      fs.mkdirSync(this.mcBopomofoUserDataPath);
-    }
+  // private writeUserPhrases(map: Map<string, string[]>): void {
+  //   if (!fs.existsSync(this.mcBopomofoUserDataPath)) {
+  //     console.log(
+  //       "User data folder not found, creating " + this.mcBopomofoUserDataPath
+  //     );
+  //     console.log("Creating one");
+  //     fs.mkdirSync(this.mcBopomofoUserDataPath);
+  //   }
 
-    let string = "";
-    for (let key of map.keys()) {
-      let phrases = map.get(key);
-      if (phrases === undefined) {
-        continue;
-      }
-      for (let phrase of phrases) {
-        string += key + " " + phrase + "\n";
-      }
-    }
+  //   let string = "";
+  //   for (let key of map.keys()) {
+  //     let phrases = map.get(key);
+  //     if (phrases === undefined) {
+  //       continue;
+  //     }
+  //     for (let phrase of phrases) {
+  //       string += key + " " + phrase + "\n";
+  //     }
+  //   }
 
-    console.log("Writing user phrases to " + this.userPhrasesPath);
-    fs.writeFile(this.userPhrasesPath, string, (err) => {
-      if (err) {
-        console.error("Failed to write user phrases");
-        console.error(err);
-      }
-    });
-  }
+  //   console.log("Writing user phrases to " + this.userPhrasesPath);
+  //   fs.writeFile(this.userPhrasesPath, string, (err) => {
+  //     if (err) {
+  //       console.error("Failed to write user phrases");
+  //       console.error(err);
+  //     }
+  //   });
+  // }
 
   public toggleAlphabetMode(): void {
     // Changes the alphabet mode, also commits current composing buffer.
@@ -502,13 +524,22 @@ class PimeMcBopomofo {
       fs.mkdirSync(pimeMcBopomofo.mcBopomofoUserDataPath);
     }
 
-    const url = pimeMcBopomofo.userPhrasesPath;
-    if (!fs.existsSync(url)) {
+    const userPhrasesUrl = pimeMcBopomofo.userPhrasesPath;
+    if (!fs.existsSync(userPhrasesUrl)) {
       fs.writeFileSync(
-        url,
+        userPhrasesUrl,
         "# 一個詞彙一行，格式為：\n# 詞彙 促因\n# 例如：\n# 小麥注音 ㄒㄧㄠˇ-ㄇㄞˋ-ㄓㄨˋ-ㄧㄣ\n"
       );
-      console.log("Created empty user phrase file at " + url);
+      console.log("Created empty user phrase file at " + userPhrasesUrl);
+    }
+
+    const excludedPhrasesUrl = pimeMcBopomofo.excludedPhrasesPath;
+    if (!fs.existsSync(excludedPhrasesUrl)) {
+      fs.writeFileSync(
+        excludedPhrasesUrl,
+        "# 一個詞彙一行，格式為：\n# 詞彙 促因\n# 例如：\n# 小麥注音 ㄒㄧㄠˇ-ㄇㄞˋ-ㄓㄨˋ-ㄧㄣ\n"
+      );
+      console.log("Created empty user phrase file at " + excludedPhrasesUrl);
     }
   }
 
@@ -584,6 +615,15 @@ class PimeMcBopomofo {
           child_process.exec(command);
         }
         break;
+      case PimeMcBopomofoCommand.OpenExcludedPhrase:
+        {
+          this.createUserPhrasesIfNotExists();
+          const url = pimeMcBopomofo.excludedPhrasesPath;
+          let command = `start ${url}`;
+          console.log("Run " + command);
+          child_process.exec(command);
+        }
+        break;
       case PimeMcBopomofoCommand.ToggleChineseConversion:
         pimeMcBopomofo.settings.chineseConversion =
           !pimeMcBopomofo.settings.chineseConversion;
@@ -653,6 +693,12 @@ try {
   });
 
   fs.watch(pimeMcBopomofo.userPhrasesPath, (event, filename) => {
+    if (filename) {
+      pimeMcBopomofo.loadUserPhrases();
+    }
+  });
+
+  fs.watch(pimeMcBopomofo.excludedPhrasesPath, (event, filename) => {
     if (filename) {
       pimeMcBopomofo.loadUserPhrases();
     }
@@ -982,8 +1028,12 @@ module.exports = {
           id: PimeMcBopomofoCommand.EditUserPhrase,
         },
         {
-          text: "用編輯器打開使用者詞庫 (&U)",
+          text: "用編輯器打開使用者詞庫",
           id: PimeMcBopomofoCommand.OpenUserPhrase,
+        },
+        {
+          text: "用編輯器打開排除的詞彙",
+          id: PimeMcBopomofoCommand.OpenExcludedPhrase,
         },
         {
           text: "打開使用者資料夾",
