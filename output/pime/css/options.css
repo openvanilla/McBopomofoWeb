@@ -48,3 +48,17 @@ a {
     text-decoration: none;
   }
 }
+
+#excluded_phrases_container {
+  display: none;
+}
+
+.toolbar {
+  margin-top: 20px;
+  border: 1px solid #ccc;
+  padding: 10px;
+}
+
+.active {
+  text-decoration: underline;
+}

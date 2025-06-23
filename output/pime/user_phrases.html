@@ -18,8 +18,14 @@
         <img src="images/icon48.png" alt="小麥注音輸入法" style="float: right" />
         小麥注音使用者詞彙
     </h1>
-    <p>您可以在這裡管理小麥注音的使用者詞彙。</p>
+
+    <div class="toolbar">
+        <a id="user_phrases_link" href="#" class="link">使用者詞彙</a>
+        <a id="excluded_phrases_link" href="#" class="link">排除的詞彙</a>
+    </div>
+
     <div id="user_phrases_container">
+        <p>您可以在這裡管理小麥注音的使用者詞彙。</p>
         <p>
             <button id="save">儲存詞彙</button>
             <button id="reload">重新載入</button>
@@ -34,8 +40,16 @@
                 data.txt），您可以使用任何純文字編輯軟體（記事本、VSCode、VIM、Emacs…）開啟、修改。您也可以用自己喜歡的方式備份這些自訂詞的內容。
             </li>
         </ul>
-
-
+    </div>
+    <div id="excluded_phrases_container">
+        <p>您可以在這裡管理排除的詞彙。</p>
+        <p>
+            <button id="save_excluded_phrases">儲存詞彙</button>
+            <button id="reload_excluded_phrases">重新載入</button>
+            <button id="open_excluded_phrases" style="float: right;">直接開啟排除的詞彙文字檔</button>
+        </p>
+        <textarea style="width: 100%; min-height: 300px;" id="excluded_phrases" rows="10" cols="50"
+            placeholder="請在此輸入您要排除的詞彙，每行一個詞彙。"></textarea>
     </div>
 </body>
 
