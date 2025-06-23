@@ -9,11 +9,11 @@ import { Candidate } from "../Gramambular2";
 import { CandidateController, CandidateWrapper } from "./CandidateController";
 
 describe("Test CandidateController", () => {
-  let controller = new CandidateController();
+  const controller = new CandidateController();
 
   beforeEach(() => {
-    let keyCaps = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
-    let candidates = [
+    const keyCaps = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
+    const candidates = [
       new Candidate("", "一", "一"),
       new Candidate("", "二", "二"),
       new Candidate("", "三", "三"),
@@ -31,10 +31,10 @@ describe("Test CandidateController", () => {
 
   test("Test next item 1", () => {
     controller.goToNextItem();
-    let result = controller.currentPage;
+    const result = controller.currentPage;
     expect(result.length).toBe(9);
-    let candidate1 = result[0];
-    let candidate2 = result[1];
+    const candidate1 = result[0];
+    const candidate2 = result[1];
     expect(candidate1.keyCap).toBe("1");
     expect(candidate1.candidate.value).toBe("一");
     expect(candidate1.selected).toBe(false);
@@ -46,10 +46,10 @@ describe("Test CandidateController", () => {
   test("Test next item 2", () => {
     controller.goToNextPage();
     controller.goToNextItem();
-    let result = controller.currentPage;
+    const result = controller.currentPage;
     expect(result.length).toBe(2);
-    let candidate1 = result[0];
-    let candidate2 = result[1];
+    const candidate1 = result[0];
+    const candidate2 = result[1];
     expect(candidate1.keyCap).toBe("1");
     expect(candidate1.candidate.value).toBe("壹");
     expect(candidate1.selected).toBe(false);
@@ -62,10 +62,10 @@ describe("Test CandidateController", () => {
     controller.goToNextPage();
     controller.goToNextItem();
     controller.goToNextItem();
-    let result = controller.currentPage;
+    const result = controller.currentPage;
     expect(result.length).toBe(2);
-    let candidate1 = result[0];
-    let candidate2 = result[1];
+    const candidate1 = result[0];
+    const candidate2 = result[1];
     expect(candidate1.keyCap).toBe("1");
     expect(candidate1.candidate.value).toBe("壹");
     expect(candidate1.selected).toBe(false);
@@ -92,9 +92,9 @@ describe("Test CandidateController", () => {
   test("Test prev item 2", () => {
     controller.goToNextPage();
     controller.goToPreviousItem();
-    let result = controller.currentPage;
+    const result = controller.currentPage;
     expect(result.length).toBe(9);
-    let candidate8 = result[8];
+    const candidate8 = result[8];
     expect(candidate8.keyCap).toBe("9");
     expect(candidate8.candidate.value).toBe("九");
     expect(candidate8.selected).toBe(true);
@@ -102,10 +102,10 @@ describe("Test CandidateController", () => {
 
   test("Test next page 1", () => {
     controller.goToNextPage();
-    let result = controller.currentPage;
+    const result = controller.currentPage;
     expect(result.length).toBe(2);
-    let candidate1 = result[0];
-    let candidate2 = result[1];
+    const candidate1 = result[0];
+    const candidate2 = result[1];
     expect(candidate1.keyCap).toBe("1");
     expect(candidate1.candidate.value).toBe("壹");
     expect(candidate1.selected).toBe(true);
@@ -117,10 +117,10 @@ describe("Test CandidateController", () => {
   test("Test next page 2", () => {
     controller.goToNextPage();
     controller.goToNextPage();
-    let result = controller.currentPage;
+    const result = controller.currentPage;
     expect(result.length).toBe(2);
-    let candidate1 = result[0];
-    let candidate2 = result[1];
+    const candidate1 = result[0];
+    const candidate2 = result[1];
     expect(candidate1.keyCap).toBe("1");
     expect(candidate1.candidate.value).toBe("壹");
     expect(candidate1.selected).toBe(true);
@@ -132,10 +132,10 @@ describe("Test CandidateController", () => {
   test("Test prev page 1", () => {
     controller.goToNextPage();
     controller.goToPreviousPage();
-    let result = controller.currentPage;
+    const result = controller.currentPage;
     expect(result.length).toBe(9);
-    let candidate1 = result[0];
-    let candidate2 = result[1];
+    const candidate1 = result[0];
+    const candidate2 = result[1];
     expect(candidate1.keyCap).toBe("1");
     expect(candidate1.candidate.value).toBe("一");
     expect(candidate1.selected).toBe(true);
@@ -148,10 +148,10 @@ describe("Test CandidateController", () => {
     controller.goToNextPage();
     controller.goToPreviousPage();
     controller.goToPreviousPage();
-    let result = controller.currentPage;
+    const result = controller.currentPage;
     expect(result.length).toBe(9);
-    let candidate1 = result[0];
-    let candidate2 = result[1];
+    const candidate1 = result[0];
+    const candidate2 = result[1];
     expect(candidate1.keyCap).toBe("1");
     expect(candidate1.candidate.value).toBe("一");
     expect(candidate1.selected).toBe(true);
@@ -161,18 +161,18 @@ describe("Test CandidateController", () => {
   });
 
   test("Test edge case with no candidates", () => {
-    let emptyController = new CandidateController();
+    const emptyController = new CandidateController();
     emptyController.update([], []);
-    let result = emptyController.currentPage;
+    const result = emptyController.currentPage;
     expect(result.length).toBe(0);
   });
 
   test("Test if new candidates reset selection", () => {
-    let newCandidatesController = new CandidateController();
+    const newCandidatesController = new CandidateController();
     newCandidatesController.update([new Candidate("", "A", "A")], ["1"]);
     newCandidatesController.goToNextItem();
     newCandidatesController.update([new Candidate("", "B", "B")], ["1"]);
-    let result = newCandidatesController.currentPage;
+    const result = newCandidatesController.currentPage;
     expect(result[0].candidate.value).toBe("B");
     expect(result[0].selected).toBe(true);
   });
@@ -246,7 +246,7 @@ describe("Test CandidateController", () => {
   test("Test totalPageCount getter", () => {
     expect(controller.totalPageCount).toBe(2);
 
-    let testController = new CandidateController();
+    const testController = new CandidateController();
     testController.update([], []);
     expect(testController.totalPageCount).toBe(0);
 
@@ -254,7 +254,7 @@ describe("Test CandidateController", () => {
     expect(testController.totalPageCount).toBe(1);
 
     // Test with exactly one full page
-    let fullPage = [
+    const fullPage = [
       new Candidate("", "一", "一"),
       new Candidate("", "二", "二"),
       new Candidate("", "三", "三"),
@@ -263,7 +263,7 @@ describe("Test CandidateController", () => {
     expect(testController.totalPageCount).toBe(1);
 
     // Test with partial pages
-    let partialPages = [
+    const partialPages = [
       new Candidate("", "一", "一"),
       new Candidate("", "二", "二"),
       new Candidate("", "三", "三"),

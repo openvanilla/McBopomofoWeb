@@ -71,7 +71,7 @@ function places(numberCase: Case) {
   }
 }
 
-let higherPlaces = ["", "萬", "億", "兆", "京", "垓", "秭", "穰"];
+const higherPlaces = ["", "萬", "億", "兆", "京", "垓", "秭", "穰"];
 
 export class ChineseNumbers {
   private static convert4Digits(
@@ -81,7 +81,7 @@ export class ChineseNumbers {
   ): string {
     let zeroHappened = zeroEverHappened;
     let output = "";
-    let currentDigits = digits(numberCase);
+    const currentDigits = digits(numberCase);
     for (let i = 0; i < 4; i++) {
       let c: string = subString[i];
       switch (c) {
@@ -103,10 +103,10 @@ export class ChineseNumbers {
   }
 
   static generate(intPart: string, decPart: string, numberCase: Case): string {
-    let intTrimmed = TrimZerosAtStart(intPart);
-    let decTrimmed = TrimZerosAtEnd(decPart);
+    const intTrimmed = TrimZerosAtStart(intPart);
+    const decTrimmed = TrimZerosAtEnd(decPart);
     let output = "";
-    let currentDigits = digits(numberCase);
+    const currentDigits = digits(numberCase);
 
     if (intPart.length === 0) {
       output += currentDigits.get("0");
@@ -117,20 +117,20 @@ export class ChineseNumbers {
       let readHead = 0;
       let zeroEverHappened = false;
       while (readHead < filledLength) {
-        let subString = filled.slice(readHead, readHead + 4);
+        const subString = filled.slice(readHead, readHead + 4);
         if (subString === "0000") {
           zeroEverHappened = true;
           readHead += 4;
           continue;
         }
-        let subOutput = this.convert4Digits(
+        const subOutput = this.convert4Digits(
           subString,
           numberCase,
           zeroEverHappened
         );
         zeroEverHappened = false;
         output += subOutput;
-        let place = (filledLength - readHead) / 4 - 1;
+        const place = (filledLength - readHead) / 4 - 1;
         output += higherPlaces[place];
         readHead += 4;
       }

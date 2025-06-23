@@ -23,8 +23,8 @@ export function TrimZerosAtStart(string: string): string {
 }
 
 export function TrimZerosAtEnd(string: string): string {
-  let reverse = reverseString(string);
-  let trimmed = TrimZerosAtStart(reverse);
-  let result = reverseString(trimmed);
+  const reverse = reverseString(string);
+  const trimmed = TrimZerosAtStart(reverse);
+  const result = reverseString(trimmed);
   return result;
 }

@@ -111,7 +111,7 @@ class InputUIController {
 
   /** Updates the UI. */
   update(): void {
-    let state = new InputUIState(
+    const state = new InputUIState(
       this.composingBuffer,
       this.cursorIndex,
       this.candidates,
@@ -119,7 +119,7 @@ class InputUIController {
       this.candidateTotalPageCount,
       this.candidateCurrentPageIndex
     );
-    let json = JSON.stringify(state);
+    const json = JSON.stringify(state);
     this.ui.update(json);
   }
 }
@@ -242,7 +242,7 @@ export class InputController {
    * @param option "after_cursor" or "before_cursor".
    * */
   public setSelectPhrase(option: string): void {
-    let flag: boolean = option === "after_cursor";
+    const flag: boolean = option === "after_cursor";
     this.keyHandler_.selectPhraseAfterCursorAsCandidate = flag;
   }
 
@@ -260,7 +260,7 @@ export class InputController {
    * @param letterCase "lower" or "upper".
    */
   public setLetterMode(letterCase: string): void {
-    let flag = letterCase === "lower";
+    const flag = letterCase === "lower";
     this.keyHandler_.putLowercaseLettersToComposingBuffer = flag;
   }
 
@@ -418,12 +418,12 @@ export class InputController {
    * @returns If the key is handled.
    */
   public keyEvent(event: KeyboardEvent): boolean {
-    let key = KeyFromKeyboardEvent(event);
+    const key = KeyFromKeyboardEvent(event);
     return this.mcbopomofoKeyEvent(key);
   }
 
   public mcbopomofoKeyEvent(key: Key): boolean {
-    let simpleAscii = key.ascii;
+    const simpleAscii = key.ascii;
     if (
       (simpleAscii === "Shift" && key.name === KeyName.ASCII) ||
       simpleAscii === "Meta" ||
@@ -456,7 +456,7 @@ export class InputController {
       // Always handle the key when there is a candidate window.
       return true;
     }
-    let accepted = this.keyHandler_.handle(
+    const accepted = this.keyHandler_.handle(
       key,
       this.state_,
       (newState) => {
@@ -486,39 +486,39 @@ export class InputController {
       return;
     }
 
-    let isMovingToLeft =
+    const isMovingToLeft =
       (key.name === KeyName.LEFT && key.shiftPressed) ||
       (this.useJKToMoveCursor_ && key.ascii === "j");
     if (isMovingToLeft) {
-      let cursor = this.keyHandler_.cursor;
+      const cursor = this.keyHandler_.cursor;
       if (cursor === 0) {
         errorCallback();
         return;
       }
-      let newIndex = cursor - 1;
+      const newIndex = cursor - 1;
       this.keyHandler_.cursor = newIndex;
-      let state = this.keyHandler_.buildChoosingCandidateState(newIndex);
+      const state = this.keyHandler_.buildChoosingCandidateState(newIndex);
       stateCallback(state);
       return;
     }
-    let isMovingToRight =
+    const isMovingToRight =
       (key.name === KeyName.RIGHT && key.shiftPressed) ||
       (this.useJKToMoveCursor_ && key.ascii === "k");
     if (isMovingToRight) {
-      let cursor = this.keyHandler_.cursor;
-      let max = this.keyHandler_.gridLength;
+      const cursor = this.keyHandler_.cursor;
+      const max = this.keyHandler_.gridLength;
       if (cursor >= max) {
         errorCallback();
         return;
       }
-      let newIndex = cursor + 1;
+      const newIndex = cursor + 1;
       this.keyHandler_.cursor = newIndex;
       let state = this.keyHandler_.buildChoosingCandidateState(newIndex);
       stateCallback(state);
       return;
     }
 
-    let selected = this.candidateController_.selectedCandidateWithKey(
+    const selected = this.candidateController_.selectedCandidateWithKey(
       key.ascii
     );
 
@@ -526,17 +526,17 @@ export class InputController {
       if (this.state_ instanceof SelectingFeature) {
         stateCallback(this.state_.features[+selected.value].nextState());
       } else if (this.state_ instanceof SelectingDateMacro) {
-        let newState = new Committing(selected.value);
+        const newState = new Committing(selected.value);
         stateCallback(newState);
       } else if (this.state_ instanceof SelectingDictionary) {
-        let index = +selected.value;
+        const index = +selected.value;
         this.keyHandler_.dictionaryServices.lookup(
           this.state_.selectedPrase,
           index,
           this.state_,
           stateCallback
         );
-        let newState = this.state_.previousState;
+        const newState = this.state_.previousState;
         stateCallback(newState);
       } else if (this.state_ instanceof ChoosingCandidate) {
         this.keyHandler_.candidateSelected(
@@ -551,21 +551,21 @@ export class InputController {
     }
 
     if (key.name === KeyName.RETURN) {
-      let current = this.candidateController_.selectedCandidate;
+      const current = this.candidateController_.selectedCandidate;
       if (this.state_ instanceof SelectingFeature) {
         stateCallback(this.state_.features[+current.value].nextState());
       } else if (this.state_ instanceof SelectingDateMacro) {
-        let newState = new Committing(current.value);
+        const newState = new Committing(current.value);
         stateCallback(newState);
       } else if (this.state_ instanceof SelectingDictionary) {
-        let index = +current.value;
+        const index = +current.value;
         this.keyHandler_.dictionaryServices.lookup(
           this.state_.selectedPrase,
           index,
           this.state_,
           stateCallback
         );
-        let newState = this.state_.previousState;
+        const newState = this.state_.previousState;
         stateCallback(newState);
       } else if (this.state_ instanceof ChoosingCandidate) {
         this.keyHandler_.candidateSelected(
@@ -582,13 +582,28 @@ export class InputController {
     let isCancelKey =
       key.name === KeyName.ESC || key.name === KeyName.BACKSPACE;
 
+    const invalidPrefixArray = [
+      "_half_punctuation_",
+      "_ctrl_punctuation_",
+      "_letter_",
+      "_number_",
+      "_punctuation_",
+    ];
+
     if (key.ascii === "?") {
       if (this.state_ instanceof SelectingDictionary) {
         isCancelKey = true;
       } else if (this.state_ instanceof ChoosingCandidate) {
-        let current = this.candidateController_.selectedCandidate;
-        let phrase = current.value;
-        let newState = new SelectingDictionary(
+        const current = this.candidateController_.selectedCandidate;
+        const phrase = current.value;
+        const readings = current.reading;
+        for (const prefix of invalidPrefixArray) {
+          if (readings.startsWith(prefix)) {
+            return true;
+          }
+        }
+
+        const newState = new SelectingDictionary(
           this.state_,
           phrase,
           this.candidateController_.selectedIndex,
@@ -606,7 +621,7 @@ export class InputController {
       ) {
         stateCallback(new EmptyIgnoringPrevious());
       } else if (this.state_ instanceof SelectingDictionary) {
-        let previous = this.state_.previousState;
+        const previous = this.state_.previousState;
         stateCallback(previous);
         if (previous instanceof ChoosingCandidate) {
           this.candidateController_.selectedIndex = this.state_.selectedIndex;
@@ -621,6 +636,28 @@ export class InputController {
         return;
       }
       return;
+    }
+
+    if (!this.keyHandler_.traditionalMode) {
+      const isPlusKey = key.ascii === "+" || key.ascii === "=";
+      const isMinusKey = key.ascii === "_" || key.ascii === "-";
+      if (
+        this.state_ instanceof ChoosingCandidate &&
+        (isPlusKey || isMinusKey)
+      ) {
+        const current = this.candidateController_.selectedCandidate;
+        const reading = current.reading;
+        for (const prefix of invalidPrefixArray) {
+          if (reading.startsWith(prefix)) {
+            return true;
+          }
+        }
+
+        // TODO: validate value and rawValue
+        // TODO: Enter custom menu state
+
+        return true;
+      }
     }
 
     if (key.name === KeyName.SPACE) {
@@ -659,10 +696,10 @@ export class InputController {
       this.candidateController_.goToNextPage();
     }
 
-    let result = this.candidateController_.currentPage;
+    const result = this.candidateController_.currentPage;
     this.ui_.setCandidates(result);
-    let totalPageCount = this.candidateController_.totalPageCount;
-    let pageIndex = this.candidateController_.currentPageIndex;
+    const totalPageCount = this.candidateController_.totalPageCount;
+    const pageIndex = this.candidateController_.currentPageIndex;
     this.ui_.setPageIndex(pageIndex + 1, totalPageCount);
 
     if (!(this.state_ instanceof ChoosingCandidate)) {
@@ -670,7 +707,8 @@ export class InputController {
     }
 
     if (this.keyHandler_.traditionalMode) {
-      let defaultCandidate = this.candidateController_.currentPage[0].candidate;
+      const defaultCandidate =
+        this.candidateController_.currentPage[0].candidate;
       this.keyHandler_.handlePunctuationKeyInCandidatePanelForTraditionalMode(
         key,
         defaultCandidate.value,
@@ -681,7 +719,7 @@ export class InputController {
   }
 
   private enterNewState(state: InputState): void {
-    let prev = this.state_;
+    const prev = this.state_;
     if (state instanceof Empty) {
       this.handleEmpty(prev, state);
     } else if (state instanceof EmptyIgnoringPrevious) {
@@ -761,36 +799,36 @@ export class InputController {
       candidates = state.candidates;
     } else if (state instanceof SelectingFeature) {
       let index = 0;
-      for (let item of state.features) {
+      for (const item of state.features) {
         let candidate = new Candidate("", index + "", item.name);
         candidates.push(candidate);
         index++;
       }
     } else if (state instanceof SelectingDateMacro) {
-      for (let item of state.menu) {
-        let candidate = new Candidate("", item, item);
+      for (const item of state.menu) {
+        const candidate = new Candidate("", item, item);
         candidates.push(candidate);
       }
     } else if (state instanceof SelectingDictionary) {
       let index = 0;
-      for (let item of state.menu) {
-        let candidate = new Candidate("", index + "", item);
+      for (const item of state.menu) {
+        const candidate = new Candidate("", index + "", item);
         candidates.push(candidate);
         index++;
       }
     }
 
     let keys: string[] = [];
-    let min = Math.min(this.candidateKeysCount_, this.candidateKeys_.length);
+    const min = Math.min(this.candidateKeysCount_, this.candidateKeys_.length);
     for (let i = 0; i < min; i++) {
       keys.push(this.candidateKeys_[i]);
     }
 
     this.candidateController_.update(candidates, keys);
-    let result = this.candidateController_.currentPage;
+    const result = this.candidateController_.currentPage;
     this.ui_.setCandidates(result);
-    let totalPageCount = this.candidateController_.totalPageCount;
-    let pageIndex = this.candidateController_.currentPageIndex;
+    const totalPageCount = this.candidateController_.totalPageCount;
+    const pageIndex = this.candidateController_.currentPageIndex;
     this.ui_.setPageIndex(pageIndex + 1, totalPageCount);
   }
 
@@ -800,7 +838,7 @@ export class InputController {
 
   private handleChineseNumber(prev: InputState, state: ChineseNumber) {
     this.ui_.reset();
-    let composingBuffer = state.composingBuffer;
+    const composingBuffer = state.composingBuffer;
     this.ui_.append(new ComposingBufferText(composingBuffer));
     this.ui_.setCursorIndex(composingBuffer.length);
     this.ui_.update();
@@ -808,14 +846,14 @@ export class InputController {
 
   private handleBig5(prev: InputState, state: Big5) {
     this.ui_.reset();
-    let composingBuffer = state.composingBuffer;
+    const composingBuffer = state.composingBuffer;
     this.ui_.append(new ComposingBufferText(composingBuffer));
     this.ui_.setCursorIndex(composingBuffer.length);
     this.ui_.update();
   }
   private handleEnclosingNumber(prev: InputState, state: EnclosingNumber) {
     this.ui_.reset();
-    let composingBuffer = state.composingBuffer;
+    const composingBuffer = state.composingBuffer;
     this.ui_.append(new ComposingBufferText(composingBuffer));
     this.ui_.setCursorIndex(composingBuffer.length);
     this.ui_.update();

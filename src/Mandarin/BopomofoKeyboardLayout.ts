@@ -88,7 +88,7 @@ export class BopomofoKeyboardLayout {
       layout: BopomofoKeyboardLayout
     ) {
       if ((c = component)) {
-        let k: string = layout.componentToKey(c);
+        const k: string = layout.componentToKey(c);
         if (k) sequence += k;
       }
     }
@@ -100,20 +100,20 @@ export class BopomofoKeyboardLayout {
   }
 
   syllableFromKeySequence(sequence: string): BopomofoSyllable {
-    let syllable = new BopomofoSyllable(0);
+    const syllable = new BopomofoSyllable(0);
     for (let i = 0; i < sequence.length; i++) {
-      let beforeSeqHasIorUE: boolean = this.sequenceContainsIorUE(
+      const beforeSeqHasIorUE: boolean = this.sequenceContainsIorUE(
         sequence,
         0,
         i
       );
-      let aheadSeqHasIorUE: boolean = this.sequenceContainsIorUE(
+      const aheadSeqHasIorUE: boolean = this.sequenceContainsIorUE(
         sequence,
         i + 1,
         sequence.length
       );
 
-      let components = this.keyToComponents(sequence.charAt(i));
+      const components = this.keyToComponents(sequence.charAt(i));
 
       if (components.length === 0) continue;
 
@@ -122,9 +122,9 @@ export class BopomofoKeyboardLayout {
         continue;
       }
 
-      let head = new BopomofoSyllable(components[0]);
-      let follow = new BopomofoSyllable(components[1]);
-      let ending =
+      const head = new BopomofoSyllable(components[0]);
+      const follow = new BopomofoSyllable(components[1]);
+      const ending =
         components.length > 2 ? new BopomofoSyllable(components[2]) : follow;
 
       // apply the I/UE + E rule
@@ -203,7 +203,7 @@ export class BopomofoKeyboardLayout {
     }
 
     // TODO
-    let isHsu: boolean = this === BopomofoKeyboardLayout.HsuLayout;
+    const isHsu: boolean = this === BopomofoKeyboardLayout.HsuLayout;
     if (isHsu) {
       // fix the left out L to ERR when it has sound, and GI, GUE -> JI, JUE
       if (
@@ -231,11 +231,11 @@ export class BopomofoKeyboardLayout {
   ): boolean {
     if (ahead === end) return true;
 
-    let tone1 = this.componentToKey(BopomofoSyllable.Tone1);
-    let tone2 = this.componentToKey(BopomofoSyllable.Tone2);
-    let tone3 = this.componentToKey(BopomofoSyllable.Tone3);
-    let tone4 = this.componentToKey(BopomofoSyllable.Tone4);
-    let tone5 = this.componentToKey(BopomofoSyllable.Tone5);
+    const tone1 = this.componentToKey(BopomofoSyllable.Tone1);
+    const tone2 = this.componentToKey(BopomofoSyllable.Tone2);
+    const tone3 = this.componentToKey(BopomofoSyllable.Tone3);
+    const tone4 = this.componentToKey(BopomofoSyllable.Tone4);
+    const tone5 = this.componentToKey(BopomofoSyllable.Tone5);
 
     if (tone1 != undefined) {
       if (seq[ahead] === tone1) return true;
@@ -254,8 +254,8 @@ export class BopomofoKeyboardLayout {
   }
 
   private sequenceContainsIorUE(seq: string, ahead: number, end: number) {
-    let iChar = this.componentToKey(BopomofoSyllable.I);
-    let ueChar = this.componentToKey(BopomofoSyllable.UE);
+    const iChar = this.componentToKey(BopomofoSyllable.I);
+    const ueChar = this.componentToKey(BopomofoSyllable.UE);
     for (let i = ahead; i < end; i++) {
       if (seq[i] === iChar || seq[i] === ueChar) return true;
     }
@@ -263,7 +263,7 @@ export class BopomofoKeyboardLayout {
   }
 
   private static CreateStandardLayout_(): BopomofoKeyboardLayout {
-    let ktcm: BopomofoKeyToComponentMap = new Map([
+    const ktcm: BopomofoKeyToComponentMap = new Map([
       ["1", [BopomofoSyllable.B]],
       ["q", [BopomofoSyllable.P]],
       ["a", [BopomofoSyllable.M]],
@@ -310,7 +310,7 @@ export class BopomofoKeyboardLayout {
   }
 
   private static CreateIBMLayout_(): BopomofoKeyboardLayout {
-    let ktcm: BopomofoKeyToComponentMap = new Map([
+    const ktcm: BopomofoKeyToComponentMap = new Map([
       ["1", [BopomofoSyllable.B]],
       ["2", [BopomofoSyllable.P]],
       ["3", [BopomofoSyllable.M]],
@@ -357,7 +357,7 @@ export class BopomofoKeyboardLayout {
   }
 
   static CreateETenLayout_(): BopomofoKeyboardLayout {
-    let ktcm: BopomofoKeyToComponentMap = new Map([
+    const ktcm: BopomofoKeyToComponentMap = new Map([
       ["b", [BopomofoSyllable.B]],
       ["p", [BopomofoSyllable.P]],
       ["m", [BopomofoSyllable.M]],
@@ -404,7 +404,7 @@ export class BopomofoKeyboardLayout {
   }
 
   private static CreateHsuLayout_(): BopomofoKeyboardLayout {
-    let ktcm: BopomofoKeyToComponentMap = new Map([
+    const ktcm: BopomofoKeyToComponentMap = new Map([
       ["b", [BopomofoSyllable.B]],
       ["p", [BopomofoSyllable.P]],
       ["m", [BopomofoSyllable.M, BopomofoSyllable.AN]],
@@ -467,7 +467,7 @@ export class BopomofoKeyboardLayout {
   }
 
   private static CreateHanyuPinyinLayout_(): BopomofoKeyboardLayout {
-    let ktcm: BopomofoKeyToComponentMap = new Map();
+    const ktcm: BopomofoKeyToComponentMap = new Map();
     return new BopomofoKeyboardLayout(ktcm, "HanyuPinyin");
   }
 }

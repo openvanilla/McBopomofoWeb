@@ -122,8 +122,8 @@ export class ReadingGrid {
     if (this.spans_.length === 0) {
       return new WalkResult([], 0, 0, 0, 0);
     }
-    let start = GetEpochNowInMicroseconds();
-    let vspans: VertexSpan[] = [];
+    const start = GetEpochNowInMicroseconds();
+    const vspans: VertexSpan[] = [];
     for (let i = 0; i < this.spans_.length; ++i) {
       vspans.push([]);
     }
@@ -145,35 +145,35 @@ export class ReadingGrid {
     let terminal = new Vertex(new Node("_TERMINAL_", -99, []));
 
     for (let i = 0, vspansLen = vspans.length; i < vspansLen; ++i) {
-      for (let v of vspans[i]) {
-        let nextVertexPos = i + v.node.spanningLength;
+      for (const v of vspans[i]) {
+        const nextVertexPos = i + v.node.spanningLength;
         if (nextVertexPos === vspansLen) {
           v.edges.push(terminal);
           continue;
         }
 
-        for (let nv of vspans[nextVertexPos]) {
+        for (const nv of vspans[nextVertexPos]) {
           v.edges.push(nv);
           ++edges;
         }
       }
     }
 
-    let root = new Vertex(new Node("_ROOT_", 0, []));
+    const root = new Vertex(new Node("_ROOT_", 0, []));
     root.distance = 0;
-    for (let v of vspans[0]) {
+    for (const v of vspans[0]) {
       root.edges.push(v);
     }
 
-    let ordered = TopologicalSort(root);
-    let reversed = ordered.reverse();
-    for (let u of reversed) {
-      for (let v of u.edges) {
+    const ordered = TopologicalSort(root);
+    const reversed = ordered.reverse();
+    for (const u of reversed) {
+      for (const v of u.edges) {
         Relax(u, v);
       }
     }
 
-    let walkedNodes: Node[] = [];
+    const walkedNodes: Node[] = [];
     let totalReadingLen = 0;
     let currentVertex = terminal;
     while (currentVertex.prev != undefined) {
@@ -184,7 +184,7 @@ export class ReadingGrid {
     walkedNodes.pop();
     walkedNodes.reverse();
 
-    let result = new WalkResult(
+    const result = new WalkResult(
       walkedNodes,
       vertices,
       edges,

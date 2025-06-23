@@ -395,3 +395,51 @@ export class SelectingFeature implements InputState {
     this.converter = converter;
   }
 }
+
+/**
+ * Represents an entry in a custom menu.
+ *
+ * This class encapsulates a menu item with a title and a callback function that
+ * gets executed when the menu item is selected.
+ */
+export class CustomMenuEntry {
+  readonly title: string;
+  readonly callback: () => void;
+
+  constructor(title: string, callback: () => void) {
+    this.title = title;
+    this.callback = callback;
+  }
+}
+
+/**
+ * Represents a custom menu in the input system.
+ *
+ * This class extends the NotEmpty state and provides functionality for
+ * a menu interface where the user can select an option from a list.
+ *
+ * @extends NotEmpty
+ */
+export class CustomMenu extends NotEmpty {
+  readonly previousState: NotEmpty;
+  readonly selectedIndex: number;
+  readonly entries: CustomMenuEntry[];
+
+  constructor(
+    composingBuffer: string,
+    cursorIndex: number,
+    title: string,
+    entries: CustomMenuEntry[],
+    previousState: NotEmpty,
+    selectedIndex: number
+  ) {
+    super(composingBuffer, cursorIndex, title);
+    this.entries = entries;
+    this.previousState = previousState;
+    this.selectedIndex = selectedIndex;
+  }
+
+  toString(): string {
+    return "CustomMenuEntry " + this.tooltip;
+  }
+}

@@ -76,7 +76,7 @@ export class SuzhouNumbers {
 
     let joined = intTrimmed + decTrimmed;
     var isVertical = preferInitialVertical;
-    for (let c of joined) {
+    for (const c of joined) {
       if (c === "1" || c === "2" || c === "3") {
         output += isVertical
           ? SuzhouNumbers.verticalDigits.get(c)
@@ -92,7 +92,7 @@ export class SuzhouNumbers {
       return output + unit;
     }
     if (output.length === 1 && trimmedZeroCounts === 1) {
-      let c = intTrimmed[0];
+      const c = intTrimmed[0];
       switch (c) {
         case "1":
           return "〸" + unit;
@@ -104,7 +104,7 @@ export class SuzhouNumbers {
           break;
       }
     }
-    let place = intTrimmed.length + trimmedZeroCounts - 1;
+    const place = intTrimmed.length + trimmedZeroCounts - 1;
     return (
       output +
       (output.length > 1 ? "\n" : "") +
