@@ -184,6 +184,25 @@ class ChromeMcBopomofo {
     });
   }
 
+  loadExcludedPhrases() {
+    largeSync.get(["excluded_phrase"], (value) => {
+      // On ChromeOS, we store the user phrases in JSON format, but
+      // the editor convert the JSON to phrases per line.
+      const jsonString = value.user_phrase;
+      if (jsonString !== undefined) {
+        try {
+          const obj = JSON.parse(jsonString);
+          if (obj) {
+            const userPhrases = new Map<string, string[]>(Object.entries(obj));
+            this.inputController.setExcludedPhrases(userPhrases);
+          }
+        } catch (e) {
+          console.log("failed to parse excluded_phrase:" + e);
+        }
+      }
+    });
+  }
+
   updateMenu() {
     if (this.engineID === undefined) return;
     const menus = [
@@ -644,8 +663,8 @@ chrome.input?.ime.onMenuItemActivated.addListener((engineID, name) => {
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   // Reloads the user phrases by the message sent from "user_phrase.html".
   if (request.command === "reload_user_phrase") {
-    //zonble
     chromeMcBopomofo.loadUserPhrases();
+    chromeMcBopomofo.loadExcludedPhrases();
     sendResponse({ status: "ok" });
   }
 });

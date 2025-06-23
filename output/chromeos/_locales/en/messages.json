@@ -97,5 +97,7 @@
   },
   "placeholder": {
     "message": "# Each phrase per line. Example:\n輸入範例 ㄕㄨ-ㄖㄨˋ-ㄈㄢˋ-ㄌㄧˋ"
-  }
+  },
+  "user_phrases_link": { "message": "Edit User Phrases" },
+  "excluded_phrases_link": { "message": "Edit Excluded Phrases" }
 }

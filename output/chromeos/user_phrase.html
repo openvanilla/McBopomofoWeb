@@ -22,11 +22,28 @@
 
 <body>
     <h1 id="user_phrases_title">McBopomofo User Phrases</h1>
-    <p>
-        <button id="reload">Reload</button>
-        <button id="save">Save</button>
-    </p>
-    <textarea id="text_area"></textarea>
+
+    <div class="toolbar">
+        <a id="user_phrases_link" href="#" class="active link">User Phrases</a>
+        <a id="excluded_phrases_link" href="#" class="link">Excluded Phrase</a>
+    </div>
+
+    <div id="user_phrases">
+        <p>
+            <button id="reload">Reload</button>
+            <button id="save">Save</button>
+        </p>
+        <textarea id="text_area"></textarea>
+    </div>
+
+    <div id="excluded_phrases">
+        <p>
+            <button id="reload_excluded_phrases">Reload</button>
+            <button id="save_excluded_phrases">Save</button>
+        </p>
+        <textarea id="text_area_excluded_phrases"></textarea>
+    </div>
+
 </body>
 
 </html>

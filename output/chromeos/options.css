@@ -47,3 +47,16 @@ a {
     text-decoration: none;
   }
 }
+
+#excluded_phrases {
+  display: none;
+}
+
+.toolbar {
+  border: 1px solid #ccc;
+  padding: 5px;
+}
+
+.active {
+  text-decoration: underline;
+}
