@@ -506,7 +506,7 @@ class PimeMcBopomofo {
     if (!fs.existsSync(url)) {
       fs.writeFileSync(
         url,
-        "# 一個詞彙一行，格式為：\n# 詞彙 促因\n# 例如：\n# 小麥注音 ㄒㄧㄠˇ-ㄇㄞˋ-ㄓㄨˋ-ㄧㄣ\n"
+        "# 一個詞彙一行，格式為：\n# 詞彙 注音\n# 例如：\n# 小麥注音 ㄒㄧㄠˇ-ㄇㄞˋ-ㄓㄨˋ-ㄧㄣ\n"
       );
       console.log("Created empty user phrase file at " + url);
     }
