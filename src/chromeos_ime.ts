@@ -540,6 +540,11 @@ chrome.input?.ime.onActivate.addListener((engineID) => {
     let jsonString = JSON.stringify(obj);
     largeSync.set({ user_phrase: jsonString }, () => {});
   });
+  chromeMcBopomofo.inputController.setOnExcludedPhraseChange((userPhrases) => {
+    const obj = Object.fromEntries(userPhrases);
+    let jsonString = JSON.stringify(obj);
+    largeSync.set({ excluded_phrase: jsonString }, () => {});
+  });
 });
 
 // Called when the current text input are loses the focus.
@@ -619,44 +624,30 @@ chrome.input?.ime.onKeyEvent.addListener((engineID, keyData) => {
 });
 
 chrome.input?.ime.onMenuItemActivated.addListener((engineID, name) => {
-  if (name === "mcbopomofo-toggle-alphabet-mode") {
-    chromeMcBopomofo.inputController.reset();
-    chromeMcBopomofo.toggleAlphabetMode();
-    return;
-  }
-
-  if (name === "mcbopomofo-chinese-conversion") {
-    chromeMcBopomofo.inputController.reset();
-    chromeMcBopomofo.toggleChineseConversion();
-    return;
-  }
-
-  if (name === "mcbopomofo-half-width-punctuation") {
-    chromeMcBopomofo.toggleHalfWidthPunctuation();
-    return;
-  }
-
-  if (name === "mcbopomofo-options") {
-    const page = "options.html";
-    chromeMcBopomofo.tryOpen(chrome.runtime.getURL(page));
-    return;
-  }
-
-  if (name === "mcbopomofo-user-phrase") {
-    const page = "user_phrase.html";
-    chromeMcBopomofo.tryOpen(chrome.runtime.getURL(page));
-    return;
-  }
-
-  if (name === "mcbopomofo-help") {
-    const page = "help/index.html";
-    chromeMcBopomofo.tryOpen(chrome.runtime.getURL(page));
-    return;
-  }
-
-  if (name === "mcbopomofo-homepage") {
-    chromeMcBopomofo.tryOpen("https://mcbopomofo.openvanilla.org/");
-    return;
+  switch (name) {
+    case "mcbopomofo-toggle-alphabet-mode":
+      chromeMcBopomofo.inputController.reset();
+      chromeMcBopomofo.toggleAlphabetMode();
+      break;
+    case "mcbopomofo-chinese-conversion":
+      chromeMcBopomofo.inputController.reset();
+      chromeMcBopomofo.toggleChineseConversion();
+      break;
+    case "mcbopomofo-half-width-punctuation":
+      chromeMcBopomofo.toggleHalfWidthPunctuation();
+      break;
+    case "mcbopomofo-options":
+      chromeMcBopomofo.tryOpen(chrome.runtime.getURL("options.html"));
+      break;
+    case "mcbopomofo-user-phrase":
+      chromeMcBopomofo.tryOpen(chrome.runtime.getURL("user_phrase.html"));
+      break;
+    case "mcbopomofo-help":
+      chromeMcBopomofo.tryOpen(chrome.runtime.getURL("help/index.html"));
+      break;
+    case "mcbopomofo-homepage":
+      chromeMcBopomofo.tryOpen("https://mcbopomofo.openvanilla.org/");
+      break;
   }
 });
 
