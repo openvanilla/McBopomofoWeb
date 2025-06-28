@@ -174,12 +174,27 @@ export class WebLanguageModel implements LanguageModel {
     this.excludedPhrases_.setUserPhrases(map);
   }
 
+  /**
+   * Sets a callback function to be invoked whenever the user phrases change.
+   *
+   * @param callback - A function that receives a Map of phrases. The Map
+   * contains string keys mapped to arrays of strings (representing the
+   * phrases).
+   * @returns void
+   */
   public setOnPhraseChange(
     callback: (map: Map<string, string[]>) => void
   ): void {
     this.userPhrases_.setOnPhraseChange(callback);
   }
 
+  /**
+   * Sets a callback to be invoked when the excluded phrases collection changes.
+   *
+   * @param callback A function that will be called when the excluded phrases
+   * change. The function receives a Map where keys are phrases and values are
+   * arrays of strings representing the excluded phrases.
+   */
   public setOnExcludedPhraseChange(
     callback: (map: Map<string, string[]>) => void
   ): void {

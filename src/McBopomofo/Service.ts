@@ -35,6 +35,15 @@ export class Service {
     this.lm_.setUserPhrases(input);
   }
 
+  /**
+   * Sets phrases to exclude from the language model suggestions.
+   *
+   * @param input The map of user phrases.
+   */
+  public setExcludedPhrases(input: Map<string, string[]> | string): void {
+    this.lm_.setExcludedPhrases(input);
+  }
+
   private convertText(
     input: string,
     readingCallback: (reading: string, value: string) => string,

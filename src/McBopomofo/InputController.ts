@@ -676,7 +676,7 @@ export class InputController {
           const entry = new CustomMenuEntry(
             this.localizedStrings_.exclude(),
             () => {
-              this.keyHandler_.addUserPhrase(reading, current.value);
+              this.keyHandler_.addExcludedPhrase(reading, current.value);
               const newState = this.keyHandler_.buildInputtingState();
               stateCallback(newState);
             }
