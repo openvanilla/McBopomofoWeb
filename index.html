@@ -41,6 +41,7 @@
     <p class="navi">功能展示：
       <a href="#feature_input" title="可以直接在網頁中使用的小麥注音輸入法">輸入功能</a>
       <a href="#feature_user_phrases" title="自行添加自訂詞">自訂詞管理</a>
+      <a href="#feature_excluded_phrases" title="自行管理排除的詞彙">管理排除的詞彙</a>
       <a href="#feature_text_to_braille" title="將國字轉換成點字">國字轉注音點字</a>
       <a href="#feature_braille_to_text" title="將點字轉換成國字">注音點字轉國字</a>
       <a href="#feature_add_bpmf" title="將國字加上注音">國字加注音</a>
@@ -248,6 +249,29 @@
 
         <h2>自訂詞管理</h2>
         <p>您可以在這裡添加自訂詞，加入自訂詞之後，請按下「更新」按鈕，這些自訂詞彙加入到線上輸入法功能以及其他文字轉換功能中。</p>
+        <p>這些自訂詞會儲存在瀏覽器本機資料中，不會同步到其他電腦，也不會備份，請自行保存這些自訂詞。</p>
+        <h3>詞庫格式</h3>
+        <p>小麥網頁版本的詞庫格式就和其他平台一樣，每行一筆，前面是國字，一個空格之後是用「-」連接的注音。範例如下</p>
+        <blockquote>
+          <p>小麥注音 ㄒㄧㄠˇ-ㄇㄞˋ-ㄓㄨˋ-ㄧㄣ</p>
+        </blockquote>
+      </div>
+    </div>
+
+    <div id="feature_excluded_phrases">
+      <div class="left">
+        <textarea placeholder="小麥注音 ㄒㄧㄠˇ-ㄇㄞˋ-ㄓㄨˋ-ㄧㄣ" id="feature_excluded_phrases_text_area" rows="10" cols="50"
+          title="輸入區"></textarea>
+      </div>
+      <div class="right">
+        <p>
+          <input type="button" value="重新載入" onclick="loadExcludedPhrases();alert('已重新載入之前儲存的詞庫');return false; ">
+          <input type="button" value="更新詞庫"
+            onclick="saveExcludedPhrases(document.getElementById('feature_excluded_phrases_text_area').value); alert('已經儲存更新的詞庫，並更新到輸入法與轉換功能中'); return false;">
+        </p>
+
+        <h2>管理已經排除的詞彙</h2>
+        <p>您可以在這裡添加要排除的詞彙，加入自訂詞之後，請按下「更新」按鈕，這些自訂詞彙加入到線上輸入法功能以及其他文字轉換功能中。</p>
         <p>這些自訂詞會儲存在瀏覽器本機資料中，不會同步到其他電腦，也不會備份，請自行保存這些自訂詞。</p>
         <h3>詞庫格式</h3>
         <p>小麥網頁版本的詞庫格式就和其他平台一樣，每行一筆，前面是國字，一個空格之後是用「-」連接的注音。範例如下</p>

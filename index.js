@@ -5,6 +5,7 @@ function toggle_feature(id) {
   let features = [
     "feature_input",
     "feature_user_phrases",
+    "feature_excluded_phrases",
     "feature_text_to_braille",
     "feature_braille_to_text",
     "feature_add_bpmf",
@@ -19,6 +20,8 @@ function toggle_feature(id) {
     document.title = "輸入功能";
   } else if (id === "feature_user_phrases") {
     document.title = "自定詞管理";
+  } else if (id === "feature_excluded_phrases") {
+    document.title = "管理排除的詞彙";
   } else if (id === "feature_text_to_braille") {
     document.getElementById("text_to_braille_text_area").focus();
     document.title = "中文轉注音點字";
@@ -122,18 +125,31 @@ let ui = (function () {
 
 const { InputController, Service } = window.mcbopomofo;
 let controller = new InputController(ui);
-controller.setOnPhraseAdded(function (key, phrase) {
-  let result = window.localStorage.getItem("user_phrases");
-  if (result === undefined || result === null || result.length === 0) {
-    result = "";
+
+controller.setOnPhraseChange((userPhrases) => {
+  console.log("userPhrases changed");
+  let string = "";
+  for (const [key, phrase] of userPhrases) {
+    console.log(`Key: ${key}, Phrase: ${phrase}`);
+    for (let i = 0; i < phrase.length; i++) {
+      string += phrase[i] + " " + key + "\n";
+    }
   }
-  let lastChar = result.substring(result.length - 1);
-  if (lastChar != "\n") {
-    result += "\n";
-  }
-  result += phrase + " " + key + "\n";
-  saveUserPhrases(result);
+  saveUserPhrases(string);
 });
+
+controller.setOnExcludedPhraseChange((userPhrases) => {
+  console.log("excludedPhrases changed");
+  let string = "";
+  for (const [key, phrase] of userPhrases) {
+    console.log(`Key: ${key}, Phrase: ${phrase}`);
+    for (let i = 0; i < phrase.length; i++) {
+      string += phrase[i] + " " + key + "\n";
+    }
+  }
+  saveExcludedPhrases(string);
+});
+
 controller.setOnOpenUrl(function (url) {
   window.open(url);
 });
@@ -328,9 +344,28 @@ function saveUserPhrases(result) {
   document.getElementById("feature_user_phrases_text_area").value = result;
 }
 
+function loadExcludedPhrases() {
+  let result = window.localStorage.getItem("excluded_phrases");
+  if (result === undefined || result === null || result.length === 0) {
+    result = "";
+  }
+  document.getElementById("feature_excluded_phrases_text_area").value = result;
+  console.log("userPhrases:\n" + result);
+  controller.setExcludedPhrases(result);
+  service.setExcludedPhrases(result);
+}
+
+function saveExcludedPhrases(result) {
+  window.localStorage.setItem("excluded_phrases", result);
+  controller.setExcludedPhrases(result);
+  service.setExcludedPhrases(result);
+  document.getElementById("feature_excluded_phrases_text_area").value = result;
+}
+
 settings = loadSettings();
 applySettings(settings);
 loadUserPhrases();
+loadExcludedPhrases();
 
 let shiftKeyIsPressed = false;
 

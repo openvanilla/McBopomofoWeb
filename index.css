@@ -246,4 +246,8 @@ blockquote {
     color: #9999ff;
     text-decoration: none;
   }
+
+  blockquote {
+    background-color: #666;
+  }
 }
