@@ -122,18 +122,29 @@ let ui = (function () {
 
 const { InputController, Service } = window.mcbopomofo;
 let controller = new InputController(ui);
-controller.setOnPhraseAdded(function (key, phrase) {
-  let result = window.localStorage.getItem("user_phrases");
-  if (result === undefined || result === null || result.length === 0) {
-    result = "";
+
+controller.setOnPhraseChange((userPhrases) => {
+  let string = "";
+  for (const [key, phrase] of userPhrases) {
+    console.log(`Key: ${key}, Phrase: ${phrase}`);
+    for (let i = 0; i < phrase.length; i++) {
+      string += phrase[i] + " " + key + "\n";
+    }
   }
-  let lastChar = result.substring(result.length - 1);
-  if (lastChar != "\n") {
-    result += "\n";
-  }
-  result += phrase + " " + key + "\n";
-  saveUserPhrases(result);
+  saveUserPhrases(string);
 });
+
+controller.setOnExcludedPhraseChange((userPhrases) => {
+  let string = "";
+  for (const [key, phrase] of userPhrases) {
+    console.log(`Key: ${key}, Phrase: ${phrase}`);
+    for (let i = 0; i < phrase.length; i++) {
+      string += phrase[i] + " " + key + "\n";
+    }
+  }
+  saveExcludedPhrases(string);
+});
+
 controller.setOnOpenUrl(function (url) {
   window.open(url);
 });
@@ -326,6 +337,13 @@ function saveUserPhrases(result) {
   controller.setUserPhrases(result);
   service.setUserPhrases(result);
   document.getElementById("feature_user_phrases_text_area").value = result;
+}
+
+function saveExcludedPhrases(result) {
+  window.localStorage.setItem("excluded_phrases", result);
+  controller.setExcludedPhrases(result);
+  service.setExcludedPhrases(result);
+  // document.getElementById("feature_user_phrases_text_area").value = result;
 }
 
 settings = loadSettings();

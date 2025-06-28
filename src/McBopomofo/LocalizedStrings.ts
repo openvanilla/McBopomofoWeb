@@ -72,4 +72,39 @@ export class LocalizedStrings {
       "Marked: " + marked + ", syllables: " + readingUiText + ", " + status
     );
   }
+
+  boostTitle(phrase: string) {
+    if (this.languageCode === "zh-TW") {
+      return "您想要增加「" + phrase + "」這個詞彙的權重嗎？";
+    }
+    return 'Do you wan to boost the phrase "' + phrase + '"?';
+  }
+
+  excludeTitle(phrase: string) {
+    if (this.languageCode === "zh-TW") {
+      return "您想要排除「" + phrase + "」這個詞彙嗎？？";
+    }
+    return 'Do you wan to exclude the phrase "' + phrase + '"?';
+  }
+
+  boost() {
+    if (this.languageCode === "zh-TW") {
+      return "增加權重";
+    }
+    return "Boost";
+  }
+
+  exclude() {
+    if (this.languageCode === "zh-TW") {
+      return "排除";
+    }
+    return "Exclude";
+  }
+
+  cancel() {
+    if (this.languageCode === "zh-TW") {
+      return "取消";
+    }
+    return "Cancel";
+  }
 }

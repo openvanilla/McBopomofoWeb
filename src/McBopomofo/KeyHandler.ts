@@ -1328,7 +1328,7 @@ export class KeyHandler {
     return true;
   }
 
-  private buildInputtingState(): Inputting {
+  public buildInputtingState(): Inputting {
     let composedString = this.getComposedString(this.grid_.cursor);
 
     let head = composedString.head;
@@ -1473,6 +1473,21 @@ export class KeyHandler {
 
   private walk() {
     this.latestWalk_ = this.grid_.walk();
+  }
+
+  addUserPhrase(reading: string, phrase: string) {
+    if (this.languageModel_ instanceof WebLanguageModel) {
+      (this.languageModel_ as WebLanguageModel).addUserPhrase(reading, phrase);
+    }
+  }
+
+  addExcludedPhrase(reading: string, phrase: string) {
+    if (this.languageModel_ instanceof WebLanguageModel) {
+      (this.languageModel_ as WebLanguageModel).addExcludedPhrase(
+        reading,
+        phrase
+      );
+    }
   }
 }
 

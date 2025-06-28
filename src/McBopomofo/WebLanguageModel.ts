@@ -12,40 +12,46 @@ import { BopomofoSyllable } from "../Mandarin";
  * The model for user phrases.
  */
 export class UserPhrases implements LanguageModel {
-  private map_: Map<string, string[]> = new Map();
+  private userPhrases_: Map<string, string[]> = new Map();
   private onPhraseChange_: (map: Map<string, string[]>) => void = () => {};
-  private onPhraseAdded_: (key: string, phrase: string) => void = () => {};
 
   setUserPhrases(map: Map<string, string[]>): void {
     if (map === null || map === undefined) {
       return;
     }
-    this.map_ = map;
+    this.userPhrases_ = map;
   }
 
   setOnPhraseChange(callback: (map: Map<string, string[]>) => void): void {
     this.onPhraseChange_ = callback;
   }
 
-  setOnPhraseAdded(callback: (key: string, phrase: string) => void): void {
-    this.onPhraseAdded_ = callback;
+  removeUserPhrase(key: string, phrase: string): void {
+    let list = this.userPhrases_.get(key);
+    if (list == undefined) {
+      return;
+    }
+    if (list.includes(phrase)) {
+      list.splice(list.indexOf(phrase), 1);
+      this.userPhrases_.set(key, list);
+      this.onPhraseChange_(this.userPhrases_);
+    }
   }
 
   addUserPhrase(key: string, phrase: string): void {
-    let list = this.map_.get(key);
+    let list = this.userPhrases_.get(key);
     if (list != undefined) {
       if (list.includes(phrase)) {
         return;
       }
       list.push(phrase);
-      this.map_.set(key, list);
+      this.userPhrases_.set(key, list);
     } else {
       list = [];
       list.push(phrase);
-      this.map_.set(key, list);
+      this.userPhrases_.set(key, list);
     }
-    this.onPhraseAdded_(key, phrase);
-    this.onPhraseChange_(this.map_);
+    this.onPhraseChange_(this.userPhrases_);
   }
 
   getUnigrams(key: string): Unigram[] {
@@ -54,7 +60,7 @@ export class UserPhrases implements LanguageModel {
     }
 
     let result: Unigram[] = [];
-    let list = this.map_.get(key);
+    let list = this.userPhrases_.get(key);
     if (list != undefined) {
       for (let item of list) {
         let g = new Unigram(item, 0);
@@ -68,7 +74,7 @@ export class UserPhrases implements LanguageModel {
     if (key === " ") {
       return true;
     }
-    let list = this.map_.get(key);
+    let list = this.userPhrases_.get(key);
     if (list === undefined) return false;
     return list.length > 0;
   }
@@ -103,11 +109,20 @@ export class WebLanguageModel implements LanguageModel {
   }
 
   private addUserPhraseConverter?: (input: string) => string | undefined;
+  private excludedPhraseConverter?: (input: string) => string | undefined;
+
   /** Sets the string converter. */
   public setAddUserPhraseConverter(
     converter?: (input: string) => string | undefined
   ): void {
     this.addUserPhraseConverter = converter;
+  }
+
+  /** Sets the string converter. */
+  public setExcludedPhraseConverter(
+    converter?: (input: string) => string | undefined
+  ): void {
+    this.excludedPhraseConverter = converter;
   }
 
   private convertTextToMap(input: String): Map<string, string[]> {
@@ -165,10 +180,10 @@ export class WebLanguageModel implements LanguageModel {
     this.userPhrases_.setOnPhraseChange(callback);
   }
 
-  public setOnPhraseAdded(
-    callback: (key: string, phrase: string) => void
+  public setOnExcludedPhraseChange(
+    callback: (map: Map<string, string[]>) => void
   ): void {
-    this.userPhrases_.setOnPhraseAdded(callback);
+    this.excludedPhrases_.setOnPhraseChange(callback);
   }
 
   /**
@@ -180,7 +195,16 @@ export class WebLanguageModel implements LanguageModel {
     if (this.addUserPhraseConverter != undefined) {
       phrase = this.addUserPhraseConverter(phrase) ?? phrase;
     }
+    this.excludedPhrases_.removeUserPhrase(key, phrase);
     this.userPhrases_.addUserPhrase(key, phrase);
+  }
+
+  addExcludedPhrase(key: string, phrase: string): void {
+    if (this.excludedPhraseConverter != undefined) {
+      phrase = this.excludedPhraseConverter(phrase) ?? phrase;
+    }
+    this.userPhrases_.removeUserPhrase(key, phrase);
+    this.excludedPhrases_.addUserPhrase(key, phrase);
   }
 
   constructor(map: any) {

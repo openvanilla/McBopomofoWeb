@@ -5,6 +5,7 @@
  * SPDX-License-Identifier: MIT
  */
 
+import { read } from "fs";
 import { Candidate } from "../Gramambular2";
 import { BopomofoKeyboardLayout } from "../Mandarin";
 import { CandidateWrapper, CandidateController } from "./CandidateController";
@@ -16,6 +17,8 @@ import {
   ChineseNumber,
   ChoosingCandidate,
   Committing,
+  CustomMenu,
+  CustomMenuEntry,
   Empty,
   EmptyIgnoringPrevious,
   EnclosingNumber,
@@ -37,6 +40,7 @@ import {
 
 import { Key, KeyFromKeyboardEvent, KeyName } from "./Key";
 import { KeyHandler } from "./KeyHandler";
+import { LocalizedStrings } from "./LocalizedStrings";
 import { webData } from "./WebData";
 import { WebLanguageModel } from "./WebLanguageModel";
 
@@ -169,6 +173,7 @@ export class InputController {
   private useVerticalCandidates_ = false;
   private onError_: Function | undefined;
   private useJKToMoveCursor_: boolean = false;
+  private localizedStrings_ = new LocalizedStrings();
 
   constructor(ui: InputUI) {
     this.ui_ = new InputUIController(ui);
@@ -366,14 +371,10 @@ export class InputController {
     this.lm_.setOnPhraseChange(callback);
   }
 
-  /**
-   * Sets the callback function that would be called when the a user phrase model is added.
-   * @param callback The callback function.
-   */
-  public setOnPhraseAdded(
-    callback: (key: string, phrase: string) => void
+  public setOnExcludedPhraseChange(
+    callback: (map: Map<string, string[]>) => void
   ): void {
-    this.lm_.setOnPhraseAdded(callback);
+    this.lm_.setOnExcludedPhraseChange(callback);
   }
 
   /** Sets Chinese conversion on or off. */
@@ -436,7 +437,8 @@ export class InputController {
       this.state_ instanceof ChoosingCandidate ||
       this.state_ instanceof SelectingFeature ||
       this.state_ instanceof SelectingDateMacro ||
-      this.state_ instanceof SelectingDictionary
+      this.state_ instanceof SelectingDictionary ||
+      this.state_ instanceof CustomMenu
     ) {
       this.handleCandidateKeyEvent(
         key,
@@ -575,6 +577,9 @@ export class InputController {
             stateCallback(newState);
           }
         );
+      } else if (this.state_ instanceof CustomMenu) {
+        const entry = this.state_.entries[+current.value];
+        entry.callback();
       }
       return;
     }
@@ -645,6 +650,7 @@ export class InputController {
         this.state_ instanceof ChoosingCandidate &&
         (isPlusKey || isMinusKey)
       ) {
+        const choosingCandidates = this.state_;
         const current = this.candidateController_.selectedCandidate;
         const reading = current.reading;
         for (const prefix of invalidPrefixArray) {
@@ -652,10 +658,48 @@ export class InputController {
             return true;
           }
         }
+        let entries: CustomMenuEntry[] = [];
+        let title = "";
+        if (isPlusKey) {
+          title = this.localizedStrings_.boostTitle(current.value);
+          const entry = new CustomMenuEntry(
+            this.localizedStrings_.boost(),
+            () => {
+              this.keyHandler_.addUserPhrase(reading, current.value);
+              const newState = this.keyHandler_.buildInputtingState();
+              stateCallback(newState);
+            }
+          );
+          entries.push(entry);
+        } else if (isMinusKey) {
+          title = this.localizedStrings_.excludeTitle(current.value);
+          const entry = new CustomMenuEntry(
+            this.localizedStrings_.exclude(),
+            () => {
+              this.keyHandler_.addUserPhrase(reading, current.value);
+              const newState = this.keyHandler_.buildInputtingState();
+              stateCallback(newState);
+            }
+          );
+          entries.push(entry);
+        }
+        const entry = new CustomMenuEntry(
+          this.localizedStrings_.cancel(),
+          () => {
+            stateCallback(choosingCandidates);
+          }
+        );
+        entries.push(entry);
 
-        // TODO: validate value and rawValue
-        // TODO: Enter custom menu state
-
+        const customMenu = new CustomMenu(
+          choosingCandidates.composingBuffer,
+          choosingCandidates.cursorIndex,
+          title,
+          entries,
+          choosingCandidates,
+          choosingCandidates.cursorIndex
+        );
+        stateCallback(customMenu);
         return true;
       }
     }
@@ -744,6 +788,8 @@ export class InputController {
       this.handleBig5(prev, state);
     } else if (state instanceof EnclosingNumber) {
       this.handleEnclosingNumber(prev, state);
+    } else if (state instanceof CustomMenu) {
+      this.handleChoosingCandidate(prev, state);
     }
     this.state_ = state;
   }
@@ -816,6 +862,13 @@ export class InputController {
         candidates.push(candidate);
         index++;
       }
+    } else if (state instanceof CustomMenu) {
+      let index = 0;
+      for (const item of state.entries) {
+        const candidate = new Candidate("", index + "", item.title);
+        candidates.push(candidate);
+        index++;
+      }
     }
 
     let keys: string[] = [];
@@ -830,6 +883,9 @@ export class InputController {
     const totalPageCount = this.candidateController_.totalPageCount;
     const pageIndex = this.candidateController_.currentPageIndex;
     this.ui_.setPageIndex(pageIndex + 1, totalPageCount);
+    if (state instanceof CustomMenu) {
+      this.ui_.setTooltip(state.tooltip);
+    }
   }
 
   private handleMarking(prev: InputState, state: Marking) {

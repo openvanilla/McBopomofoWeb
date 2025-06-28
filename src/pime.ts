@@ -141,9 +141,14 @@ class PimeMcBopomofo {
       const command = `start "" "${url}"`;
       child_process.exec(command);
     });
-    this.inputController.setOnPhraseAdded((key: string, phrase: string) => {
-      this.addPhrase(key, phrase);
+    this.inputController.setOnPhraseChange((map: Map<string, string[]>) => {
+      this.writeUserPhrases(map);
     });
+    this.inputController.setOnExcludedPhraseChange(
+      (map: Map<string, string[]>) => {
+        this.writeExcludedPhrases(map);
+      }
+    );
     this.inputController.setOnError(() => {
       if (this.settings.beep_on_error) {
         child_process.exec(`rundll32 user32.dll,MessageBeep`);
@@ -231,7 +236,7 @@ class PimeMcBopomofo {
     });
   }
 
-  private addPhrase(key: string, phrase: string): void {
+  private writeUserPhrases(map: Map<string, string[]>): void {
     if (!fs.existsSync(this.mcBopomofoUserDataPath)) {
       console.log(
         "User data folder not found, creating " + this.mcBopomofoUserDataPath
@@ -240,47 +245,54 @@ class PimeMcBopomofo {
       fs.mkdirSync(this.mcBopomofoUserDataPath);
     }
 
-    fs.readFile(this.userPhrasesPath, (err, data) => {
-      let lineToWrite = phrase + " " + key + "\n";
-      if (data) {
-        let string = data.toString();
-        if (string.length > 0 && string[string.length - 1] !== "\n") {
-          string += "\n";
-        }
-        string += lineToWrite;
-        fs.writeFile(this.userPhrasesPath, string, (err) => {});
+    let string = "";
+    for (let key of map.keys()) {
+      let phrases = map.get(key);
+      if (phrases === undefined) {
+        continue;
+      }
+      for (let phrase of phrases) {
+        string += key + " " + phrase + "\n";
+      }
+    }
+
+    console.log("Writing user phrases to " + this.userPhrasesPath);
+    fs.writeFile(this.userPhrasesPath, string, (err) => {
+      if (err) {
+        console.error("Failed to write user phrases");
+        console.error(err);
       }
     });
   }
 
-  // private writeUserPhrases(map: Map<string, string[]>): void {
-  //   if (!fs.existsSync(this.mcBopomofoUserDataPath)) {
-  //     console.log(
-  //       "User data folder not found, creating " + this.mcBopomofoUserDataPath
-  //     );
-  //     console.log("Creating one");
-  //     fs.mkdirSync(this.mcBopomofoUserDataPath);
-  //   }
+  private writeExcludedPhrases(map: Map<string, string[]>): void {
+    if (!fs.existsSync(this.mcBopomofoUserDataPath)) {
+      console.log(
+        "User data folder not found, creating " + this.mcBopomofoUserDataPath
+      );
+      console.log("Creating one");
+      fs.mkdirSync(this.mcBopomofoUserDataPath);
+    }
 
-  //   let string = "";
-  //   for (let key of map.keys()) {
-  //     let phrases = map.get(key);
-  //     if (phrases === undefined) {
-  //       continue;
-  //     }
-  //     for (let phrase of phrases) {
-  //       string += key + " " + phrase + "\n";
-  //     }
-  //   }
+    let string = "";
+    for (let key of map.keys()) {
+      let phrases = map.get(key);
+      if (phrases === undefined) {
+        continue;
+      }
+      for (let phrase of phrases) {
+        string += key + " " + phrase + "\n";
+      }
+    }
 
-  //   console.log("Writing user phrases to " + this.userPhrasesPath);
-  //   fs.writeFile(this.userPhrasesPath, string, (err) => {
-  //     if (err) {
-  //       console.error("Failed to write user phrases");
-  //       console.error(err);
-  //     }
-  //   });
-  // }
+    console.log("Writing user phrases to " + this.userPhrasesPath);
+    fs.writeFile(this.excludedPhrasesPath, string, (err) => {
+      if (err) {
+        console.error("Failed to write user phrases");
+        console.error(err);
+      }
+    });
+  }
 
   public toggleAlphabetMode(): void {
     // Changes the alphabet mode, also commits current composing buffer.
