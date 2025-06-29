@@ -421,22 +421,16 @@ export class CustomMenuEntry {
  * @extends NotEmpty
  */
 export class CustomMenu extends NotEmpty {
-  readonly previousState: NotEmpty;
-  readonly selectedIndex: number;
   readonly entries: CustomMenuEntry[];
 
   constructor(
     composingBuffer: string,
     cursorIndex: number,
     title: string,
-    entries: CustomMenuEntry[],
-    previousState: NotEmpty,
-    selectedIndex: number
+    entries: CustomMenuEntry[]
   ) {
     super(composingBuffer, cursorIndex, title);
     this.entries = entries;
-    this.previousState = previousState;
-    this.selectedIndex = selectedIndex;
   }
 
   toString(): string {

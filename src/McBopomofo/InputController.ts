@@ -626,10 +626,11 @@ export class InputController {
       ) {
         stateCallback(new EmptyIgnoringPrevious());
       } else if (this.state_ instanceof SelectingDictionary) {
+        const current = this.state_;
         const previous = this.state_.previousState;
         stateCallback(previous);
         if (previous instanceof ChoosingCandidate) {
-          this.candidateController_.selectedIndex = this.state_.selectedIndex;
+          this.candidateController_.selectedIndex = current.selectedIndex;
         }
       } else if (this.state_ instanceof ChoosingCandidate) {
         this.keyHandler_.candidatePanelCancelled(
@@ -638,7 +639,10 @@ export class InputController {
             stateCallback(newState);
           }
         );
-        return;
+      } else if (this.state_ instanceof CustomMenu) {
+        const cursor = this.keyHandler_.cursor;
+        const choosing = this.keyHandler_.buildChoosingCandidateState(cursor);
+        stateCallback(choosing);
       }
       return;
     }
@@ -652,6 +656,9 @@ export class InputController {
       ) {
         const choosingCandidates = this.state_;
         const current = this.candidateController_.selectedCandidate;
+        if (!current) {
+          return true;
+        }
         const reading = current.reading;
         for (const prefix of invalidPrefixArray) {
           if (reading.startsWith(prefix)) {
@@ -695,9 +702,7 @@ export class InputController {
           choosingCandidates.composingBuffer,
           choosingCandidates.cursorIndex,
           title,
-          entries,
-          choosingCandidates,
-          choosingCandidates.cursorIndex
+          entries
         );
         stateCallback(customMenu);
         return true;
