@@ -1,7 +1,7 @@
 # McBopomofoWeb - 使用網頁技術打造的小麥注音輸入法
 
 ![Static Badge](https://img.shields.io/badge/platform-web-green)
-![ChromeOS](https://img.shields.io/badge/platform-chome_os-yellow) ![Static Badge](https://img.shields.io/badge/platform-windows-blue)
+![ChromeOS](https://img.shields.io/badge/platform-chome_os-yellow) ![Static Badge](https://img.shields.io/badge/platform-windows-blue) [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/openvanilla/McBopomofoWeb)
 
 本專案嘗試使用 JavaScript/TypeScript 與網頁相關技術實作小麥注音輸入法。小麥注音
 是一套自動選字的注音輸入法，提供多種常用鍵盤配置，以及各種方便快速輸入的功能。
