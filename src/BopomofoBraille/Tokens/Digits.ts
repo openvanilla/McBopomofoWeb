@@ -1,4 +1,14 @@
-/** Represents the digits. */
+/**
+ * @license
+ * Copyright (c) 2022 and onwards The McBopomofo Authors.
+ * This code is released under the MIT license.
+ * SPDX-License-Identifier: MIT
+ */
+
+/**
+ * Represents the digits.
+ * @enum {string}
+ */
 export enum Digit {
   zero = "0",
   one = "1",
@@ -51,6 +61,10 @@ export namespace Digit {
   }
 }
 
+/**
+ * Represents the digit related punctuations.
+ * @enum {string}
+ */
 export enum DigitRelated {
   point = ".",
   percent = "%",

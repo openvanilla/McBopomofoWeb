@@ -1,3 +1,10 @@
+/**
+ * @license
+ * Copyright (c) 2022 and onwards The McBopomofo Authors.
+ * This code is released under the MIT license.
+ * SPDX-License-Identifier: MIT
+ */
+
 import { BopomofoSyllable } from "./Tokens/BopomofoSyllable";
 import { Digit, DigitRelated } from "./Tokens/Digits";
 import { FullWidthPunctuation } from "./Tokens/FullWidthPunctuation";

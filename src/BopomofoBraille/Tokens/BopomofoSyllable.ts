@@ -1,7 +1,17 @@
+/**
+ * @license
+ * Copyright (c) 2022 and onwards The McBopomofo Authors.
+ * This code is released under the MIT license.
+ * SPDX-License-Identifier: MIT
+ */
+
 const kMinimalBopomofoLength = 1;
 const kMinimalBrailleLength = 2;
 
-/** Represents the Consonants in Bopomofo. */
+/**
+ * Represents the Consonants in Bopomofo.
+ * @enum {string}
+ */
 enum Consonant {
   ㄅ = "ㄅ",
   ㄆ = "ㄆ",
@@ -102,7 +112,10 @@ namespace Consonant {
   }
 }
 
-/** Represents the middle vowels in Bopomofo. */
+/**
+ * Represents the middle vowels in Bopomofo.
+ * @enum {string}
+ */
 enum MiddleVowel {
   ㄧ = "ㄧ",
   ㄨ = "ㄨ",
@@ -166,6 +179,7 @@ namespace MiddleVowel {
 
 /**
  * Represents the vowels in Bopomofo.
+ * @enum {string}
  */
 enum Vowel {
   ㄚ = "ㄚ",
@@ -235,6 +249,10 @@ namespace Vowel {
   }
 }
 
+/**
+ * Represents the combinations of ㄧ in Bopomofo.
+ * @enum {string}
+ */
 enum ㄧ_Combination {
   ㄧㄚ = "ㄧㄚ",
   ㄧㄛ = "ㄧㄛ",
@@ -298,6 +316,10 @@ namespace ㄧ_Combination {
   }
 }
 
+/**
+ * Represents the combinations of ㄨ in Bopomofo.
+ * @enum {string}
+ */
 enum ㄨ_Combination {
   ㄨㄚ = "ㄨㄚ",
   ㄨㄛ = "ㄨㄛ",
@@ -357,6 +379,10 @@ namespace ㄨ_Combination {
   }
 }
 
+/**
+ * Represents the combinations of ㄩ in Bopomofo.
+ * @enum {string}
+ */
 enum ㄩ_Combination {
   ㄩㄝ = "ㄩㄝ",
   ㄩㄢ = "ㄩㄢ",
@@ -407,6 +433,10 @@ namespace ㄩ_Combination {
   }
 }
 
+/**
+ * Represents the tones in Bopomofo.
+ * @enum {string}
+ */
 enum Tone {
   tone1 = "",
   tone2 = "ˊ",

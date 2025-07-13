@@ -7,15 +7,28 @@
 
 import { BopomofoSyllable, Component } from "./BopomofoSyllable";
 
+/**
+ * A map between Bopomofo characters and their components.
+ * @class
+ */
 export class BopomofoCharacterMap {
+  /**
+   * The shared instance of the map.
+   */
   static sharedInstance: BopomofoCharacterMap = new BopomofoCharacterMap();
 
   private characterToComponent_: Map<string, Component> = new Map();
+  /**
+   * A map from Bopomofo characters to their components.
+   */
   get characterToComponent(): Map<string, Component> {
     return this.characterToComponent_;
   }
 
   private componentToCharacter_: Map<Component, string> = new Map();
+  /**
+   * A map from Bopomofo components to their characters.
+   */
   get componentToCharacter(): Map<Component, string> {
     return this.componentToCharacter_;
   }

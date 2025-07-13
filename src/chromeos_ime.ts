@@ -17,6 +17,9 @@ const ChineseConvert = require("chinese_convert");
 
 const largeSync = new LargeSync();
 
+/**
+ * Represents the settings for the McBopomofo IME on ChromeOS.
+ */
 type ChromeMcBopomofoSettings = {
   /** The keyboard layout. */
   layout: string;
@@ -48,6 +51,9 @@ type ChromeMcBopomofoSettings = {
   repeated_punctuation_choose_candidate: boolean;
 };
 
+/**
+ * The main class for the McBopomofo IME on ChromeOS.
+ */
 class ChromeMcBopomofo {
   // The ID of the current input engine.
   engineID: string | undefined = undefined;
@@ -116,6 +122,9 @@ class ChromeMcBopomofo {
     this.inputController.setUserVerticalCandidates(true);
   }
 
+  /**
+   * Loads the settings from chrome.storage.sync.
+   */
   loadSettings() {
     chrome.storage.sync.get("settings", (value) => {
       this.settings = value.settings;
@@ -168,6 +177,9 @@ class ChromeMcBopomofo {
     });
   }
 
+  /**
+   * Loads the user phrases from largeSync.
+   */
   loadUserPhrases() {
     largeSync.get(["user_phrase"], (value) => {
       // On ChromeOS, we store the user phrases in JSON format, but
@@ -187,6 +199,9 @@ class ChromeMcBopomofo {
     });
   }
 
+  /**
+   * Loads the excluded phrases from largeSync.
+   */
   loadExcludedPhrases() {
     largeSync.get(["excluded_phrase"], (value) => {
       // On ChromeOS, we store the user phrases in JSON format, but
@@ -206,6 +221,9 @@ class ChromeMcBopomofo {
     });
   }
 
+  /**
+   * Updates the menu items.
+   */
   updateMenu() {
     if (this.engineID === undefined) return;
     const menus = [
@@ -251,6 +269,9 @@ class ChromeMcBopomofo {
     chrome.input.ime.setMenuItems({ engineID: this.engineID, items: menus });
   }
 
+  /**
+   * Toggles the alphabet mode.
+   */
   toggleAlphabetMode() {
     if (this.engineID === undefined) return;
     this.isAlphabetMode = !this.isAlphabetMode;
@@ -270,6 +291,9 @@ class ChromeMcBopomofo {
     }
   }
 
+  /**
+   * Toggles the Chinese conversion.
+   */
   toggleChineseConversion() {
     let checked = this.settings.chinese_conversion;
     checked = !checked;
@@ -300,6 +324,9 @@ class ChromeMcBopomofo {
     });
   }
 
+  /**
+   * Toggles the half-width punctuation.
+   */
   toggleHalfWidthPunctuation() {
     let checked = this.settings.half_width_punctuation_enabled;
     checked = !checked;
@@ -328,6 +355,10 @@ class ChromeMcBopomofo {
     });
   }
 
+  /**
+   * Tries to open a URL in a new tab or focus on an existing tab with the same URL.
+   * @param url The URL to open.
+   */
   tryOpen(url: string) {
     chrome.windows.getCurrent({}, (win) => {
       if (win === undefined) {
@@ -368,6 +399,10 @@ class ChromeMcBopomofo {
     }, 5000);
   }
 
+  /**
+   * Creates the UI object for the input controller.
+   * @returns The UI object.
+   */
   makeUI() {
     return {
       reset: () => {
@@ -861,6 +896,11 @@ chrome.contextMenus.create({
   contexts: ["selection", "editable"],
 });
 
+/**
+ * Converts a keyboard event to a Key object.
+ * @param event The keyboard event.
+ * @returns The Key object.
+ */
 function KeyFromKeyboardEvent(event: chrome.input.ime.KeyboardEvent) {
   let keyName = KeyName.UNKNOWN;
   switch (event.code) {

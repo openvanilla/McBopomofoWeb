@@ -37,6 +37,7 @@ export interface LanguageModel {
  * Represents a unigram in a language model with a value and an associated
  * score. A unigram is a single unit (typically a word or character) in natural
  * language processing.
+ * @class
  */
 export class Unigram {
   readonly value: string;

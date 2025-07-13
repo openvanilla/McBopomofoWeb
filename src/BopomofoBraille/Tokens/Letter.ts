@@ -1,3 +1,14 @@
+/**
+ * @license
+ * Copyright (c) 2022 and onwards The McBopomofo Authors.
+ * This code is released under the MIT license.
+ * SPDX-License-Identifier: MIT
+ */
+
+/**
+ * Represents the letters.
+ * @enum {string}
+ */
 export enum Letter {
   a = "a",
   b = "b",
@@ -90,3 +101,4 @@ export namespace Letter {
     return (map.get(c) as string[])[1];
   }
 }
+

@@ -19,13 +19,24 @@ import path from "path";
 import process from "process";
 import { Empty } from "./McBopomofo/InputState";
 
-/** The McBopomofo Settings. */
+/**
+ * The McBopomofo Settings.
+ * @interface
+ */
 interface Settings {
+  /** The font size of the candidate window. */
   candidate_font_size: number;
-  /** The keyboard layout. Valid options: "Standard", "Hsu", "ETen", "ETen26",
-   * "IBM", "HanyuPinyin" */
+  /**
+   * The keyboard layout.
+   * @remarks
+   * Valid options: "Standard", "Hsu", "ETen", "ETen26", "IBM", "HanyuPinyin"
+   */
   layout: string;
-  /** "before_cursor" and "after_cursor". */
+  /**
+   * The selection phrase.
+   * @remarks
+   * Valid options: "before_cursor" and "after_cursor".
+   */
   select_phrase: string;
   /** The candidate keys like "123456789", "asdfghjkl" and so on. */
   candidate_keys: string;
@@ -39,13 +50,19 @@ interface Settings {
   shift_key_toggle_alphabet_mode: boolean;
   /** Whether Traditional/Simplified Chinese conversion is on. */
   chineseConversion: boolean;
-  /** Whether the input method moves the cursor to the place of the end of the
-   * selected candidate. Only works when select_phrase is "after_cursor" */
+  /**
+   * Whether the input method moves the cursor to the place of the end of the
+   * selected candidate.
+   * @remarks
+   * Only works when select_phrase is "after_cursor"
+   */
   move_cursor: boolean;
   /** Inputs upper case or lower case letters when shift key is pressed. */
   letter_mode: string;
-  /** Whether input half width punctuation instead of default full width
-   * punctuation. */
+  /**
+   * Whether input half width punctuation instead of default full width
+   * punctuation.
+   */
   half_width_punctuation: boolean;
   /** Whether the input method is deactivated on Windows 8 and above. */
   by_default_deactivated: boolean;
@@ -53,18 +70,30 @@ interface Settings {
   beep_on_error: boolean;
   /** The behavior for handling Ctrl+ Enter key. */
   ctrl_enter_option: number;
+  /** Whether to use repeated punctuation to choose candidate. */
   repeated_punctuation_choose_candidate: boolean;
 }
 
-/** A middle data structure between McBopomofo input controller and PIME. */
+/**
+ * A middle data structure between McBopomofo input controller and PIME.
+ * @interface
+ */
 interface UiState {
+  /** The string to be committed. */
   commitString: string;
+  /** The composition string. */
   compositionString: string;
+  /** The cursor position in the composition string. */
   compositionCursor: number;
+  /** Whether to show the candidate window. */
   showCandidates: boolean;
+  /** The list of candidates. */
   candidateList: List<string>;
+  /** The cursor position in the candidate list. */
   candidateCursor: number;
+  /** The message to be shown. */
   showMessage: any;
+  /** Whether to hide the message. */
   hideMessage: boolean;
 }
 
@@ -88,6 +117,10 @@ const defaultSettings: Settings = {
   repeated_punctuation_choose_candidate: false,
 };
 
+/**
+ * The commands for PIME McBopomofo.
+ * @enum
+ */
 enum PimeMcBopomofoCommand {
   ModeIcon = 0,
   SwitchLanguage = 1,
@@ -108,6 +141,7 @@ enum PimeMcBopomofoCommand {
 class PimeMcBopomofo {
   /** The input controller. */
   readonly inputController: InputController;
+  /** The UI state. */
   uiState: UiState = {
     commitString: "",
     compositionString: "",
@@ -120,21 +154,32 @@ class PimeMcBopomofo {
   };
   /** The settings in memory. */
   settings: Settings = defaultSettings;
-  /**  Whether the input method is in Alphabet mode or Chinese mode. True for
-   * Alphabet mode, false for Chinese mode. */
+  /**
+   * Whether the input method is in Alphabet mode or Chinese mode. True for
+   * Alphabet mode, false for Chinese mode.
+   */
   isAlphabetMode: boolean = false;
+  /** The last request from PIME. */
   lastRequest: any = {};
+  /** Whether the last key down event was handled. */
   isLastFilterKeyDownHandled: boolean = false;
+  /** Whether the input method is opened. */
   isOpened: boolean = true;
-  /** Helps to remember if Shift key is pressed on when key down event is
-   * triggered. It would be reset on key on. */
+  /**
+   * Helps to remember if Shift key is pressed on when key down event is
+   * triggered. It would be reset on key on.
+   */
   isShiftHold: boolean = false;
-  /** Helps to remember if Caps Lock is on when key down event is triggered. It
-   * would be reset on key on. */
+  /**
+   * Helps to remember if Caps Lock is on when key down event is triggered. It
+   * would be reset on key on.
+   */
   isCapsLockHold: boolean = false;
-  /** If the user presses a shortcut key, such as the key to toggle
+  /**
+   * If the user presses a shortcut key, such as the key to toggle
    * Traditional/Simplifies Chinese, the flag should be set to true and then
-   * update the input UI. */
+   * update the input UI.
+   */
   isScheduledToUpdateUi = false;
 
   constructor() {
@@ -164,6 +209,7 @@ class PimeMcBopomofo {
     this.loadUserPhrases();
   }
 
+  /** Resets the UI state before handling a key. */
   public resetBeforeHandlingKey(): void {
     this.isLastFilterKeyDownHandled = false;
     this.uiState = {
@@ -178,35 +224,42 @@ class PimeMcBopomofo {
     };
   }
 
+  /** Resets the input controller. */
   public resetController(): void {
     this.inputController.reset();
   }
 
+  /** The path to the PIME user data folder. */
   readonly pimeUserDataPath: string = path.join(
     process.env.APPDATA || "",
     "PIME"
   );
 
+  /** The path to the McBopomofo user data folder. */
   readonly mcBopomofoUserDataPath: string = path.join(
     this.pimeUserDataPath,
     "mcbopomofo"
   );
 
+  /** The path to the user phrases file. */
   readonly userPhrasesPath: string = path.join(
     this.mcBopomofoUserDataPath,
     "data.txt"
   );
 
+  /** The path to the excluded phrases file. */
   readonly excludedPhrasesPath: string = path.join(
     this.mcBopomofoUserDataPath,
     "exclude-phrases.txt"
   );
 
+  /** The path to the user settings file. */
   readonly userSettingsPath: string = path.join(
     this.mcBopomofoUserDataPath,
     "config.json"
   );
 
+  /** Loads user phrases from disk. */
   public loadUserPhrases(): void {
     fs.readFile(this.userPhrasesPath, (err, data) => {
       if (err) {
@@ -297,12 +350,14 @@ class PimeMcBopomofo {
     });
   }
 
+  /** Toggles the alphabet mode. */
   public toggleAlphabetMode(): void {
     // Changes the alphabet mode, also commits current composing buffer.
     this.isAlphabetMode = !this.isAlphabetMode;
     this.resetController();
   }
 
+  /** Applies the settings to the input controller. */
   public applySettings(): void {
     this.inputController.setKeyboardLayout(this.settings.layout);
     this.inputController.setSelectPhrase(this.settings.select_phrase);
@@ -331,7 +386,10 @@ class PimeMcBopomofo {
     this.inputController.setLanguageCode("zh-TW");
   }
 
-  /** Load settings from disk */
+  /**
+   * Load settings from disk.
+   * @param callback The callback function.
+   */
   public loadSettings(callback: () => void): void {
     fs.readFile(this.userSettingsPath, (err, data) => {
       if (err) {
@@ -377,6 +435,11 @@ class PimeMcBopomofo {
     });
   }
 
+  /**
+   * Creates an InputUI object.
+   * @param instance The PimeMcBopomofo instance.
+   * @returns The InputUI object.
+   */
   public makeUI(instance: PimeMcBopomofo): InputUI {
     let that: InputUI = {
       reset: () => {
@@ -451,9 +514,15 @@ class PimeMcBopomofo {
     return that;
   }
 
+  /** Whether the button has been added to the UI. */
   alreadyAddButton: boolean = false;
+  /** Whether the OS is Windows 8 or above. */
   isWindows8Above: boolean = false;
 
+  /**
+   * Creates the button UI response.
+   * @returns The button UI response.
+   */
   public buttonUiResponse(): any {
     let windowsModeIcon = "close.ico";
     if (this.isOpened) {
@@ -507,6 +576,10 @@ class PimeMcBopomofo {
     return object;
   }
 
+  /**
+   * Creates the custom UI response.
+   * @returns The custom UI response.
+   */
   public customUiResponse(): any {
     let fontSize = this.settings.candidate_font_size;
     if (fontSize == undefined) {
@@ -530,6 +603,7 @@ class PimeMcBopomofo {
     };
   }
 
+  /** Creates the user phrases file if it does not exist. */
   public createUserPhrasesIfNotExists(): void {
     if (!fs.existsSync(pimeMcBopomofo.pimeUserDataPath)) {
       fs.mkdirSync(pimeMcBopomofo.pimeUserDataPath);
@@ -558,6 +632,10 @@ class PimeMcBopomofo {
     }
   }
 
+  /**
+   * Handles a command.
+   * @param id The command ID.
+   */
   public handleCommand(id: PimeMcBopomofoCommand): void {
     switch (id) {
       case PimeMcBopomofoCommand.ModeIcon:

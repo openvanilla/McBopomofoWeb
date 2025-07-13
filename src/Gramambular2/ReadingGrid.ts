@@ -5,7 +5,6 @@
  * SPDX-License-Identifier: MIT
  */
 
-// import assert from "assert";
 import { LanguageModel, Unigram } from "./LanguageModel";
 
 /**
@@ -20,6 +19,7 @@ import { LanguageModel, Unigram } from "./LanguageModel";
  * language model consists of only unigrams. Once we have put all plausible
  * unigrams as nodes on the grid, a simple DAG shortest-path walk will give us
  * the maximum likelihood estimation (MLE) for the hidden values.
+ * @class
  */
 export class ReadingGrid {
   private cursor_: number = 0;
@@ -32,20 +32,32 @@ export class ReadingGrid {
     this.lm_ = lm;
   }
 
+  /**
+   * Clears the grid.
+   */
   clear() {
     this.cursor_ = 0;
     this.readings_ = [];
     this.spans_ = [];
   }
 
+  /**
+   * The readings in the grid.
+   */
   get readings(): string[] {
     return this.readings_;
   }
 
+  /**
+   * The length of the readings in the grid.
+   */
   get length(): number {
     return this.readings_.length;
   }
 
+  /**
+   * The cursor position in the grid.
+   */
   get cursor(): number {
     return this.cursor_;
   }
@@ -54,6 +66,9 @@ export class ReadingGrid {
     this.cursor_ = cursor;
   }
 
+  /**
+   * The separator for readings.
+   */
   get readingSeparator(): string {
     return this.separator_;
   }
@@ -62,6 +77,11 @@ export class ReadingGrid {
     this.separator_ = readingSeparator;
   }
 
+  /**
+   * Inserts a reading at the current cursor position.
+   * @param reading The reading to insert.
+   * @returns True if the reading was inserted, false otherwise.
+   */
   insertReading(reading: string): boolean {
     if (reading.length === 0 || reading === this.separator_) {
       return false;
@@ -80,6 +100,7 @@ export class ReadingGrid {
   /**
    * Delete the reading before the cursor, like Backspace. Cursor will decrement
    * by one.
+   * @returns Always returns false.
    */
   deleteReadingBeforeCursor(): boolean {
     if (!this.cursor_) {
@@ -94,6 +115,7 @@ export class ReadingGrid {
 
   /**
    * Delete the reading after the cursor, like Del. Cursor is unmoved.
+   * @returns Always returns false.
    */
   deleteReadingAfterCursor(): boolean {
     if (this.cursor_ >= this.readings_.length) {
@@ -117,6 +139,7 @@ export class ReadingGrid {
    * log probability a larger value means a larger probability. The algorithm
    * runs in O(|V| + |E|) time for G = (V, E) where G is a DAG. This means the
    * walk is fairly economical even when the grid is large.
+   * @returns The result of the walk.
    */
   walk(): WalkResult {
     if (this.spans_.length === 0) {
@@ -198,6 +221,8 @@ export class ReadingGrid {
    * Returns all candidate values at the location. If spans are not empty and
    * loc is at the end of the spans, (loc - 1) is used, so that the caller does
    * not have to care about this boundary condition.
+   * @param loc The location to get candidates from.
+   * @returns A list of candidates.
    */
   candidatesAt(loc: number): Candidate[] {
     let result: Candidate[] = [];
@@ -231,6 +256,10 @@ export class ReadingGrid {
    * value and applies the desired override type, essentially resulting in user
    * override. An overridden node would influence the grid walk to favor walking
    * through it.
+   * @param loc The location of the candidate.
+   * @param candidate The candidate to override.
+   * @param overrideType The type of override.
+   * @returns True if the override was successful, false otherwise.
    */
   overrideCandidate = (
     loc: number,
@@ -248,6 +277,10 @@ export class ReadingGrid {
    * Same as the method above, but since the string candidate value is used, if
    * there are multiple nodes (of different spanning length) that have the same
    * unigram value, it's not guaranteed which node will be selected.
+   * @param loc The location of the candidate.
+   * @param candidate The candidate to override.
+   * @param overrideType The type of override.
+   * @returns True if the override was successful, false otherwise.
    */
   overrideCandidateWithString = (
     loc: number,
@@ -419,6 +452,8 @@ export class ReadingGrid {
   /**
    * Find all nodes that overlap with the location. The return value is a list
    * of nodes along with their starting location in the grid.
+   * @param loc The location to find overlapping nodes.
+   * @returns A list of nodes that overlap with the location.
    */
   overlappingNodesAt(loc: number): NodeInSpan[] {
     let results: NodeInSpan[] = [];
@@ -453,6 +488,10 @@ export class ReadingGrid {
   }
 }
 
+/**
+ * The type of override.
+ * @enum {number}
+ */
 export enum OverrideType {
   kNone,
   // Override the node with a unigram value and a score such that the node
@@ -469,6 +508,10 @@ export enum OverrideType {
   kOverrideValueWithScoreFromTopUnigram,
 }
 
+/**
+ * A node in the reading grid.
+ * @class
+ */
 export class Node {
   readonly reading: string;
   readonly spanningLength: number;
@@ -482,18 +525,27 @@ export class Node {
     this.unigrams = unigrams;
   }
 
+  /**
+   * The current unigram of the node.
+   */
   get currentUnigram(): Unigram {
     return this.unigrams.length === 0
       ? new Unigram("", 0)
       : this.unigrams[this.selectedIndex_];
   }
 
+  /**
+   * The value of the current unigram.
+   */
   get value(): string {
     return this.unigrams.length === 0
       ? ""
       : this.unigrams[this.selectedIndex_].value;
   }
 
+  /**
+   * The score of the current unigram.
+   */
   get score(): number {
     if (this.unigrams.length === 0) {
       return 0;
@@ -510,15 +562,27 @@ export class Node {
     }
   }
 
+  /**
+   * Whether the node is overridden.
+   */
   get isOverridden(): boolean {
     return this.overrideType_ != OverrideType.kNone;
   }
 
+  /**
+   * Resets the node to its original state.
+   */
   reset() {
     this.selectedIndex_ = 0;
     this.overrideType_ = OverrideType.kNone;
   }
 
+  /**
+   * Selects a unigram to override the node.
+   * @param value The value of the unigram to select.
+   * @param type The type of override.
+   * @returns True if the unigram was found and selected, false otherwise.
+   */
   selectOverrideUnigram(value: string, type: OverrideType): boolean {
     // assert(type != OverrideType.kNone);
     for (let i = 0; i < this.unigrams.length; i++) {
@@ -547,6 +611,10 @@ export class Node {
   static kOverridingScore: number = 42;
 }
 
+/**
+ * The result of a walk on the reading grid.
+ * @class
+ */
 export class WalkResult {
   readonly nodes: Node[];
   readonly vertices: number;
@@ -568,6 +636,10 @@ export class WalkResult {
     this.totalReadings = totalReadings;
   }
 
+  /**
+   * The values of the nodes as a list of strings.
+   * @returns A list of strings.
+   */
   valuesAsStrings(): string[] {
     let result: string[] = [];
 
@@ -577,6 +649,10 @@ export class WalkResult {
     return result;
   }
 
+  /**
+   * The readings of the nodes as a list of strings.
+   * @returns A list of strings.
+   */
   readingsAsStrings(): string[] {
     let result: string[] = [];
 
@@ -586,6 +662,11 @@ export class WalkResult {
     return result;
   }
 
+  /**
+   * Finds the node at a given cursor position.
+   * @param cursor The cursor position.
+   * @returns A tuple containing the found node, the cursor index, and the node index.
+   */
   findNodeAt(
     cursor: number
   ): Readonly<
@@ -624,7 +705,10 @@ export class WalkResult {
   }
 }
 
-/** Represents a candidate which has a reading and a value. */
+/**
+ * Represents a candidate which has a reading and a value.
+ * @class
+ */
 export class Candidate {
   /** The reading of the candidate. For example, when a user tries to input "你
     ", the reading is "ㄋㄧˇ" */
@@ -644,6 +728,10 @@ export class Candidate {
   }
 }
 
+/**
+ * A span in the reading grid.
+ * @class
+ */
 export class Span {
   nodes_: (Node | undefined)[] = [];
   maxLength_: number = 0;
@@ -652,15 +740,25 @@ export class Span {
     this.nodes_.fill(undefined, 0, ReadingGrid.kMaximumSpanLength);
   }
 
+  /**
+   * The maximum length of the nodes in the span.
+   */
   get maxLength(): number {
     return this.maxLength_;
   }
 
+  /**
+   * Clears the span.
+   */
   clear() {
     this.nodes_.fill(undefined, 0, ReadingGrid.kMaximumSpanLength);
     this.maxLength_ = 0;
   }
 
+  /**
+   * Adds a node to the span.
+   * @param node The node to add.
+   */
   add(node: Node) {
     this.nodes_[node.spanningLength - 1] = node;
 
@@ -669,6 +767,10 @@ export class Span {
     }
   }
 
+  /**
+   * Removes nodes of a certain length or longer.
+   * @param length The length to remove.
+   */
   removeNodesOfOrLongerThan(length: number) {
     // assert(length > 0 && length <= ReadingGrid.kMaximumSpanLength);
     for (let i = length - 1; i < ReadingGrid.kMaximumSpanLength; ++i) {
@@ -694,12 +796,22 @@ export class Span {
     }
   }
 
+  /**
+   * Returns the node of a certain length.
+   * @param length The length of the node.
+   * @returns The node of the given length.
+   */
   nodeOf(length: number): Node | undefined {
     // assert(length > 0 && length <= ReadingGrid.kMaximumSpanLength);
     return this.nodes_[length - 1];
   }
 }
 
+/**
+ * A language model that ranks unigrams by score.
+ * @class
+ * @implements {LanguageModel}
+ */
 export class ScoreRankedLanguageModel implements LanguageModel {
   private lm_: LanguageModel;
 
@@ -715,6 +827,10 @@ export class ScoreRankedLanguageModel implements LanguageModel {
   }
 }
 
+/**
+ * A node in a span.
+ * @class
+ */
 export class NodeInSpan {
   readonly node: Node;
   readonly spanIndex: number;
@@ -746,6 +862,8 @@ class Vertex {
 
 /**
  * Cormen et al. 2001 explains the historical origin of the term "relax."
+ * @param u The source vertex.
+ * @param v The destination vertex.
  */
 function Relax(u: Vertex, v: Vertex) {
   // The distance from u to w is simply v's score.

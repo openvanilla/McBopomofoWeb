@@ -1,3 +1,10 @@
+/**
+ * @license
+ * Copyright (c) 2022 and onwards The McBopomofo Authors.
+ * This code is released under the MIT license.
+ * SPDX-License-Identifier: MIT
+ */
+
 function reverseString(str: string) {
   let result = "";
   for (let i = str.length - 1; i >= 0; i--) {
@@ -6,6 +13,11 @@ function reverseString(str: string) {
   return result;
 }
 
+/**
+ * Trims zeros at the start of a string.
+ * @param string The string to trim.
+ * @returns The trimmed string.
+ */
 export function TrimZerosAtStart(string: string): string {
   let nonZeroFound = false;
   let output = "";
@@ -22,6 +34,11 @@ export function TrimZerosAtStart(string: string): string {
   return output;
 }
 
+/**
+ * Trims zeros at the end of a string.
+ * @param string The string to trim.
+ * @returns The trimmed string.
+ */
 export function TrimZerosAtEnd(string: string): string {
   const reverse = reverseString(string);
   const trimmed = TrimZerosAtStart(reverse);

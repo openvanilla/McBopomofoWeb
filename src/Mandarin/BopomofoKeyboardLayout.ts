@@ -7,13 +7,26 @@
 
 import { BopomofoSyllable, Component } from "./BopomofoSyllable";
 
+/**
+ * A map from a key to a list of Bopomofo components.
+ */
 export type BopomofoKeyToComponentMap = Map<string, Component[]>;
+/**
+ * A map from a Bopomofo component to a key.
+ */
 export type BopomofoComponentToKeyMap = Map<Component, string>;
 
+/**
+ * A Bopomofo keyboard layout.
+ * @class
+ */
 export class BopomofoKeyboardLayout {
   private static StandardLayout_: BopomofoKeyboardLayout =
     BopomofoKeyboardLayout.CreateStandardLayout_();
 
+  /**
+   * The standard layout.
+   */
   static get StandardLayout(): BopomofoKeyboardLayout {
     return BopomofoKeyboardLayout.StandardLayout_;
   }
@@ -21,6 +34,9 @@ export class BopomofoKeyboardLayout {
   private static IBMLayout_: BopomofoKeyboardLayout =
     BopomofoKeyboardLayout.CreateIBMLayout_();
 
+  /**
+   * The IBM layout.
+   */
   static get IBMLayout(): BopomofoKeyboardLayout {
     return BopomofoKeyboardLayout.IBMLayout_;
   }
@@ -28,6 +44,9 @@ export class BopomofoKeyboardLayout {
   private static ETenLayout_: BopomofoKeyboardLayout =
     BopomofoKeyboardLayout.CreateETenLayout_();
 
+  /**
+   * The ETen layout.
+   */
   static get ETenLayout(): BopomofoKeyboardLayout {
     return BopomofoKeyboardLayout.ETenLayout_;
   }
@@ -35,6 +54,9 @@ export class BopomofoKeyboardLayout {
   private static HsuLayout_: BopomofoKeyboardLayout =
     BopomofoKeyboardLayout.CreateHsuLayout_();
 
+  /**
+   * The Hsu layout.
+   */
   static get HsuLayout(): BopomofoKeyboardLayout {
     return BopomofoKeyboardLayout.HsuLayout_;
   }
@@ -42,6 +64,9 @@ export class BopomofoKeyboardLayout {
   private static ETen26Layout_: BopomofoKeyboardLayout =
     BopomofoKeyboardLayout.CreateETen26Layout_();
 
+  /**
+   * The ETen26 layout.
+   */
   static get ETen26Layout(): BopomofoKeyboardLayout {
     return BopomofoKeyboardLayout.ETen26Layout_;
   }
@@ -49,6 +74,9 @@ export class BopomofoKeyboardLayout {
   private static HanyuPinyinLayout_: BopomofoKeyboardLayout =
     BopomofoKeyboardLayout.CreateHanyuPinyinLayout_();
 
+  /**
+   * The Hanyu Pinyin layout.
+   */
   static get HanyuPinyinLayout(): BopomofoKeyboardLayout {
     return BopomofoKeyboardLayout.HanyuPinyinLayout_;
   }
@@ -67,18 +95,36 @@ export class BopomofoKeyboardLayout {
     });
   }
 
+  /**
+   * The name of the layout.
+   */
   get name(): string {
     return this.name_;
   }
 
+  /**
+   * Converts a Bopomofo component to a key.
+   * @param component The Bopomofo component.
+   * @returns The key.
+   */
   componentToKey(component: Component): string {
     return this.componentToKey_.get(component) ?? "";
   }
 
+  /**
+   * Converts a key to a list of Bopomofo components.
+   * @param key The key.
+   * @returns A list of Bopomofo components.
+   */
   keyToComponents(key: string): Component[] {
     return this.keyToComponent_.get(key) ?? [];
   }
 
+  /**
+   * Converts a Bopomofo syllable to a key sequence.
+   * @param syllable The Bopomofo syllable.
+   * @returns The key sequence.
+   */
   keySequenceFromSyllable(syllable: BopomofoSyllable): string {
     let sequence = "";
     let c: Component = 0;
@@ -99,6 +145,11 @@ export class BopomofoKeyboardLayout {
     return sequence;
   }
 
+  /**
+   * Converts a key sequence to a Bopomofo syllable.
+   * @param sequence The key sequence.
+   * @returns The Bopomofo syllable.
+   */
   syllableFromKeySequence(sequence: string): BopomofoSyllable {
     const syllable = new BopomofoSyllable(0);
     for (let i = 0; i < sequence.length; i++) {

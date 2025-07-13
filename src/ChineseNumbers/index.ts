@@ -13,6 +13,7 @@
  * - Handling traditional and simplified Chinese numeric characters
  * - Supporting Suzhou/Huama numeric notation system
  *
+ * @module ChineseNumbers
  * @packageDocumentation
  */
 

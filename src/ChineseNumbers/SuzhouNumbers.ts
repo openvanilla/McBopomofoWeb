@@ -1,5 +1,15 @@
+/**
+ * @license
+ * Copyright (c) 2022 and onwards The McBopomofo Authors.
+ * This code is released under the MIT license.
+ * SPDX-License-Identifier: MIT
+ */
+
 import { TrimZerosAtEnd, TrimZerosAtStart } from "./StringUtils";
 
+/**
+ * A class to convert numbers to Suzhou numbers.
+ */
 export class SuzhouNumbers {
   private static verticalDigits = new Map<string, string>([
     ["0", "〇"],
@@ -53,6 +63,14 @@ export class SuzhouNumbers {
     "千穰",
   ];
 
+  /**
+   * Generates a Suzhou number string.
+   * @param intPart The integer part of the number.
+   * @param decPart The decimal part of the number.
+   * @param unit The unit of the number.
+   * @param preferInitialVertical Whether to prefer vertical digits for the first digit.
+   * @returns The Suzhou number string.
+   */
   public static generate(
     intPart: string,
     decPart: string,
@@ -113,3 +131,4 @@ export class SuzhouNumbers {
     );
   }
 }
+

@@ -1,4 +1,14 @@
-/** Represents the full-width punctuations. */
+/**
+ * @license
+ * Copyright (c) 2022 and onwards The McBopomofo Authors.
+ * This code is released under the MIT license.
+ * SPDX-License-Identifier: MIT
+ */
+
+/**
+ * Represents the full-width punctuations.
+ * @enum {string}
+ */
 export enum FullWidthPunctuation {
   period = "。",
   dot = "·",

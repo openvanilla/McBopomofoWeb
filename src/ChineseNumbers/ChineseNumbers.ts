@@ -1,8 +1,19 @@
+/**
+ * @license
+ * Copyright (c) 2022 and onwards The McBopomofo Authors.
+ * This code is released under the MIT license.
+ * SPDX-License-Identifier: MIT
+ */
+
 import {
   TrimZerosAtStart,
   TrimZerosAtEnd as TrimZerosAtEnd,
 } from "./StringUtils";
 
+/**
+ * The case of the Chinese numbers.
+ * @enum {number}
+ */
 export enum Case {
   lowercase,
   uppercase,
@@ -73,6 +84,9 @@ function places(numberCase: Case) {
 
 const higherPlaces = ["", "萬", "億", "兆", "京", "垓", "秭", "穰"];
 
+/**
+ * A class to convert numbers to Chinese numbers.
+ */
 export class ChineseNumbers {
   private static convert4Digits(
     subString: string,
@@ -102,6 +116,13 @@ export class ChineseNumbers {
     return output;
   }
 
+  /**
+   * Generates a Chinese number string.
+   * @param intPart The integer part of the number.
+   * @param decPart The decimal part of the number.
+   * @param numberCase The case of the Chinese number.
+   * @returns The Chinese number string.
+   */
   static generate(intPart: string, decPart: string, numberCase: Case): string {
     const intTrimmed = TrimZerosAtStart(intPart);
     const decTrimmed = TrimZerosAtEnd(decPart);

@@ -13,7 +13,8 @@
  * - Work with Bopomofo syllables
  * - Convert Bopomofo text to Braille
  *
- * @module BopomofoBraille @packageDocumentation
+ * @module BopomofoBraille
+ * @packageDocumentation
  */
 
 export { BopomofoSyllable } from "./Tokens/BopomofoSyllable";

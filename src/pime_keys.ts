@@ -8,6 +8,10 @@
 
 import { Key, KeyName } from "./McBopomofo/Key";
 
+/**
+ * Virtual key codes.
+ * @enum {number}
+ */
 export enum VK_Keys {
   VK_LBUTTON = 0x01,
   VK_RBUTTON = 0x02,
@@ -191,6 +195,14 @@ export enum VK_Keys {
   VK_OEM_CLEAR = 0xfe,
 }
 
+/**
+ * Creates a Key object from a keyboard event.
+ * @param keyCode The key code.
+ * @param keyStates The key states.
+ * @param ascii The ASCII character.
+ * @param charCode The character code.
+ * @returns The Key object.
+ */
 export function KeyFromKeyboardEvent(
   keyCode: number,
   keyStates: number[],
