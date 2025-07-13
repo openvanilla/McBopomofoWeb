@@ -83,5 +83,9 @@
     "message": "# 一個詞彙一行。範例如下：\n輸入範例 ㄕㄨ-ㄖㄨˋ-ㄈㄢˋ-ㄌㄧˋ"
   },
   "user_phrases_link": { "message": "編輯使用者詞彙" },
-  "excluded_phrases_link": { "message": "編輯排除的詞彙" }
+  "excluded_phrases_link": { "message": "編輯排除的詞彙" },
+  "when_choosing_candidates": { "message": "選字時：" },
+  "moving_cursor_is_not_allowed": { "message": "不移動游標" },
+  "jk_keys_move_the_cursor": { "message": "JK 按鍵移動游標" },
+  "hl_keys_move_the_cursor": { "message": "HL 按鍵移動游標" }
 }

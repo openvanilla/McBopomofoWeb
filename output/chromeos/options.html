@@ -51,9 +51,18 @@
                     <option value="8">8</option>
                     <option value="9" selected="selected">9</option>
                 </select>
-                <br />
-                <input type="checkbox" name="jk_key" id="jk_key"><label for="jk_key" id="use_jk_key">Use J/K keys to
-                    move cursor when choosing candidates</label>
+            </td>
+        </tr>
+
+        <tr>
+            <td class="option_title" id="when_choosing_candidates">When Choosing Candidates:</td>
+            <td>
+                <select id="moving_cursor_option">
+                    <option value="0" selected="selected" id="moving_cursor_is_not_allowed">Moving cursor is not allowed
+                    </option>
+                    <option value="1" id="jk_keys_move_the_cursor">JK Keys move the cursor</option>
+                    <option value="2" id="hl_keys_move_the_cursor">HL Keys move the cursor</option>
+                </select>
             </td>
         </tr>
 

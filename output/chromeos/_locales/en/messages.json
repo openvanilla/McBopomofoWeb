@@ -62,9 +62,6 @@
   "ctrl_enter_taiwanese_braille": { "message": "Input Taiwanese Braille" },
   "ctrl_enter_hanyu_pinyin": { "message": "Hanyu Pinyin" },
   "candidate_keys_count": { "message": "Candidate Keys Count:" },
-  "use_jk_key": {
-    "message": "Use J/K keys to move cursor when choosing candidates "
-  },
   "system": { "message": "System:" },
   "use_notification": { "message": "Use system notification" },
   "alphabet_mode": { "message": "English Mode" },
@@ -99,5 +96,9 @@
     "message": "# Each phrase per line. Example:\n輸入範例 ㄕㄨ-ㄖㄨˋ-ㄈㄢˋ-ㄌㄧˋ"
   },
   "user_phrases_link": { "message": "Edit User Phrases" },
-  "excluded_phrases_link": { "message": "Edit Excluded Phrases" }
+  "excluded_phrases_link": { "message": "Edit Excluded Phrases" },
+  "when_choosing_candidates": { "message": "When Choosing Candidates:" },
+  "moving_cursor_is_not_allowed": { "message": "Moving cursor is not allowed" },
+  "jk_keys_move_the_cursor": { "message": "JK keys move the cursor" },
+  "hl_keys_move_the_cursor": { "message": "HL keys move the cursor" }
 }

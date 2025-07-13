@@ -6,7 +6,7 @@ window.onload = () => {
     candidate_keys: "123456789",
     candidate_keys_count: 9,
     esc_key_clear_entire_buffer: false,
-    use_jk_key_to_move_cursor: false,
+    moving_cursor_option: 0,
     shift_key_toggle_alphabet_mode: true,
     half_width_punctuation: false,
     chinese_conversion: false,
@@ -58,12 +58,21 @@ window.onload = () => {
       }
     }
     {
+      controller.setMovingCursorOption(settings.moving_cursor_option);
+      let select = document.getElementById("moving_cursor_option");
+      let options = select.getElementsByTagName("option");
+      for (let option of options) {
+        if (option.value === settings.moving_cursor_option) {
+          option.selected = "selected";
+          break;
+        }
+      }
+    }
+    {
       document.getElementById("shift_key").checked =
         settings.shift_key_toggle_alphabet_mode;
       document.getElementById("esc_key").checked =
         settings.esc_key_clear_entire_buffer;
-      document.getElementById("jk_key").checked =
-        settings.use_jk_key_to_move_cursor;
       document.getElementById("move_cursor").checked = settings.move_cursor;
       document.getElementById("use_notification").checked =
         settings.use_notification;
@@ -144,9 +153,9 @@ window.onload = () => {
     saveSettings(settings);
   };
 
-  document.getElementById("jk_key").onchange = function (event) {
-    let checked = document.getElementById("jk_key").checked;
-    settings.use_jk_key_to_move_cursor = checked;
+  document.getElementById("moving_cursor_option").onchange = function (event) {
+    let value = document.getElementById("moving_cursor_option").value;
+    settings.moving_cursor_option = +value;
     saveSettings(settings);
   };
 
@@ -290,12 +299,19 @@ window.onload = () => {
     chrome.i18n.getMessage("optionOtherManageUserPhrases");
   document.getElementById("candidate_keys_count").innerText =
     chrome.i18n.getMessage("candidate_keys_count");
-  document.getElementById("use_jk_key").innerText =
-    chrome.i18n.getMessage("use_jk_key");
   document.getElementById("system").innerText =
     chrome.i18n.getMessage("system");
   document.getElementById("use_notification_label").innerText =
     chrome.i18n.getMessage("use_notification");
+
+  document.getElementById("when_choosing_candidates").innerText =
+    chrome.i18n.getMessage("when_choosing_candidates");
+  document.getElementById("moving_cursor_is_not_allowed").innerText =
+    chrome.i18n.getMessage("moving_cursor_is_not_allowed");
+  document.getElementById("jk_keys_move_the_cursor").innerText =
+    chrome.i18n.getMessage("jk_keys_move_the_cursor");
+  document.getElementById("hl_keys_move_the_cursor").innerText =
+    chrome.i18n.getMessage("hl_keys_move_the_cursor");
 
   document.getElementById(
     "repeated_punctuation_choose_candidate_title"

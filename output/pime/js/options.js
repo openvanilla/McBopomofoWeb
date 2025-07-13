@@ -100,7 +100,6 @@ window.onload = () => {
         settings.repeated_punctuation_choose_candidate;
     }
     {
-      controller.setMovingCursorOption(settings.moving_cursor_option);
       let select = document.getElementById("moving_cursor_option");
       let options = select.getElementsByTagName("option");
       for (let option of options) {
