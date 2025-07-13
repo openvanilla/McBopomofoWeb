@@ -5,7 +5,6 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { read } from "fs";
 import { Candidate } from "../Gramambular2";
 import { BopomofoKeyboardLayout } from "../Mandarin";
 import { CandidateWrapper, CandidateController } from "./CandidateController";
@@ -129,6 +128,19 @@ class InputUIController {
 }
 
 /**
+ * Enumeration for moving cursor options.
+ * @enum {number}
+ * @property {number} Disabled - Cursor movement is disabled (0).
+ * @property {number} UseJK - Use J and K keys for cursor movement (1).
+ * @property {number} UseHL - Use H and L keys for cursor movement (2).
+ */
+export enum MovingCursorOption {
+  Disabled = 0,
+  UseJK = 1,
+  UseHL = 2,
+}
+
+/**
  * Controller class that manages the input method's state and handles keyboard
  * events. This class serves as the main coordinator between different
  * components of the input method, including the UI, language model, and
@@ -172,7 +184,7 @@ export class InputController {
   private candidateKeysCount_: number = 9;
   private useVerticalCandidates_ = false;
   private onError_: Function | undefined;
-  private useJKToMoveCursor_: boolean = false;
+  private movingCursorOption_: MovingCursorOption = MovingCursorOption.Disabled;
   private localizedStrings_ = new LocalizedStrings();
 
   constructor(ui: InputUI) {
@@ -308,8 +320,8 @@ export class InputController {
    * candidates using these keys similar to vim-style navigation.
    * @param flag - True to enable J/K cursor movement, false to disable
    */
-  public setUseJKToMoveCursor(flag: boolean): void {
-    this.useJKToMoveCursor_ = flag;
+  public setMovingCursorOption(option: MovingCursorOption): void {
+    this.movingCursorOption_ = option;
   }
 
   /**
@@ -490,7 +502,10 @@ export class InputController {
 
     const isMovingToLeft =
       (key.name === KeyName.LEFT && key.shiftPressed) ||
-      (this.useJKToMoveCursor_ && key.ascii === "j");
+      (this.movingCursorOption_ === MovingCursorOption.UseJK &&
+        key.ascii === "j") ||
+      (this.movingCursorOption_ === MovingCursorOption.UseHL &&
+        key.ascii === "h");
     if (isMovingToLeft) {
       const cursor = this.keyHandler_.cursor;
       if (cursor === 0) {
@@ -505,7 +520,10 @@ export class InputController {
     }
     const isMovingToRight =
       (key.name === KeyName.RIGHT && key.shiftPressed) ||
-      (this.useJKToMoveCursor_ && key.ascii === "k");
+      (this.movingCursorOption_ === MovingCursorOption.UseJK &&
+        key.ascii === "k") ||
+      (this.movingCursorOption_ === MovingCursorOption.UseHL &&
+        key.ascii === "l");
     if (isMovingToRight) {
       const cursor = this.keyHandler_.cursor;
       const max = this.keyHandler_.gridLength;
@@ -912,6 +930,7 @@ export class InputController {
     this.ui_.setCursorIndex(composingBuffer.length);
     this.ui_.update();
   }
+
   private handleEnclosingNumber(prev: InputState, state: EnclosingNumber) {
     this.ui_.reset();
     const composingBuffer = state.composingBuffer;

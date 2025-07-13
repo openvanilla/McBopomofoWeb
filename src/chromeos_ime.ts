@@ -6,7 +6,10 @@
  * The main entrance of the IME for ChromeOS.
  */
 
-import { InputController } from "./McBopomofo/InputController";
+import {
+  InputController,
+  MovingCursorOption,
+} from "./McBopomofo/InputController";
 import { Service } from "./McBopomofo/Service";
 import { Key, KeyName } from "./McBopomofo/Key";
 import { LargeSync } from "./LargeSync/LargeSync";
@@ -38,7 +41,7 @@ type ChromeMcBopomofoSettings = {
   /** Whether to enable half-width punctuation. */
   half_width_punctuation_enabled: boolean;
   /** Whether to use J/K keys to move the cursor when the candidate window appears. */
-  use_jk_key_to_move_cursor: boolean;
+  moving_cursor_option: MovingCursorOption;
   /** Whether to use notification. */
   use_notification: boolean;
   /** Whether to use repeated punctuation to choose candidate. */
@@ -65,7 +68,7 @@ class ChromeMcBopomofo {
     letter_mode: "upper",
     ctrl_enter_option: 0,
     half_width_punctuation_enabled: false,
-    use_jk_key_to_move_cursor: false,
+    moving_cursor_option: MovingCursorOption.Disabled,
     use_notification: true,
     repeated_punctuation_choose_candidate: false,
   };
@@ -81,7 +84,7 @@ class ChromeMcBopomofo {
     letter_mode: "upper",
     ctrl_enter_option: 0,
     half_width_punctuation_enabled: false,
-    use_jk_key_to_move_cursor: false,
+    moving_cursor_option: MovingCursorOption.Disabled,
     use_notification: true,
     repeated_punctuation_choose_candidate: false,
   };
@@ -156,8 +159,8 @@ class ChromeMcBopomofo {
       this.inputController.setCandidateKeysCount(
         this.settings.candidate_keys_count
       );
-      this.inputController.setUseJKToMoveCursor(
-        this.settings.use_jk_key_to_move_cursor
+      this.inputController.setMovingCursorOption(
+        this.settings.moving_cursor_option
       );
       this.inputController.setRepeatedPunctuationChooseCandidate(
         this.settings.repeated_punctuation_choose_candidate

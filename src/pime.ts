@@ -6,7 +6,10 @@
  * The main entrance of the IME for ChromeOS.
  */
 
-import { InputController } from "./McBopomofo/InputController";
+import {
+  InputController,
+  MovingCursorOption,
+} from "./McBopomofo/InputController";
 import { InputUI } from "./McBopomofo/InputUI";
 import { KeyFromKeyboardEvent, VK_Keys } from "./pime_keys";
 import { List } from "lodash";
@@ -31,7 +34,7 @@ interface Settings {
   /** Whether ESC key clears all of the composing buffer. */
   esc_key_clear_entire_buffer: boolean;
   /** Whether to use jk key to move cursor. */
-  use_jk_key_to_move_cursor: boolean;
+  moving_cursor_option: MovingCursorOption;
   /** Whether Shift key toggles the BPMF/Alphabet mode. */
   shift_key_toggle_alphabet_mode: boolean;
   /** Whether Traditional/Simplified Chinese conversion is on. */
@@ -81,7 +84,7 @@ const defaultSettings: Settings = {
   by_default_deactivated: false,
   beep_on_error: true,
   ctrl_enter_option: 0,
-  use_jk_key_to_move_cursor: false,
+  moving_cursor_option: MovingCursorOption.Disabled,
   repeated_punctuation_choose_candidate: false,
 };
 
@@ -319,8 +322,8 @@ class PimeMcBopomofo {
       this.settings.half_width_punctuation
     );
     this.inputController.setCtrlEnterOption(this.settings.ctrl_enter_option);
-    this.inputController.setUseJKToMoveCursor(
-      this.settings.use_jk_key_to_move_cursor
+    this.inputController.setMovingCursorOption(
+      this.settings.moving_cursor_option
     );
     this.inputController.setRepeatedPunctuationChooseCandidate(
       this.settings.repeated_punctuation_choose_candidate
