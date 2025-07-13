@@ -46,7 +46,7 @@ describe("Test Pinyin", () => {
       ["huang1", "ㄏㄨㄤ"],
       ["jue2", "ㄐㄩㄝˊ"],
       ["qiong2", "ㄑㄩㄥˊ"],
-      ["xiong1", "ㄒㄩㄥ"],
+      ["xiong", "ㄒㄩㄥ"],
       ["yuan1", "ㄩㄢ"],
       ["ying2", "ㄧㄥˊ"],
       ["yung3", "ㄩㄥˇ"],
@@ -110,5 +110,116 @@ describe("Test Pinyin", () => {
     expect(result.absoluteOrder).toBe(4686);
     let string = result.composedString;
     expect(string).toBe("ㄧㄤˋ");
+  });
+
+  test("Test edge cases for FromHanyuPinyin", () => {
+    // Test empty string
+    expect(BopomofoSyllable.FromHanyuPinyin("").composedString).toBe("");
+
+    // Test tone marks
+    expect(BopomofoSyllable.FromHanyuPinyin("a1").composedString).toBe("ㄚ");
+    expect(BopomofoSyllable.FromHanyuPinyin("a2").composedString).toBe("ㄚˊ");
+    expect(BopomofoSyllable.FromHanyuPinyin("a3").composedString).toBe("ㄚˇ");
+    expect(BopomofoSyllable.FromHanyuPinyin("a4").composedString).toBe("ㄚˋ");
+    expect(BopomofoSyllable.FromHanyuPinyin("a5").composedString).toBe("ㄚ˙");
+
+    // Test case insensitivity
+    expect(BopomofoSyllable.FromHanyuPinyin("WO3").composedString).toBe(
+      "ㄨㄛˇ"
+    );
+    expect(BopomofoSyllable.FromHanyuPinyin("NI3").composedString).toBe(
+      "ㄋㄧˇ"
+    );
+
+    // Test without tone number
+    expect(BopomofoSyllable.FromHanyuPinyin("hao").composedString).toBe("ㄏㄠ");
+  });
+
+  test("Test HanyuPinyinString with includeTone=true", () => {
+    let testCases = [
+      ["ㄅㄚ", "ba"],
+      ["ㄆㄛˊ", "po2"],
+      ["ㄇㄜˇ", "me3"],
+      ["ㄈㄛˋ", "fo4"],
+      ["ㄉㄜ˙", "de5"],
+      ["ㄊㄧ", "ti"],
+      ["ㄋㄨˊ", "nu2"],
+      ["ㄐㄩㄝˊ", "jue2"],
+      ["ㄑㄩㄥˊ", "qiong2"],
+      ["ㄒㄩㄥ", "xiong"],
+      ["ㄓ", "zhi"],
+      ["ㄔˊ", "chi2"],
+      ["ㄕˇ", "shi3"],
+      ["ㄖˋ", "ri4"],
+      ["ㄗ˙", "zi5"],
+      ["ㄧㄢˋ", "yan4"],
+      ["ㄩㄢˇ", "yuan3"],
+      ["ㄨㄥˊ", "weng2"],
+      ["ㄧㄥˇ", "ying3"],
+    ];
+
+    testCases.forEach(([bopomofo, expected]) => {
+      let syllable = BopomofoSyllable.FromComposedString(bopomofo);
+      let result = syllable.HanyuPinyinString(true, false);
+      expect(result).toBe(expected);
+    });
+  });
+
+  test("Test HanyuPinyinString with includeTone=false", () => {
+    let testCases = [
+      ["ㄅㄚ", "ba"],
+      ["ㄆㄛˊ", "po"],
+      ["ㄇㄜˇ", "me"],
+      ["ㄈㄛˋ", "fo"],
+      ["ㄉㄜ˙", "de"],
+      ["ㄐㄩㄝˊ", "jue"],
+      ["ㄑㄩㄥˊ", "qiong"],
+      ["ㄒㄩㄥ", "xiong"],
+    ];
+
+    testCases.forEach(([bopomofo, expected]) => {
+      let syllable = BopomofoSyllable.FromComposedString(bopomofo);
+      let result = syllable.HanyuPinyinString(false, false);
+      expect(result).toBe(expected);
+    });
+  });
+
+  test("Test HanyuPinyinString with useVForUUmlaut=true", () => {
+    let testCases = [
+      ["ㄌㄩ", "lv"],
+      ["ㄋㄩˊ", "nv2"],
+      ["ㄩㄢˇ", "yuan3"],
+      ["ㄐㄩㄝˋ", "jue4"],
+      ["ㄒㄩ˙", "xu5"],
+    ];
+
+    testCases.forEach(([bopomofo, expected]) => {
+      let syllable = BopomofoSyllable.FromComposedString(bopomofo);
+      let result = syllable.HanyuPinyinString(true, true);
+      expect(result).toBe(expected);
+    });
+  });
+
+  test("Test HanyuPinyinString special cases", () => {
+    // Test empty syllable
+    let emptySyllable = new BopomofoSyllable();
+    expect(emptySyllable.HanyuPinyinString(true, false)).toBe("");
+
+    // Test special combinations
+    let testCases = [
+      ["ㄧㄥ", "ying"],
+      ["ㄨㄥ", "weng"],
+      ["ㄧㄡ", "you"],
+      ["ㄧㄣ", "yin"],
+      ["ㄨㄟ", "wei"],
+      ["ㄩㄥ", "yong"],
+      ["ㄩㄣ", "yun"],
+    ];
+
+    testCases.forEach(([bopomofo, expected]) => {
+      let syllable = BopomofoSyllable.FromComposedString(bopomofo);
+      let result = syllable.HanyuPinyinString(true, false);
+      expect(result).toBe(expected);
+    });
   });
 });

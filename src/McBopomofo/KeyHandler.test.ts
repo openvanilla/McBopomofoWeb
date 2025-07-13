@@ -14,6 +14,7 @@ import {
   ChineseNumberStyle,
   ChoosingCandidate,
   Committing,
+  CustomMenu,
   Empty,
   EmptyIgnoringPrevious,
   EnclosingNumber,
@@ -130,6 +131,18 @@ describe("Test KeyHandler.test", () => {
       expect(inputting.composingBuffer).toBe("你");
       expect(inputting.cursorIndex).toBe(1);
 
+      keyHandler.keyboardLayout = BopomofoKeyboardLayout.ETen26Layout; // ETenLayout is 1
+      expect(keyHandler.keyboardLayout).toBe(
+        BopomofoKeyboardLayout.ETen26Layout
+      );
+
+      keys = asciiKey(["n", "e", "j"]); // ETen26 layout keys for "你"
+      state = handleKeySequence(keyHandler, keys);
+      expect(state).toBeInstanceOf(Inputting);
+      inputting = state as Inputting;
+      expect(inputting.composingBuffer).toBe("你你");
+      expect(inputting.cursorIndex).toBe(2);
+
       keyHandler.keyboardLayout = BopomofoKeyboardLayout.HsuLayout; // HsuLayout is 2
       expect(keyHandler.keyboardLayout).toBe(BopomofoKeyboardLayout.HsuLayout);
 
@@ -138,8 +151,18 @@ describe("Test KeyHandler.test", () => {
       state = handleKeySequence(keyHandler, keys);
       expect(state).toBeInstanceOf(Inputting);
       inputting = state as Inputting;
-      expect(inputting.composingBuffer).toBe("你你");
-      expect(inputting.cursorIndex).toBe(2);
+      expect(inputting.composingBuffer).toBe("你你你");
+      expect(inputting.cursorIndex).toBe(3);
+
+      keyHandler.keyboardLayout = BopomofoKeyboardLayout.IBMLayout; // HsuLayout is 2
+      expect(keyHandler.keyboardLayout).toBe(BopomofoKeyboardLayout.IBMLayout);
+
+      keys = asciiKey(["7", "a", ","]); // Hsu layout keys for "你"
+      state = handleKeySequence(keyHandler, keys);
+      expect(state).toBeInstanceOf(Inputting);
+      inputting = state as Inputting;
+      expect(inputting.composingBuffer).toBe("你你你你");
+      expect(inputting.cursorIndex).toBe(4);
     });
 
     describe("Hanyu Pinyin", () => {
@@ -478,7 +501,6 @@ describe("Test KeyHandler.test", () => {
       let state = handleKeySequence(keyHandler, keys);
       expect(state).toBeInstanceOf(Inputting);
       let inputting = state as Inputting;
-      console.log(inputting);
       expect(inputting.composingBuffer).toBe("你好 ");
     });
   });
