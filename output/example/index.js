@@ -172,7 +172,7 @@ let defaultSettings = {
   move_cursor: false,
   letter_mode: "upper",
   ctrl_enter_option: 0,
-  use_jk_key_to_move_cursor: false,
+  moving_cursor_option: 0,
   beep_on_error: true,
   repeated_punctuation_choose_candidate: false,
 };
@@ -290,9 +290,15 @@ function applySettings(settings) {
       settings.repeated_punctuation_choose_candidate;
   }
   {
-    controller.setUseJKToMoveCursor(settings.use_jk_key_to_move_cursor);
-    document.getElementById("jk_key").checked =
-      settings.use_jk_key_to_move_cursor;
+    controller.setMovingCursorOption(settings.moving_cursor_option);
+    let select = document.getElementById("moving_cursor_option");
+    let options = select.getElementsByTagName("option");
+    for (let option of options) {
+      if (option.value === settings.moving_cursor_option) {
+        option.selected = "selected";
+        break;
+      }
+    }
   }
   {
     document.getElementById("beep_on_error").checked = settings.beep_on_error;
@@ -464,12 +470,23 @@ document.getElementById("keys").onblur = function (event) {
 
 document.getElementById("keys_count").onchange = function (event) {
   let value = document.getElementById("keys_count").value;
-  controller.setCandidateKeysCount(+value);
-  settings.candidate_keys_count = +value;
+  value = +value;
+  controller.setCandidateKeysCount(value);
+  settings.candidate_keys_count = value;
   saveSettings(settings);
   document.getElementById("text_area").focus();
 };
+
 document.getElementById("keys_count").onblur = function (event) {
+  document.getElementById("text_area").focus();
+};
+
+document.getElementById("moving_cursor_option").onchange = function (event) {
+  let value = document.getElementById("moving_cursor_option").value;
+  value = +value;
+  controller.setMovingCursorOption(value);
+  settings.moving_cursor_option = value;
+  saveSettings(settings);
   document.getElementById("text_area").focus();
 };
 
@@ -505,14 +522,6 @@ document.getElementById("repeated_punctuation_choose_candidate").onchange =
     saveSettings(settings);
     document.getElementById("text_area").focus();
   };
-
-document.getElementById("jk_key").onchange = function (event) {
-  let checked = document.getElementById("jk_key").checked;
-  controller.setUseJKToMoveCursor(checked);
-  settings.use_jk_key_to_move_cursor = checked;
-  saveSettings(settings);
-  document.getElementById("text_area").focus();
-};
 
 document.getElementById("uppercase_letters").onchange = function (event) {
   controller.setLetterMode("upper");

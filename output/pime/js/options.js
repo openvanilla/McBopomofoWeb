@@ -7,7 +7,7 @@ window.onload = () => {
     candidate_keys: "123456789",
     candidate_keys_count: 9,
     esc_key_clear_entire_buffer: false,
-    use_jk_key_to_move_cursor: false,
+    moving_cursor_option: 0,
     shift_key_toggle_alphabet_mode: true,
     half_width_punctuation: false,
     chinese_conversion: false,
@@ -77,10 +77,6 @@ window.onload = () => {
         settings.esc_key_clear_entire_buffer;
     }
     {
-      document.getElementById("jk_key").checked =
-        settings.use_jk_key_to_move_cursor;
-    }
-    {
       let enabled = settings.shift_key_toggle_alphabet_mode;
       if (enabled === undefined) {
         enabled = true;
@@ -103,7 +99,17 @@ window.onload = () => {
       document.getElementById("repeated_punctuation_choose_candidate").checked =
         settings.repeated_punctuation_choose_candidate;
     }
-
+    {
+      controller.setMovingCursorOption(settings.moving_cursor_option);
+      let select = document.getElementById("moving_cursor_option");
+      let options = select.getElementsByTagName("option");
+      for (let option of options) {
+        if (option.value === settings.moving_cursor_option) {
+          option.selected = "selected";
+          break;
+        }
+      }
+    }
     {
       if (settings.letter_mode === "upper") {
         document.getElementById("uppercase_letters").checked = true;
@@ -197,6 +203,12 @@ window.onload = () => {
     saveSettings(settings);
   };
 
+  document.getElementById("moving_cursor_option").onchange = function (event) {
+    let value = document.getElementById("moving_cursor_option").value;
+    settings.moving_cursor_option = +value;
+    saveSettings(settings);
+  };
+
   document.getElementById("before_cursor").onchange = (event) => {
     settings.select_phrase = "before_cursor";
     saveSettings(settings);
@@ -210,12 +222,6 @@ window.onload = () => {
   document.getElementById("esc_key").onchange = (event) => {
     let checked = document.getElementById("esc_key").checked;
     settings.esc_key_clear_entire_buffer = checked;
-    saveSettings(settings);
-  };
-
-  document.getElementById("jk_key").onchange = function (event) {
-    let checked = document.getElementById("jk_key").checked;
-    settings.use_jk_key_to_move_cursor = checked;
     saveSettings(settings);
   };
 
