@@ -704,7 +704,7 @@ async function keepAlive() {
 
 async function retryOnTabUpdate(
   tabId: number,
-  info: chrome.tabs.TabChangeInfo,
+  info: chrome.tabs.OnUpdatedInfo,
   tab: chrome.tabs.Tab
 ) {
   if (info.url && /^(file|https?):/.test(info.url)) {
