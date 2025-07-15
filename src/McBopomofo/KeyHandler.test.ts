@@ -1606,4 +1606,215 @@ describe("Test KeyHandler.test", () => {
       expect(inputting.composingBuffer).toBe("．，");
     });
   });
+
+  describe("Ctrl + \\ feature selection", () => {
+    test("Ctrl + \\ enters SelectingFeature state", () => {
+      let ctrlBackslash = new Key("\\", KeyName.UNKNOWN, false, true, false);
+      let state = handleKeySequence(keyHandler, [ctrlBackslash]);
+      expect(state).toBeInstanceOf(SelectingFeature);
+    });
+  });
+
+  describe("Big5 state handling", () => {
+    test("Big5 code input with valid hexadecimal values", () => {
+      let currentState: InputState = new Big5();
+      let commit: Committing | undefined = undefined;
+      let keys = asciiKey(["a", "4", "e", "1"]);
+      for (let key of keys) {
+        keyHandler.handle(
+          key,
+          currentState,
+          (state) => {
+            if (state instanceof Committing) {
+              commit = state;
+            }
+            currentState = state;
+          },
+          () => {}
+        );
+      }
+      expect(commit).toBeDefined();
+      expect(commit).toBeInstanceOf(Committing);
+    });
+
+    test("Big5 code input with invalid hexadecimal values", () => {
+      let currentState: InputState = new Big5();
+      let keys = asciiKey(["g", "h", "i", "j"]);
+      for (let key of keys) {
+        keyHandler.handle(
+          key,
+          currentState,
+          (state) => {
+            currentState = state;
+          },
+          () => {}
+        );
+      }
+      expect(currentState).toBeInstanceOf(Big5);
+      let big5 = currentState as Big5;
+      expect(big5.code).toBe("");
+    });
+
+    test("Big5 code with return key without complete code", () => {
+      let currentState: InputState = new Big5();
+      let keys = asciiKey(["a", "4"]);
+      let enter = Key.namedKey(KeyName.RETURN);
+      keys.push(enter);
+      for (let key of keys) {
+        keyHandler.handle(
+          key,
+          currentState,
+          (state) => {
+            currentState = state;
+          },
+          () => {}
+        );
+      }
+      expect(currentState).toBeInstanceOf(Big5);
+    });
+
+    test("Big5 code with complete valid input", () => {
+      let currentState: InputState = new Big5();
+      let commit: Committing | undefined = undefined;
+      let keys = asciiKey(["b", "9", "4", "3"]);
+      for (let key of keys) {
+        keyHandler.handle(
+          key,
+          currentState,
+          (state) => {
+            if (state instanceof Committing) {
+              commit = state;
+            }
+            currentState = state;
+          },
+          () => {}
+        );
+      }
+      expect(commit).toBeDefined();
+    });
+
+    test("Big5 code with multiple backspaces", () => {
+      let currentState: InputState = new Big5();
+      let keys = asciiKey(["c", "1", "2", "3"]);
+      let backspace = Key.namedKey(KeyName.BACKSPACE);
+      for (let key of keys) {
+        keyHandler.handle(
+          key,
+          currentState,
+          (state) => {
+            currentState = state;
+          },
+          () => {}
+        );
+      }
+
+      // Press backspace multiple times
+      for (let i = 0; i < 5; i++) {
+        keyHandler.handle(
+          backspace,
+          currentState,
+          (state) => {
+            currentState = state;
+          },
+          () => {}
+        );
+      }
+
+      expect(currentState).toBeInstanceOf(Empty);
+    });
+
+    test("Big5 code transition to Empty state with ESC", () => {
+      let currentState: InputState = new Big5();
+      let keys = asciiKey(["f", "f", "1", "2"]);
+      let esc = Key.namedKey(KeyName.ESC);
+
+      for (let key of keys) {
+        keyHandler.handle(
+          key,
+          currentState,
+          (state) => {
+            currentState = state;
+          },
+          () => {}
+        );
+      }
+
+      keyHandler.handle(
+        esc,
+        currentState,
+        (state) => {
+          currentState = state;
+        },
+        () => {}
+      );
+
+      expect(currentState).toBeInstanceOf(Empty);
+    });
+
+    test("Big5 code with mixed upper and lowercase hex digits", () => {
+      let currentState: InputState = new Big5();
+      let commit: Committing | undefined = undefined;
+
+      // Test with uppercase hex digits
+      let keys = [
+        new Key("A", KeyName.UNKNOWN, true, false, false),
+        new Key("B", KeyName.UNKNOWN, true, false, false),
+        new Key("C", KeyName.UNKNOWN, true, false, false),
+        new Key("D", KeyName.UNKNOWN, true, false, false),
+      ];
+
+      for (let key of keys) {
+        keyHandler.handle(
+          key,
+          currentState,
+          (state) => {
+            if (state instanceof Committing) {
+              commit = state;
+            }
+            currentState = state;
+          },
+          () => {}
+        );
+      }
+      expect(commit).toBeUndefined();
+    });
+  });
+
+  describe("Space and Tab handling in Empty state", () => {
+    test("Space key in empty state", () => {
+      let spaceKey = Key.namedKey(KeyName.SPACE);
+      let state = handleKeySequence(keyHandler, [spaceKey]);
+      expect(state).toBeInstanceOf(Empty);
+    });
+
+    test("Tab key in empty state", () => {
+      let tabKey = Key.namedKey(KeyName.TAB);
+      let state = handleKeySequence(keyHandler, [tabKey]);
+      expect(state).toBeInstanceOf(Empty);
+    });
+
+    test("Shift+Space in empty state", () => {
+      let shiftSpace = new Key(" ", KeyName.SPACE, true, false, false);
+      let state = handleKeySequence(keyHandler, [shiftSpace]);
+      expect(state).toBeInstanceOf(Empty);
+    });
+
+    test("Shift+Tab in empty state", () => {
+      let shiftTab = Key.namedKey(KeyName.TAB, true, false);
+      let state = handleKeySequence(keyHandler, [shiftTab]);
+      expect(state).toBeInstanceOf(Empty);
+    });
+
+    test("Ctrl+Space in empty state", () => {
+      let ctrlSpace = new Key(" ", KeyName.SPACE, false, true, false);
+      let state = handleKeySequence(keyHandler, [ctrlSpace]);
+      expect(state).toBeInstanceOf(Empty);
+    });
+
+    test("Alt+Space in empty state", () => {
+      let altSpace = new Key(" ", KeyName.SPACE, false, false, true);
+      let state = handleKeySequence(keyHandler, [altSpace]);
+      expect(state).toBeInstanceOf(Empty);
+    });
+  });
 });
