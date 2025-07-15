@@ -143,7 +143,7 @@ describe("Test KeyHandler.test", () => {
       expect(inputting.composingBuffer).toBe("你你");
       expect(inputting.cursorIndex).toBe(2);
 
-      keyHandler.keyboardLayout = BopomofoKeyboardLayout.HsuLayout; // HsuLayout is 2
+      keyHandler.keyboardLayout = BopomofoKeyboardLayout.HsuLayout;
       expect(keyHandler.keyboardLayout).toBe(BopomofoKeyboardLayout.HsuLayout);
 
       // Test typing with Hsu layout
@@ -154,7 +154,7 @@ describe("Test KeyHandler.test", () => {
       expect(inputting.composingBuffer).toBe("你你你");
       expect(inputting.cursorIndex).toBe(3);
 
-      keyHandler.keyboardLayout = BopomofoKeyboardLayout.IBMLayout; // HsuLayout is 2
+      keyHandler.keyboardLayout = BopomofoKeyboardLayout.IBMLayout;
       expect(keyHandler.keyboardLayout).toBe(BopomofoKeyboardLayout.IBMLayout);
 
       keys = asciiKey(["7", "a", ","]); // Hsu layout keys for "你"
@@ -163,6 +163,50 @@ describe("Test KeyHandler.test", () => {
       inputting = state as Inputting;
       expect(inputting.composingBuffer).toBe("你你你你");
       expect(inputting.cursorIndex).toBe(4);
+    });
+
+    test("Switching keyboard layout affects punctuation mapping", () => {
+      // First test with standard layout
+      let keys = asciiKey([">"]);
+      let state = handleKeySequence(keyHandler, keys);
+      expect(state).toBeInstanceOf(Inputting);
+      let inputting = state as Inputting;
+      expect(inputting.composingBuffer).toBe("。");
+
+      // Now change to ETen layout and test the same punctuation
+      keyHandler.reset();
+      keyHandler.keyboardLayout = BopomofoKeyboardLayout.ETenLayout;
+      keys = asciiKey([">"]);
+      state = handleKeySequence(keyHandler, keys);
+      expect(state).toBeInstanceOf(Inputting);
+      inputting = state as Inputting;
+      expect(inputting.composingBuffer).toBe("。");
+
+      keyHandler.reset();
+      keyHandler.keyboardLayout = BopomofoKeyboardLayout.ETen26Layout;
+      keys = asciiKey(["."]);
+      state = handleKeySequence(keyHandler, keys);
+      expect(state).toBeInstanceOf(Inputting);
+      inputting = state as Inputting;
+      expect(inputting.composingBuffer).toBe("。");
+
+      // Test another punctuation mark with different layout
+      keyHandler.reset();
+      keyHandler.keyboardLayout = BopomofoKeyboardLayout.HsuLayout;
+      keys = asciiKey([";"]);
+      state = handleKeySequence(keyHandler, keys);
+      expect(state).toBeInstanceOf(Inputting);
+      inputting = state as Inputting;
+      expect(inputting.composingBuffer).toBe("；");
+
+      // Test another punctuation mark with different layout
+      keyHandler.reset();
+      keyHandler.keyboardLayout = BopomofoKeyboardLayout.IBMLayout;
+      keys = asciiKey([">"]);
+      state = handleKeySequence(keyHandler, keys);
+      expect(state).toBeInstanceOf(Inputting);
+      inputting = state as Inputting;
+      expect(inputting.composingBuffer).toBe("。");
     });
 
     describe("Hanyu Pinyin", () => {
@@ -1231,6 +1275,335 @@ describe("Test KeyHandler.test", () => {
       } else {
         expect((commit as Committing).text).toBe("ni hao");
       }
+    });
+  });
+
+  describe("Tab key handling in Inputting state", () => {
+    test("Tab key in empty state", () => {
+      let tab = Key.namedKey(KeyName.TAB);
+      let keys = [tab];
+      let state = handleKeySequence(keyHandler, keys);
+      expect(state).toBeInstanceOf(Empty);
+    });
+
+    test("Tab key with non-empty reading buffer", () => {
+      let keys = asciiKey(["s", "u"]);
+      let tab = Key.namedKey(KeyName.TAB);
+      keys.push(tab);
+      let state = handleKeySequence(keyHandler, keys);
+      expect(state).toBeInstanceOf(Inputting);
+      let inputting = state as Inputting;
+      expect(inputting.composingBuffer).toBe("ㄋㄧ");
+    });
+
+    test("Tab key to cycle through candidates", () => {
+      keyHandler.selectPhraseAfterCursorAsCandidate = false;
+      let keys = asciiKey(["s", "u", "3"]); // Type "你"
+      let state = handleKeySequence(keyHandler, keys);
+      expect(state).toBeInstanceOf(Inputting);
+
+      // First tab should change to the next candidate
+      let tab = Key.namedKey(KeyName.TAB);
+      keyHandler.handle(
+        tab,
+        state,
+        (newState) => {
+          state = newState;
+        },
+        () => {}
+      );
+      expect(state).toBeInstanceOf(Inputting);
+      let inputting = state as Inputting;
+      expect(inputting.composingBuffer).toBe("妳");
+
+      // Second tab should change to another candidate
+      keyHandler.handle(
+        tab,
+        state,
+        (newState) => {
+          state = newState;
+        },
+        () => {}
+      );
+      expect(state).toBeInstanceOf(Inputting);
+      inputting = state as Inputting;
+      expect(inputting.composingBuffer).toBe("擬");
+    });
+
+    test("Shift+Tab key to cycle backward through candidates", () => {
+      keyHandler.selectPhraseAfterCursorAsCandidate = false;
+      let keys = asciiKey(["s", "u", "3"]); // Type "你"
+      let state = handleKeySequence(keyHandler, keys);
+      expect(state).toBeInstanceOf(Inputting);
+
+      // Use tab multiple times to get to a known position
+      let tab = Key.namedKey(KeyName.TAB);
+      keyHandler.handle(
+        tab,
+        state,
+        (newState) => {
+          state = newState;
+        },
+        () => {}
+      );
+      keyHandler.handle(
+        tab,
+        state,
+        (newState) => {
+          state = newState;
+        },
+        () => {}
+      );
+
+      // Now use shift+tab to go back
+      let shiftTab = Key.namedKey(KeyName.TAB, true, false);
+      keyHandler.handle(
+        shiftTab,
+        state,
+        (newState) => {
+          state = newState;
+        },
+        () => {}
+      );
+      expect(state).toBeInstanceOf(Inputting);
+      let inputting = state as Inputting;
+      expect(inputting.composingBuffer).toBe("妳");
+    });
+
+    test("Tab key with multiple characters in buffer", () => {
+      let keys = asciiKey(["s", "u", "3", "c", "l", "3"]); // Type "你好"
+      let state = handleKeySequence(keyHandler, keys);
+      expect(state).toBeInstanceOf(Inputting);
+
+      // Move cursor to first character
+      let leftKey = Key.namedKey(KeyName.LEFT);
+      keyHandler.handle(
+        leftKey,
+        state,
+        (newState) => {
+          state = newState;
+        },
+        () => {}
+      );
+
+      // Tab should cycle the candidate at cursor position
+      let tab = Key.namedKey(KeyName.TAB);
+      keyHandler.handle(
+        tab,
+        state,
+        (newState) => {
+          state = newState;
+        },
+        () => {}
+      );
+      expect(state).toBeInstanceOf(Inputting);
+      let inputting = state as Inputting;
+      expect(inputting.composingBuffer).toBe("妳好");
+    });
+
+    test("Tab key at the end of composing buffer", () => {
+      let keys = asciiKey(["s", "u", "3", "c", "l", "3"]); // Type "你好"
+      let state = handleKeySequence(keyHandler, keys);
+      expect(state).toBeInstanceOf(Inputting);
+
+      let tab = Key.namedKey(KeyName.TAB);
+      keyHandler.handle(
+        tab,
+        state,
+        (newState) => {
+          state = newState;
+        },
+        () => {}
+      );
+      expect(state).toBeInstanceOf(Inputting);
+      let inputting = state as Inputting;
+      expect(inputting.composingBuffer).toBe("妳好");
+    });
+
+    test("Tab key with no available candidates", () => {
+      let keys = asciiKey(["j", "7", "2"]); // Type a character with limited candidates
+      let state = handleKeySequence(keyHandler, keys);
+
+      // Tab should do nothing if there are no more candidates
+      let initialState = state;
+      let tab = Key.namedKey(KeyName.TAB);
+      let errorCalled = false;
+      keyHandler.handle(
+        tab,
+        state,
+        (newState) => {
+          state = newState;
+        },
+        () => {
+          errorCalled = true;
+        }
+      );
+
+      // Expect that either we're still in the same state or error callback was called
+      if (!errorCalled) {
+        expect(state).toBe(initialState);
+      } else {
+        expect(errorCalled).toBe(true);
+      }
+    });
+  });
+
+  describe("Repeated punctuation to select candidate", () => {
+    test("Double punctuation selects candidate when enabled", () => {
+      keyHandler.repeatedPunctuationToSelectCandidateEnabled = true;
+      expect(keyHandler.repeatedPunctuationToSelectCandidateEnabled).toBe(true);
+
+      // Type > once to get "。"
+      let keys = asciiKey([">"]);
+      let state = handleKeySequence(keyHandler, keys);
+      expect(state).toBeInstanceOf(Inputting);
+      let inputting = state as Inputting;
+      expect(inputting.composingBuffer).toBe("。");
+
+      // Type > again to get "．"
+      let secondPunctuation = Key.asciiKey(">");
+      keyHandler.handle(
+        secondPunctuation,
+        state,
+        (newState) => {
+          state = newState;
+        },
+        () => {}
+      );
+
+      expect(state).toBeInstanceOf(Inputting);
+      inputting = state as Inputting;
+      expect(inputting.composingBuffer).toBe("．");
+    });
+
+    test("Double punctuation does nothing when disabled", () => {
+      keyHandler.repeatedPunctuationToSelectCandidateEnabled = false;
+      expect(keyHandler.repeatedPunctuationToSelectCandidateEnabled).toBe(
+        false
+      );
+
+      // Type > once to get "。"
+      let keys = asciiKey([">"]);
+      let state = handleKeySequence(keyHandler, keys);
+      expect(state).toBeInstanceOf(Inputting);
+      let inputting = state as Inputting;
+      expect(inputting.composingBuffer).toBe("。");
+
+      // Type > again should just add another "。"
+      let secondPunctuation = Key.asciiKey(">");
+      keyHandler.handle(
+        secondPunctuation,
+        state,
+        (newState) => {
+          state = newState;
+        },
+        () => {}
+      );
+
+      expect(state).toBeInstanceOf(Inputting);
+      inputting = state as Inputting;
+      expect(inputting.composingBuffer).toBe("。。");
+    });
+
+    test("Double punctuation works with different punctuation marks", () => {
+      keyHandler.repeatedPunctuationToSelectCandidateEnabled = true;
+      expect(keyHandler.repeatedPunctuationToSelectCandidateEnabled).toBe(true);
+
+      // Type < once to get "，"
+      let keys = asciiKey(["<"]);
+      let state = handleKeySequence(keyHandler, keys);
+      expect(state).toBeInstanceOf(Inputting);
+      let inputting = state as Inputting;
+      expect(inputting.composingBuffer).toBe("，");
+
+      // Type < again to cycle to the next candidate
+      let secondPunctuation = Key.asciiKey("<");
+      keyHandler.handle(
+        secondPunctuation,
+        state,
+        (newState) => {
+          state = newState;
+        },
+        () => {}
+      );
+
+      expect(state).toBeInstanceOf(Inputting);
+      inputting = state as Inputting;
+      // The exact character might depend on the model, but it should be different
+      expect(inputting.composingBuffer).not.toBe("，");
+    });
+
+    test("Repeated punctuation can cycle through multiple candidates", () => {
+      keyHandler.repeatedPunctuationToSelectCandidateEnabled = true;
+
+      // Type > once to get "。"
+      let keys = asciiKey([">"]);
+      let state = handleKeySequence(keyHandler, keys);
+      let inputting = state as Inputting;
+      expect(inputting.composingBuffer).toBe("。");
+
+      // Type > multiple times to cycle through candidates
+      let secondPunctuation = Key.asciiKey(">");
+      keyHandler.handle(
+        secondPunctuation,
+        state,
+        (newState) => {
+          state = newState;
+        },
+        () => {}
+      );
+      expect((state as Inputting).composingBuffer).toBe("．");
+
+      // Another press should cycle to the next candidate or back to the first
+      keyHandler.handle(
+        secondPunctuation,
+        state,
+        (newState) => {
+          state = newState;
+        },
+        () => {}
+      );
+
+      // Either we get a new candidate or we cycle back to the first
+      let thirdPunctuationResult = (state as Inputting).composingBuffer;
+      expect(
+        thirdPunctuationResult === "。" || thirdPunctuationResult !== "．"
+      ).toBeTruthy();
+    });
+
+    test("Typing different punctuation after repeated punctuation", () => {
+      keyHandler.repeatedPunctuationToSelectCandidateEnabled = true;
+
+      // Type > once to get "。"
+      let keys = asciiKey([">"]);
+      let state = handleKeySequence(keyHandler, keys);
+
+      // Type > again to get "．"
+      let secondPunctuation = Key.asciiKey(">");
+      keyHandler.handle(
+        secondPunctuation,
+        state,
+        (newState) => {
+          state = newState;
+        },
+        () => {}
+      );
+      expect((state as Inputting).composingBuffer).toBe("．");
+
+      // Now type a different punctuation
+      let differentPunctuation = Key.asciiKey("<");
+      keyHandler.handle(
+        differentPunctuation,
+        state,
+        (newState) => {
+          state = newState;
+        },
+        () => {}
+      );
+
+      expect(state).toBeInstanceOf(Inputting);
+      let inputting = state as Inputting;
+      expect(inputting.composingBuffer).toBe("．，");
     });
   });
 });
