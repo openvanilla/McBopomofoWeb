@@ -102,6 +102,12 @@ describe("Test KeyHandler.test", () => {
       expect(state).toBeInstanceOf(Empty);
     });
 
+    test("Shift + Tab in Empty State", () => {
+      let keys = [Key.namedKey(KeyName.TAB, true, false)];
+      let state = handleKeySequence(keyHandler, keys);
+      expect(state).toBeInstanceOf(Empty);
+    });
+
     test("Tab", () => {
       let keys = [Key.namedKey(KeyName.TAB)];
       let state = handleKeySequence(keyHandler, keys);
@@ -690,6 +696,221 @@ describe("Test KeyHandler.test", () => {
       expect(state).toBeInstanceOf(ChoosingCandidate);
       let inputting = state as ChoosingCandidate;
       expect(inputting.composingBuffer).toBe("　");
+    });
+
+    test("Shift + Tab cycles through candidates backwards", () => {
+      keyHandler.selectPhraseAfterCursorAsCandidate = false;
+      let keys = asciiKey(["s", "u", "3"]); // Type "你"
+      let state = handleKeySequence(keyHandler, keys);
+      expect(state).toBeInstanceOf(Inputting);
+
+      // Use tab a few times to cycle forward
+      let tab = Key.namedKey(KeyName.TAB);
+      keyHandler.handle(
+        tab,
+        state,
+        (newState) => {
+          state = newState;
+        },
+        () => {}
+      );
+      keyHandler.handle(
+        tab,
+        state,
+        (newState) => {
+          state = newState;
+        },
+        () => {}
+      );
+
+      // Now use Shift+Tab to cycle backwards
+      let shiftTab = Key.namedKey(KeyName.TAB, true, false);
+      keyHandler.handle(
+        shiftTab,
+        state,
+        (newState) => {
+          state = newState;
+        },
+        () => {}
+      );
+      expect(state).toBeInstanceOf(Inputting);
+      let inputting = state as Inputting;
+      expect(inputting.composingBuffer).toBe("妳");
+
+      // One more Shift+Tab should go back to original
+      keyHandler.handle(
+        shiftTab,
+        state,
+        (newState) => {
+          state = newState;
+        },
+        () => {}
+      );
+      inputting = state as Inputting;
+      expect(inputting.composingBuffer).toBe("你");
+    });
+
+    test("Shift + Tab in composing state with multiple characters", () => {
+      let keys = asciiKey(["s", "u", "3", "c", "l", "3"]); // Type "你好"
+      let state = handleKeySequence(keyHandler, keys);
+      expect(state).toBeInstanceOf(Inputting);
+
+      // Move cursor to first character
+      let leftKey = Key.namedKey(KeyName.LEFT);
+      keyHandler.handle(
+        leftKey,
+        state,
+        (newState) => {
+          state = newState;
+        },
+        () => {}
+      );
+
+      // First tab to change to another candidate
+      let tab = Key.namedKey(KeyName.TAB);
+      keyHandler.handle(
+        tab,
+        state,
+        (newState) => {
+          state = newState;
+        },
+        () => {}
+      );
+      expect((state as Inputting).composingBuffer).toBe("妳好");
+
+      // Now Shift+Tab to go back
+      let shiftTab = Key.namedKey(KeyName.TAB, true, false);
+      keyHandler.handle(
+        shiftTab,
+        state,
+        (newState) => {
+          state = newState;
+        },
+        () => {}
+      );
+      expect(state).toBeInstanceOf(Inputting);
+      expect((state as Inputting).composingBuffer).toBe("你好");
+    });
+
+    test("Shift + Tab with no available previous candidates", () => {
+      let keys = asciiKey(["j", "7", "2"]); // Type a character with limited candidates
+      let state = handleKeySequence(keyHandler, keys);
+
+      // Shift+Tab should do nothing if there are no previous candidates
+      let initialState = state;
+      let shiftTab = Key.namedKey(KeyName.TAB, true, false);
+      let errorCalled = false;
+      keyHandler.handle(
+        shiftTab,
+        state,
+        (newState) => {
+          state = newState;
+        },
+        () => {
+          errorCalled = true;
+        }
+      );
+
+      // Expect either same state or error callback was called
+      if (!errorCalled) {
+        expect(state).toBe(initialState);
+      } else {
+        expect(errorCalled).toBe(true);
+      }
+    });
+
+    test("Shift + Tab in empty reading buffer", () => {
+      let keys = asciiKey(["s", "u", "3"]); // Type "你"
+      let state = handleKeySequence(keyHandler, keys);
+
+      // Delete the reading buffer
+      let backspace = Key.namedKey(KeyName.BACKSPACE);
+      keyHandler.handle(
+        backspace,
+        state,
+        (newState) => {
+          state = newState;
+        },
+        () => {}
+      );
+
+      // Now try Shift+Tab
+      let shiftTab = Key.namedKey(KeyName.TAB, true, false);
+      keyHandler.handle(
+        shiftTab,
+        state,
+        (newState) => {
+          state = newState;
+        },
+        () => {}
+      );
+
+      // Should still be in the same state type
+      expect(state).toBeInstanceOf(EmptyIgnoringPrevious);
+    });
+
+    test("Shift + Tab during complex input sequence", () => {
+      // Type a longer sequence
+      let keys = asciiKey([
+        "s",
+        "u",
+        "3",
+        "c",
+        "l",
+        "3",
+        "w",
+        "4",
+        "m",
+        "3",
+        "s",
+        "4",
+      ]);
+      let state = handleKeySequence(keyHandler, keys);
+      expect(state).toBeInstanceOf(Inputting);
+
+      // Move cursor to middle
+      let leftKey = Key.namedKey(KeyName.LEFT);
+      keyHandler.handle(
+        leftKey,
+        state,
+        (newState) => {
+          state = newState;
+        },
+        () => {}
+      );
+      keyHandler.handle(
+        leftKey,
+        state,
+        (newState) => {
+          state = newState;
+        },
+        () => {}
+      );
+
+      // Use tab to change a candidate
+      let tab = Key.namedKey(KeyName.TAB);
+      keyHandler.handle(
+        tab,
+        state,
+        (newState) => {
+          state = newState;
+        },
+        () => {}
+      );
+
+      // Now use Shift+Tab to go back
+      let shiftTab = Key.namedKey(KeyName.TAB, true, false);
+      keyHandler.handle(
+        shiftTab,
+        state,
+        (newState) => {
+          state = newState;
+        },
+        () => {}
+      );
+
+      // Verify we're still in Inputting state
+      expect(state).toBeInstanceOf(Inputting);
     });
 
     test("Tab key #1", () => {
@@ -1815,6 +2036,265 @@ describe("Test KeyHandler.test", () => {
       let altSpace = new Key(" ", KeyName.SPACE, false, false, true);
       let state = handleKeySequence(keyHandler, [altSpace]);
       expect(state).toBeInstanceOf(Empty);
+    });
+  });
+
+  describe("Numpad handling", () => {
+    test("Numpad keys in Chinese number mode", () => {
+      let currentState: InputState = new ChineseNumber(
+        "",
+        ChineseNumberStyle.Lowercase
+      );
+
+      // Simulate numpad keys 1, 2, 3
+      let keys = [
+        new Key("1", KeyName.UNKNOWN, false, false, true),
+        new Key("2", KeyName.UNKNOWN, false, false, true),
+        new Key("3", KeyName.UNKNOWN, false, false, true),
+      ];
+
+      for (let key of keys) {
+        keyHandler.handle(
+          key,
+          currentState,
+          (state) => {
+            currentState = state;
+          },
+          () => {}
+        );
+      }
+
+      expect(currentState).toBeInstanceOf(ChineseNumber);
+      let chineseNumber = currentState as ChineseNumber;
+      expect(chineseNumber.number).toBe("123");
+    });
+
+    test("Numpad decimal point in Chinese number mode", () => {
+      let currentState: InputState = new ChineseNumber(
+        "",
+        ChineseNumberStyle.Lowercase
+      );
+
+      let keys = [
+        new Key("1", KeyName.UNKNOWN, false, false, true),
+        new Key(".", KeyName.UNKNOWN, false, false, true), // Numpad decimal point
+        new Key("5", KeyName.UNKNOWN, false, false, true),
+      ];
+
+      for (let key of keys) {
+        keyHandler.handle(
+          key,
+          currentState,
+          (state) => {
+            currentState = state;
+          },
+          () => {}
+        );
+      }
+
+      expect(currentState).toBeInstanceOf(ChineseNumber);
+      let chineseNumber = currentState as ChineseNumber;
+      expect(chineseNumber.number).toBe("1.5");
+    });
+
+    test("Numpad Enter commits Chinese number", () => {
+      let currentState: InputState = new ChineseNumber(
+        "",
+        ChineseNumberStyle.Lowercase
+      );
+      let commit: Committing | undefined = undefined;
+
+      let keys = [
+        new Key("4", KeyName.UNKNOWN, false, false, true),
+        new Key("2", KeyName.UNKNOWN, false, false, true),
+        new Key("", KeyName.RETURN, false, false, true), // Numpad Enter
+      ];
+
+      for (let key of keys) {
+        keyHandler.handle(
+          key,
+          currentState,
+          (state) => {
+            if (state instanceof Committing) {
+              commit = state;
+            }
+            currentState = state;
+          },
+          () => {}
+        );
+      }
+
+      expect(commit).toBeDefined();
+      expect(commit).toBeInstanceOf(Committing);
+    });
+
+    test("Numpad keys in empty state", () => {
+      let currentState: InputState = new Empty();
+
+      let numpad7 = new Key("7", KeyName.UNKNOWN, false, false, true);
+      keyHandler.handle(
+        numpad7,
+        currentState,
+        (state) => {
+          currentState = state;
+        },
+        () => {}
+      );
+
+      // Should remain in empty state
+      expect(currentState).toBeInstanceOf(Empty);
+    });
+
+    test("Numpad keys in Big5 state", () => {
+      let currentState: InputState = new Big5();
+
+      let keys = [
+        new Key("a", KeyName.UNKNOWN, false, false, false), // Normal key for "a"
+        new Key("1", KeyName.UNKNOWN, false, false, true), // Numpad 1
+        new Key("2", KeyName.UNKNOWN, false, false, true), // Numpad 2
+      ];
+
+      for (let key of keys) {
+        keyHandler.handle(
+          key,
+          currentState,
+          (state) => {
+            currentState = state;
+          },
+          () => {}
+        );
+      }
+
+      expect(currentState).toBeInstanceOf(Big5);
+      let big5 = currentState as Big5;
+      expect(big5.code).toBe("a12");
+    });
+
+    test("Numpad keys in EnclosingNumber state", () => {
+      let currentState: InputState = new EnclosingNumber();
+
+      let keys = [
+        new Key("2", KeyName.UNKNOWN, false, false, true), // Numpad 2
+        new Key("0", KeyName.UNKNOWN, false, false, true), // Numpad 0
+      ];
+
+      for (let key of keys) {
+        keyHandler.handle(
+          key,
+          currentState,
+          (state) => {
+            currentState = state;
+          },
+          () => {}
+        );
+      }
+
+      expect(currentState).toBeInstanceOf(EnclosingNumber);
+      let enclosingNumber = currentState as EnclosingNumber;
+      expect(enclosingNumber.number).toBe("20");
+    });
+
+    test("Numpad Enter in EnclosingNumber state", () => {
+      let currentState: InputState = new EnclosingNumber();
+
+      let keys = [
+        new Key("1", KeyName.UNKNOWN, false, false, true), // Numpad 1
+        new Key("", KeyName.RETURN, false, false, true), // Numpad Enter
+      ];
+
+      for (let key of keys) {
+        keyHandler.handle(
+          key,
+          currentState,
+          (state) => {
+            currentState = state;
+          },
+          () => {}
+        );
+      }
+
+      // Should transition to ChoosingCandidate state with enclosing number options
+      expect(currentState).toBeInstanceOf(ChoosingCandidate);
+    });
+
+    test("Numpad keys in normal typing", () => {
+      // Reset keyHandler
+      keyHandler.reset();
+
+      // First type a regular character
+      let keys = asciiKey(["s", "u", "3"]);
+      let state = handleKeySequence(keyHandler, keys);
+      expect(state).toBeInstanceOf(Inputting);
+
+      // Then add a numpad key
+      let numpad5 = new Key("5", KeyName.UNKNOWN, false, false, true);
+      keyHandler.handle(
+        numpad5,
+        state,
+        (newState) => {
+          state = newState;
+        },
+        () => {}
+      );
+
+      // Check that numpad 5 was treated like regular 5
+      expect(state).toBeInstanceOf(Committing);
+    });
+
+    test("Numpad arithmetic operators", () => {
+      // Reset keyHandler
+      keyHandler.reset();
+
+      // First type a regular character
+      let keys = asciiKey(["s", "u", "3"]);
+      let state = handleKeySequence(keyHandler, keys);
+
+      // Then add numpad operators
+      let numpadPlus = new Key("+", KeyName.UNKNOWN, false, false, true);
+      keyHandler.handle(
+        numpadPlus,
+        state,
+        (newState) => {
+          state = newState;
+        },
+        () => {}
+      );
+
+      let numpadMinus = new Key("-", KeyName.UNKNOWN, false, false, true);
+      keyHandler.handle(
+        numpadMinus,
+        state,
+        (newState) => {
+          state = newState;
+        },
+        () => {}
+      );
+
+      // Check that operators were handled
+      expect(state).toBeInstanceOf(Committing);
+    });
+
+    test("Numpad Enter in composing state", () => {
+      // First type regular characters
+      let keys = asciiKey(["s", "u", "3", "c", "l", "3"]);
+      let state = handleKeySequence(keyHandler, keys);
+      expect(state).toBeInstanceOf(Inputting);
+
+      // Press numpad Enter
+      let numpadEnter = new Key("", KeyName.RETURN, false, false, true);
+      keyHandler.handle(
+        numpadEnter,
+        state,
+        (newState) => {
+          state = newState;
+        },
+        () => {}
+      );
+
+      // Should commit the text
+      expect(state).toBeInstanceOf(Committing);
+      let committing = state as Committing;
+      expect(committing.text).toBe("你好");
     });
   });
 });
