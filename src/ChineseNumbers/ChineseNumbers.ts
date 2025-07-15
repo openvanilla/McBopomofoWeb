@@ -131,6 +131,8 @@ export class ChineseNumbers {
 
     if (intPart.length === 0) {
       output += currentDigits.get("0");
+    } else if (intPart === "0") {
+      output += currentDigits.get("0");
     } else {
       let intSectionCount = Math.ceil(intTrimmed.length / 4);
       let filledLength = intSectionCount * 4;
