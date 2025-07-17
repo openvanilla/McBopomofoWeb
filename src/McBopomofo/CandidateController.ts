@@ -170,7 +170,7 @@ export class CandidateController {
   /** Moves to the next page. */
   goToNextPage(): void {
     let current = Math.floor(this.currentSelectedIndex_ / this.keyCaps_.length);
-    let last = Math.floor(this.candidates_.length / this.keyCaps_.length);
+    let last = Math.floor((this.candidates_.length - 1) / this.keyCaps_.length);
     if (current === last) {
       return;
     }
@@ -182,7 +182,7 @@ export class CandidateController {
    * first page. */
   goToNextPageButFistWhenAtEnd(): void {
     let current = Math.floor(this.currentSelectedIndex_ / this.keyCaps_.length);
-    let last = Math.floor(this.candidates_.length / this.keyCaps_.length);
+    let last = Math.floor((this.candidates_.length - 1) / this.keyCaps_.length);
     if (current === last) {
       this.currentSelectedIndex_ = 0;
       return;
