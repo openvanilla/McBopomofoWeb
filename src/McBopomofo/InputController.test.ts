@@ -30,15 +30,12 @@ describe("Test Input Controller", () => {
     inputCStr(controller, "5j/ jp6");
 
     let state = controller.state;
-    console.log("State:", state);
     expect(state).toBeInstanceOf(Inputting);
     const space = new Key(" ", KeyName.SPACE, false, false);
     controller.mcbopomofoKeyEvent(space);
     controller.mcbopomofoKeyEvent(space);
     controller.mcbopomofoKeyEvent(space);
     state = controller.state;
-    console.log("State:", state);
-    console.log("Last State:", lastState);
     let psrsed = JSON.parse(lastState);
     let candidates = psrsed.candidates;
     expect(candidates.length).toBe(9);
