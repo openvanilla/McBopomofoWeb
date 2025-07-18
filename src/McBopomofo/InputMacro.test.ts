@@ -1,9 +1,9 @@
-import dayjs from "dayjs";
-import { inputMacroController } from "./InputMacro";
-
-// Mock dayjs to have consistent test results
-jest.mock("dayjs", () => {
+jest.mock("./InputMacroDate", () => {
   const mockDayjs = jest.fn(() => ({
+    default: {
+      locale: jest.fn(),
+      extend: jest.fn(),
+    },
     year: () => 2024,
     format: jest.fn((formatStr: string) => {
       switch (formatStr) {
@@ -238,10 +238,7 @@ jest.mock("dayjs", () => {
   return mockDayjs;
 });
 
-// Mock require for dayjs plugins
-jest.mock("dayjs/locale/zh-tw", () => ({}), { virtual: true });
-jest.mock("dayjs/locale/ja", () => ({}), { virtual: true });
-jest.mock("dayjs/plugin/localizedFormat", () => () => ({}), { virtual: true });
+import { inputMacroController } from "./InputMacro";
 
 describe("InputMacro", () => {
   describe("Year Macros", () => {

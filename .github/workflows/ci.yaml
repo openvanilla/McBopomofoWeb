@@ -17,7 +17,7 @@ jobs:
         contents: write
     strategy:
       matrix:
-        node-version: [21.x, 20.x, 19.x, 18.x]
+        node-version: [23.x, 22.x, 21.x, 20.x, 19.x, 18.x]
     steps:
       - uses: actions/checkout@v4
       - name: Use Node.js ${{ matrix.node-version }}
@@ -27,7 +27,26 @@ jobs:
       - run: npm install -D typescript@5.3.3
       - run: npm install
       - run: npm run build
+
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+        checks: write
+        pull-requests: write
+        contents: write
+    strategy:
+      matrix:
+        node-version: [23.x, 22.x, 21.x, 20.x, 19.x, 18.x]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm install -D typescript@5.3.3
+      - run: npm install
       - run: npm run test:coverage
+        # continue-on-error: true
       - name: Jest Coverage Report
         if: matrix.node-version == '21.x'
         uses: ArtiomTr/jest-coverage-report-action@v2
@@ -35,12 +54,11 @@ jobs:
       #   id: coverageComment
       #   uses: MishaKav/jest-coverage-comment@main
 
-
   build_chromeos:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [21.x, 20.x, 19.x, 18.x]
+        node-version: [23.x, 22.x, 21.x, 20.x, 19.x, 18.x]
     steps:
       - uses: actions/checkout@v4
       - name: Use Node.js ${{ matrix.node-version }}
@@ -55,7 +73,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [21.x, 20.x, 19.x, 18.x]
+        node-version: [23.x, 22.x, 21.x, 20.x, 19.x, 18.x]
     steps:
       - uses: actions/checkout@v4
       - name: Use Node.js ${{ matrix.node-version }}

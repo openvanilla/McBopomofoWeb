@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-import dayjs from "dayjs";
+import dayjs from "./InputMacroDate";
 
 /**
  * The interface of input macros.
@@ -739,11 +739,6 @@ class InputMacroWeekdayTomorrowJapanese implements InputMacro {
 class InputMacroController {
   private macroMap = new Map<string, InputMacro>();
   constructor() {
-    require("dayjs/locale/zh-tw");
-    require("dayjs/locale/ja");
-    var localizedFormat = require("dayjs/plugin/localizedFormat");
-    dayjs.extend(localizedFormat);
-
     const macros: InputMacro[] = [
       new InputMacroDateTodayShort(),
       new InputMacroDateTodayMedium(),

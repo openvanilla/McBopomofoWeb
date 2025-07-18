@@ -189,5 +189,30 @@ describe("ReadingGrid", () => {
     grid.insertReading("testReading");
     expect(grid.overrideCandidateWithString(2, "testValue")).toBe(false);
   });
+
+  it("should clear the grid correctly", () => {
+    const mockLM = new MockLanguageModel();
+    const grid = new ReadingGrid(mockLM);
+
+    // Add some readings
+    grid.insertReading("testReading");
+    grid.insertReading("testReading2");
+    expect(grid.readings).toEqual(["testReading", "testReading2"]);
+    expect(grid.length).toBe(2);
+    expect(grid.cursor).toBe(2);
+
+    // Clear the grid
+    grid.clear();
+
+    // Verify grid is cleared
+    expect(grid.readings).toEqual([]);
+    expect(grid.length).toBe(0);
+    expect(grid.cursor).toBe(0);
+
+    // Make sure we can add readings after clearing
+    grid.insertReading("testReading");
+    expect(grid.readings).toEqual(["testReading"]);
+    expect(grid.length).toBe(1);
+    expect(grid.cursor).toBe(1);
+  });
 });
-// ...existing code...
