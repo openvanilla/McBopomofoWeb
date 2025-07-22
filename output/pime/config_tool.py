@@ -5,7 +5,9 @@ import os
 import uuid  # use to generate a random auth token
 import random
 import json
+import logging
 
+logging.basicConfig(level=logging.INFO)
 current_dir = os.path.dirname(__file__)
 
 config_dir = os.path.join(os.path.expandvars("%APPDATA%"), "PIME", "mcbopomofo")
@@ -130,8 +132,8 @@ class UserPhrasesHandler(BaseHandler):
                 f.write(data)
             self.write('{"return":true}')
         except Exception as e:
-            print(e)
-            self.write('{"return":false, "error":"%s"}' % str(e))
+            logging.error("Error saving user phrases: %s", e, exc_info=True)
+            self.write('{"return":false, "error":"An internal error has occurred."}')
 
 
 class ExcludedPhrasesHandler(BaseHandler):
