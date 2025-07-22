@@ -175,6 +175,7 @@ let defaultSettings = {
   moving_cursor_option: 0,
   beep_on_error: true,
   repeated_punctuation_choose_candidate: false,
+  associated_phrases: true,
 };
 let settings = {};
 
@@ -288,6 +289,10 @@ function applySettings(settings) {
     );
     document.getElementById("repeated_punctuation_choose_candidate").checked =
       settings.repeated_punctuation_choose_candidate;
+  }
+  {
+    controller.setAssociatedPhrasesEnabled(settings.associated_phrases);
+    document.getElementById("associated_phrases").checked = settings.associated_phrases;
   }
   {
     controller.setMovingCursorOption(settings.moving_cursor_option);
@@ -522,6 +527,14 @@ document.getElementById("repeated_punctuation_choose_candidate").onchange =
     saveSettings(settings);
     document.getElementById("text_area").focus();
   };
+
+document.getElementById("associated_phrases").onchange = function (event) {
+  let checked = document.getElementById("associated_phrases").checked;
+  controller.setAssociatedPhrasesEnabled(checked);
+  settings.associated_phrases = checked;
+  saveSettings(settings);
+  document.getElementById("text_area").focus();
+};
 
 document.getElementById("uppercase_letters").onchange = function (event) {
   controller.setLetterMode("upper");

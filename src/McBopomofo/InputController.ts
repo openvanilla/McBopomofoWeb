@@ -14,6 +14,7 @@ import { inputMacroController } from "./InputMacro";
 import {
   Big5,
   ChineseNumber,
+  ChoosingAssociatedWords,
   ChoosingCandidate,
   Committing,
   CustomMenu,
@@ -186,6 +187,7 @@ export class InputController {
   private onError_: Function | undefined;
   private movingCursorOption_: MovingCursorOption = MovingCursorOption.Disabled;
   private localizedStrings_ = new LocalizedStrings();
+  private associatedPhrasesEnabled: boolean = true;
 
   constructor(ui: InputUI) {
     this.ui_ = new InputUIController(ui);
@@ -360,6 +362,16 @@ export class InputController {
   }
 
   /**
+   * Enables or disables association words feature.
+   * When enabled, the input method will show association word suggestions
+   * after committing text.
+   * @param flag True to enable association words, false to disable
+   */
+  public setAssociatedPhrasesEnabled(flag: boolean): void {
+    this.associatedPhrasesEnabled = flag;
+  }
+
+  /**
    * Sets the user phrases to the language model.
    * @param input The map of user phrases.
    */
@@ -447,6 +459,7 @@ export class InputController {
 
     if (
       this.state_ instanceof ChoosingCandidate ||
+      this.state_ instanceof ChoosingAssociatedWords ||
       this.state_ instanceof SelectingFeature ||
       this.state_ instanceof SelectingDateMacro ||
       this.state_ instanceof SelectingDictionary ||
@@ -566,6 +579,11 @@ export class InputController {
             this.enterNewState(newState);
           }
         );
+      } else if (this.state_ instanceof ChoosingAssociatedWords) {
+        // For association words, just commit the selected word and go back to empty state
+        const newState = new Committing(selected.value);
+        stateCallback(newState);
+        stateCallback(new Empty());
       }
       return;
     }
@@ -595,6 +613,11 @@ export class InputController {
             stateCallback(newState);
           }
         );
+      } else if (this.state_ instanceof ChoosingAssociatedWords) {
+        // For association words, just commit the selected word and go back to empty state
+        const newState = new Committing(current.value);
+        stateCallback(newState);
+        stateCallback(new Empty());
       } else if (this.state_ instanceof CustomMenu) {
         const entry = this.state_.entries[+current.value];
         entry.callback();
@@ -657,6 +680,9 @@ export class InputController {
             stateCallback(newState);
           }
         );
+      } else if (this.state_ instanceof ChoosingAssociatedWords) {
+        // For association words, just go back to empty state when cancelled
+        stateCallback(new Empty());
       } else if (this.state_ instanceof CustomMenu) {
         const cursor = this.keyHandler_.cursor;
         const choosing = this.keyHandler_.buildChoosingCandidateState(cursor);
@@ -797,6 +823,8 @@ export class InputController {
       this.handleInputting(prev, state);
     } else if (state instanceof ChoosingCandidate) {
       this.handleChoosingCandidate(prev, state);
+    } else if (state instanceof ChoosingAssociatedWords) {
+      this.handleChoosingAssociatedWords(prev, state);
     } else if (state instanceof Marking) {
       this.handleMarking(prev, state);
     } else if (state instanceof SelectingFeature) {
@@ -835,6 +863,38 @@ export class InputController {
     this.ui_.reset();
     if (state.text.length > 0) {
       this.ui_.commitString(state.text);
+      
+      // Check if we should show association words
+      if (this.associatedPhrasesEnabled && state.text.length > 0) {
+        this.showAssociationWordsIfAvailable(state.text);
+      }
+    }
+  }
+
+  private handleChoosingAssociatedWords(prev: InputState, state: ChoosingAssociatedWords) {
+    this.candidateController_.update(
+      state.candidates,
+      this.candidateKeys_
+    );
+    const result = this.candidateController_.currentPage;
+    this.ui_.resetComposingBuffer();
+    this.ui_.append(new ComposingBufferText("[" + this.localizedStrings_.associatedPhrases() + "]"));
+    this.ui_.setCursorIndex(0);
+    this.ui_.setCandidates(result);
+    const totalPageCount = this.candidateController_.totalPageCount;
+    const pageIndex = this.candidateController_.currentPageIndex;
+    this.ui_.setPageIndex(pageIndex + 1, totalPageCount);
+    this.ui_.update();
+  }
+
+  /**
+   * Shows association words if available for the committed text
+   */
+  private showAssociationWordsIfAvailable(committedText: string) {
+    const associationWords = this.lm_.getAssociationWords(committedText);
+    if (associationWords.length > 0) {
+      const newState = new ChoosingAssociatedWords(associationWords, committedText);
+      this.enterNewState(newState);
     }
   }
 

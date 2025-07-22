@@ -107,4 +107,11 @@ export class LocalizedStrings {
     }
     return "Cancel";
   }
+
+  associatedPhrases() {
+    if (this.languageCode === "zh-TW") {
+      return "聯想詞";
+    }
+    return "Associated Phrases";
+  }
 }

@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { LanguageModel, Unigram } from "../Gramambular2";
+import { LanguageModel, Unigram, Candidate } from "../Gramambular2";
 import { BopomofoSyllable } from "../Mandarin";
 
 /**
@@ -445,5 +445,134 @@ export class WebLanguageModel implements LanguageModel {
       readings.push(bopomofoSyllable.composedString);
     }
     return readings.join("-");
+  }
+
+  /**
+   * Gets association word candidates for a given committed text.
+   * Association words are words that commonly follow the committed text.
+   * 
+   * @param committedText The text that was just committed
+   * @returns An array of Candidate objects for association words
+   */
+  getAssociationWords(committedText: string): Candidate[] {
+    if (!committedText || committedText.length === 0) {
+      return [];
+    }
+
+    let candidates: Candidate[] = [];
+    let candidateSet = new Set<string>(); // To avoid duplicates
+    
+    // Look for bigram patterns - words that commonly follow the committed text
+    // First, try to find exact bigram patterns in the data
+    for (let key in this.map_) {
+      let values = this.map_[key].split(" ");
+      for (let i = 0; i < values.length; i += 2) {
+        let value = values[i];
+        let score = parseFloat(values[i + 1]);
+        
+        // Look for bigram patterns: if the value starts with our committed text
+        // and has more content, it could be an association pattern
+        if (value.startsWith(committedText) && 
+            value.length > committedText.length && 
+            score > -6.5 && // Only consider reasonably common phrases
+            !candidateSet.has(value)) {
+          
+          let reading = this.getReadingForKey(key);
+          if (reading) {
+            let candidate = new Candidate(reading, value, "");
+            candidates.push(candidate);
+            candidateSet.add(value);
+          }
+        }
+      }
+    }
+
+    // Also look for single character words that might follow
+    // This is a simplified approach - in practice, we'd use n-gram models
+    const commonFollowingChars = this.getCommonFollowingCharacters(committedText);
+    for (let followingChar of commonFollowingChars) {
+      if (!candidateSet.has(followingChar)) {
+        let reading = this.getReading(followingChar);
+        if (reading) {
+          let candidate = new Candidate(reading, followingChar, "");
+          candidates.push(candidate);
+          candidateSet.add(followingChar);
+        }
+      }
+    }
+
+    // Sort by frequency/score (we'll use a simple length-based heuristic for now)
+    // In practice, this would use actual n-gram frequencies
+    candidates.sort((a, b) => {
+      // Prefer shorter, more common words
+      if (a.value.length !== b.value.length) {
+        return a.value.length - b.value.length;
+      }
+      return a.value.localeCompare(b.value);
+    });
+    
+    // Limit to top 6 association word suggestions
+    candidates = candidates.slice(0, 6);
+    
+    return candidates;
+  }
+
+  /**
+   * Gets common characters that might follow the given text
+   * This is a simplified implementation - in practice this would use statistical analysis
+   */
+  private getCommonFollowingCharacters(text: string): string[] {
+    const commonFollowers: string[] = [];
+    
+    // This is a very simplified approach
+    // In a real implementation, this would analyze n-gram statistics
+    const lastChar = text[text.length - 1];
+    
+    // Some basic association rules based on common Chinese word patterns
+    switch (lastChar) {
+      case '的':
+        commonFollowers.push('是', '人', '事', '話', '時候', '地方');
+        break;
+      case '了':
+        commonFollowers.push('一', '很', '也', '就', '都');
+        break;
+      case '我':
+        commonFollowers.push('們', '的', '要', '會', '在');
+        break;
+      case '在':
+        commonFollowers.push('這', '那', '家', '學校', '公司');
+        break;
+      case '很':
+        commonFollowers.push('好', '多', '少', '快', '慢');
+        break;
+      default:
+        // For other cases, we could look for common following patterns in the data
+        break;
+    }
+    
+    return commonFollowers.slice(0, 3); // Limit to 3 suggestions
+  }
+
+  /**
+   * Converts a language model key to a readable bopomofo string
+   * @param key The language model key
+   * @returns The readable bopomofo string or undefined
+   */
+  private getReadingForKey(key: string): string | undefined {
+    if (key.startsWith("_")) {
+      return undefined; // Skip special keys
+    }
+    
+    try {
+      let readings: string[] = [];
+      for (let i = 0; i < key.length; i += 2) {
+        let substring = key.substring(i, i + 2);
+        let bopomofoSyllable = BopomofoSyllable.FromAbsoluteOrderString(substring);
+        readings.push(bopomofoSyllable.composedString);
+      }
+      return readings.join("-");
+    } catch (e) {
+      return undefined;
+    }
   }
 }

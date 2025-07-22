@@ -129,6 +129,28 @@ export class ChoosingCandidate extends NotEmpty {
   }
 }
 
+/** Represents the state for choosing association words. */
+/* istanbul ignore next */
+export class ChoosingAssociatedWords extends NotEmpty {
+  /** The association word candidates to choose from. */
+  readonly candidates: Candidate[];
+  /** The previously committed text that triggered these association words. */
+  readonly committedText: string;
+
+  constructor(
+    cs: Candidate[],
+    committedText: string
+  ) {
+    super("", 0);
+    this.candidates = cs;
+    this.committedText = committedText;
+  }
+
+  toString(): string {
+    return "ChoosingAssociatedWords " + this.candidates;
+  }
+}
+
 /**
  * Represents the Marking state where the user uses Shift-Left/Shift-Right to
  * mark a phrase to be added to their custom phrases. A Marking state still has
