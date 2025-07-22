@@ -1,10 +1,10 @@
 {
   "devDependencies": {
-    "@types/chrome": "^0.1.0",
+    "@types/chrome": "^0.1.1",
     "@types/jest": "^30.0.0",
     "@types/lodash": "^4.17.20",
     "@types/node": "^24.0.15",
-    "@typescript-eslint/eslint-plugin": "^8.37.0",
+    "@typescript-eslint/eslint-plugin": "^8.38.0",
     "@typescript-eslint/parser": "^8.37.0",
     "eslint": "^9.31.0",
     "jest": "^30.0.4",
@@ -16,7 +16,7 @@
     "ts-node": "^10.9.2",
     "typedoc": "^0.28.7",
     "typescript": "^5.8.3",
-    "webpack": "^5.100.1",
+    "webpack": "^5.100.2",
     "webpack-cli": "^6.0.1"
   },
   "name": "mcbopomofoweb",
