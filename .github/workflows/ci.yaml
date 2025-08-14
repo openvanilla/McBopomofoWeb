@@ -50,6 +50,16 @@ jobs:
       - name: Jest Coverage Report
         if: matrix.node-version == '21.x'
         uses: ArtiomTr/jest-coverage-report-action@v2
+      - name: Upload coverage reports to Codecov
+        if: matrix.node-version == '21.x'
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./coverage/clover.xml
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: false
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       # - name: Jest Coverage Comment
       #   id: coverageComment
       #   uses: MishaKav/jest-coverage-comment@main
