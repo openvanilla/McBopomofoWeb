@@ -13,7 +13,7 @@
     "minimatch": ">=10.0.3",
     "nodemon": "^3.1.10",
     "ts-jest": "^29.4.1",
-    "ts-loader": "^9.5.2",
+    "ts-loader": "^9.5.4",
     "ts-node": "^10.9.2",
     "typedoc": "^0.28.12",
     "typescript": "^5.9.2",
