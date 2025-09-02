@@ -5,7 +5,7 @@
     "@types/lodash": "^4.17.20",
     "@types/node": "^24.2.1",
     "@typescript-eslint/eslint-plugin": "^8.41.0",
-    "@types/node": "^24.0.15",
+    "@types/node": "^24.3.0",
     "@typescript-eslint/parser": "^8.37.0",
     "eslint": "^9.34.0",
     "jest": "^30.0.5",
