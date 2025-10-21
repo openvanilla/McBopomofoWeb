@@ -230,40 +230,40 @@ class ChromeMcBopomofo {
       {
         id: "mcbopomofo-toggle-alphabet-mode",
         label: chrome.i18n.getMessage("menuAlphabetMode"),
-        style: "check",
+        style: "check" as const,
         checked: this.isAlphabetMode === true,
       },
       {
         id: "mcbopomofo-chinese-conversion",
         label: chrome.i18n.getMessage("menuChineseConversion"),
-        style: "check",
+        style: "check" as const,
         checked: this.settings.chinese_conversion === true,
       },
       {
         id: "mcbopomofo-half-width-punctuation",
         label: chrome.i18n.getMessage("menuHalfWidthPunctuation"),
-        style: "check",
+        style: "check" as const,
         checked: this.settings.half_width_punctuation_enabled === true,
       },
       {
         id: "mcbopomofo-options",
         label: chrome.i18n.getMessage("menuOptions"),
-        style: "check",
+        style: "check" as const,
       },
       {
         id: "mcbopomofo-user-phrase",
         label: chrome.i18n.getMessage("menuUserPhrases"),
-        style: "check",
+        style: "check" as const,
       },
       {
         id: "mcbopomofo-help",
         label: chrome.i18n.getMessage("menuHelp"),
-        style: "check",
+        style: "check" as const,
       },
       {
         id: "mcbopomofo-homepage",
         label: chrome.i18n.getMessage("homepage"),
-        style: "check",
+        style: "check" as const,
       },
     ];
     chrome.input.ime.setMenuItems({ engineID: this.engineID, items: menus });
@@ -454,14 +454,14 @@ class ChromeMcBopomofo {
             let segment = {
               start: index,
               end: index + item.text.length,
-              style: "doubleUnderline",
+              style: "doubleUnderline" as const,
             };
             segments.push(segment);
           } else {
             let segment = {
               start: index,
               end: index + item.text.length,
-              style: "underline",
+              style: "underline" as const,
             };
             segments.push(segment);
           }
