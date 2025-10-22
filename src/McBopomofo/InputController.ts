@@ -729,11 +729,9 @@ export class InputController {
 
     // Determines whether the input should trigger a page up action. This is
     // true when:
-    // - Left arrow key is pressed with Shift, OR
     // - Using JK cursor movement option and 'h' key is pressed, OR
     // - Using HL cursor movement option and 'j' key is pressed
     const isAdditionalPageUp =
-      (key.name === KeyName.LEFT && key.shiftPressed) ||
       (this.movingCursorOption_ === MovingCursorOption.UseJK &&
         key.ascii === "h") ||
       (this.movingCursorOption_ === MovingCursorOption.UseHL &&
@@ -741,11 +739,9 @@ export class InputController {
 
     // Determines if the current key input should trigger an additional page
     // down action. This occurs when:
-    // - Left arrow key is pressed with Shift modifier, or
     // - Moving cursor option is set to UseJK and 'l' key is pressed, or
     // - Moving cursor option is set to UseHL and 'k' key is pressed
     const isAdditionalPageDown =
-      (key.name === KeyName.LEFT && key.shiftPressed) ||
       (this.movingCursorOption_ === MovingCursorOption.UseJK &&
         key.ascii === "l") ||
       (this.movingCursorOption_ === MovingCursorOption.UseHL &&
