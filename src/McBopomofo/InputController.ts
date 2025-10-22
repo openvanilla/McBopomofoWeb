@@ -608,9 +608,10 @@ export class InputController {
     const invalidPrefixArray = [
       "_half_punctuation_",
       "_ctrl_punctuation_",
+      "_punctuation_",
       "_letter_",
       "_number_",
-      "_punctuation_",
+      "_numpad_",
     ];
 
     if (key.ascii === "?") {

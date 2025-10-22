@@ -431,7 +431,10 @@ export class WebLanguageModel implements LanguageModel {
     if (
       result.startsWith("_") &&
       result.charAt(result.length - 2) === "_" &&
-      (result.includes("punctuation") || result.includes("letter"))
+      (result.includes("punctuation") ||
+        result.includes("letter") ||
+        result.includes("number") ||
+        result.includes("numpad"))
     ) {
       // this is a punctuation
       return result;
