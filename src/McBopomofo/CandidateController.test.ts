@@ -277,18 +277,18 @@ describe("Test CandidateController", () => {
     expect(controller.currentPageIndex).toBe(0);
 
     // Go to next page normally
-    controller.goToNextPageButFistWhenAtEnd();
+    controller.goToNextPageButFirstWhenAtEnd();
     expect(controller.currentPageIndex).toBe(1);
     expect(controller.selectedCandidate.value).toBe("壹");
 
     // When at last page, should cycle to first page
-    controller.goToNextPageButFistWhenAtEnd();
+    controller.goToNextPageButFirstWhenAtEnd();
     expect(controller.currentPageIndex).toBe(0);
     expect(controller.selectedCandidate.value).toBe("一");
 
     // Test cycling multiple times
-    controller.goToNextPageButFistWhenAtEnd();
-    controller.goToNextPageButFistWhenAtEnd();
+    controller.goToNextPageButFirstWhenAtEnd();
+    controller.goToNextPageButFirstWhenAtEnd();
     expect(controller.currentPageIndex).toBe(0);
     expect(controller.selectedCandidate.value).toBe("一");
   });

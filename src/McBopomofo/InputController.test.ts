@@ -511,13 +511,22 @@ describe("InputController", () => {
       expect(typeof result2).toBe("boolean");
     });
 
-    it("should handle candidate navigation with shift+arrows when enabled", () => {
+    it("should handle candidate navigation with J/K when enabled", () => {
       controller.setMovingCursorOption(MovingCursorOption.UseJK);
 
       const resultJ = inputChar(controller, "j");
       const resultK = inputChar(controller, "k");
       expect(typeof resultJ).toBe("boolean");
       expect(typeof resultK).toBe("boolean");
+    });
+
+    it("should handle candidate navigation with J/K when enabled", () => {
+      controller.setMovingCursorOption(MovingCursorOption.UseJK);
+
+      const resultH = inputChar(controller, "h");
+      const resultL = inputChar(controller, "l");
+      expect(typeof resultH).toBe("boolean");
+      expect(typeof resultL).toBe("boolean");
     });
 
     it("should handle candidate navigation with H/L when enabled", () => {
@@ -527,6 +536,15 @@ describe("InputController", () => {
       const resultL = inputChar(controller, "l");
       expect(typeof resultH).toBe("boolean");
       expect(typeof resultL).toBe("boolean");
+    });
+
+    it("should handle candidate navigation with H/L when enabled", () => {
+      controller.setMovingCursorOption(MovingCursorOption.UseHL);
+
+      const resultJ = inputChar(controller, "j");
+      const resultK = inputChar(controller, "k");
+      expect(typeof resultJ).toBe("boolean");
+      expect(typeof resultK).toBe("boolean");
     });
   });
 

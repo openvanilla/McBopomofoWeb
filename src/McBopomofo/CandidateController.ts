@@ -180,7 +180,7 @@ export class CandidateController {
 
   /** Moves to the next page. If it is already at the last page, moves to the
    * first page. */
-  goToNextPageButFistWhenAtEnd(): void {
+  goToNextPageButFirstWhenAtEnd(): void {
     let current = Math.floor(this.currentSelectedIndex_ / this.keyCaps_.length);
     let last = Math.floor((this.candidates_.length - 1) / this.keyCaps_.length);
     if (current === last) {
