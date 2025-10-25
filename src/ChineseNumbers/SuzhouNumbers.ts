@@ -8,7 +8,12 @@
 import { TrimZerosAtEnd, TrimZerosAtStart } from "./StringUtils";
 
 /**
- * A class to convert numbers to Suzhou numbers.
+ * Converts Arabic numerals into the traditional Suzhou (蘇州碼子) numeral form.
+ *
+ * Suzhou numerals are widely used in contexts such as restaurant receipts and
+ * traditional marketplaces. The converter outputs the vertical counting-rod
+ * shapes and, when appropriate, appends the positional marker line plus an
+ * optional unit label.
  */
 export class SuzhouNumbers {
   private static verticalDigits = new Map<string, string>([
@@ -64,12 +69,28 @@ export class SuzhouNumbers {
   ];
 
   /**
-   * Generates a Suzhou number string.
-   * @param intPart The integer part of the number.
-   * @param decPart The decimal part of the number.
-   * @param unit The unit of the number.
-   * @param preferInitialVertical Whether to prefer vertical digits for the first digit.
-   * @returns The Suzhou number string.
+   * Generates a Suzhou numeral representation for the supplied number parts.
+   *
+   * The converter supports mixed vertical/“horizontal” glyph alternation that
+   * emulates handwritten Suzhou numerals. When `preferInitialVertical` is
+   * `true`, the first eligible digit (1–3) uses a vertical rod character (`〡`,
+   * `〢`, `〣`); subsequent eligible digits flip between the vertical and
+   * horizontal variants to match customary writing. Callers can supply a unit
+   * suffix such as `"元"` to append after the positional marker line.
+   *
+   * @param intPart The integer component, e.g. `"120"`.
+   * @param decPart The fractional component without the decimal point, e.g.
+   * `"5"`.
+   * @param unit Optional unit string appended after the place marker.
+   * @param preferInitialVertical Toggles the initial orientation for digits
+   * 1–3.
+   * @returns A formatted Suzhou numeral, optionally including a newline before
+   * the place marker.
+   * @example
+   * ```ts
+   * const receipt = SuzhouNumbers.generate("123", "", "元");
+   * // receipt === "〡二〣\n百元"
+   * ```
    */
   public static generate(
     intPart: string,
@@ -131,4 +152,3 @@ export class SuzhouNumbers {
     );
   }
 }
-

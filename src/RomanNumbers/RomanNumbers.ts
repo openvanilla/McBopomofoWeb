@@ -1,3 +1,6 @@
+/**
+ * Error thrown when a Roman numeral conversion receives unsupported input.
+ */
 export class RomanNumbersError extends Error {
   constructor(message: string) {
     super(message);
@@ -5,6 +8,9 @@ export class RomanNumbersError extends Error {
   }
 }
 
+/**
+ * Output variants for Roman numeral conversion.
+ */
 export enum RomanNumbersStyle {
   Alphabets = "alphabets",
   FullWidthUpper = "fullWidthUpper",
@@ -44,7 +50,18 @@ function getDigitsMap(style: RomanNumbersStyle): DigitsMap {
   }
 }
 
+/**
+ * Utilities for converting numbers into Unicode Roman numerals.
+ */
 export class RomanNumbers {
+  /**
+   * Convert a numeric value to a Roman numeral string.
+   *
+   * @param input Value between 0 and 3999 (inclusive) to convert.
+   * @param style Output styling to apply; defaults to ASCII letters.
+   * @returns The Roman numeral representation of `input` in the desired style.
+   * @throws RomanNumbersError If the value is outside the supported range.
+   */
   static convert(
     input: number,
     style: RomanNumbersStyle = RomanNumbersStyle.Alphabets
@@ -89,6 +106,14 @@ export class RomanNumbers {
     return result;
   }
 
+  /**
+   * Parse a string and convert it to a Roman numeral string.
+   *
+   * @param input String containing a base-10 integer representation.
+   * @param style Output styling to apply; defaults to ASCII letters.
+   * @returns The Roman numeral representation of the parsed number.
+   * @throws RomanNumbersError If parsing fails or the value is unsupported.
+   */
   static convertString(
     input: string,
     style: RomanNumbersStyle = RomanNumbersStyle.Alphabets
