@@ -25,6 +25,7 @@ import {
   Inputting,
   Marking,
   NotEmpty,
+  RomanNumber,
   SelectingDateMacro,
   SelectingDictionary,
   SelectingFeature,
@@ -832,6 +833,8 @@ export class InputController {
       this.handleChoosingCandidate(prev, state);
     } else if (state instanceof ChineseNumber) {
       this.handleChineseNumber(prev, state);
+    } else if (state instanceof RomanNumber) {
+      this.handleRomanNumber(prev, state);
     } else if (state instanceof Big5) {
       this.handleBig5(prev, state);
     } else if (state instanceof EnclosingNumber) {
@@ -941,6 +944,14 @@ export class InputController {
   }
 
   private handleChineseNumber(prev: InputState, state: ChineseNumber) {
+    this.ui_.reset();
+    const composingBuffer = state.composingBuffer;
+    this.ui_.append(new ComposingBufferText(composingBuffer));
+    this.ui_.setCursorIndex(composingBuffer.length);
+    this.ui_.update();
+  }
+
+  private handleRomanNumber(prev: InputState, state: RomanNumber) {
     this.ui_.reset();
     const composingBuffer = state.composingBuffer;
     this.ui_.append(new ComposingBufferText(composingBuffer));

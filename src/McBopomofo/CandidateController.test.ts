@@ -8,7 +8,7 @@
 import { Candidate } from "../Gramambular2";
 import { CandidateController, CandidateWrapper } from "./CandidateController";
 
-describe("Test CandidateController", () => {
+describe("CandidateController", () => {
   const controller = new CandidateController();
 
   beforeEach(() => {
@@ -29,7 +29,7 @@ describe("Test CandidateController", () => {
     controller.update(candidates, keyCaps);
   });
 
-  test("Test next item 1", () => {
+  test("moves selection to next candidate on first page", () => {
     controller.goToNextItem();
     const result = controller.currentPage;
     expect(result.length).toBe(9);
@@ -43,7 +43,7 @@ describe("Test CandidateController", () => {
     expect(candidate2.selected).toBe(true);
   });
 
-  test("Test next item 2", () => {
+  test("moves selection to next candidate on last page", () => {
     controller.goToNextPage();
     controller.goToNextItem();
     const result = controller.currentPage;
@@ -58,7 +58,7 @@ describe("Test CandidateController", () => {
     expect(candidate2.selected).toBe(true);
   });
 
-  test("Test next item 3", () => {
+  test("maintains last selection when advancing past end", () => {
     controller.goToNextPage();
     controller.goToNextItem();
     controller.goToNextItem();
@@ -74,7 +74,7 @@ describe("Test CandidateController", () => {
     expect(candidate2.selected).toBe(true);
   });
 
-  test("Test prev item 1", () => {
+  test("returns selection to previous candidate", () => {
     controller.goToNextItem();
     controller.goToPreviousItem();
     let result = controller.currentPage;
@@ -89,7 +89,7 @@ describe("Test CandidateController", () => {
     expect(candidate2.selected).toBe(false);
   });
 
-  test("Test prev item 2", () => {
+  test("wraps selection to last candidate on previous page", () => {
     controller.goToNextPage();
     controller.goToPreviousItem();
     const result = controller.currentPage;
@@ -100,7 +100,7 @@ describe("Test CandidateController", () => {
     expect(candidate8.selected).toBe(true);
   });
 
-  test("Test next page 1", () => {
+  test("advances to next page and selects first candidate", () => {
     controller.goToNextPage();
     const result = controller.currentPage;
     expect(result.length).toBe(2);
@@ -114,7 +114,7 @@ describe("Test CandidateController", () => {
     expect(candidate2.selected).toBe(false);
   });
 
-  test("Test next page 2", () => {
+  test("keeps selection stable when advancing again", () => {
     controller.goToNextPage();
     controller.goToNextPage();
     const result = controller.currentPage;
@@ -129,7 +129,7 @@ describe("Test CandidateController", () => {
     expect(candidate2.selected).toBe(false);
   });
 
-  test("Test prev page 1", () => {
+  test("returns to previous page and selects first candidate", () => {
     controller.goToNextPage();
     controller.goToPreviousPage();
     const result = controller.currentPage;
@@ -144,7 +144,7 @@ describe("Test CandidateController", () => {
     expect(candidate2.selected).toBe(false);
   });
 
-  test("Test prev page 2", () => {
+  test("maintains first page state when moving before start", () => {
     controller.goToNextPage();
     controller.goToPreviousPage();
     controller.goToPreviousPage();
@@ -160,14 +160,14 @@ describe("Test CandidateController", () => {
     expect(candidate2.selected).toBe(false);
   });
 
-  test("Test edge case with no candidates", () => {
+  test("returns empty page when no candidates exist", () => {
     const emptyController = new CandidateController();
     emptyController.update([], []);
     const result = emptyController.currentPage;
     expect(result.length).toBe(0);
   });
 
-  test("Test if new candidates reset selection", () => {
+  test("resets selection after updating candidate list", () => {
     const newCandidatesController = new CandidateController();
     newCandidatesController.update([new Candidate("", "A", "A")], ["1"]);
     newCandidatesController.goToNextItem();
@@ -177,7 +177,7 @@ describe("Test CandidateController", () => {
     expect(result[0].selected).toBe(true);
   });
 
-  test("Test selectedCandidateWithKey", () => {
+  test("finds candidate by key cap", () => {
     let result = controller.selectedCandidateWithKey("2");
     expect(result?.value).toBe("二");
 
@@ -189,7 +189,7 @@ describe("Test CandidateController", () => {
     expect(result).toBeUndefined();
   });
 
-  test("Test selectedCandidate getter", () => {
+  test("exposes selected candidate value", () => {
     expect(controller.selectedCandidate.value).toBe("一");
 
     controller.goToNextItem();
@@ -205,7 +205,7 @@ describe("Test CandidateController", () => {
     expect(controller.selectedCandidate.value).toBe("一");
   });
 
-  test("Test selectedIndex getter and setter", () => {
+  test("updates selectedIndex and selected candidate", () => {
     expect(controller.selectedIndex).toBe(0);
 
     controller.selectedIndex = 1;
@@ -221,7 +221,7 @@ describe("Test CandidateController", () => {
     expect(controller.selectedCandidate.value).toBe("一");
   });
 
-  test("Test currentPageIndex getter", () => {
+  test("tracks current page index", () => {
     expect(controller.currentPageIndex).toBe(0);
 
     controller.goToNextPage();
@@ -243,7 +243,7 @@ describe("Test CandidateController", () => {
     expect(controller.currentPageIndex).toBe(1);
   });
 
-  test("Test totalPageCount getter", () => {
+  test("calculates total page count from provided candidates", () => {
     expect(controller.totalPageCount).toBe(2);
 
     const testController = new CandidateController();
@@ -273,7 +273,7 @@ describe("Test CandidateController", () => {
     expect(testController.totalPageCount).toBe(2);
   });
 
-  test("Test goToNextPageButFistWhenAtEnd", () => {
+  test("cycles to first page when advancing past last", () => {
     expect(controller.currentPageIndex).toBe(0);
 
     // Go to next page normally
@@ -294,8 +294,8 @@ describe("Test CandidateController", () => {
   });
 });
 
-describe("Test CandidateWrapper", () => {
-  test("Test constructor and getters", () => {
+describe("CandidateWrapper", () => {
+  test("exposes candidate wrapper properties", () => {
     const candidate = new Candidate("reading", "value", "displayedText");
     const wrapper = new CandidateWrapper("1", candidate, true);
 
@@ -307,7 +307,7 @@ describe("Test CandidateWrapper", () => {
     expect(wrapper.displayedText).toBe("displayedText");
   });
 
-  test("Test immutability", () => {
+  test("preserves candidate references", () => {
     const candidate = new Candidate("reading", "value", "displayedText");
     const wrapper = new CandidateWrapper("1", candidate, true);
     expect(wrapper.candidate).toBe(candidate);

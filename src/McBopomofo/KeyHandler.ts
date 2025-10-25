@@ -14,7 +14,7 @@ import { UserOverrideModel } from "./UserOverrideModel";
 import {
   Big5,
   ChineseNumber,
-  ChineseNumberStyle,
+  ChineseNumbersStateStyle,
   ChoosingCandidate,
   Committing,
   Empty,
@@ -24,6 +24,8 @@ import {
   Inputting,
   Marking,
   NotEmpty,
+  RomanNumber,
+  RomanNumberStateStyle as RomanNumbersStateStyle,
   SelectingDictionary,
   SelectingFeature,
 } from "./InputState";
@@ -42,6 +44,7 @@ import { ChineseNumbers, SuzhouNumbers, Case } from "../ChineseNumbers";
 import { DictionaryServices } from "./DictionaryServices";
 import { CtrlEnterOption } from "./CtrlEnterOption";
 import { BopomofoBrailleConverter } from "../BopomofoBraille";
+import { RomanNumbers, RomanNumbersStyle } from "../RomanNumbers";
 
 export class ComposedString {
   head: string = "";
@@ -229,6 +232,10 @@ export class KeyHandler {
 
     if (state instanceof ChineseNumber) {
       return this.handleChineseNumber(key, state, stateCallback, errorCallback);
+    }
+
+    if (state instanceof RomanNumber) {
+      return this.handleRomanNumber(key, state, stateCallback, errorCallback);
     }
 
     if (state instanceof Big5) {
@@ -1152,21 +1159,21 @@ export class KeyHandler {
       }
       let commitString = "";
       switch (state.style) {
-        case ChineseNumberStyle.Lowercase:
+        case ChineseNumbersStateStyle.Lowercase:
           commitString = ChineseNumbers.generate(
             intPart,
             decPart,
             Case.lowercase
           );
           break;
-        case ChineseNumberStyle.Uppercase:
+        case ChineseNumbersStateStyle.Uppercase:
           commitString = ChineseNumbers.generate(
             intPart,
             decPart,
             Case.uppercase
           );
           break;
-        case ChineseNumberStyle.Suzhou:
+        case ChineseNumbersStateStyle.Suzhou:
           commitString = SuzhouNumbers.generate(intPart, decPart, "單位", true);
           break;
       }
@@ -1193,6 +1200,68 @@ export class KeyHandler {
       }
       let number = state.number + key.ascii;
       let newState = new ChineseNumber(number, state.style);
+      stateCallback(newState);
+    } else {
+      errorCallback();
+    }
+
+    return true;
+  }
+
+  private handleRomanNumber(
+    key: Key,
+    state: RomanNumber,
+    stateCallback: (state: InputState) => void,
+    errorCallback: () => void
+  ): boolean {
+    if (key.name === KeyName.ESC) {
+      stateCallback(new Empty());
+      return true;
+    }
+    if (key.isDeleteKey) {
+      let number = state.number;
+      if (number.length > 0) {
+        number = number.substring(0, number.length - 1);
+      } else {
+        errorCallback();
+        return true;
+      }
+      let newState = new RomanNumber(number, state.style);
+      stateCallback(newState);
+      return true;
+    }
+    if (key.name === KeyName.RETURN) {
+      if (state.number.length === 0) {
+        stateCallback(new Empty());
+        return true;
+      }
+      let number = state.number;
+      let style = RomanNumbersStyle.Alphabets;
+      switch (state.style) {
+        case RomanNumbersStateStyle.Alphabets:
+          style = RomanNumbersStyle.Alphabets;
+          break;
+        case RomanNumbersStateStyle.FullWidthUpper:
+          style = RomanNumbersStyle.FullWidthUpper;
+          break;
+        case RomanNumbersStateStyle.FullWidthLower:
+          style = RomanNumbersStyle.FullWidthLower;
+          break;
+        default:
+          break;
+      }
+      let commitString = RomanNumbers.convertString(number, style);
+      let newState = new Committing(commitString);
+      stateCallback(newState);
+      return true;
+    }
+    if (key.ascii >= "0" && key.ascii <= "9") {
+      if (state.number.length >= 4) {
+        errorCallback();
+        return true;
+      }
+      let number = state.number + key.ascii;
+      let newState = new RomanNumber(number, state.style);
       stateCallback(newState);
     } else {
       errorCallback();

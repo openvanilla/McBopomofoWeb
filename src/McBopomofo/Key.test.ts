@@ -2,7 +2,7 @@ import { Key, KeyName, KeyFromKeyboardEvent } from "./Key";
 
 describe("Key", () => {
   describe("construction", () => {
-    it("should create with default values", () => {
+    it("creates with default values", () => {
       const key = new Key();
       expect(key.ascii).toBe("");
       expect(key.name).toBe(KeyName.UNKNOWN);
@@ -11,7 +11,7 @@ describe("Key", () => {
       expect(key.isNumpadKey).toBe(false);
     });
 
-    it("should create ASCII key with factory method", () => {
+    it("creates ASCII key with factory method", () => {
       const key = Key.asciiKey("a", true, true);
       expect(key.ascii).toBe("a");
       expect(key.name).toBe(KeyName.ASCII);
@@ -19,7 +19,7 @@ describe("Key", () => {
       expect(key.ctrlPressed).toBe(true);
     });
 
-    it("should create named key with factory method", () => {
+    it("creates named key with factory method", () => {
       const key = Key.namedKey(KeyName.RETURN, true, false);
       expect(key.ascii).toBe("");
       expect(key.name).toBe(KeyName.RETURN);
@@ -29,14 +29,14 @@ describe("Key", () => {
   });
 
   describe("cursor keys", () => {
-    it("should detect regular cursor keys", () => {
+    it("detects regular cursor keys", () => {
       expect(Key.namedKey(KeyName.LEFT).isCursorKey).toBe(true);
       expect(Key.namedKey(KeyName.RIGHT).isCursorKey).toBe(true);
       expect(Key.namedKey(KeyName.HOME).isCursorKey).toBe(true);
       expect(Key.namedKey(KeyName.END).isCursorKey).toBe(true);
     });
 
-    it("should detect Emacs-style cursor keys", () => {
+    it("detects Emacs-style cursor keys", () => {
       expect(Key.asciiKey("a", false, true).isCursorKey).toBe(true);
       expect(Key.asciiKey("e", false, true).isCursorKey).toBe(true);
       expect(Key.asciiKey("f", false, true).isCursorKey).toBe(true);
@@ -45,19 +45,19 @@ describe("Key", () => {
   });
 
   describe("delete keys", () => {
-    it("should detect regular delete keys", () => {
+    it("detects regular delete keys", () => {
       expect(Key.namedKey(KeyName.BACKSPACE).isDeleteKey).toBe(true);
       expect(Key.namedKey(KeyName.DELETE).isDeleteKey).toBe(true);
     });
 
-    it("should detect Emacs-style delete keys", () => {
+    it("detects Emacs-style delete keys", () => {
       expect(Key.asciiKey("h", false, true).isDeleteKey).toBe(true);
       expect(Key.asciiKey("d", false, true).isDeleteKey).toBe(true);
     });
   });
 
   describe("KeyFromKeyboardEvent", () => {
-    it("should handle arrow keys", () => {
+    it("handles arrow keys", () => {
       const event = {
         code: "ArrowLeft",
         key: "ArrowLeft",
@@ -68,7 +68,7 @@ describe("Key", () => {
       expect(key.name).toBe(KeyName.LEFT);
     });
 
-    it("should handle numpad keys", () => {
+    it("handles numpad keys", () => {
       const event = {
         code: "Numpad1",
         key: "1",
@@ -80,7 +80,7 @@ describe("Key", () => {
       expect(key.isNumpadKey).toBe(true);
     });
 
-    it("should handle special keys", () => {
+    it("handles special keys", () => {
       const event = {
         code: "Enter",
         key: "Enter",
@@ -94,7 +94,7 @@ describe("Key", () => {
 });
 
 describe("numpad keys", () => {
-  it("should handle numpad operators", () => {
+  it("handles numpad operators", () => {
     const cases = [
       { code: "NumpadAdd", key: "+" },
       { code: "NumpadSubtract", key: "-" },
@@ -117,7 +117,7 @@ describe("numpad keys", () => {
     });
   });
 
-  it("should handle numpad navigation keys", () => {
+  it("handles numpad navigation keys", () => {
     const cases = [
       { code: "Numpad4", key: "ArrowLeft", expected: KeyName.LEFT },
       { code: "Numpad6", key: "ArrowRight", expected: KeyName.RIGHT },
@@ -141,7 +141,7 @@ describe("numpad keys", () => {
     });
   });
 
-  it("should handle numpad enter", () => {
+  it("handles numpad enter", () => {
     const event = {
       code: "NumpadEnter",
       key: "Enter",
@@ -154,7 +154,7 @@ describe("numpad keys", () => {
 });
 
 describe("toString method", () => {
-  it("should return formatted string representation", () => {
+  it("returns formatted string representation", () => {
     const key1 = Key.asciiKey("a", true, false);
     expect(key1.toString()).toBe(
       "Key{ascii: a, name: ASCII, shift: true, ctrl: false}"
@@ -173,7 +173,7 @@ describe("toString method", () => {
 });
 
 describe("constructor with all parameters", () => {
-  it("should create key with all parameters", () => {
+  it("creates key with all parameters", () => {
     const key = new Key("z", KeyName.ASCII, true, true, true);
     expect(key.ascii).toBe("z");
     expect(key.name).toBe(KeyName.ASCII);
@@ -184,35 +184,35 @@ describe("constructor with all parameters", () => {
 });
 
 describe("edge cases for cursor keys", () => {
-  it("should not detect non-cursor keys as cursor keys", () => {
+  it("does not detect non-cursor keys as cursor keys", () => {
     expect(Key.namedKey(KeyName.SPACE).isCursorKey).toBe(false);
     expect(Key.namedKey(KeyName.RETURN).isCursorKey).toBe(false);
     expect(Key.asciiKey("x", false, true).isCursorKey).toBe(false);
     expect(Key.asciiKey("a", true, false).isCursorKey).toBe(false); // shift+a, no ctrl
   });
 
-  it("should handle uppercase Emacs cursor keys with ctrl", () => {
+  it("treats uppercase Emacs cursor keys with ctrl as non-cursor keys", () => {
     expect(Key.asciiKey("A", false, true).isCursorKey).toBe(false); // uppercase A
     expect(Key.asciiKey("E", false, true).isCursorKey).toBe(false); // uppercase E
   });
 });
 
 describe("edge cases for delete keys", () => {
-  it("should not detect non-delete keys as delete keys", () => {
+  it("does not detect non-delete keys as delete keys", () => {
     expect(Key.namedKey(KeyName.SPACE).isDeleteKey).toBe(false);
     expect(Key.namedKey(KeyName.RETURN).isDeleteKey).toBe(false);
     expect(Key.asciiKey("x", false, true).isDeleteKey).toBe(false);
     expect(Key.asciiKey("h", true, false).isDeleteKey).toBe(false); // shift+h, no ctrl
   });
 
-  it("should handle uppercase Emacs delete keys with ctrl", () => {
+  it("treats uppercase Emacs delete keys with ctrl as non-delete keys", () => {
     expect(Key.asciiKey("H", false, true).isDeleteKey).toBe(false); // uppercase H
     expect(Key.asciiKey("D", false, true).isDeleteKey).toBe(false); // uppercase D
   });
 });
 
 describe("KeyFromKeyboardEvent edge cases", () => {
-  it("should handle unknown key codes", () => {
+  it("handles unknown key codes", () => {
     const event = {
       code: "UnknownKey",
       key: "unknown",
@@ -225,7 +225,7 @@ describe("KeyFromKeyboardEvent edge cases", () => {
     expect(key.isNumpadKey).toBe(false);
   });
 
-  it("should handle modifier keys correctly", () => {
+  it("handles modifier keys correctly", () => {
     const event = {
       code: "KeyA",
       key: "a",
@@ -237,7 +237,7 @@ describe("KeyFromKeyboardEvent edge cases", () => {
     expect(key.ctrlPressed).toBe(true);
   });
 
-  it("should handle regular ASCII keys", () => {
+  it("handles regular ASCII keys", () => {
     const event = {
       code: "KeyA",
       key: "a",
@@ -250,7 +250,7 @@ describe("KeyFromKeyboardEvent edge cases", () => {
     expect(key.isNumpadKey).toBe(false);
   });
 
-  it("should handle ESC, SPACE, and TAB keys", () => {
+  it("handles ESC, SPACE, and TAB keys", () => {
     const cases = [
       { code: "Escape", key: "Escape", expected: KeyName.ESC },
       { code: "Space", key: " ", expected: KeyName.SPACE },
@@ -269,7 +269,7 @@ describe("KeyFromKeyboardEvent edge cases", () => {
     });
   });
 
-  it("should handle numpad keys with single character", () => {
+  it("handles numpad keys with single character", () => {
     const event = {
       code: "Numpad5",
       key: "5",
@@ -282,7 +282,7 @@ describe("KeyFromKeyboardEvent edge cases", () => {
     expect(key.isNumpadKey).toBe(true);
   });
 
-  it("should handle numpad 0 and numpad 5 with navigation functions", () => {
+  it("handles numpad 0 and numpad 5 with navigation functions", () => {
     // Test numpad keys that can have navigation functions when Num Lock is off
     const cases = [
       { code: "Numpad0", key: "Insert", expected: KeyName.UNKNOWN },
@@ -301,7 +301,7 @@ describe("KeyFromKeyboardEvent edge cases", () => {
     });
   });
 
-  it("should preserve original key value in ascii property", () => {
+  it("preserves original key value in ascii property", () => {
     const event = {
       code: "NumpadAdd",
       key: "+",
@@ -316,7 +316,7 @@ describe("KeyFromKeyboardEvent edge cases", () => {
 });
 
 describe("KeyName enum coverage", () => {
-  it("should handle all KeyName enum values", () => {
+  it("handles all KeyName enum values", () => {
     const allKeyNames = [
       KeyName.ASCII,
       KeyName.LEFT,
@@ -348,13 +348,13 @@ describe("KeyName enum coverage", () => {
 });
 
 describe("factory method edge cases", () => {
-  it("should handle asciiKey with empty string", () => {
+  it("handles asciiKey with empty string", () => {
     const key = Key.asciiKey("");
     expect(key.ascii).toBe("");
     expect(key.name).toBe(KeyName.ASCII);
   });
 
-  it("should handle asciiKey with special characters", () => {
+  it("handles asciiKey with special characters", () => {
     const specialChars = [
       "!",
       "@",
@@ -376,7 +376,7 @@ describe("factory method edge cases", () => {
     });
   });
 
-  it("should handle Unicode characters", () => {
+  it("handles Unicode characters", () => {
     const unicodeChars = ["ñ", "é", "中", "🎉"];
     unicodeChars.forEach((char) => {
       const key = Key.asciiKey(char);
@@ -387,7 +387,7 @@ describe("factory method edge cases", () => {
 });
 
 describe("numpad key combinations", () => {
-  it("should handle numpad keys with modifiers", () => {
+  it("handles numpad keys with modifiers", () => {
     const event = {
       code: "Numpad1",
       key: "1",
@@ -402,7 +402,7 @@ describe("numpad key combinations", () => {
     expect(key.ctrlPressed).toBe(true);
   });
 
-  it("should handle all numpad digit keys", () => {
+  it("handles all numpad digit keys", () => {
     for (let i = 0; i <= 9; i++) {
       const event = {
         code: `Numpad${i}`,
@@ -419,7 +419,7 @@ describe("numpad key combinations", () => {
 });
 
 describe("KeyFromKeyboardEvent comprehensive coverage", () => {
-  it("should handle numpad keys when Num Lock is off (navigation mode)", () => {
+  it("handles numpad keys when Num Lock is off (navigation mode)", () => {
     const cases = [
       { code: "Numpad0", key: "Insert", expected: KeyName.UNKNOWN },
       { code: "Numpad1", key: "End", expected: KeyName.END },
@@ -446,7 +446,7 @@ describe("KeyFromKeyboardEvent comprehensive coverage", () => {
     });
   });
 
-  it("should handle numpad delete key", () => {
+  it("handles numpad delete key", () => {
     const event = {
       code: "NumpadDecimal",
       key: "Delete",
@@ -459,7 +459,7 @@ describe("KeyFromKeyboardEvent comprehensive coverage", () => {
     expect(key.isNumpadKey).toBe(true);
   });
 
-  it("should handle all modifier combinations", () => {
+  it("handles all modifier combinations", () => {
     const modifierCombinations = [
       { shift: false, ctrl: false },
       { shift: true, ctrl: false },
@@ -481,7 +481,7 @@ describe("KeyFromKeyboardEvent comprehensive coverage", () => {
     });
   });
 
-  it("should handle function keys", () => {
+  it("handles function keys", () => {
     const functionKeys = ["F1", "F2", "F3", "F12"];
     functionKeys.forEach((fKey) => {
       const event = {
@@ -497,7 +497,7 @@ describe("KeyFromKeyboardEvent comprehensive coverage", () => {
     });
   });
 
-  it("should handle special characters and symbols", () => {
+  it("handles special characters and symbols", () => {
     const specialChars = [
       { code: "Semicolon", key: ";" },
       { code: "Quote", key: "'" },
@@ -525,7 +525,7 @@ describe("KeyFromKeyboardEvent comprehensive coverage", () => {
     });
   });
 
-  it("should handle shifted special characters", () => {
+  it("handles shifted special characters", () => {
     const shiftedChars = [
       { code: "Digit1", key: "!" },
       { code: "Digit2", key: "@" },
@@ -549,7 +549,7 @@ describe("KeyFromKeyboardEvent comprehensive coverage", () => {
     });
   });
 
-  it("should handle caps lock scenarios", () => {
+  it("handles caps lock scenarios", () => {
     const event = {
       code: "KeyA",
       key: "A", // Caps lock on
@@ -561,7 +561,7 @@ describe("KeyFromKeyboardEvent comprehensive coverage", () => {
     expect(key.shiftPressed).toBe(false);
   });
 
-  it("should handle meta and alt keys in event", () => {
+  it("handles meta and alt keys in event", () => {
     // Note: KeyFromKeyboardEvent doesn't currently handle meta/alt, but we test that it doesn't break
     const event = {
       code: "KeyA",
@@ -578,7 +578,7 @@ describe("KeyFromKeyboardEvent comprehensive coverage", () => {
 });
 
 describe("Key property getters", () => {
-  it("should have immutable properties", () => {
+  it("has immutable properties", () => {
     const key = new Key("test", KeyName.ASCII, true, true, true);
 
     // Test that properties are read-only by attempting to modify
@@ -591,7 +591,7 @@ describe("Key property getters", () => {
 });
 
 describe("isCursorKey edge cases", () => {
-  it("should require exact lowercase for Emacs-style cursor keys", () => {
+  it("requires exact lowercase for Emacs-style cursor keys", () => {
     const emacsKeys = ["a", "e", "f", "b"];
     emacsKeys.forEach((char) => {
       const lowerKey = Key.asciiKey(char, false, true);
@@ -602,7 +602,7 @@ describe("isCursorKey edge cases", () => {
     });
   });
 
-  it("should not detect cursor keys without ctrl for Emacs-style", () => {
+  it("does not detect cursor keys without ctrl for Emacs-style", () => {
     const emacsKeys = ["a", "e", "f", "b"];
     emacsKeys.forEach((char) => {
       const key = Key.asciiKey(char, false, false); // No ctrl
@@ -610,7 +610,7 @@ describe("isCursorKey edge cases", () => {
     });
   });
 
-  it("should detect cursor keys with shift modifier", () => {
+  it("detects cursor keys with shift modifier", () => {
     const cursorKeys = [KeyName.LEFT, KeyName.RIGHT, KeyName.HOME, KeyName.END];
     cursorKeys.forEach((keyName) => {
       const key = Key.namedKey(keyName, true, false); // With shift
@@ -620,7 +620,7 @@ describe("isCursorKey edge cases", () => {
 });
 
 describe("isDeleteKey edge cases", () => {
-  it("should require exact lowercase for Emacs-style delete keys", () => {
+  it("requires exact lowercase for Emacs-style delete keys", () => {
     const emacsKeys = ["h", "d"];
     emacsKeys.forEach((char) => {
       const lowerKey = Key.asciiKey(char, false, true);
@@ -631,7 +631,7 @@ describe("isDeleteKey edge cases", () => {
     });
   });
 
-  it("should not detect delete keys without ctrl for Emacs-style", () => {
+  it("does not detect delete keys without ctrl for Emacs-style", () => {
     const emacsKeys = ["h", "d"];
     emacsKeys.forEach((char) => {
       const key = Key.asciiKey(char, false, false); // No ctrl
@@ -639,7 +639,7 @@ describe("isDeleteKey edge cases", () => {
     });
   });
 
-  it("should detect delete keys with shift modifier", () => {
+  it("detects delete keys with shift modifier", () => {
     const deleteKeys = [KeyName.BACKSPACE, KeyName.DELETE];
     deleteKeys.forEach((keyName) => {
       const key = Key.namedKey(keyName, true, false); // With shift
@@ -649,7 +649,7 @@ describe("isDeleteKey edge cases", () => {
 });
 
 describe("factory methods comprehensive", () => {
-  it("should handle asciiKey with all parameter combinations", () => {
+  it("handles asciiKey with all parameter combinations", () => {
     const combinations = [
       { shift: false, ctrl: false },
       { shift: true, ctrl: false },
@@ -667,7 +667,7 @@ describe("factory methods comprehensive", () => {
     });
   });
 
-  it("should handle namedKey with all parameter combinations", () => {
+  it("handles namedKey with all parameter combinations", () => {
     const combinations = [
       { shift: false, ctrl: false },
       { shift: true, ctrl: false },
@@ -687,7 +687,7 @@ describe("factory methods comprehensive", () => {
 });
 
 describe("toString method comprehensive", () => {
-  it("should handle toString with numpad keys", () => {
+  it("handles toString with numpad keys", () => {
     const key = new Key("5", KeyName.ASCII, false, false, true);
     expect(key.toString()).toBe(
       "Key{ascii: 5, name: ASCII, shift: false, ctrl: false}"
@@ -695,14 +695,14 @@ describe("toString method comprehensive", () => {
     // Note: toString doesn't include isNumpadKey in output
   });
 
-  it("should handle toString with empty ascii", () => {
+  it("handles toString with empty ascii", () => {
     const key = Key.namedKey(KeyName.UNKNOWN);
     expect(key.toString()).toBe(
       "Key{ascii: , name: UNKNOWN, shift: false, ctrl: false}"
     );
   });
 
-  it("should handle toString with special characters", () => {
+  it("handles toString with special characters", () => {
     const specialChars = [" ", "\t", "\n", '"', "'"];
     specialChars.forEach((char) => {
       const key = Key.asciiKey(char);
@@ -714,7 +714,7 @@ describe("toString method comprehensive", () => {
 });
 
 describe("KeyFromKeyboardEvent fall-through cases", () => {
-  it("should handle the default case in switch statement", () => {
+  it("handles the default case in switch statement", () => {
     const event = {
       code: "UnknownCode123",
       key: "unknownKey",
@@ -727,7 +727,7 @@ describe("KeyFromKeyboardEvent fall-through cases", () => {
     expect(key.isNumpadKey).toBe(false);
   });
 
-  it("should preserve keyName when falling through to default", () => {
+  it("preserves keyName when falling through to default", () => {
     // Test the `keyName = keyName;` line in the default case
     const event = {
       code: "SomeOtherKey",

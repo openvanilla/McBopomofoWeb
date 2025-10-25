@@ -1,18 +1,18 @@
 import { SuzhouNumbers } from "./SuzhouNumbers";
 
-describe("Test Chinese Numbers", () => {
+describe("SuzhouNumbers.generate", () => {
   describe("Basic number generation", () => {
-    test("Suzhou 1", () => {
+    test("renders single-digit values as vertical glyphs", () => {
       const output = SuzhouNumbers.generate("0001", "", "", true);
       expect(output).toBe("〡");
     });
 
-    test("Suzhou 123", () => {
+    test("renders 123 with correct alternation and labeling", () => {
       const output = SuzhouNumbers.generate("123", "", "", true);
       expect(output).toBe("〡二〣\n百");
     });
 
-    test("Suzhou 1234", () => {
+    test("renders 1234 with thousand-place indicator", () => {
       const output = SuzhouNumbers.generate("1234", "", "", true);
       expect(output).toBe("〡二〣〤\n千");
     });
