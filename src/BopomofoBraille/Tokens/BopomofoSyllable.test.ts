@@ -274,4 +274,107 @@ describe("Additional BopomofoSyllable Tests", () => {
     expect(BopomofoSyllable.fromBpmf(" ㄅㄚ ").braille).toBe("⠕⠜⠄");
     expect(BopomofoSyllable.fromBraille(" ⠕⠜⠄ ").bpmf).toBe("ㄅㄚ");
   });
+
+  // Test more complex error scenarios
+  test("should throw specific error for invalid Braille patterns", () => {
+    // Test ⠱ in non-initial position with non-single consonant
+    expect(() => {
+      BopomofoSyllable.fromBraille("⠕⠱⠄");
+    }).toThrow("Invalid Braille");
+
+    // Test invalid ⠑ (ㄙ/ㄒ) at end of sequence
+    expect(() => {
+      BopomofoSyllable.fromBraille("⠑");
+    }).toThrow();
+
+    // Test invalid ⠚ (ㄑ/ㄘ) at end of sequence  
+    expect(() => {
+      BopomofoSyllable.fromBraille("⠚");
+    }).toThrow();
+
+    // Test invalid ⠅ (ㄍ/ㄐ) at end of sequence
+    expect(() => {
+      BopomofoSyllable.fromBraille("⠅");
+    }).toThrow();
+  });
+
+  // Test more Braille error scenarios
+  test("should throw errors for duplicate components in Braille", () => {
+    // Multiple consonants
+    expect(() => {
+      BopomofoSyllable.fromBraille("⠕⠏⠄");
+    }).toThrow("Invalid Braille: multiple consonants");
+
+    // Multiple middle vowels
+    expect(() => {
+      BopomofoSyllable.fromBraille("⠡⠌⠄");
+    }).toThrow("Invalid Braille: multiple middle vowels");
+
+    // Multiple tones
+    expect(() => {
+      BopomofoSyllable.fromBraille("⠜⠄⠂");
+    }).toThrow("Invalid Braille: multiple tones");
+  });
+
+  // Test ㄦ special case from Braille
+  test("should convert ⠱ at position 0 to ㄦ", () => {
+    const result = BopomofoSyllable.fromBraille("⠱⠄");
+    expect(result.bpmf).toBe("ㄦ");
+  });
+
+  // Test ambiguous Braille patterns
+  test("should correctly parse ambiguous Braille consonants", () => {
+    // ⠑ followed by ㄧ/ㄩ combination should be ㄒ, otherwise ㄙ
+    expect(BopomofoSyllable.fromBraille("⠑⠾⠄").bpmf).toBe("ㄒㄧㄚ");
+    expect(BopomofoSyllable.fromBraille("⠑⠜⠄").bpmf).toBe("ㄙㄚ");
+    
+    // ⠚ followed by ㄧ/ㄩ combination should be ㄑ, otherwise ㄘ
+    expect(BopomofoSyllable.fromBraille("⠚⠾⠄").bpmf).toBe("ㄑㄧㄚ");
+    expect(BopomofoSyllable.fromBraille("⠚⠜⠄").bpmf).toBe("ㄘㄚ");
+    
+    // ⠅ followed by ㄧ/ㄩ combination should be ㄐ, otherwise ㄍ
+    expect(BopomofoSyllable.fromBraille("⠅⠾⠄").bpmf).toBe("ㄐㄧㄚ");
+    expect(BopomofoSyllable.fromBraille("⠅⠜⠄").bpmf).toBe("ㄍㄚ");
+  });
+
+  // Test Braille combinations with different tones
+  test("should handle Braille combinations from various namespaces", () => {
+    // ㄧ combinations
+    expect(BopomofoSyllable.fromBraille("⠾⠄").bpmf).toBe("ㄧㄚ");
+    expect(BopomofoSyllable.fromBraille("⠬⠄").bpmf).toBe("ㄧㄝ");
+    expect(BopomofoSyllable.fromBraille("⠽⠄").bpmf).toBe("ㄧㄥ");
+    
+    // ㄨ combinations  
+    expect(BopomofoSyllable.fromBraille("⠔⠄").bpmf).toBe("ㄨㄚ");
+    expect(BopomofoSyllable.fromBraille("⠒⠄").bpmf).toBe("ㄨㄛ");
+    expect(BopomofoSyllable.fromBraille("⠯⠄").bpmf).toBe("ㄨㄥ");
+    
+    // ㄩ combinations
+    expect(BopomofoSyllable.fromBraille("⠦⠄").bpmf).toBe("ㄩㄝ");
+    expect(BopomofoSyllable.fromBraille("⠘⠄").bpmf).toBe("ㄩㄢ");
+    expect(BopomofoSyllable.fromBraille("⠖⠄").bpmf).toBe("ㄩㄥ");
+  });
+
+  // Test more Bopomofo error scenarios
+  test("should throw error for invalid combination attempts", () => {
+    // Invalid ㄧ + vowel combination
+    expect(() => {
+      BopomofoSyllable.fromBpmf("ㄧㄜ");
+    }).toThrow("Invalid Bopomofo: invalid combination");
+
+    // Invalid ㄨ + vowel combination  
+    expect(() => {
+      BopomofoSyllable.fromBpmf("ㄨㄝ");
+    }).toThrow("Invalid Bopomofo: invalid combination");
+
+    // Invalid ㄩ + vowel combination
+    expect(() => {
+      BopomofoSyllable.fromBpmf("ㄩㄚ");
+    }).toThrow("Invalid Bopomofo: invalid combination");
+
+    // Tone without any phonetic component
+    expect(() => {
+      BopomofoSyllable.fromBpmf("ˊ");
+    }).toThrow("Invalid Bopomofo: tone without consonant, middle vowel, or vowel");
+  });
 });
