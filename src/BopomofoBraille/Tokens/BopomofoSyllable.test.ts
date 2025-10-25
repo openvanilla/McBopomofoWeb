@@ -1,29 +1,79 @@
 import { BopomofoSyllable } from "./BopomofoSyllable";
 
-describe("Test BopomofoSyllable", () => {
+describe("BopomofoSyllable input validation", () => {
+  test("throws when Bopomofo string is empty", () => {
+    expect(() => BopomofoSyllable.fromBpmf("")).toThrow(
+      "Invalid Bopomofo length"
+    );
+  });
+
+  test("throws when Bopomofo string is whitespace only", () => {
+    expect(() => BopomofoSyllable.fromBpmf("  ")).toThrow(
+      "Invalid Bopomofo length"
+    );
+  });
+
+  test("throws when Bopomofo string contains Latin letters", () => {
+    expect(() => BopomofoSyllable.fromBpmf("ABC")).toThrow(
+      "Invalid Bopomofo: invalid character"
+    );
+  });
+
+  test("throws when Bopomofo string mixes zhuyin and Latin characters", () => {
+    expect(() => BopomofoSyllable.fromBpmf("ㄓB")).toThrow(
+      "Invalid Bopomofo: invalid character"
+    );
+  });
+
+  test("throws when Bopomofo string contains digits", () => {
+    expect(() => BopomofoSyllable.fromBpmf("ㄓㄨ111")).toThrow(
+      "Invalid Bopomofo: invalid character"
+    );
+  });
+
+  test("throws when Braille string is empty", () => {
+    expect(() => BopomofoSyllable.fromBraille("")).toThrow(
+      "Invalid Braille length"
+    );
+  });
+
+  test("throws when Braille string is whitespace only", () => {
+    expect(() => BopomofoSyllable.fromBraille("  ")).toThrow(
+      "Invalid Braille length"
+    );
+  });
+
+  test("throws when Braille string contains Latin letters", () => {
+    expect(() => BopomofoSyllable.fromBraille("ABC")).toThrow(
+      "Invalid character in Braille"
+    );
+  });
+});
+
+describe("BopomofoSyllable conversions", () => {
   test("should convert single consonant ㄘ to ⠚⠱⠄", () => {
-    let result = BopomofoSyllable.fromBpmf("ㄘ");
-    expect(result.braille).toBe("⠚⠱⠄");
+    const syllable = BopomofoSyllable.fromBpmf("ㄘ");
+    expect(syllable.braille).toBe("⠚⠱⠄");
   });
 
   test("should convert single consonant ㄙ to ⠑⠱⠄", () => {
-    let result = BopomofoSyllable.fromBpmf("ㄙ");
-    expect(result.braille).toBe("⠑⠱⠄");
+    const syllable = BopomofoSyllable.fromBpmf("ㄙ");
+    expect(syllable.braille).toBe("⠑⠱⠄");
   });
 
   test("should convert ⠁⠱⠄ to ㄓ", () => {
-    let result = BopomofoSyllable.fromBraille("⠁⠱⠄");
-    expect(result.bpmf).toBe("ㄓ");
+    const syllable = BopomofoSyllable.fromBraille("⠁⠱⠄");
+    expect(syllable.bpmf).toBe("ㄓ");
   });
 
   test("should convert ⠃⠱⠄ to ㄔ", () => {
-    let result = BopomofoSyllable.fromBraille("⠃⠱⠄");
-    expect(result.bpmf).toBe("ㄔ");
+    const syllable = BopomofoSyllable.fromBraille("⠃⠱⠄");
+    expect(syllable.bpmf).toBe("ㄔ");
   });
 
   test("should convert ⠊⠱⠄ to ㄕ", () => {
-    let result = BopomofoSyllable.fromBraille("⠊⠱⠄");
-    expect(result.bpmf).toBe("ㄕ");
+    const syllable = BopomofoSyllable.fromBraille("⠊⠱⠄");
+    expect(syllable.bpmf).toBe("ㄕ");
   });
 
   test("should throw error for invalid consonant sequence", () => {
@@ -39,33 +89,33 @@ describe("Test BopomofoSyllable", () => {
   });
 
   test("should convert ㄉㄠˋ to ⠙⠩⠐", () => {
-    let result = BopomofoSyllable.fromBpmf("ㄉㄠˋ");
-    expect(result.braille).toBe("⠙⠩⠐");
+    const syllable = BopomofoSyllable.fromBpmf("ㄉㄠˋ");
+    expect(syllable.braille).toBe("⠙⠩⠐");
   });
 
   test("should convert ⠙⠩⠐ to ㄉㄠˋ", () => {
-    let result = BopomofoSyllable.fromBraille("⠙⠩⠐");
-    expect(result.bpmf).toBe("ㄉㄠˋ");
+    const syllable = BopomofoSyllable.fromBraille("⠙⠩⠐");
+    expect(syllable.bpmf).toBe("ㄉㄠˋ");
   });
 
   test("should convert ㄓㄨㄥ to ⠁⠯⠄", () => {
-    let result = BopomofoSyllable.fromBpmf("ㄓㄨㄥ");
-    expect(result.braille).toBe("⠁⠯⠄");
+    const syllable = BopomofoSyllable.fromBpmf("ㄓㄨㄥ");
+    expect(syllable.braille).toBe("⠁⠯⠄");
   });
 
   test("should convert ⠁⠯⠄ to ㄓㄨㄥ", () => {
-    let result = BopomofoSyllable.fromBraille("⠁⠯⠄");
-    expect(result.bpmf).toBe("ㄓㄨㄥ");
+    const syllable = BopomofoSyllable.fromBraille("⠁⠯⠄");
+    expect(syllable.bpmf).toBe("ㄓㄨㄥ");
   });
 
   test("should convert ㄒㄧㄢˊ to ⠑⠞⠂", () => {
-    let result = BopomofoSyllable.fromBpmf("ㄒㄧㄢˊ");
-    expect(result.braille).toBe("⠑⠞⠂");
+    const syllable = BopomofoSyllable.fromBpmf("ㄒㄧㄢˊ");
+    expect(syllable.braille).toBe("⠑⠞⠂");
   });
 
   test("should convert ⠑⠞⠂ to ㄒㄧㄢˊ", () => {
-    let result = BopomofoSyllable.fromBraille("⠑⠞⠂");
-    expect(result.bpmf).toBe("ㄒㄧㄢˊ");
+    const syllable = BopomofoSyllable.fromBraille("⠑⠞⠂");
+    expect(syllable.bpmf).toBe("ㄒㄧㄢˊ");
   });
 
   test("should throw error for invalid Bopomofo", () => {
@@ -89,37 +139,37 @@ describe("Test BopomofoSyllable", () => {
   });
 
   test("should convert ㄋㄧˇ to ⠝⠡⠈", () => {
-    let result = BopomofoSyllable.fromBpmf("ㄋㄧˇ");
-    expect(result.braille).toBe("⠝⠡⠈");
+    const syllable = BopomofoSyllable.fromBpmf("ㄋㄧˇ");
+    expect(syllable.braille).toBe("⠝⠡⠈");
   });
 
   test("should convert ⠝⠡⠈ to ㄋㄧˇ", () => {
-    let result = BopomofoSyllable.fromBraille("⠝⠡⠈");
-    expect(result.bpmf).toBe("ㄋㄧˇ");
+    const syllable = BopomofoSyllable.fromBraille("⠝⠡⠈");
+    expect(syllable.bpmf).toBe("ㄋㄧˇ");
   });
 
   test("should convert ㄨㄢ to ⠻⠄", () => {
-    let result = BopomofoSyllable.fromBpmf("ㄨㄢ");
-    expect(result.braille).toBe("⠻⠄");
+    const syllable = BopomofoSyllable.fromBpmf("ㄨㄢ");
+    expect(syllable.braille).toBe("⠻⠄");
   });
 
   test("should convert ㄧㄤ to ⠨⠄", () => {
-    let result = BopomofoSyllable.fromBpmf("ㄧㄤ");
-    expect(result.braille).toBe("⠨⠄");
+    const syllable = BopomofoSyllable.fromBpmf("ㄧㄤ");
+    expect(syllable.braille).toBe("⠨⠄");
   });
 
   test("should convert ⠨⠄ to ㄧㄤ", () => {
-    let result = BopomofoSyllable.fromBraille("⠨⠄");
-    expect(result.bpmf).toBe("ㄧㄤ");
+    const syllable = BopomofoSyllable.fromBraille("⠨⠄");
+    expect(syllable.bpmf).toBe("ㄧㄤ");
   });
 
   test("should convert ㄏㄢˇ to ⠗⠧⠈", () => {
-    let result = BopomofoSyllable.fromBpmf("ㄏㄢˇ");
-    expect(result.braille).toBe("⠗⠧⠈");
+    const syllable = BopomofoSyllable.fromBpmf("ㄏㄢˇ");
+    expect(syllable.braille).toBe("⠗⠧⠈");
   });
 });
 
-describe("Additional BopomofoSyllable Tests", () => {
+describe("Additional BopomofoSyllable scenarios", () => {
   // Test all vowels without consonants
   test("should convert vowel-only syllables", () => {
     expect(BopomofoSyllable.fromBpmf("ㄚ").braille).toBe("⠜⠄");
@@ -287,7 +337,7 @@ describe("Additional BopomofoSyllable Tests", () => {
       BopomofoSyllable.fromBraille("⠑");
     }).toThrow();
 
-    // Test invalid ⠚ (ㄑ/ㄘ) at end of sequence  
+    // Test invalid ⠚ (ㄑ/ㄘ) at end of sequence
     expect(() => {
       BopomofoSyllable.fromBraille("⠚");
     }).toThrow();
@@ -318,8 +368,8 @@ describe("Additional BopomofoSyllable Tests", () => {
 
   // Test ㄦ special case from Braille
   test("should convert ⠱ at position 0 to ㄦ", () => {
-    const result = BopomofoSyllable.fromBraille("⠱⠄");
-    expect(result.bpmf).toBe("ㄦ");
+    const syllable = BopomofoSyllable.fromBraille("⠱⠄");
+    expect(syllable.bpmf).toBe("ㄦ");
   });
 
   // Test ambiguous Braille patterns
@@ -327,11 +377,11 @@ describe("Additional BopomofoSyllable Tests", () => {
     // ⠑ followed by ㄧ/ㄩ combination should be ㄒ, otherwise ㄙ
     expect(BopomofoSyllable.fromBraille("⠑⠾⠄").bpmf).toBe("ㄒㄧㄚ");
     expect(BopomofoSyllable.fromBraille("⠑⠜⠄").bpmf).toBe("ㄙㄚ");
-    
+
     // ⠚ followed by ㄧ/ㄩ combination should be ㄑ, otherwise ㄘ
     expect(BopomofoSyllable.fromBraille("⠚⠾⠄").bpmf).toBe("ㄑㄧㄚ");
     expect(BopomofoSyllable.fromBraille("⠚⠜⠄").bpmf).toBe("ㄘㄚ");
-    
+
     // ⠅ followed by ㄧ/ㄩ combination should be ㄐ, otherwise ㄍ
     expect(BopomofoSyllable.fromBraille("⠅⠾⠄").bpmf).toBe("ㄐㄧㄚ");
     expect(BopomofoSyllable.fromBraille("⠅⠜⠄").bpmf).toBe("ㄍㄚ");
@@ -343,12 +393,12 @@ describe("Additional BopomofoSyllable Tests", () => {
     expect(BopomofoSyllable.fromBraille("⠾⠄").bpmf).toBe("ㄧㄚ");
     expect(BopomofoSyllable.fromBraille("⠬⠄").bpmf).toBe("ㄧㄝ");
     expect(BopomofoSyllable.fromBraille("⠽⠄").bpmf).toBe("ㄧㄥ");
-    
-    // ㄨ combinations  
+
+    // ㄨ combinations
     expect(BopomofoSyllable.fromBraille("⠔⠄").bpmf).toBe("ㄨㄚ");
     expect(BopomofoSyllable.fromBraille("⠒⠄").bpmf).toBe("ㄨㄛ");
     expect(BopomofoSyllable.fromBraille("⠯⠄").bpmf).toBe("ㄨㄥ");
-    
+
     // ㄩ combinations
     expect(BopomofoSyllable.fromBraille("⠦⠄").bpmf).toBe("ㄩㄝ");
     expect(BopomofoSyllable.fromBraille("⠘⠄").bpmf).toBe("ㄩㄢ");
@@ -362,7 +412,7 @@ describe("Additional BopomofoSyllable Tests", () => {
       BopomofoSyllable.fromBpmf("ㄧㄜ");
     }).toThrow("Invalid Bopomofo: invalid combination");
 
-    // Invalid ㄨ + vowel combination  
+    // Invalid ㄨ + vowel combination
     expect(() => {
       BopomofoSyllable.fromBpmf("ㄨㄝ");
     }).toThrow("Invalid Bopomofo: invalid combination");
@@ -375,6 +425,82 @@ describe("Additional BopomofoSyllable Tests", () => {
     // Tone without any phonetic component
     expect(() => {
       BopomofoSyllable.fromBpmf("ˊ");
-    }).toThrow("Invalid Bopomofo: tone without consonant, middle vowel, or vowel");
+    }).toThrow(
+      "Invalid Bopomofo: tone without consonant, middle vowel, or vowel"
+    );
+  });
+});
+
+describe("Braille validation edge cases", () => {
+  test("throws for duplicated consonant patterns", () => {
+    expect(() => BopomofoSyllable.fromBraille("⠑⠑")).toThrow(
+      "Invalid Braille: duplicated consonant"
+    );
+    expect(() => BopomofoSyllable.fromBraille("⠅⠅")).toThrow(
+      "Invalid Braille: duplicated consonant"
+    );
+    expect(() => BopomofoSyllable.fromBraille("⠅⠡⠅⠡")).toThrow(
+      "Invalid Braille: duplicated consonant"
+    );
+  });
+
+  test("throws for incomplete Braille sequences", () => {
+    expect(() => BopomofoSyllable.fromBraille("⠅")).toThrow(
+      "Invalid Braille length"
+    );
+    expect(() => BopomofoSyllable.fromBraille("⠑")).toThrow(
+      "Invalid Braille length"
+    );
+  });
+
+  test("throws when tone marker is missing", () => {
+    expect(() => BopomofoSyllable.fromBraille("⠱⠱")).toThrow(
+      "Invalid Braille: no tone"
+    );
+  });
+
+  test("throws for multiple consonant symbols", () => {
+    expect(() => BopomofoSyllable.fromBraille("⠕⠄⠕⠄")).toThrow(
+      "Invalid Braille: multiple consonants"
+    );
+  });
+
+  test("throws for multiple middle vowel symbols", () => {
+    expect(() => BopomofoSyllable.fromBraille("⠮⠮")).toThrow(
+      "Invalid Braille: multiple middle vowels"
+    );
+    expect(() => BopomofoSyllable.fromBraille("⠣⠣")).toThrow(
+      "Invalid Braille: multiple middle vowels"
+    );
+    expect(() => BopomofoSyllable.fromBraille("⠡⠡⠄")).toThrow(
+      "Invalid Braille: multiple middle vowels"
+    );
+    expect(() => BopomofoSyllable.fromBraille("⠌⠌⠄")).toThrow(
+      "Invalid Braille: multiple middle vowels"
+    );
+    expect(() => BopomofoSyllable.fromBraille("⠳⠳⠄")).toThrow(
+      "Invalid Braille: multiple middle vowels"
+    );
+    expect(() => BopomofoSyllable.fromBraille("⠌⠻⠄")).toThrow(
+      "Invalid Braille: multiple middle vowels"
+    );
+    expect(() => BopomofoSyllable.fromBraille("⠡⠞⠄")).toThrow(
+      "Invalid Braille: multiple middle vowels"
+    );
+  });
+
+  test("throws for invalid Braille characters", () => {
+    expect(() => BopomofoSyllable.fromBraille("⠕⠐")).toThrow(
+      "Invalid Braille: invalid character"
+    );
+    expect(() => BopomofoSyllable.fromBraille("⠝⠁")).toThrow(
+      "Invalid Braille: invalid character"
+    );
+  });
+
+  test("throws for duplicated tone markers", () => {
+    expect(() => BopomofoSyllable.fromBraille("⠁⠱⠄⠄")).toThrow(
+      "Invalid Braille: multiple tones"
+    );
   });
 });
