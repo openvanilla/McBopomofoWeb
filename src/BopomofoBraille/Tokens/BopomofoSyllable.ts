@@ -818,7 +818,7 @@ export class BopomofoSyllable {
       vowel == undefined &&
       (consonant == undefined || Consonant.isSingle(consonant!) == false)
     ) {
-      throw new Error("Invalid Bopomofo: invalid character");
+      throw new Error("Invalid Braille: invalid character");
     }
 
     let bpmf = BopomofoSyllable.makeBpmf(consonant, middleVowel, vowel, tone);
