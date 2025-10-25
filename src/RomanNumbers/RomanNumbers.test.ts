@@ -1,7 +1,7 @@
 import { RomanNumbers, RomanNumbersStyle } from "./RomanNumbers";
 
-describe("RomanNumbersTests", () => {
-  test("Test alphabets", () => {
+describe("RomanNumbers.convertString", () => {
+  test("returns ASCII Roman numerals for standard digits", () => {
     const testCases = [
       ["0", ""],
       ["1", "I"],
@@ -20,7 +20,7 @@ describe("RomanNumbersTests", () => {
     }
   });
 
-  test("Test Upper cased", () => {
+  test("returns full-width upper-case Roman numerals", () => {
     const testCases = [
       ["0", ""],
       ["1", "Ⅰ"],
@@ -37,7 +37,7 @@ describe("RomanNumbersTests", () => {
     }
   });
 
-  test("Test Lower cased", () => {
+  test("returns full-width lower-case Roman numerals", () => {
     const testCases = [
       ["0", ""],
       ["1", "ⅰ"],

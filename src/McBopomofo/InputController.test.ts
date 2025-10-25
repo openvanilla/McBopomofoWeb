@@ -12,6 +12,7 @@ import {
   InputState,
   Inputting,
   Marking,
+  RomanNumber,
   SelectingDateMacro,
   SelectingDictionary,
   SelectingFeature,
@@ -763,6 +764,170 @@ describe("InputController", () => {
       result = controller.mcbopomofoKeyEvent(key);
       state = controller.state;
       expect(state).toBeInstanceOf(Committing);
+    });
+  });
+
+  describe("Roman Number", () => {
+    it("should enter Roman Number mode", () => {
+      let key = new Key("\\", KeyName.UNKNOWN, false, true);
+      let result = controller.mcbopomofoKeyEvent(key);
+      expect(result).toBe(true);
+      let state: InputState = controller.state;
+      expect(state).toBeInstanceOf(SelectingFeature);
+      key = new Key("7", KeyName.UNKNOWN);
+      result = controller.mcbopomofoKeyEvent(key);
+      expect(result).toBe(true);
+      state = controller.state;
+      expect(state).toBeInstanceOf(RomanNumber);
+    });
+
+    it("should input numbers in Roman Number mode", () => {
+      let key = new Key("\\", KeyName.UNKNOWN, false, true);
+      let result = controller.mcbopomofoKeyEvent(key);
+      expect(result).toBe(true);
+      key = new Key("7", KeyName.UNKNOWN);
+      result = controller.mcbopomofoKeyEvent(key);
+      expect(result).toBe(true);
+      let state = controller.state;
+      expect(state).toBeInstanceOf(RomanNumber);
+
+      inputCStr(controller, "1");
+      state = controller.state;
+      expect(state).toBeInstanceOf(RomanNumber);
+      if (state instanceof RomanNumber) {
+        expect(state.composingBuffer).toBe("[羅馬數字 (字母)] 1");
+      }
+    });
+
+    it("should convert multiple digits to Roman numerals", () => {
+      let key = new Key("\\", KeyName.UNKNOWN, false, true);
+      let result = controller.mcbopomofoKeyEvent(key);
+      expect(result).toBe(true);
+      key = new Key("7", KeyName.UNKNOWN);
+      result = controller.mcbopomofoKeyEvent(key);
+      expect(result).toBe(true);
+
+      inputCStr(controller, "42");
+      let state = controller.state;
+      expect(state).toBeInstanceOf(RomanNumber);
+      if (state instanceof RomanNumber) {
+        expect(state.composingBuffer).toBe("[羅馬數字 (字母)] 42");
+      }
+    });
+
+    it("should convert 99 to Roman numeral", () => {
+      let key = new Key("\\", KeyName.UNKNOWN, false, true);
+      controller.mcbopomofoKeyEvent(key);
+      key = new Key("7", KeyName.UNKNOWN);
+      controller.mcbopomofoKeyEvent(key);
+
+      inputCStr(controller, "99");
+      let state = controller.state;
+      expect(state).toBeInstanceOf(RomanNumber);
+      if (state instanceof RomanNumber) {
+        expect(state.composingBuffer).toBe("[羅馬數字 (字母)] 99");
+      }
+    });
+
+    it("should commit Roman number on return key", () => {
+      let key = new Key("\\", KeyName.UNKNOWN, false, true);
+      controller.mcbopomofoKeyEvent(key);
+      key = new Key("7", KeyName.UNKNOWN);
+      controller.mcbopomofoKeyEvent(key);
+
+      inputCStr(controller, "8");
+      let state = controller.state;
+      expect(state).toBeInstanceOf(RomanNumber);
+
+      key = new Key("", KeyName.RETURN);
+      let result = controller.mcbopomofoKeyEvent(key);
+      expect(result).toBe(true);
+      state = controller.state;
+      expect(state).toBeInstanceOf(Committing);
+      if (state instanceof Committing) {
+        expect(state.text).toBe("VIII");
+      }
+    });
+
+    it("should exit Roman Number mode with ESC key", () => {
+      let key = new Key("\\", KeyName.UNKNOWN, false, true);
+      controller.mcbopomofoKeyEvent(key);
+      key = new Key("7", KeyName.UNKNOWN);
+      controller.mcbopomofoKeyEvent(key);
+
+      inputCStr(controller, "25");
+      let state = controller.state;
+      expect(state).toBeInstanceOf(RomanNumber);
+
+      key = new Key("", KeyName.ESC);
+      controller.mcbopomofoKeyEvent(key);
+      state = controller.state;
+      expect(state).toBeInstanceOf(Empty);
+    });
+
+    it("should handle backspace in Roman Number mode", () => {
+      let key = new Key("\\", KeyName.UNKNOWN, false, true);
+      controller.mcbopomofoKeyEvent(key);
+      key = new Key("7", KeyName.UNKNOWN);
+      controller.mcbopomofoKeyEvent(key);
+
+      inputCStr(controller, "123");
+      let state = controller.state;
+      expect(state).toBeInstanceOf(RomanNumber);
+      if (state instanceof RomanNumber) {
+        expect(state.composingBuffer).toBe("[羅馬數字 (字母)] 123");
+      }
+
+      key = new Key("", KeyName.BACKSPACE);
+      controller.mcbopomofoKeyEvent(key);
+      state = controller.state;
+      expect(state).toBeInstanceOf(RomanNumber);
+      if (state instanceof RomanNumber) {
+        expect(state.composingBuffer).toBe("[羅馬數字 (字母)] 12");
+      }
+    });
+
+    it("should handle large numbers in Roman Number mode", () => {
+      let key = new Key("\\", KeyName.UNKNOWN, false, true);
+      controller.mcbopomofoKeyEvent(key);
+      key = new Key("7", KeyName.UNKNOWN);
+      controller.mcbopomofoKeyEvent(key);
+
+      inputCStr(controller, "444");
+      let state = controller.state;
+      expect(state).toBeInstanceOf(RomanNumber);
+      if (state instanceof RomanNumber) {
+        expect(state.composingBuffer).toBe("[羅馬數字 (字母)] 444");
+      }
+    });
+
+    it("should maintain cursor position in Roman Number mode", () => {
+      let key = new Key("\\", KeyName.UNKNOWN, false, true);
+      controller.mcbopomofoKeyEvent(key);
+      key = new Key("7", KeyName.UNKNOWN);
+      controller.mcbopomofoKeyEvent(key);
+
+      inputCStr(controller, "10");
+      let state = controller.state;
+      expect(state).toBeInstanceOf(RomanNumber);
+      if (state instanceof RomanNumber) {
+        expect(state.number.length).toBe(2);
+      }
+    });
+
+    it("should reset Roman Number mode", () => {
+      let key = new Key("\\", KeyName.UNKNOWN, false, true);
+      controller.mcbopomofoKeyEvent(key);
+      key = new Key("7", KeyName.UNKNOWN);
+      controller.mcbopomofoKeyEvent(key);
+
+      inputCStr(controller, "50");
+      let state = controller.state;
+      expect(state).toBeInstanceOf(RomanNumber);
+
+      controller.reset();
+      state = controller.state;
+      expect(state).toBeInstanceOf(Empty);
     });
   });
 
