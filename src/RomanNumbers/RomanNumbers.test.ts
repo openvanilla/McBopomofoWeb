@@ -1,4 +1,8 @@
-import { RomanNumbers, RomanNumbersStyle } from "./RomanNumbers";
+import {
+  RomanNumbers,
+  RomanNumbersError,
+  RomanNumbersStyle,
+} from "./RomanNumbers";
 
 describe("RomanNumbers.convertString", () => {
   test("returns ASCII Roman numerals for standard digits", () => {
@@ -15,7 +19,6 @@ describe("RomanNumbers.convertString", () => {
         input,
         RomanNumbersStyle.Alphabets
       );
-      console.log("output" + output);
       expect(output).toBe(expected);
     }
   });
@@ -52,5 +55,32 @@ describe("RomanNumbers.convertString", () => {
       );
       expect(output).toBe(expected);
     }
+  });
+});
+
+describe("RomanNumbers.convert", () => {
+  test.each([
+    [RomanNumbersStyle.FullWidthUpper, 11, "Ⅺ"],
+    [RomanNumbersStyle.FullWidthUpper, 12, "Ⅻ"],
+    [RomanNumbersStyle.FullWidthLower, 11, "ⅺ"],
+    [RomanNumbersStyle.FullWidthLower, 12, "ⅻ"],
+  ])("returns precomposed numerals for %s %s", (style, value, expected) => {
+    expect(RomanNumbers.convert(value, style)).toBe(expected);
+  });
+
+  test("throws when input is greater than 3999", () => {
+    expect(() => RomanNumbers.convert(4000)).toThrow(RomanNumbersError);
+  });
+
+  test("throws when input is negative", () => {
+    expect(() => RomanNumbers.convert(-1)).toThrow(RomanNumbersError);
+  });
+});
+
+describe("RomanNumbers.convertString error handling", () => {
+  test("throws when the input cannot be parsed", () => {
+    expect(() => RomanNumbers.convertString("not-a-number")).toThrow(
+      RomanNumbersError
+    );
   });
 });
