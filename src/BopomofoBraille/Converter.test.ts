@@ -1,4 +1,5 @@
 import { BopomofoBrailleConverter } from "./Converter";
+import { BopomofoSyllable } from "./Tokens/BopomofoSyllable";
 
 describe("Test BopomofoBrailleConverter", () => {
   test("Test 1 bopomofo syllable", () => {
@@ -238,6 +239,36 @@ describe("Test BopomofoBrailleConverter", () => {
 
       expect(tokens.length).toBeGreaterThan(1);
     });
+
+    test("should reset digit state when followed by bopomofo", () => {
+      let braille = "⠼⠂⠻⠄";
+      let tokens = BopomofoBrailleConverter.convertBrailleToTokens(braille);
+
+      expect(tokens.length).toBe(2);
+      expect(tokens[0]).toBe("1");
+      expect(tokens[1]).toBeInstanceOf(BopomofoSyllable);
+      if (tokens[1] instanceof BopomofoSyllable) {
+        expect(tokens[1].bpmf).toBe("ㄨㄢ");
+      }
+
+      let roundtrip = BopomofoBrailleConverter.convertBrailleToBpmf(braille);
+      expect(roundtrip).toBe("1ㄨㄢ");
+    });
+
+    test("should reset letter state when followed by bopomofo", () => {
+      let braille = "⠠⠁⠻⠄";
+      let tokens = BopomofoBrailleConverter.convertBrailleToTokens(braille);
+
+      expect(tokens.length).toBe(2);
+      expect(tokens[0]).toBe("A");
+      expect(tokens[1]).toBeInstanceOf(BopomofoSyllable);
+      if (tokens[1] instanceof BopomofoSyllable) {
+        expect(tokens[1].bpmf).toBe("ㄨㄢ");
+      }
+
+      let roundtrip = BopomofoBrailleConverter.convertBrailleToBpmf(braille);
+      expect(roundtrip).toBe("Aㄨㄢ");
+    });
   });
 
   describe("Edge cases and error handling", () => {
@@ -327,6 +358,14 @@ describe("Test BopomofoBrailleConverter", () => {
       let r1 = BopomofoBrailleConverter.convertBpmfToBraille(input);
       let r2 = BopomofoBrailleConverter.convertBrailleToBpmf(r1);
       expect(r2).toContain("ㄊㄞˊㄨㄢ");
+    });
+
+    test("should keep letters and punctuation compact", () => {
+      let input = "abc.";
+      let r1 = BopomofoBrailleConverter.convertBpmfToBraille(input);
+      expect(r1).toBe("⠁⠃⠉⠲");
+      let r2 = BopomofoBrailleConverter.convertBrailleToBpmf(r1);
+      expect(r2).toBe(input);
     });
   });
 
