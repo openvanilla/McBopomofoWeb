@@ -21,6 +21,8 @@ import {
   InputState,
   Inputting,
   Marking,
+  RomanNumber,
+  RomanNumberStateStyle,
   SelectingFeature,
 } from "./InputState";
 import { Key, KeyName } from "./Key";
@@ -1197,7 +1199,315 @@ describe("Test KeyHandler.test", () => {
         expect((commit as Committing).text).toBe("伍拾參點肆");
       }
     });
+    describe("Roman number conversion", () => {
+      test("Roman number conversion #1", () => {
+        let currentState: InputState = new RomanNumber(
+          "",
+          RomanNumberStateStyle.FullWidthLower
+        );
+        let commit: Committing | undefined = undefined;
+        let keys = asciiKey(["1", "2", "3"]);
+        let enter = Key.namedKey(KeyName.RETURN);
+        keys.push(enter);
+        for (let key of keys) {
+          keyHandler.handle(
+            key,
+            currentState,
+            (state) => {
+              if (state instanceof Committing) {
+                commit = state;
+              }
+              currentState = state;
+            },
+            () => {}
+          );
+        }
+        if (commit === undefined) {
+          fail("Committing state not found");
+        } else {
+          expect((commit as Committing).text).toBe("ⅽⅹⅹⅲ");
+        }
+      });
 
+      test("Roman number conversion #2", () => {
+        let currentState: InputState = new RomanNumber(
+          "",
+          RomanNumberStateStyle.Alphabets
+        );
+        let commit: Committing | undefined = undefined;
+        let keys = asciiKey(["4", "4"]);
+        let enter = Key.namedKey(KeyName.RETURN);
+        keys.push(enter);
+        for (let key of keys) {
+          keyHandler.handle(
+            key,
+            currentState,
+            (state) => {
+              if (state instanceof Committing) {
+                commit = state;
+              }
+              currentState = state;
+            },
+            () => {}
+          );
+        }
+        if (commit === undefined) {
+          fail("Committing state not found");
+        } else {
+          expect((commit as Committing).text).toBe("XLIV");
+        }
+      });
+
+      test("Roman number conversion #3", () => {
+        let currentState: InputState = new RomanNumber(
+          "",
+          RomanNumberStateStyle.FullWidthLower
+        );
+        let commit: Committing | undefined = undefined;
+        let keys = asciiKey(["9", "9"]);
+        let enter = Key.namedKey(KeyName.RETURN);
+        keys.push(enter);
+        for (let key of keys) {
+          keyHandler.handle(
+            key,
+            currentState,
+            (state) => {
+              if (state instanceof Committing) {
+                commit = state;
+              }
+              currentState = state;
+            },
+            () => {}
+          );
+        }
+        if (commit === undefined) {
+          fail("Committing state not found");
+        } else {
+          expect((commit as Committing).text).toBe("ⅹⅽⅸ");
+        }
+      });
+
+      test("Roman number conversion with backspace", () => {
+        let currentState: InputState = new RomanNumber(
+          "",
+          RomanNumberStateStyle.Alphabets
+        );
+        let keys = asciiKey(["1", "2", "3"]);
+        let deleteKey = Key.namedKey(KeyName.BACKSPACE);
+        keys.push(deleteKey);
+        for (let key of keys) {
+          keyHandler.handle(
+            key,
+            currentState,
+            (state) => {
+              currentState = state;
+            },
+            () => {}
+          );
+        }
+        expect(currentState).toBeInstanceOf(RomanNumber);
+        let romanNumber = currentState as RomanNumber;
+        expect(romanNumber.number).toBe("12");
+      });
+
+      test("Roman number conversion with delete", () => {
+        let currentState: InputState = new RomanNumber(
+          "",
+          RomanNumberStateStyle.Alphabets
+        );
+        let keys = asciiKey(["5", "0"]);
+        let deleteKey = Key.namedKey(KeyName.DELETE);
+        keys.push(deleteKey);
+        for (let key of keys) {
+          keyHandler.handle(
+            key,
+            currentState,
+            (state) => {
+              currentState = state;
+            },
+            () => {}
+          );
+        }
+        expect(currentState).toBeInstanceOf(RomanNumber);
+        let romanNumber = currentState as RomanNumber;
+        expect(romanNumber.number).toBe("5");
+      });
+
+      test("Roman number conversion with ESC", () => {
+        let currentState: InputState = new RomanNumber(
+          "",
+          RomanNumberStateStyle.Alphabets
+        );
+        let keys = asciiKey(["2", "5", "0"]);
+        let esc = Key.namedKey(KeyName.ESC);
+        keys.push(esc);
+        for (let key of keys) {
+          keyHandler.handle(
+            key,
+            currentState,
+            (state) => {
+              currentState = state;
+            },
+            () => {}
+          );
+        }
+        expect(currentState).toBeInstanceOf(Empty);
+      });
+
+      test("Roman number with single digit", () => {
+        let currentState: InputState = new RomanNumber(
+          "",
+          RomanNumberStateStyle.FullWidthLower
+        );
+        let commit: Committing | undefined = undefined;
+        let keys = asciiKey(["5"]);
+        let enter = Key.namedKey(KeyName.RETURN);
+        keys.push(enter);
+        for (let key of keys) {
+          keyHandler.handle(
+            key,
+            currentState,
+            (state) => {
+              if (state instanceof Committing) {
+                commit = state;
+              }
+              currentState = state;
+            },
+            () => {}
+          );
+        }
+        if (commit === undefined) {
+          fail("Committing state not found");
+        } else {
+          expect((commit as Committing).text).toBe("ⅴ");
+        }
+      });
+
+      test("Roman number with zero", () => {
+        let currentState: InputState = new RomanNumber(
+          "",
+          RomanNumberStateStyle.Alphabets
+        );
+        let keys = asciiKey(["0"]);
+        for (let key of keys) {
+          keyHandler.handle(
+            key,
+            currentState,
+            (state) => {
+              currentState = state;
+            },
+            () => {}
+          );
+        }
+        expect(currentState).toBeInstanceOf(RomanNumber);
+        let romanNumber = currentState as RomanNumber;
+        expect(romanNumber.number).toBe("0");
+      });
+
+      test("Roman number with large number", () => {
+        let currentState: InputState = new RomanNumber(
+          "",
+          RomanNumberStateStyle.Alphabets
+        );
+        let commit: Committing | undefined = undefined;
+        let keys = asciiKey(["2", "0", "2", "4"]);
+        let enter = Key.namedKey(KeyName.RETURN);
+        keys.push(enter);
+        for (let key of keys) {
+          keyHandler.handle(
+            key,
+            currentState,
+            (state) => {
+              if (state instanceof Committing) {
+                commit = state;
+              }
+              currentState = state;
+            },
+            () => {}
+          );
+        }
+        expect(commit).toBeDefined();
+        expect(commit).toBeInstanceOf(Committing);
+      });
+
+      test("Roman number uppercase style", () => {
+        let currentState: InputState = new RomanNumber(
+          "",
+          RomanNumberStateStyle.Alphabets
+        );
+        let commit: Committing | undefined = undefined;
+        let keys = asciiKey(["1", "0"]);
+        let enter = Key.namedKey(KeyName.RETURN);
+        keys.push(enter);
+        for (let key of keys) {
+          keyHandler.handle(
+            key,
+            currentState,
+            (state) => {
+              if (state instanceof Committing) {
+                commit = state;
+              }
+              currentState = state;
+            },
+            () => {}
+          );
+        }
+        if (commit === undefined) {
+          fail("Committing state not found");
+        } else {
+          expect((commit as Committing).text).toBe("X");
+        }
+      });
+
+      test("Roman number multiple backspaces", () => {
+        let currentState: InputState = new RomanNumber(
+          "",
+          RomanNumberStateStyle.Alphabets
+        );
+        let keys = asciiKey(["1", "5", "0"]);
+        let backspace = Key.namedKey(KeyName.BACKSPACE);
+        keys.push(backspace);
+        keys.push(backspace);
+        for (let key of keys) {
+          keyHandler.handle(
+            key,
+            currentState,
+            (state) => {
+              currentState = state;
+            },
+            () => {}
+          );
+        }
+        expect(currentState).toBeInstanceOf(RomanNumber);
+        let romanNumber = currentState as RomanNumber;
+        expect(romanNumber.number).toBe("1");
+      });
+
+      test("Roman number clear entire buffer with multiple deletes", () => {
+        let currentState: InputState = new RomanNumber(
+          "",
+          RomanNumberStateStyle.Alphabets
+        );
+        let keys = asciiKey(["2", "5"]);
+        let deleteKey = Key.namedKey(KeyName.DELETE);
+        keys.push(deleteKey);
+        keys.push(deleteKey);
+        keys.push(deleteKey);
+        for (let key of keys) {
+          keyHandler.handle(
+            key,
+            currentState,
+            (state) => {
+              currentState = state;
+            },
+            () => {}
+          );
+        }
+        expect(currentState).toBeInstanceOf(RomanNumber);
+        let romanNumber = currentState as RomanNumber;
+        expect(romanNumber.number).toBe("");
+      });
+    });
     test("Chinese number conversion #4", () => {
       let currentState: InputState = new ChineseNumber(
         "",
