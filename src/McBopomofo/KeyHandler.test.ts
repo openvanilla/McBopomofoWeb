@@ -11,7 +11,7 @@ import { webData } from "./WebData";
 import {
   Big5,
   ChineseNumber,
-  ChineseNumberStyle,
+  ChineseNumbersStateStyle,
   ChoosingCandidate,
   Committing,
   CustomMenu,
@@ -1114,7 +1114,7 @@ describe("Test KeyHandler.test", () => {
     test("Chinese number conversion #1", () => {
       let currentState: InputState = new ChineseNumber(
         "",
-        ChineseNumberStyle.Lowercase
+        ChineseNumbersStateStyle.Lowercase
       );
       let commit: Committing | undefined = undefined;
       let keys = asciiKey(["1", "2", "3", "5"]);
@@ -1143,7 +1143,7 @@ describe("Test KeyHandler.test", () => {
     test("Chinese number conversion #2", () => {
       let currentState: InputState = new ChineseNumber(
         "",
-        ChineseNumberStyle.Lowercase
+        ChineseNumbersStateStyle.Lowercase
       );
       let commit: Committing | undefined = undefined;
       let keys = asciiKey(["8", "0", "0", "5", "3", ".", "4"]);
@@ -1172,7 +1172,7 @@ describe("Test KeyHandler.test", () => {
     test("Chinese number conversion #3", () => {
       let currentState: InputState = new ChineseNumber(
         "",
-        ChineseNumberStyle.Uppercase
+        ChineseNumbersStateStyle.Uppercase
       );
       let commit: Committing | undefined = undefined;
       let keys = asciiKey(["0", "0", "5", "3", ".", "4", "0"]);
@@ -1201,7 +1201,7 @@ describe("Test KeyHandler.test", () => {
     test("Chinese number conversion #4", () => {
       let currentState: InputState = new ChineseNumber(
         "",
-        ChineseNumberStyle.Suzhou
+        ChineseNumbersStateStyle.Suzhou
       );
       let commit: Committing | undefined = undefined;
       let keys = asciiKey(["1", "2", "3", "4"]);
@@ -1230,7 +1230,7 @@ describe("Test KeyHandler.test", () => {
     test("Chinese number conversion #4", () => {
       let currentState: InputState = new ChineseNumber(
         "",
-        ChineseNumberStyle.Suzhou
+        ChineseNumbersStateStyle.Suzhou
       );
       // let commit: Committing | undefined = undefined;
       let keys = asciiKey(["1"]);
@@ -1254,7 +1254,7 @@ describe("Test KeyHandler.test", () => {
     test("Chinese number conversion #5", () => {
       let currentState: InputState = new ChineseNumber(
         "",
-        ChineseNumberStyle.Suzhou
+        ChineseNumbersStateStyle.Suzhou
       );
       // let commit: Committing | undefined = undefined;
       let keys = asciiKey(["1"]);
@@ -1280,7 +1280,7 @@ describe("Test KeyHandler.test", () => {
     test("Chinese number conversion #6", () => {
       let currentState: InputState = new ChineseNumber(
         "",
-        ChineseNumberStyle.Suzhou
+        ChineseNumbersStateStyle.Suzhou
       );
       let keys = asciiKey(["1"]);
       let esc = Key.namedKey(KeyName.ESC);
@@ -2043,7 +2043,7 @@ describe("Test KeyHandler.test", () => {
     test("Numpad keys in Chinese number mode", () => {
       let currentState: InputState = new ChineseNumber(
         "",
-        ChineseNumberStyle.Lowercase
+        ChineseNumbersStateStyle.Lowercase
       );
 
       // Simulate numpad keys 1, 2, 3
@@ -2072,7 +2072,7 @@ describe("Test KeyHandler.test", () => {
     test("Numpad decimal point in Chinese number mode", () => {
       let currentState: InputState = new ChineseNumber(
         "",
-        ChineseNumberStyle.Lowercase
+        ChineseNumbersStateStyle.Lowercase
       );
 
       let keys = [
@@ -2100,7 +2100,7 @@ describe("Test KeyHandler.test", () => {
     test("Numpad Enter commits Chinese number", () => {
       let currentState: InputState = new ChineseNumber(
         "",
-        ChineseNumberStyle.Lowercase
+        ChineseNumbersStateStyle.Lowercase
       );
       let commit: Committing | undefined = undefined;
 

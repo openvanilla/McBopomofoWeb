@@ -16,7 +16,7 @@ import {
   Marking,
   SelectingDictionary,
   ChineseNumber,
-  ChineseNumberStyle,
+  ChineseNumbersStateStyle,
   Big5,
   EnclosingNumber,
   SelectingDateMacro,
@@ -24,6 +24,8 @@ import {
   SelectingFeature,
   CustomMenuEntry,
   CustomMenu,
+  RomanNumber,
+  RomanNumberStateStyle,
 } from "./InputState";
 import { Candidate } from "../Gramambular2";
 
@@ -277,16 +279,16 @@ describe("InputState classes", () => {
 
   describe("ChineseNumberStyle enum", () => {
     it("should have correct enum values", () => {
-      expect(ChineseNumberStyle.Lowercase).toBe(0);
-      expect(ChineseNumberStyle.Uppercase).toBe(1);
-      expect(ChineseNumberStyle.Suzhou).toBe(2);
+      expect(ChineseNumbersStateStyle.Lowercase).toBe(0);
+      expect(ChineseNumbersStateStyle.Uppercase).toBe(1);
+      expect(ChineseNumbersStateStyle.Suzhou).toBe(2);
     });
   });
 
   describe("ChineseNumber", () => {
     it("should create chinese number state", () => {
       const number = "123";
-      const style = ChineseNumberStyle.Lowercase;
+      const style = ChineseNumbersStateStyle.Lowercase;
       const chineseNumber = new ChineseNumber(number, style);
 
       expect(chineseNumber).toBeInstanceOf(ChineseNumber);
@@ -297,7 +299,7 @@ describe("InputState classes", () => {
     it("should have correct composing buffer for lowercase style", () => {
       const chineseNumber = new ChineseNumber(
         "123",
-        ChineseNumberStyle.Lowercase
+        ChineseNumbersStateStyle.Lowercase
       );
       expect(chineseNumber.composingBuffer).toBe("[中文數字] 123");
     });
@@ -305,18 +307,24 @@ describe("InputState classes", () => {
     it("should have correct composing buffer for uppercase style", () => {
       const chineseNumber = new ChineseNumber(
         "456",
-        ChineseNumberStyle.Uppercase
+        ChineseNumbersStateStyle.Uppercase
       );
       expect(chineseNumber.composingBuffer).toBe("[大寫數字] 456");
     });
 
     it("should have correct composing buffer for Suzhou style", () => {
-      const chineseNumber = new ChineseNumber("789", ChineseNumberStyle.Suzhou);
+      const chineseNumber = new ChineseNumber(
+        "789",
+        ChineseNumbersStateStyle.Suzhou
+      );
       expect(chineseNumber.composingBuffer).toBe("[蘇州碼] 789");
     });
 
     it("should handle empty number", () => {
-      const chineseNumber = new ChineseNumber("", ChineseNumberStyle.Lowercase);
+      const chineseNumber = new ChineseNumber(
+        "",
+        ChineseNumbersStateStyle.Lowercase
+      );
       expect(chineseNumber.composingBuffer).toBe("[中文數字] ");
     });
   });
@@ -494,7 +502,7 @@ describe("InputState classes", () => {
 
   describe("CustomMenuEntry", () => {
     it("should create custom menu entry", () => {
-      const title = "菜單項目";
+      const title = "選單項目";
       const callback = jest.fn();
       const entry = new CustomMenuEntry(title, callback);
 
@@ -519,9 +527,9 @@ describe("InputState classes", () => {
     ];
 
     it("should create custom menu state", () => {
-      const buffer = "自定義菜單";
+      const buffer = "自定義選單";
       const index = 2;
-      const title = "菜單標題";
+      const title = "選單標題";
       const menu = new CustomMenu(buffer, index, title, mockEntries);
 
       expect(menu).toBeInstanceOf(CustomMenu);
@@ -533,8 +541,8 @@ describe("InputState classes", () => {
     });
 
     it("should have correct toString", () => {
-      const menu = new CustomMenu("test", 1, "菜單標題", mockEntries);
-      expect(menu.toString()).toBe("CustomMenuEntry 菜單標題");
+      const menu = new CustomMenu("test", 1, "選單標題", mockEntries);
+      expect(menu.toString()).toBe("CustomMenuEntry 選單標題");
     });
 
     it("should handle empty entries", () => {
@@ -553,7 +561,8 @@ describe("InputState classes", () => {
         new ChoosingCandidate("test", 1, [], 0),
         new Marking("test", 1, "", 0, "", "", "", "", true),
         new SelectingDictionary(new NotEmpty("test", 1), "phrase", 0, []),
-        new ChineseNumber("123", ChineseNumberStyle.Lowercase),
+        new ChineseNumber("123", ChineseNumbersStateStyle.Lowercase),
+        new RomanNumber("123", RomanNumberStateStyle.FullWidthLower),
         new Big5("A440"),
         new EnclosingNumber("123"),
         new SelectingDateMacro(() => "converted"),

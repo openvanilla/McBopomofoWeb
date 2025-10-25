@@ -219,7 +219,7 @@ export class SelectingDictionary extends NotEmpty {
  * @property {number} Suzhou - Chinese numbers in Suzhou format (e.g., 〡〢〣)
  */
 /* istanbul ignore next */
-export enum ChineseNumberStyle {
+export enum ChineseNumbersStateStyle {
   Lowercase,
   Uppercase,
   Suzhou,
@@ -231,21 +231,54 @@ export class ChineseNumber implements InputState {
   /** The user inputted number. */
   readonly number: string;
   /** The style of the Chinese number. */
-  readonly style: ChineseNumberStyle;
+  readonly style: ChineseNumbersStateStyle;
 
-  constructor(number: string, style: ChineseNumberStyle) {
+  constructor(number: string, style: ChineseNumbersStateStyle) {
     this.number = number;
     this.style = style;
   }
 
   get composingBuffer(): string {
     switch (this.style) {
-      case ChineseNumberStyle.Lowercase:
+      case ChineseNumbersStateStyle.Lowercase:
         return "[中文數字] " + this.number;
-      case ChineseNumberStyle.Uppercase:
+      case ChineseNumbersStateStyle.Uppercase:
         return "[大寫數字] " + this.number;
-      case ChineseNumberStyle.Suzhou:
+      case ChineseNumbersStateStyle.Suzhou:
         return "[蘇州碼] " + this.number;
+      default:
+        break;
+    }
+
+    return "";
+  }
+}
+
+export enum RomanNumberStateStyle {
+  Alphabets,
+  FullWidthUpper,
+  FullWidthLower,
+}
+
+export class RomanNumber implements InputState {
+  /** The user inputted number. */
+  readonly number: string;
+  /** The style of the Chinese number. */
+  readonly style: RomanNumberStateStyle;
+
+  constructor(number: string, style: RomanNumberStateStyle) {
+    this.number = number;
+    this.style = style;
+  }
+
+  get composingBuffer(): string {
+    switch (this.style) {
+      case RomanNumberStateStyle.Alphabets:
+        return "[羅馬數字 (字母)] " + this.number;
+      case RomanNumberStateStyle.FullWidthUpper:
+        return "[羅馬數字 (全形大寫)] " + this.number;
+      case RomanNumberStateStyle.FullWidthLower:
+        return "[羅馬數字 (全形小寫)] " + this.number;
       default:
         break;
     }
@@ -372,21 +405,40 @@ export class SelectingFeature implements InputState {
     features.push(
       new Feature(
         "中文數字",
-        () => new ChineseNumber("", ChineseNumberStyle.Lowercase)
+        () => new ChineseNumber("", ChineseNumbersStateStyle.Lowercase)
       )
     );
     features.push(
       new Feature(
         "大寫數字",
-        () => new ChineseNumber("", ChineseNumberStyle.Uppercase)
+        () => new ChineseNumber("", ChineseNumbersStateStyle.Uppercase)
       )
     );
     features.push(
       new Feature(
         "蘇州碼",
-        () => new ChineseNumber("", ChineseNumberStyle.Suzhou)
+        () => new ChineseNumber("", ChineseNumbersStateStyle.Suzhou)
       )
     );
+    features.push(
+      new Feature(
+        "羅馬數字 (字母)",
+        () => new RomanNumber("", RomanNumberStateStyle.Alphabets)
+      )
+    );
+    features.push(
+      new Feature(
+        "羅馬數字 (全形大寫)",
+        () => new RomanNumber("", RomanNumberStateStyle.FullWidthUpper)
+      )
+    );
+    features.push(
+      new Feature(
+        "羅馬數字 (全形小寫)",
+        () => new RomanNumber("", RomanNumberStateStyle.FullWidthLower)
+      )
+    );
+
     return features;
   })();
 
