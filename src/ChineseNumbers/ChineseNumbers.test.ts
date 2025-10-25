@@ -51,6 +51,11 @@ describe("ChineseNumbers.generate edge cases", () => {
     expect(output).toBe("〇");
   });
 
+  test("returns zero when integer part is empty and fractional is also empty", () => {
+    let output = ChineseNumbers.generate("", "", Case.lowercase);
+    expect(output).toBe("〇");
+  });
+
   test("returns zero when integer part is literally zero", () => {
     let output = ChineseNumbers.generate("0", "", Case.lowercase);
     expect(output).toBe("〇");
