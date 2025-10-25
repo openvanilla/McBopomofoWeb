@@ -263,7 +263,7 @@ export enum RomanNumberStateStyle {
 export class RomanNumber implements InputState {
   /** The user inputted number. */
   readonly number: string;
-  /** The style of the Chinese number. */
+  /** The style of the Roman number. */
   readonly style: RomanNumberStateStyle;
 
   constructor(number: string, style: RomanNumberStateStyle) {

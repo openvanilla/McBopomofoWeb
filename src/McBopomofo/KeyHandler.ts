@@ -1236,13 +1236,13 @@ export class KeyHandler {
         return true;
       }
       let number = state.number;
-      var style = RomanNumbersStyle.Alphabets;
+      let style = RomanNumbersStyle.Alphabets;
       switch (state.style) {
         case RomanNumbersStateStyle.Alphabets:
           style = RomanNumbersStyle.Alphabets;
           break;
-        case RomanNumbersStateStyle.FullWidthLower:
-          style = RomanNumbersStyle.FullWidthLower;
+        case RomanNumbersStateStyle.FullWidthUpper:
+          style = RomanNumbersStyle.FullWidthUpper;
           break;
         case RomanNumbersStateStyle.FullWidthLower:
           style = RomanNumbersStyle.FullWidthLower;
