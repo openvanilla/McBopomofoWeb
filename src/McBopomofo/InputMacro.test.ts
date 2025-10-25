@@ -155,6 +155,10 @@ jest.mock("./InputMacroDate", () => {
     }),
     add: jest.fn((amount: number, unit: string) => {
       return {
+        year: () => {
+          if (unit === "year") return 2024 + amount;
+          return 2024;
+        },
         format: jest.fn((formatStr: string) => {
           if (unit === "year") {
             switch (formatStr) {
@@ -433,6 +437,23 @@ describe("InputMacro", () => {
         ""
       );
     });
+
+    test("handles Japanese weekday macros", () => {
+      const todayJp = inputMacroController.handle(
+        "MACRO@DATE_TODAY_WEEKDAY_JAPANESE"
+      );
+      expect(todayJp).toBeDefined();
+      
+      const yesterdayJp = inputMacroController.handle(
+        "MACRO@DATE_YESTERDAY_WEEKDAY_JAPANESE"
+      );
+      expect(yesterdayJp).toBeDefined();
+      
+      const tomorrowJp = inputMacroController.handle(
+        "MACRO@DATE_TOMORROW_WEEKDAY_JAPANESE"
+      );
+      expect(tomorrowJp).toBeDefined();
+    });
   });
 
   describe("Time Zone and DateTime Macros", () => {
@@ -457,21 +478,21 @@ describe("InputMacro", () => {
   });
 
   describe("Chinese Zodiac and GanZhi Macros", () => {
-    // test("handles GanZhi macros", () => {
-    //   const thisYear = inputMacroController.handle("MACRO@THIS_YEAR_GANZHI");
-    //   const lastYear = inputMacroController.handle("MACRO@LAST_YEAR_GANZHI");
-    //   const nextYear = inputMacroController.handle("MACRO@NEXT_YEAR_GANZHI");
+    test("handles GanZhi macros", () => {
+      const thisYear = inputMacroController.handle("MACRO@THIS_YEAR_GANZHI");
+      const lastYear = inputMacroController.handle("MACRO@LAST_YEAR_GANZHI");
+      const nextYear = inputMacroController.handle("MACRO@NEXT_YEAR_GANZHI");
 
-    //   expect(thisYear).toMatch(
-    //     /^[甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥]年$/
-    //   );
-    //   expect(lastYear).toMatch(
-    //     /^[甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥]年$/
-    //   );
-    //   expect(nextYear).toMatch(
-    //     /^[甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥]年$/
-    //   );
-    // });
+      expect(thisYear).toMatch(
+        /^[甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥]年$/
+      );
+      expect(lastYear).toMatch(
+        /^[甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥]年$/
+      );
+      expect(nextYear).toMatch(
+        /^[甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥]年$/
+      );
+    });
 
     test("handles Chinese zodiac macros", () => {
       const thisYear = inputMacroController.handle(
