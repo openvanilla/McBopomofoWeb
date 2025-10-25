@@ -551,6 +551,55 @@ describe("InputState classes", () => {
     });
   });
 
+  describe("RomanNumberStyle enum", () => {
+    it("has correct enum values", () => {
+      expect(RomanNumberStateStyle.Alphabets).toBe(0);
+      expect(RomanNumberStateStyle.FullWidthUpper).toBe(1);
+      expect(RomanNumberStateStyle.FullWidthLower).toBe(2);
+    });
+  });
+
+  describe("RomanNumber", () => {
+    it("creates roman number state", () => {
+      const number = "XII";
+      const style = RomanNumberStateStyle.Alphabets;
+      const romanNumber = new RomanNumber(number, style);
+
+      expect(romanNumber).toBeInstanceOf(RomanNumber);
+      expect(romanNumber.number).toBe(number);
+      expect(romanNumber.style).toBe(style);
+    });
+
+    it("has correct composing buffer for Alphabets style", () => {
+      const romanNumber = new RomanNumber(
+        "XV",
+        RomanNumberStateStyle.Alphabets
+      );
+      expect(romanNumber.composingBuffer).toBe("[羅馬數字 (字母)] XV");
+    });
+
+    it("has correct composing buffer for FullWidthUpper style", () => {
+      const romanNumber = new RomanNumber(
+        "XX",
+        RomanNumberStateStyle.FullWidthUpper
+      );
+      expect(romanNumber.composingBuffer).toBe("[羅馬數字 (全形大寫)] XX");
+    });
+
+    it("has correct composing buffer for FullWidthLower style", () => {
+      const romanNumber = new RomanNumber(
+        "IX",
+        RomanNumberStateStyle.FullWidthLower
+      );
+      expect(romanNumber.composingBuffer).toBe("[羅馬數字 (全形小寫)] IX");
+    });
+
+    it("handles empty number", () => {
+      const romanNumber = new RomanNumber("", RomanNumberStateStyle.Alphabets);
+      expect(romanNumber.composingBuffer).toBe("[羅馬數字 (字母)] ");
+    });
+  });
+
   describe("Interface compliance", () => {
     it("implements InputState interface", () => {
       const states: InputState[] = [

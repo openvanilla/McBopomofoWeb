@@ -57,7 +57,7 @@ describe("Key", () => {
   });
 
   describe("KeyFromKeyboardEvent", () => {
-    it("handles arrow keys", () => {
+    it("handles arrow left key", () => {
       const event = {
         code: "ArrowLeft",
         key: "ArrowLeft",
@@ -66,6 +66,105 @@ describe("Key", () => {
       } as KeyboardEvent;
       const key = KeyFromKeyboardEvent(event);
       expect(key.name).toBe(KeyName.LEFT);
+    });
+
+    it("handles arrow right key", () => {
+      const event = {
+        code: "ArrowRight",
+        key: "ArrowRight",
+        shiftKey: false,
+        ctrlKey: false,
+      } as KeyboardEvent;
+      const key = KeyFromKeyboardEvent(event);
+      expect(key.name).toBe(KeyName.RIGHT);
+    });
+
+    it("handles arrow up key", () => {
+      const event = {
+        code: "ArrowUp",
+        key: "ArrowUp",
+        shiftKey: false,
+        ctrlKey: false,
+      } as KeyboardEvent;
+      const key = KeyFromKeyboardEvent(event);
+      expect(key.name).toBe(KeyName.UP);
+    });
+
+    it("handles arrow down key", () => {
+      const event = {
+        code: "ArrowDown",
+        key: "ArrowDown",
+        shiftKey: false,
+        ctrlKey: false,
+      } as KeyboardEvent;
+      const key = KeyFromKeyboardEvent(event);
+      expect(key.name).toBe(KeyName.DOWN);
+    });
+
+    it("handles home key", () => {
+      const event = {
+        code: "Home",
+        key: "Home",
+        shiftKey: false,
+        ctrlKey: false,
+      } as KeyboardEvent;
+      const key = KeyFromKeyboardEvent(event);
+      expect(key.name).toBe(KeyName.HOME);
+    });
+
+    it("handles end key", () => {
+      const event = {
+        code: "End",
+        key: "End",
+        shiftKey: false,
+        ctrlKey: false,
+      } as KeyboardEvent;
+      const key = KeyFromKeyboardEvent(event);
+      expect(key.name).toBe(KeyName.END);
+    });
+
+    it("handles backspace key", () => {
+      const event = {
+        code: "Backspace",
+        key: "Backspace",
+        shiftKey: false,
+        ctrlKey: false,
+      } as KeyboardEvent;
+      const key = KeyFromKeyboardEvent(event);
+      expect(key.name).toBe(KeyName.BACKSPACE);
+    });
+
+    it("handles delete key", () => {
+      const event = {
+        code: "Delete",
+        key: "Delete",
+        shiftKey: false,
+        ctrlKey: false,
+      } as KeyboardEvent;
+      const key = KeyFromKeyboardEvent(event);
+      expect(key.name).toBe(KeyName.DELETE);
+    });
+
+    it("handles page up key", () => {
+      const event = {
+        code: "PageUp",
+        key: "PageUp",
+        shiftKey: false,
+        ctrlKey: false,
+      } as KeyboardEvent;
+      const key = KeyFromKeyboardEvent(event);
+      expect(key.name).toBe(KeyName.PAGE_UP);
+    });
+
+    it("handles page down key", () => {
+      const event = {
+        code: "PageDown",
+        key: "PageDown",
+        shiftKey: false,
+        ctrlKey: false,
+      } as KeyboardEvent;
+      const key = KeyFromKeyboardEvent(event);
+      expect(key.name).toBe(KeyName.PAGE_DOWN);
     });
 
     it("handles numpad keys", () => {
@@ -80,7 +179,7 @@ describe("Key", () => {
       expect(key.isNumpadKey).toBe(true);
     });
 
-    it("handles special keys", () => {
+    it("handles enter key", () => {
       const event = {
         code: "Enter",
         key: "Enter",
