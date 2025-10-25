@@ -1,7 +1,7 @@
 import { Service } from "./Service";
 
-describe("Test service", () => {
-  test("Test convertBrailleToText 1", () => {
+describe("Service", () => {
+  test("round-trips full sentence through Braille conversion", () => {
     let service = new Service();
     let input = "由「小麥」的作者";
     let r1 = service.convertTextToBraille(input);
@@ -9,7 +9,7 @@ describe("Test service", () => {
     expect(r2).toBe(input);
   });
 
-  test("Test convertBrailleToText 2 - 1", () => {
+  test("converts ordinal phrase with digit to Braille and back", () => {
     let service = new Service();
     let input = "第1名";
     let r1 = service.convertTextToBraille(input);
@@ -18,7 +18,7 @@ describe("Test service", () => {
     expect(r2).toBe("地 1 明");
   });
 
-  test("Test convertBrailleToText 2 - 2", () => {
+  test("converts ordinal phrase with uppercase letter to Braille and back", () => {
     let service = new Service();
     let input = "第A名";
     let r1 = service.convertTextToBraille(input);
@@ -27,7 +27,7 @@ describe("Test service", () => {
     expect(r2).toBe("地 A 明");
   });
 
-  test("Test convertBrailleToText 2 - 3", () => {
+  test("converts ordinal phrase with spaced uppercase letters to Braille and back", () => {
     let service = new Service();
     let input = "第A B名";
     let r1 = service.convertTextToBraille(input);
@@ -36,7 +36,7 @@ describe("Test service", () => {
     expect(r2).toBe("地 A B 明");
   });
 
-  test("Test convertBrailleToText 2 - 4", () => {
+  test("converts ordinal phrase with adjacent uppercase letters to Braille and back", () => {
     let service = new Service();
     let input = "第AB名";
     let r1 = service.convertTextToBraille(input);
@@ -45,78 +45,78 @@ describe("Test service", () => {
     expect(r2).toBe("地 AB 明");
   });
 
-  test("Test convertBrailleToText 3", () => {
+  test("converts Braille sentence with tone marks to text", () => {
     let service = new Service();
     let result = service.convertBrailleToText("⠋⠞⠄⠚⠡⠐⠗⠩⠈");
     expect(result).toBe("天氣好");
   });
 
-  test("Test convertBrailleToText with punctuation", () => {
+  test("converts Braille sentence with punctuation to text", () => {
     let service = new Service();
     let result = service.convertBrailleToText("⠋⠞⠄⠚⠡⠐⠗⠩⠈⠂");
     expect(result).toBe("天氣好,");
   });
 
-  test("Test convertBrailleToText 4", () => {
+  test("converts longer Braille sentence to text", () => {
     let service = new Service();
     let result = service.convertBrailleToText("⠋⠞⠄⠚⠡⠐⠁⠥⠄⠙⠮⠁⠗⠥⠈⠗⠩⠈");
     expect(result).toBe("天氣真的很好");
   });
 
-  test("Test convertTextToBraille 5", () => {
+  test("converts sentence to Braille glyphs", () => {
     let service = new Service();
     let result = service.convertTextToBraille("天氣好");
     expect(result).toBe("⠋⠞⠄⠚⠡⠐⠗⠩⠈");
   });
-  test("Test convertTextToBraille 6", () => {
+  test("converts longer sentence to Braille glyphs", () => {
     let service = new Service();
     let result = service.convertTextToBraille("天氣真的很好");
     expect(result).toBe("⠋⠞⠄⠚⠡⠐⠁⠥⠄⠙⠮⠁⠗⠥⠈⠗⠩⠈");
   });
 
-  test("Test convertTextToBraille 7", () => {
+  test("converts weather sentence with duplicate characters to Braille", () => {
     let service = new Service();
     let result = service.convertTextToBraille("今天天氣好清爽");
     expect(result).toBe("⠅⠹⠄⠋⠞⠄⠋⠞⠄⠚⠡⠐⠗⠩⠈⠚⠽⠄⠊⠸⠈");
   });
 
-  test("Test convertTextToBraille 8", () => {
+  test("converts comma punctuation to Braille", () => {
     let service = new Service();
     let result = service.convertTextToBraille("，");
     expect(result).toBe("⠆");
   });
 
-  test("Test convertTextToBraille 9", () => {
+  test("converts phrase with tone mark to Braille", () => {
     let service = new Service();
     let result = service.convertTextToBraille("同樣");
     expect(result).toBe("⠋⠯⠂⠨⠐");
   });
 
-  test("Test convertTextToBraille 10", () => {
+  test("converts repeated punctuation to Braille", () => {
     let service = new Service();
     let result = service.convertTextToBraille("，，，");
     expect(result).toBe("⠆⠆⠆");
   });
 
-  test("Test convertTextToBraille 11", () => {
+  test("converts mixed phrase to Braille", () => {
     let service = new Service();
     let result = service.convertTextToBraille("除了在");
     expect(result).toBe("⠃⠌⠂⠉⠮⠁⠓⠺⠐");
   });
 
-  test("Test convertTextToBraille with digits 1", () => {
+  test("includes digits when converting text to Braille", () => {
     let service = new Service();
     let result = service.convertTextToBraille("天氣好 1234");
     expect(result).toBe("⠋⠞⠄⠚⠡⠐⠗⠩⠈ ⠼⠂⠆⠒⠲");
   });
 
-  test("Test convertTextToBraille with digits1", () => {
+  test("converts Braille digits back to text", () => {
     let service = new Service();
     let result = service.convertBrailleToText("⠋⠞⠄⠚⠡⠐⠗⠩⠈ ⠼⠂⠆⠒⠲");
     expect(result).toBe("天氣好 1234");
   });
 
-  test("Test two way convert 1", () => {
+  test("round-trips input method name through Braille conversion", () => {
     let service = new Service();
     let input = "小麥注音輸入法";
     let r1 = service.convertTextToBraille(input);
@@ -124,7 +124,7 @@ describe("Test service", () => {
     expect(r2).toBe(input);
   });
 
-  test("Test two way convert 2", () => {
+  test("round-trips decimal number through Braille conversion", () => {
     let service = new Service();
     let input = "2.5";
     let r1 = service.convertTextToBraille(input);
@@ -133,7 +133,7 @@ describe("Test service", () => {
     expect(r2).toBe(input);
   });
 
-  test("Test two way convert 3", () => {
+  test("round-trips phrase with number through Braille conversion", () => {
     let service = new Service();
     let input = "小麥注音輸入法 2.5";
     let r1 = service.convertTextToBraille(input);
@@ -141,7 +141,7 @@ describe("Test service", () => {
     expect(r2).toBe(input);
   });
 
-  test("Test convertTextToHtmlRuby", () => {
+  test("converts text to HTML ruby markup", () => {
     let service = new Service();
     let input = "小麥注音輸入法";
     let result = service.convertTextToHtmlRuby(input);
@@ -150,14 +150,14 @@ describe("Test service", () => {
     expect(result).toBe(expected);
   });
 
-  test("Test Pinyin", () => {
+  test("converts text to Pinyin readings", () => {
     let service = new Service();
     let input = "小麥注音輸入法";
     let r1 = service.convertTextToPinyin(input);
     expect(r1).toEqual("xiao mai zhu yin shu ru fa");
   });
 
-  test("Test convertTextToBpmfReadings", () => {
+  test("converts text to Bopomofo readings", () => {
     let service = new Service();
     let input = "小麥注音輸入法";
     let result = service.convertTextToBpmfReadings(input);
@@ -180,7 +180,7 @@ describe("Test service", () => {
     expect(result).toBe("ㄉㄧˋABㄇㄧㄥˊ");
   });
 
-  test("Test appendBpmfReadingsToText", () => {
+  test("appends Bopomofo readings to text", () => {
     let service = new Service();
     let input = "小麥注音輸入法";
     let result = service.appendBpmfReadingsToText(input);

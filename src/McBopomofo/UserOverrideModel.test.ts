@@ -11,7 +11,7 @@ describe("UserOverrideModel", () => {
   });
 
   describe("Constructor", () => {
-    test("should create model with correct capacity and decay exponent", () => {
+    test("creates model with correct capacity and decay exponent", () => {
       const capacity = 50;
       const decayConstant = 5000;
       const testModel = new UserOverrideModel(capacity, decayConstant);
@@ -24,7 +24,7 @@ describe("UserOverrideModel", () => {
   });
 
   describe("Suggestion class", () => {
-    test("should create suggestion with correct properties", () => {
+    test("creates suggestion with correct properties", () => {
       const candidate = "測試";
       const forceHighScore = true;
       const suggestion = new Suggestion(candidate, forceHighScore);
@@ -33,7 +33,7 @@ describe("UserOverrideModel", () => {
       expect(suggestion.forceHighScoreOverride).toBe(forceHighScore);
     });
 
-    test("should create suggestion with false force high score", () => {
+    test("creates suggestion with false force high score", () => {
       const candidate = "例子";
       const forceHighScore = false;
       const suggestion = new Suggestion(candidate, forceHighScore);
@@ -61,7 +61,7 @@ describe("UserOverrideModel", () => {
       return new WalkResult(nodes, 0, 0, 0, totalReadings);
     }
 
-    test("should handle undefined walks", () => {
+    test("handles undefined walks", () => {
       expect(() => {
         model.observe(undefined, undefined, 0, 1000);
       }).not.toThrow();
@@ -69,7 +69,7 @@ describe("UserOverrideModel", () => {
       expect(model.m_lruList.length).toBe(0);
     });
 
-    test("should handle empty walks", () => {
+    test("handles empty walks", () => {
       const emptyWalk = createMockWalkResult([]);
 
       expect(() => {
@@ -79,7 +79,7 @@ describe("UserOverrideModel", () => {
       expect(model.m_lruList.length).toBe(0);
     });
 
-    test("should handle mismatched total readings", () => {
+    test("handles mismatched total readings", () => {
       const walk1 = createMockWalkResult([createMockNode("ㄊㄞˊ", "台")], 1);
       const walk2 = createMockWalkResult([createMockNode("ㄊㄞˊ", "臺")], 2);
 
@@ -88,7 +88,7 @@ describe("UserOverrideModel", () => {
       expect(model.m_lruList.length).toBe(0);
     });
 
-    test("should observe simple override", () => {
+    test("observes simple override", () => {
       const beforeNode = createMockNode("ㄊㄞˊ", "台");
       const afterNode = createMockNode("ㄊㄞˊ", "臺");
 
@@ -102,7 +102,7 @@ describe("UserOverrideModel", () => {
       expect(model.m_lruList[0].observation.overrides["臺"]).toBeDefined();
     });
 
-    test("should handle multi-character phrases", () => {
+    test("handles multi-character phrases", () => {
       const beforeNode = createMockNode("ㄗˋㄏㄨㄟˋ", "字會", 2);
       const afterNode = createMockNode("ㄗˋㄏㄨㄟˋ", "字彙", 2);
 
@@ -114,7 +114,7 @@ describe("UserOverrideModel", () => {
       expect(model.m_lruList.length).toBe(1);
     });
 
-    test("should skip phrases over 3 characters", () => {
+    test("skips phrases over 3 characters", () => {
       const longNode = createMockNode("ㄊㄞˊㄨㄢㄉㄚˋㄒㄩㄝˊ", "台灣大學", 4);
 
       const walkBefore = createMockWalkResult([longNode], 4);
@@ -125,7 +125,7 @@ describe("UserOverrideModel", () => {
       expect(model.m_lruList.length).toBe(0);
     });
 
-    test("should handle punctuation nodes", () => {
+    test("handles punctuation nodes", () => {
       const punctuationNode = createMockNode("_punctuation_comma", "，");
       const regularNode = createMockNode("ㄊㄞˊ", "台");
 
@@ -140,7 +140,7 @@ describe("UserOverrideModel", () => {
       expect(model.m_lruList.length).toBe(1);
     });
 
-    test("should update existing observations", () => {
+    test("updates existing observations", () => {
       const beforeNode = createMockNode("ㄊㄞˊ", "台");
       const afterNode1 = createMockNode("ㄊㄞˊ", "臺");
       const afterNode2 = createMockNode("ㄊㄞˊ", "台");
@@ -163,7 +163,7 @@ describe("UserOverrideModel", () => {
       );
     });
 
-    test("should respect capacity limit", () => {
+    test("respects capacity limit", () => {
       const smallModel = new UserOverrideModel(2, defaultDecayConstant);
 
       for (let i = 0; i < 5; i++) {
@@ -199,7 +199,7 @@ describe("UserOverrideModel", () => {
       return new WalkResult(nodes, 0, 0, 0, totalReadings);
     }
 
-    test("should return undefined for invalid cursor", () => {
+    test("returns undefined for invalid cursor", () => {
       const node = createMockNode("ㄊㄞˊ", "台");
       const walk = createMockWalkResult([node], 1);
 
@@ -208,7 +208,7 @@ describe("UserOverrideModel", () => {
       expect(suggestion).toBeUndefined();
     });
 
-    test("should return empty suggestion when no observations", () => {
+    test("returns empty suggestion when no observations", () => {
       const node = createMockNode("ㄊㄞˊ", "台");
       const walk = createMockWalkResult([node], 1);
 
@@ -219,7 +219,7 @@ describe("UserOverrideModel", () => {
       expect(suggestion!.forceHighScoreOverride).toBe(false);
     });
 
-    test("should return suggestion based on observations", () => {
+    test("returns suggestion based on observations", () => {
       // First observe an override
       const beforeNode = createMockNode("ㄊㄞˊ", "台");
       const afterNode = createMockNode("ㄊㄞˊ", "臺");
@@ -237,7 +237,7 @@ describe("UserOverrideModel", () => {
       expect(suggestion!.candidate).toBe("臺");
     });
 
-    test("should return best scoring suggestion", () => {
+    test("returns best scoring suggestion", () => {
       const beforeNode = createMockNode("ㄊㄞˊ", "台");
 
       // Observe multiple overrides
@@ -261,7 +261,7 @@ describe("UserOverrideModel", () => {
       expect(suggestion!.candidate).toBe("臺");
     });
 
-    test("should handle force high score override flag", () => {
+    test("handles force high score override flag", () => {
       // Create a more realistic scenario
       const beforeNode = createMockNode("ㄊㄞˊ", "台");
       const afterNode = createMockNode("ㄊㄞˊ", "臺");
@@ -282,14 +282,14 @@ describe("UserOverrideModel", () => {
   });
 
   describe("suggestInner method", () => {
-    test("should return empty suggestion for unknown key", () => {
+    test("returns empty suggestion for unknown key", () => {
       const suggestion = model.suggestInner("unknown-key", 1000);
 
       expect(suggestion.candidate).toBe("");
       expect(suggestion.forceHighScoreOverride).toBe(false);
     });
 
-    test("should handle decayed observations", () => {
+    test("handles decayed observations", () => {
       // Create a model with fast decay
       const fastDecayModel = new UserOverrideModel(100, 1);
 
@@ -312,7 +312,7 @@ describe("UserOverrideModel", () => {
   });
 
   describe("LRU behavior", () => {
-    test("should maintain LRU order when accessing existing keys", () => {
+    test("maintains LRU order when accessing existing keys", () => {
       const smallModel = new UserOverrideModel(3, defaultDecayConstant);
 
       function createMockNode(reading: string, value: string): Node {
@@ -344,7 +344,7 @@ describe("UserOverrideModel", () => {
   });
 
   describe("Edge cases and error handling", () => {
-    test("should handle cursor at position 0", () => {
+    test("handles cursor at position 0", () => {
       function createMockNode(reading: string, value: string): Node {
         const unigrams = [new Unigram(value, 1.0)];
         return new Node(reading, 1, unigrams);
@@ -365,7 +365,7 @@ describe("UserOverrideModel", () => {
       expect(model.m_lruList.length).toBeGreaterThanOrEqual(0);
     });
 
-    test("should handle empty candidate strings", () => {
+    test("handles empty candidate strings", () => {
       const beforeNode = new Node("test", 1, [new Unigram("", 1.0)]);
       const afterNode = new Node("test", 1, [new Unigram("", 1.0)]);
 
@@ -379,7 +379,7 @@ describe("UserOverrideModel", () => {
       expect(suggestion!.candidate).toBe("");
     });
 
-    test("should handle multiple candidates with same score", () => {
+    test("handles multiple candidates with same score", () => {
       const beforeNode = new Node("test", 1, [new Unigram("original", 1.0)]);
       const afterNode1 = new Node("test", 1, [new Unigram("candidate1", 1.0)]);
       const afterNode2 = new Node("test", 1, [new Unigram("candidate2", 1.0)]);
@@ -400,7 +400,7 @@ describe("UserOverrideModel", () => {
   });
 
   describe("Performance and memory management", () => {
-    test("should handle large number of observations efficiently", () => {
+    test("handles large number of observations efficiently", () => {
       const largeModel = new UserOverrideModel(1000, defaultDecayConstant);
 
       function createMockNode(reading: string, value: string): Node {
@@ -432,7 +432,7 @@ describe("UserOverrideModel", () => {
   });
 
   describe("Integration scenarios", () => {
-    test("should handle realistic user override scenario", () => {
+    test("handles realistic user override scenario", () => {
       // User types "台灣" and system suggests "台湾"
       // User overrides to "台灣"
       const beforeNode1 = createMockNode("ㄊㄞˊ", "台");
@@ -461,7 +461,7 @@ describe("UserOverrideModel", () => {
       return new Node(reading, spanningLength, unigrams);
     }
 
-    test("should handle breaking up phrases", () => {
+    test("handles breaking up phrases", () => {
       // User has "字彙" as one phrase but wants to type "字會" as two characters
       const beforeNode = createMockNode("ㄗˋㄏㄨㄟˋ", "字彙", 2);
       const afterNode1 = createMockNode("ㄗˋ", "字");
@@ -479,7 +479,7 @@ describe("UserOverrideModel", () => {
       expect(suggestion).toBeDefined();
     });
 
-    test("should handle time-based decay correctly", () => {
+    test("handles time-based decay correctly", () => {
       const beforeNode = createMockNode("ㄊㄞˊ", "台");
       const afterNode = createMockNode("ㄊㄞˊ", "臺");
 

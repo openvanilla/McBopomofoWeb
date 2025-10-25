@@ -73,11 +73,11 @@ describe("InputController", () => {
   });
 
   describe("Basic Functionality", () => {
-    it("should initialize with empty state", () => {
+    it("initializes with empty state", () => {
       expect(controller.state).toBeInstanceOf(Empty);
     });
 
-    it("should reset to empty state", () => {
+    it("resets to empty state", () => {
       // Input some text first
       inputCStr(controller, "5j/");
       expect(controller.state).not.toBeInstanceOf(Empty);
@@ -88,14 +88,14 @@ describe("InputController", () => {
       expect(mockUI.reset).toHaveBeenCalled();
     });
 
-    it("should handle keyboard events and return boolean", () => {
+    it("returns boolean from keyboard events", () => {
       // Test direct mcbopomofoKeyEvent method instead of keyEvent
       const key = Key.asciiKey("a", false, false);
       const result = controller.mcbopomofoKeyEvent(key);
       expect(typeof result).toBe("boolean");
     });
 
-    it("should ignore modifier keys", () => {
+    it("ignores modifier keys", () => {
       const shiftKey = Key.asciiKey("Shift", false, false);
       const metaKey = Key.asciiKey("Meta", false, false);
       const altKey = Key.asciiKey("Alt", false, false);
@@ -107,7 +107,7 @@ describe("InputController", () => {
   });
 
   describe("Configuration Methods", () => {
-    it("should set traditional mode", () => {
+    it("sets traditional mode", () => {
       controller.setTraditionalMode(true);
       inputCStr(controller, "5j/ ");
       let state = controller.state;
@@ -136,13 +136,13 @@ describe("InputController", () => {
       }
     });
 
-    it("should set language code", () => {
+    it("sets language code", () => {
       controller.setLanguageCode("zh-TW");
       controller.setLanguageCode("en");
       // No exception should be thrown
     });
 
-    it("should set keyboard layout", () => {
+    it("sets keyboard layout", () => {
       const layouts = [
         "Standard",
         "ETen",
@@ -159,27 +159,27 @@ describe("InputController", () => {
       });
     });
 
-    it("should set select phrase option", () => {
+    it("sets select phrase option", () => {
       controller.setSelectPhrase("after_cursor");
       controller.setSelectPhrase("before_cursor");
       controller.setSelectPhrase("invalid_option");
       // No exception should be thrown
     });
 
-    it("should set move cursor after selection", () => {
+    it("sets move cursor after selection", () => {
       controller.setMoveCursorAfterSelection(true);
       controller.setMoveCursorAfterSelection(false);
       // No exception should be thrown
     });
 
-    it("should set letter mode", () => {
+    it("sets letter mode", () => {
       controller.setLetterMode("lower");
       controller.setLetterMode("upper");
       controller.setLetterMode("invalid");
       // No exception should be thrown
     });
 
-    it("should set candidate keys", () => {
+    it("sets candidate keys", () => {
       controller.setCandidateKeys("123456789");
       controller.setCandidateKeys("asdfgh");
       controller.setCandidateKeys("1234567890abcdefg"); // Too many
@@ -188,7 +188,7 @@ describe("InputController", () => {
       // No exception should be thrown
     });
 
-    it("should set candidate keys count", () => {
+    it("sets candidate keys count", () => {
       controller.setCandidateKeysCount(9);
       controller.setCandidateKeysCount(15);
       controller.setCandidateKeysCount(3); // Too few
@@ -196,7 +196,7 @@ describe("InputController", () => {
       // No exception should be thrown
     });
 
-    it("should set moving cursor option", () => {
+    it("sets moving cursor option", () => {
       controller.setMovingCursorOption(MovingCursorOption.Disabled);
       inputCStr(controller, "5j/ jp6");
       let key = new Key(" ", KeyName.SPACE);
@@ -277,7 +277,7 @@ describe("InputController", () => {
       expect((state as ChoosingCandidate).cursorIndex).toBe(2);
     });
 
-    it("should set ESC clear entire buffer", () => {
+    it("sets ESC clear entire buffer", () => {
       controller.setEscClearEntireBuffer(true);
       inputCStr(controller, "5j/ jp6");
       let state = controller.state;
@@ -289,7 +289,7 @@ describe("InputController", () => {
       controller.setEscClearEntireBuffer(false);
     });
 
-    it("should set repeated punctuation choose candidate", () => {
+    it("sets repeated punctuation choose candidate", () => {
       controller.setRepeatedPunctuationChooseCandidate(true);
       inputCStr(controller, "++");
       let state = controller.state;
@@ -301,13 +301,13 @@ describe("InputController", () => {
       controller.setRepeatedPunctuationChooseCandidate(false);
     });
 
-    it("should set vertical candidates", () => {
+    it("sets vertical candidates", () => {
       controller.setUserVerticalCandidates(true);
       controller.setUserVerticalCandidates(false);
       // No exception should be thrown
     });
 
-    it("should set half width punctuation", () => {
+    it("sets half width punctuation", () => {
       controller.setHalfWidthPunctuationEnabled(true);
       let key = new Key(">", KeyName.ASCII, true);
       controller.mcbopomofoKeyEvent(key);
@@ -320,7 +320,7 @@ describe("InputController", () => {
       controller.setHalfWidthPunctuationEnabled(false);
     });
 
-    it("should set Chinese conversion", () => {
+    it("sets Chinese conversion", () => {
       controller.setChineseConversionEnabled(true);
       inputCStr(controller, "z;6fm 5j;4dj;4n0 g/ vul4");
       let state = controller.state;
@@ -333,7 +333,7 @@ describe("InputController", () => {
       controller.setChineseConversionEnabled(false);
     });
 
-    it("should set ctrl enter option", () => {
+    it("sets ctrl enter option", () => {
       controller.setCtrlEnterOption(CtrlEnterOption.none);
       controller.setCtrlEnterOption(CtrlEnterOption.bpmfReadings);
       controller.setCtrlEnterOption(CtrlEnterOption.htmlRuby);
@@ -344,19 +344,19 @@ describe("InputController", () => {
   });
 
   describe("User Phrases and Callbacks", () => {
-    it("should set user phrases with map", () => {
+    it("sets user phrases with map", () => {
       const phrases = new Map<string, string[]>();
       phrases.set("test", ["測試", "試驗"]);
       controller.setUserPhrases(phrases);
       // No exception should be thrown
     });
 
-    it("should set user phrases with string", () => {
+    it("sets user phrases with string", () => {
       controller.setUserPhrases("test phrase string");
       // No exception should be thrown
     });
 
-    it("should set excluded phrases", () => {
+    it("sets excluded phrases", () => {
       const excludedPhrases = new Map<string, string[]>();
       excludedPhrases.set("exclude", ["排除"]);
       controller.setExcludedPhrases(excludedPhrases);
@@ -364,7 +364,7 @@ describe("InputController", () => {
       // No exception should be thrown
     });
 
-    it("should set phrase change callbacks", () => {
+    it("sets phrase change callbacks", () => {
       const phraseCallback = jest.fn();
       const excludedCallback = jest.fn();
 
@@ -373,13 +373,13 @@ describe("InputController", () => {
       // No exception should be thrown
     });
 
-    it("should set error callback", () => {
+    it("sets error callback", () => {
       const errorCallback = jest.fn();
       controller.setOnError(errorCallback);
       // No exception should be thrown
     });
 
-    it("should set open URL callback", () => {
+    it("sets open URL callback", () => {
       const urlCallback = jest.fn();
       controller.setOnOpenUrl(urlCallback);
       controller.setOnOpenUrl(undefined);
@@ -388,7 +388,7 @@ describe("InputController", () => {
   });
 
   describe("Input and State Transitions", () => {
-    it("should show correct candidate", () => {
+    it("shows correct candidate", () => {
       inputCStr(controller, "5j/ jp6");
 
       let state = controller.state;
@@ -405,7 +405,7 @@ describe("InputController", () => {
       expect(candidates.length).toBe(9);
     });
 
-    it("should handle basic input and produce inputting state", () => {
+    it("handles basic input and produce inputting state", () => {
       inputChar(controller, "5");
       expect(controller.state).toBeInstanceOf(Inputting);
 
@@ -413,7 +413,7 @@ describe("InputController", () => {
       expect(controller.state).toBeInstanceOf(Inputting);
     });
 
-    it("should handle space key to show candidates", () => {
+    it("handles space key to show candidates", () => {
       inputCStr(controller, "5j/");
       expect(controller.state).toBeInstanceOf(Inputting);
 
@@ -423,7 +423,7 @@ describe("InputController", () => {
       expect(parsed.candidates).toBeDefined();
     });
 
-    it("should handle navigation keys", () => {
+    it("handles navigation keys", () => {
       inputCStr(controller, "5j/");
       inputKey(controller, KeyName.SPACE);
       inputKey(controller, KeyName.SPACE);
@@ -439,7 +439,7 @@ describe("InputController", () => {
       expect(inputKey(controller, KeyName.PAGE_DOWN)).toBe(true);
     });
 
-    it("should handle navigation keys", () => {
+    it("handles navigation keys", () => {
       controller.setUserVerticalCandidates(true);
       inputCStr(controller, "5j/");
       inputKey(controller, KeyName.SPACE);
@@ -456,7 +456,7 @@ describe("InputController", () => {
       expect(inputKey(controller, KeyName.PAGE_DOWN)).toBe(true);
     });
 
-    it("should handle escape key", () => {
+    it("handles escape key", () => {
       inputCStr(controller, "5j/");
       expect(controller.state).toBeInstanceOf(Inputting);
 
@@ -468,7 +468,7 @@ describe("InputController", () => {
       ).toBe(true);
     });
 
-    it("should handle backspace key", () => {
+    it("handles backspace key", () => {
       inputCStr(controller, "5j/");
       expect(controller.state).toBeInstanceOf(Inputting);
 
@@ -476,7 +476,7 @@ describe("InputController", () => {
       expect(controller.state).toBeInstanceOf(Inputting);
     });
 
-    it("should handle return key", () => {
+    it("handles return key", () => {
       inputCStr(controller, "5j/");
       inputKey(controller, KeyName.SPACE);
 
@@ -484,7 +484,7 @@ describe("InputController", () => {
       expect(inputKey(controller, KeyName.RETURN)).toBe(true);
     });
 
-    it("should handle digit keys for candidate selection", () => {
+    it("handles digit keys for candidate selection", () => {
       inputCStr(controller, "5j/");
       inputKey(controller, KeyName.SPACE);
 
@@ -501,7 +501,7 @@ describe("InputController", () => {
       inputKey(controller, KeyName.SPACE);
     });
 
-    it("should select candidate with number keys", () => {
+    it("selects candidate with number keys", () => {
       const result1 = inputChar(controller, "1");
       expect(typeof result1).toBe("boolean");
 
@@ -512,7 +512,7 @@ describe("InputController", () => {
       expect(typeof result2).toBe("boolean");
     });
 
-    it("should handle candidate navigation with J/K when enabled", () => {
+    it("handles candidate navigation with J/K when enabled", () => {
       controller.setMovingCursorOption(MovingCursorOption.UseJK);
 
       const resultJ = inputChar(controller, "j");
@@ -521,7 +521,7 @@ describe("InputController", () => {
       expect(typeof resultK).toBe("boolean");
     });
 
-    it("should handle candidate navigation with J/K when enabled", () => {
+    it("handles candidate navigation with J/K when enabled", () => {
       controller.setMovingCursorOption(MovingCursorOption.UseJK);
 
       const resultH = inputChar(controller, "h");
@@ -530,7 +530,7 @@ describe("InputController", () => {
       expect(typeof resultL).toBe("boolean");
     });
 
-    it("should handle candidate navigation with H/L when enabled", () => {
+    it("handles candidate navigation with H/L when enabled", () => {
       controller.setMovingCursorOption(MovingCursorOption.UseHL);
 
       const resultH = inputChar(controller, "h");
@@ -539,7 +539,7 @@ describe("InputController", () => {
       expect(typeof resultL).toBe("boolean");
     });
 
-    it("should handle candidate navigation with H/L when enabled", () => {
+    it("handles candidate navigation with H/L when enabled", () => {
       controller.setMovingCursorOption(MovingCursorOption.UseHL);
 
       const resultJ = inputChar(controller, "j");
@@ -550,7 +550,7 @@ describe("InputController", () => {
   });
 
   describe("Special Keys and Features", () => {
-    it("should handle question mark for dictionary", () => {
+    it("handles question mark for dictionary", () => {
       inputCStr(controller, "5j/");
       inputKey(controller, KeyName.SPACE);
 
@@ -558,7 +558,7 @@ describe("InputController", () => {
       expect(typeof result).toBe("boolean");
     });
 
-    it("should handle plus/minus keys in simplified mode", () => {
+    it("handles plus/minus keys in simplified mode", () => {
       controller.setTraditionalMode(false);
       inputCStr(controller, "5j/");
       inputKey(controller, KeyName.SPACE);
@@ -577,7 +577,7 @@ describe("InputController", () => {
   });
 
   describe("UI Integration", () => {
-    it("should set UI component", () => {
+    it("sets UI component", () => {
       const newMockUI = createMockUI();
       controller.setUI(newMockUI as any);
 
@@ -585,14 +585,14 @@ describe("InputController", () => {
       expect(newMockUI.update).toHaveBeenCalled();
     });
 
-    it("should update UI on state changes", () => {
+    it("updates UI on state changes", () => {
       mockUI.update.mockClear();
 
       inputChar(controller, "5");
       expect(mockUI.update).toHaveBeenCalled();
     });
 
-    it("should commit string on completion", () => {
+    it("commits string on completion", () => {
       inputCStr(controller, "5j/");
       inputKey(controller, KeyName.SPACE);
       inputChar(controller, "1"); // Select first candidate
@@ -601,7 +601,7 @@ describe("InputController", () => {
       expect(mockUI.commitString.mock.calls.length >= 0).toBe(true);
     });
 
-    it("should reset UI when entering empty state", () => {
+    it("resets UI when entering empty state", () => {
       inputChar(controller, "5");
       mockUI.reset.mockClear();
 
@@ -611,7 +611,7 @@ describe("InputController", () => {
   });
 
   describe("Error Handling", () => {
-    it("should call error callback when set", () => {
+    it("calls error callback when set", () => {
       const errorCallback = jest.fn();
       controller.setOnError(errorCallback);
 
@@ -627,14 +627,14 @@ describe("InputController", () => {
       }
     });
 
-    it("should handle invalid keyboard events gracefully", () => {
+    it("handles invalid keyboard events gracefully", () => {
       const invalidEvent = {} as KeyboardEvent;
       expect(() => controller.keyEvent(invalidEvent)).not.toThrow();
     });
   });
 
   describe("Complex Input Scenarios", () => {
-    it("should handle multiple input sessions", () => {
+    it("handles multiple input sessions", () => {
       // First input session
       inputCStr(controller, "5j/");
       inputKey(controller, KeyName.SPACE);
@@ -651,7 +651,7 @@ describe("InputController", () => {
       expect(controller.state).toBeInstanceOf(Inputting);
     });
 
-    it("should handle mixed input types", () => {
+    it("handles mixed input types", () => {
       inputChar(controller, "5");
       expect(controller.state).toBeInstanceOf(Inputting);
 
@@ -662,7 +662,7 @@ describe("InputController", () => {
       expect(controller.state).toBeInstanceOf(Inputting);
     });
 
-    it("should maintain state consistency during navigation", () => {
+    it("maintains state consistency during navigation", () => {
       inputCStr(controller, "5j/");
       inputKey(controller, KeyName.SPACE);
 
@@ -678,11 +678,11 @@ describe("InputController", () => {
   });
 
   describe("Edge Cases", () => {
-    it("should handle empty input gracefully", () => {
+    it("handles empty input gracefully", () => {
       expect(() => inputCStr(controller, "")).not.toThrow();
     });
 
-    it("should handle rapid key presses", () => {
+    it("handles rapid key presses", () => {
       for (let i = 0; i < 100; i++) {
         inputChar(controller, "5");
         inputKey(controller, KeyName.BACKSPACE);
@@ -690,7 +690,7 @@ describe("InputController", () => {
       expect(controller.state).toBeDefined();
     });
 
-    it("should handle undefined/null inputs safely", () => {
+    it("handles undefined/null inputs safely", () => {
       controller.setCandidateKeys(undefined as any);
       controller.setUserPhrases(undefined as any);
       controller.setOnOpenUrl(undefined);
@@ -698,7 +698,7 @@ describe("InputController", () => {
     });
   });
   describe("Big5", () => {
-    it("should enter Big5 mode", () => {
+    it("enters Big5 mode", () => {
       let key = new Key("\\", KeyName.UNKNOWN, false, true);
       let result = controller.mcbopomofoKeyEvent(key);
       expect(result).toBe(true);
@@ -714,7 +714,7 @@ describe("InputController", () => {
       expect(state).toBeInstanceOf(Empty);
     });
 
-    it("should enter Big5 mode", () => {
+    it("enters Big5 mode", () => {
       let key = new Key("\\", KeyName.UNKNOWN, false, true);
       let result = controller.mcbopomofoKeyEvent(key);
       expect(result).toBe(true);
@@ -730,7 +730,7 @@ describe("InputController", () => {
       expect(state).toBeInstanceOf(Empty);
     });
 
-    it("should enter and exit Big5 mode", () => {
+    it("enters and exit Big5 mode", () => {
       let key = new Key("\\", KeyName.UNKNOWN, false, true);
       let result = controller.mcbopomofoKeyEvent(key);
       expect(result).toBe(true);
@@ -749,7 +749,7 @@ describe("InputController", () => {
   });
 
   describe("Date Macro", () => {
-    it("should enter Date Macro mode", () => {
+    it("enters Date Macro mode", () => {
       let key = new Key("\\", KeyName.UNKNOWN, false, true);
       let result = controller.mcbopomofoKeyEvent(key);
       expect(result).toBe(true);
@@ -768,7 +768,7 @@ describe("InputController", () => {
   });
 
   describe("Roman Number", () => {
-    it("should enter Roman Number mode", () => {
+    it("enters Roman Number mode", () => {
       let key = new Key("\\", KeyName.UNKNOWN, false, true);
       let result = controller.mcbopomofoKeyEvent(key);
       expect(result).toBe(true);
@@ -781,7 +781,7 @@ describe("InputController", () => {
       expect(state).toBeInstanceOf(RomanNumber);
     });
 
-    it("should input numbers in Roman Number mode", () => {
+    it("inputs numbers in Roman Number mode", () => {
       let key = new Key("\\", KeyName.UNKNOWN, false, true);
       let result = controller.mcbopomofoKeyEvent(key);
       expect(result).toBe(true);
@@ -799,7 +799,7 @@ describe("InputController", () => {
       }
     });
 
-    it("should convert multiple digits to Roman numerals", () => {
+    it("converts multiple digits to Roman numerals", () => {
       let key = new Key("\\", KeyName.UNKNOWN, false, true);
       let result = controller.mcbopomofoKeyEvent(key);
       expect(result).toBe(true);
@@ -815,7 +815,7 @@ describe("InputController", () => {
       }
     });
 
-    it("should convert 99 to Roman numeral", () => {
+    it("converts 99 to Roman numeral", () => {
       let key = new Key("\\", KeyName.UNKNOWN, false, true);
       controller.mcbopomofoKeyEvent(key);
       key = new Key("7", KeyName.UNKNOWN);
@@ -829,7 +829,7 @@ describe("InputController", () => {
       }
     });
 
-    it("should commit Roman number on return key", () => {
+    it("commits Roman number on return key", () => {
       let key = new Key("\\", KeyName.UNKNOWN, false, true);
       controller.mcbopomofoKeyEvent(key);
       key = new Key("7", KeyName.UNKNOWN);
@@ -849,7 +849,7 @@ describe("InputController", () => {
       }
     });
 
-    it("should exit Roman Number mode with ESC key", () => {
+    it("exits Roman Number mode with ESC key", () => {
       let key = new Key("\\", KeyName.UNKNOWN, false, true);
       controller.mcbopomofoKeyEvent(key);
       key = new Key("7", KeyName.UNKNOWN);
@@ -865,7 +865,7 @@ describe("InputController", () => {
       expect(state).toBeInstanceOf(Empty);
     });
 
-    it("should handle backspace in Roman Number mode", () => {
+    it("handles backspace in Roman Number mode", () => {
       let key = new Key("\\", KeyName.UNKNOWN, false, true);
       controller.mcbopomofoKeyEvent(key);
       key = new Key("7", KeyName.UNKNOWN);
@@ -887,7 +887,7 @@ describe("InputController", () => {
       }
     });
 
-    it("should handle large numbers in Roman Number mode", () => {
+    it("handles large numbers in Roman Number mode", () => {
       let key = new Key("\\", KeyName.UNKNOWN, false, true);
       controller.mcbopomofoKeyEvent(key);
       key = new Key("7", KeyName.UNKNOWN);
@@ -901,7 +901,7 @@ describe("InputController", () => {
       }
     });
 
-    it("should maintain cursor position in Roman Number mode", () => {
+    it("maintains cursor position in Roman Number mode", () => {
       let key = new Key("\\", KeyName.UNKNOWN, false, true);
       controller.mcbopomofoKeyEvent(key);
       key = new Key("7", KeyName.UNKNOWN);
@@ -915,7 +915,7 @@ describe("InputController", () => {
       }
     });
 
-    it("should reset Roman Number mode", () => {
+    it("resets Roman Number mode", () => {
       let key = new Key("\\", KeyName.UNKNOWN, false, true);
       controller.mcbopomofoKeyEvent(key);
       key = new Key("7", KeyName.UNKNOWN);
@@ -932,7 +932,7 @@ describe("InputController", () => {
   });
 
   describe("Enclosing Number", () => {
-    it("should enter Date Macro mode", () => {
+    it("enters Date Macro mode", () => {
       let key = new Key("\\", KeyName.UNKNOWN, false, true);
       let result = controller.mcbopomofoKeyEvent(key);
       expect(result).toBe(true);
@@ -955,7 +955,7 @@ describe("InputController", () => {
   });
 
   describe("Chinese Number", () => {
-    it("should enter Chinese Number mode", () => {
+    it("enters Chinese Number mode", () => {
       let key = new Key("\\", KeyName.UNKNOWN, false, true);
       let result = controller.mcbopomofoKeyEvent(key);
       expect(result).toBe(true);
@@ -978,7 +978,7 @@ describe("InputController", () => {
       }
     });
 
-    it("should enter Chinese Number mode", () => {
+    it("enters Chinese Number mode", () => {
       let key = new Key("\\", KeyName.UNKNOWN, false, true);
       let result = controller.mcbopomofoKeyEvent(key);
       expect(result).toBe(true);
@@ -1003,7 +1003,7 @@ describe("InputController", () => {
   });
 
   describe("Marking", () => {
-    it("should enter Marking mode", () => {
+    it("enters Marking mode", () => {
       inputCStr(controller, "jo65j/ ");
       let key = new Key("", KeyName.LEFT, true);
       let result = controller.mcbopomofoKeyEvent(key);
@@ -1026,7 +1026,7 @@ describe("InputController", () => {
       expect(getPhrase).toBeDefined();
     });
 
-    it("should enter Marking mode", () => {
+    it("enters Marking mode", () => {
       inputCStr(controller, "5j/ jp6");
       let key = new Key("", KeyName.LEFT, true);
       let result = controller.mcbopomofoKeyEvent(key);
@@ -1055,7 +1055,7 @@ describe("InputController", () => {
   });
 
   describe("Boost", () => {
-    it("should boost a phrase", () => {
+    it("boosts a phrase", () => {
       inputCStr(controller, "5j/ jp6");
       let key = new Key(" ", KeyName.SPACE);
       let result = controller.mcbopomofoKeyEvent(key);
@@ -1080,7 +1080,7 @@ describe("InputController", () => {
   });
 
   describe("Exclude", () => {
-    it("should exclude a phrase", () => {
+    it("excludes a phrase", () => {
       inputCStr(controller, "5j/ jp6");
       let key = new Key(" ", KeyName.SPACE);
       let result = controller.mcbopomofoKeyEvent(key);
@@ -1103,7 +1103,7 @@ describe("InputController", () => {
       expect(getPhrase).toBeDefined();
     });
 
-    it("should enter and exit exclude mode", () => {
+    it("enters and exit exclude mode", () => {
       inputCStr(controller, "5j/ jp6");
       let key = new Key(" ", KeyName.SPACE);
       let result = controller.mcbopomofoKeyEvent(key);
@@ -1123,7 +1123,7 @@ describe("InputController", () => {
   });
 
   describe("Selecting Feature", () => {
-    it("should enter and exit selecting feature mode", () => {
+    it("enters and exit selecting feature mode", () => {
       let key = new Key("\\", KeyName.UNKNOWN, false, true);
       let result = controller.mcbopomofoKeyEvent(key);
       expect(result).toBe(true);
@@ -1139,7 +1139,7 @@ describe("InputController", () => {
   });
 
   describe("Selecting Dictionary", () => {
-    it("should enter and exit selecting dictionary mode", () => {
+    it("enters and exit selecting dictionary mode", () => {
       inputCStr(controller, "5j/ jp6");
       let key = new Key(" ", KeyName.SPACE);
       let result = controller.mcbopomofoKeyEvent(key);
@@ -1157,7 +1157,7 @@ describe("InputController", () => {
       expect(state).toBeInstanceOf(ChoosingCandidate);
     });
 
-    it("should enter and exit selecting dictionary mode", () => {
+    it("enters and exit selecting dictionary mode", () => {
       inputCStr(controller, "5j/ jp6");
       let key = new Key(" ", KeyName.SPACE);
       let result = controller.mcbopomofoKeyEvent(key);

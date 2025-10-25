@@ -242,125 +242,125 @@ import { inputMacroController } from "./InputMacro";
 
 describe("InputMacro", () => {
   describe("Year Macros", () => {
-    test("should handle THIS_YEAR_PLAIN macro", () => {
+    test("handles THIS_YEAR_PLAIN macro", () => {
       const result = inputMacroController.handle("MACRO@THIS_YEAR_PLAIN");
       expect(result).toBe("2024年");
     });
 
-    test("should handle THIS_YEAR_PLAIN_WITH_ERA macro", () => {
+    test("handles THIS_YEAR_PLAIN_WITH_ERA macro", () => {
       const result = inputMacroController.handle(
         "MACRO@THIS_YEAR_PLAIN_WITH_ERA"
       );
       expect(result).toBe("西元2024年");
     });
 
-    test("should handle THIS_YEAR_ROC macro", () => {
+    test("handles THIS_YEAR_ROC macro", () => {
       const result = inputMacroController.handle("MACRO@THIS_YEAR_ROC");
       expect(result).toBe("民國113年");
     });
 
-    test("should handle THIS_YEAR_JAPANESE macro (not implemented)", () => {
+    test("handles THIS_YEAR_JAPANESE macro (not implemented)", () => {
       const result = inputMacroController.handle("MACRO@THIS_YEAR_JAPANESE");
       expect(result).toBe("");
     });
 
-    test("should handle LAST_YEAR_PLAIN macro", () => {
+    test("handles LAST_YEAR_PLAIN macro", () => {
       const result = inputMacroController.handle("MACRO@LAST_YEAR_PLAIN");
       expect(result).toBe("2023年");
     });
 
-    test("should handle LAST_YEAR_PLAIN_WITH_ERA macro", () => {
+    test("handles LAST_YEAR_PLAIN_WITH_ERA macro", () => {
       const result = inputMacroController.handle(
         "MACRO@LAST_YEAR_PLAIN_WITH_ERA"
       );
       expect(result).toBe("西元2023年");
     });
 
-    test("should handle LAST_YEAR_ROC macro", () => {
+    test("handles LAST_YEAR_ROC macro", () => {
       const result = inputMacroController.handle("MACRO@LAST_YEAR_ROC");
       expect(result).toContain("年"); // Just check it contains the year character
       expect(result).toMatch(/民國\d+年/); // Check ROC format
     });
 
-    test("should handle LAST_YEAR_JAPANESE macro (not implemented)", () => {
+    test("handles LAST_YEAR_JAPANESE macro (not implemented)", () => {
       const result = inputMacroController.handle("MACRO@LAST_YEAR_JAPANESE");
       expect(result).toBe("");
     });
 
-    test("should handle NEXT_YEAR_PLAIN macro", () => {
+    test("handles NEXT_YEAR_PLAIN macro", () => {
       const result = inputMacroController.handle("MACRO@NEXT_YEAR_PLAIN");
       expect(result).toBe("2025年");
     });
 
-    test("should handle NEXT_YEAR_PLAIN_WITH_ERA macro", () => {
+    test("handles NEXT_YEAR_PLAIN_WITH_ERA macro", () => {
       const result = inputMacroController.handle(
         "MACRO@NEXT_YEAR_PLAIN_WITH_ERA"
       );
       expect(result).toBe("西元2025年");
     });
 
-    // test("should handle NEXT_YEAR_ROC macro", () => {
+    // test("handles NEXT_YEAR_ROC macro", () => {
     //   const result = inputMacroController.handle("MACRO@NEXT_YEAR_ROC");
     //   expect(result).toBe("民國114年");
     // });
 
-    test("should handle NEXT_YEAR_JAPANESE macro (not implemented)", () => {
+    test("handles NEXT_YEAR_JAPANESE macro (not implemented)", () => {
       const result = inputMacroController.handle("MACRO@NEXT_YEAR_JAPANESE");
       expect(result).toBe("");
     });
   });
 
   describe("Date Macros", () => {
-    test("should handle DATE_TODAY_SHORT macro", () => {
+    test("handles DATE_TODAY_SHORT macro", () => {
       const result = inputMacroController.handle("MACRO@DATE_TODAY_SHORT");
       expect(result).toBe("2024/1/15");
     });
 
-    test("should handle DATE_YESTERDAY_SHORT macro", () => {
+    test("handles DATE_YESTERDAY_SHORT macro", () => {
       const result = inputMacroController.handle("MACRO@DATE_YESTERDAY_SHORT");
       expect(result).toBe("2024/1/14");
     });
 
-    test("should handle DATE_TOMORROW_SHORT macro", () => {
+    test("handles DATE_TOMORROW_SHORT macro", () => {
       const result = inputMacroController.handle("MACRO@DATE_TOMORROW_SHORT");
       expect(result).toBe("2024/1/16");
     });
 
-    test("should handle DATE_TODAY_MEDIUM macro", () => {
+    test("handles DATE_TODAY_MEDIUM macro", () => {
       const result = inputMacroController.handle("MACRO@DATE_TODAY_MEDIUM");
       expect(result).toBe("2024年1月15日");
     });
 
-    test("should handle DATE_YESTERDAY_MEDIUM macro", () => {
+    test("handles DATE_YESTERDAY_MEDIUM macro", () => {
       const result = inputMacroController.handle("MACRO@DATE_YESTERDAY_MEDIUM");
       expect(result).toBe("2024年1月14日");
     });
 
-    test("should handle DATE_TOMORROW_MEDIUM macro", () => {
+    test("handles DATE_TOMORROW_MEDIUM macro", () => {
       const result = inputMacroController.handle("MACRO@DATE_TOMORROW_MEDIUM");
       expect(result).toBe("2024年1月16日");
     });
 
-    test("should handle DATE_TODAY_MEDIUM_ROC macro", () => {
+    test("handles DATE_TODAY_MEDIUM_ROC macro", () => {
       const result = inputMacroController.handle("MACRO@DATE_TODAY_MEDIUM_ROC");
       expect(result).toMatch(/民國\d+年\d+月\d+日/);
     });
 
-    test("should handle DATE_YESTERDAY_MEDIUM_ROC macro", () => {
+    test("handles DATE_YESTERDAY_MEDIUM_ROC macro", () => {
       const result = inputMacroController.handle(
         "MACRO@DATE_YESTERDAY_MEDIUM_ROC"
       );
       expect(result).toMatch(/民國\d+年\d+月\d+日/);
     });
 
-    test("should handle DATE_TOMORROW_MEDIUM_ROC macro", () => {
+    test("handles DATE_TOMORROW_MEDIUM_ROC macro", () => {
       const result = inputMacroController.handle(
         "MACRO@DATE_TOMORROW_MEDIUM_ROC"
       );
       expect(result).toMatch(/民國\d+年\d+月\d+日/);
     });
 
-    test("should handle unimplemented Chinese date macros", () => {
+    test("handles unimplemented Chinese date macros", () => {
       expect(
         inputMacroController.handle("MACRO@DATE_TODAY_MEDIUM_CHINESE")
       ).toBe("");
@@ -372,7 +372,7 @@ describe("InputMacro", () => {
       ).toBe("");
     });
 
-    test("should handle unimplemented Japanese date macros", () => {
+    test("handles unimplemented Japanese date macros", () => {
       expect(
         inputMacroController.handle("MACRO@DATE_TODAY_MEDIUM_JAPANESE")
       ).toBe("");
@@ -386,45 +386,45 @@ describe("InputMacro", () => {
   });
 
   describe("Weekday Macros", () => {
-    test("should handle DATE_TODAY_WEEKDAY_SHORT macro", () => {
+    test("handles DATE_TODAY_WEEKDAY_SHORT macro", () => {
       const result = inputMacroController.handle(
         "MACRO@DATE_TODAY_WEEKDAY_SHORT"
       );
       expect(result).toBe("週一");
     });
 
-    test("should handle DATE_TODAY_WEEKDAY macro", () => {
+    test("handles DATE_TODAY_WEEKDAY macro", () => {
       const result = inputMacroController.handle("MACRO@DATE_TODAY_WEEKDAY");
       expect(result).toBe("星期一");
     });
 
-    test("should handle DATE_YESTERDAY_WEEKDAY_SHORT macro", () => {
+    test("handles DATE_YESTERDAY_WEEKDAY_SHORT macro", () => {
       const result = inputMacroController.handle(
         "MACRO@DATE_YESTERDAY_WEEKDAY_SHORT"
       );
       expect(result).toBe("週日");
     });
 
-    test("should handle DATE_YESTERDAY_WEEKDAY macro", () => {
+    test("handles DATE_YESTERDAY_WEEKDAY macro", () => {
       const result = inputMacroController.handle(
         "MACRO@DATE_YESTERDAY_WEEKDAY"
       );
       expect(result).toBe("星期日");
     });
 
-    test("should handle DATE_TOMORROW_WEEKDAY_SHORT macro", () => {
+    test("handles DATE_TOMORROW_WEEKDAY_SHORT macro", () => {
       const result = inputMacroController.handle(
         "MACRO@DATE_TOMORROW_WEEKDAY_SHORT"
       );
       expect(result).toBe("週二");
     });
 
-    test("should handle DATE_TOMORROW_WEEKDAY macro", () => {
+    test("handles DATE_TOMORROW_WEEKDAY macro", () => {
       const result = inputMacroController.handle("MACRO@DATE_TOMORROW_WEEKDAY");
       expect(result).toBe("星期二");
     });
 
-    test("should handle unimplemented weekday macros", () => {
+    test("handles unimplemented weekday macros", () => {
       expect(inputMacroController.handle("MACRO@DATE_TODAY2_WEEKDAY")).toBe("");
       expect(inputMacroController.handle("MACRO@DATE_YESTERDAY2_WEEKDAY")).toBe(
         ""
@@ -436,19 +436,19 @@ describe("InputMacro", () => {
   });
 
   describe("Time Zone and DateTime Macros", () => {
-    test("should handle TIME_NOW_SHORT macro", () => {
+    test("handles TIME_NOW_SHORT macro", () => {
       const result = inputMacroController.handle("MACRO@TIME_NOW_SHORT");
       expect(result).toBeDefined();
       expect(result).not.toBe("MACRO@TIME_NOW_SHORT"); // Should not return the input
     });
 
-    test("should handle TIME_NOW_MEDIUM macro", () => {
+    test("handles TIME_NOW_MEDIUM macro", () => {
       const result = inputMacroController.handle("MACRO@TIME_NOW_MEDIUM");
       expect(result).toBeDefined();
       expect(result).not.toBe("MACRO@TIME_NOW_MEDIUM"); // Should not return the input
     });
 
-    test("should handle unimplemented timezone macros", () => {
+    test("handles unimplemented timezone macros", () => {
       expect(inputMacroController.handle("MACRO@TIMEZONE_STANDARD")).toBe("");
       expect(inputMacroController.handle("MACRO@TIMEZONE_GENERIC_SHORT")).toBe(
         ""
@@ -457,7 +457,7 @@ describe("InputMacro", () => {
   });
 
   describe("Chinese Zodiac and GanZhi Macros", () => {
-    // test("should handle GanZhi macros", () => {
+    // test("handles GanZhi macros", () => {
     //   const thisYear = inputMacroController.handle("MACRO@THIS_YEAR_GANZHI");
     //   const lastYear = inputMacroController.handle("MACRO@LAST_YEAR_GANZHI");
     //   const nextYear = inputMacroController.handle("MACRO@NEXT_YEAR_GANZHI");
@@ -473,7 +473,7 @@ describe("InputMacro", () => {
     //   );
     // });
 
-    test("should handle Chinese zodiac macros", () => {
+    test("handles Chinese zodiac macros", () => {
       const thisYear = inputMacroController.handle(
         "MACRO@THIS_YEAR_CHINESE_ZODIAC"
       );
@@ -491,34 +491,34 @@ describe("InputMacro", () => {
   });
 
   describe("InputMacroController", () => {
-    test("should return original input for unknown macro", () => {
+    test("returns original input for unknown macro", () => {
       const result = inputMacroController.handle("UNKNOWN_MACRO");
       expect(result).toBe("UNKNOWN_MACRO");
     });
 
-    test("should return original input for non-macro text", () => {
+    test("returns original input for non-macro text", () => {
       const result = inputMacroController.handle("regular text");
       expect(result).toBe("regular text");
     });
 
-    test("should handle empty input", () => {
+    test("handles empty input", () => {
       const result = inputMacroController.handle("");
       expect(result).toBe("");
     });
 
-    test("should handle partial macro names", () => {
+    test("handles partial macro names", () => {
       const result = inputMacroController.handle("MACRO@");
       expect(result).toBe("MACRO@");
     });
 
-    test("should handle case sensitivity", () => {
+    test("handles case sensitivity", () => {
       const result = inputMacroController.handle("macro@date_today_short");
       expect(result).toBe("macro@date_today_short");
     });
   });
 
   describe("Macro Name Validation", () => {
-    test("should have consistent macro naming convention", () => {
+    test("has consistent macro naming convention", () => {
       // Test that all macro names start with MACRO@
       const macroNames = [
         "MACRO@THIS_YEAR_PLAIN",
@@ -536,17 +536,17 @@ describe("InputMacro", () => {
   });
 
   describe("ROC Year Calculation", () => {
-    test("should calculate ROC year correctly", () => {
+    test("calculates ROC year correctly", () => {
       const result = inputMacroController.handle("MACRO@THIS_YEAR_ROC");
       expect(result).toMatch(/民國\d+年/);
     });
 
-    test("should calculate last year ROC correctly", () => {
+    test("calculates last year ROC correctly", () => {
       const result = inputMacroController.handle("MACRO@LAST_YEAR_ROC");
       expect(result).toMatch(/民國\d+年/);
     });
 
-    test("should calculate next year ROC correctly", () => {
+    test("calculates next year ROC correctly", () => {
       const result = inputMacroController.handle("MACRO@NEXT_YEAR_ROC");
       expect(result).toMatch(/民國\d+年/);
     });

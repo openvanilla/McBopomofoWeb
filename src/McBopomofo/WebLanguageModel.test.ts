@@ -2,8 +2,8 @@ import { webData } from "./WebData";
 import { WebLanguageModel, UserPhrases } from "./WebLanguageModel";
 import { Unigram } from "../Gramambular2";
 
-describe("Test get reading", () => {
-  test("Test 1", () => {
+describe("getReading", () => {
+  test("returns reading for supplied character", () => {
     let model = new WebLanguageModel(webData);
     let reading = model.getReading("楊");
     expect(reading).toBe("ㄧㄤˊ");
@@ -18,7 +18,7 @@ describe("UserPhrases", () => {
   });
 
   describe("setUserPhrases", () => {
-    it("should set user phrases from map", () => {
+    it("sets user phrases from map", () => {
       const map = new Map<string, string[]>();
       map.set("test", ["測試", "考試"]);
       userPhrases.setUserPhrases(map);
@@ -29,7 +29,7 @@ describe("UserPhrases", () => {
       expect(unigrams[1].value).toBe("考試");
     });
 
-    it("should handle null/undefined input", () => {
+    it("handles null/undefined input", () => {
       userPhrases.setUserPhrases(null as any);
       expect(userPhrases.hasUnigrams("test")).toBe(false);
 
@@ -39,7 +39,7 @@ describe("UserPhrases", () => {
   });
 
   describe("addUserPhrase", () => {
-    it("should add new phrase to new key", () => {
+    it("adds new phrase to new key", () => {
       userPhrases.addUserPhrase("hello", "你好");
       expect(userPhrases.hasUnigrams("hello")).toBe(true);
 
@@ -49,7 +49,7 @@ describe("UserPhrases", () => {
       expect(unigrams[0].score).toBe(0);
     });
 
-    it("should add phrase to existing key", () => {
+    it("adds phrase to existing key", () => {
       userPhrases.addUserPhrase("test", "測試");
       userPhrases.addUserPhrase("test", "考試");
 
@@ -59,7 +59,7 @@ describe("UserPhrases", () => {
       expect(unigrams[1].value).toBe("考試");
     });
 
-    it("should not add duplicate phrases", () => {
+    it("does not add duplicate phrases", () => {
       userPhrases.addUserPhrase("test", "測試");
       userPhrases.addUserPhrase("test", "測試");
 
@@ -68,7 +68,7 @@ describe("UserPhrases", () => {
       expect(unigrams[0].value).toBe("測試");
     });
 
-    it("should call onPhraseChange callback", () => {
+    it("calls onPhraseChange callback", () => {
       const callback = jest.fn();
       userPhrases.setOnPhraseChange(callback);
 
@@ -84,7 +84,7 @@ describe("UserPhrases", () => {
       userPhrases.addUserPhrase("test", "考試");
     });
 
-    it("should remove existing phrase", () => {
+    it("removes existing phrase", () => {
       userPhrases.removeUserPhrase("test", "測試");
 
       const unigrams = userPhrases.getUnigrams("test");
@@ -92,19 +92,19 @@ describe("UserPhrases", () => {
       expect(unigrams[0].value).toBe("考試");
     });
 
-    it("should handle non-existing key", () => {
+    it("handles non-existing key", () => {
       userPhrases.removeUserPhrase("nonexistent", "test");
       // Should not throw
     });
 
-    it("should handle non-existing phrase", () => {
+    it("handles non-existing phrase", () => {
       userPhrases.removeUserPhrase("test", "nonexistent");
 
       const unigrams = userPhrases.getUnigrams("test");
       expect(unigrams).toHaveLength(2);
     });
 
-    it("should call onPhraseChange callback when phrase is removed", () => {
+    it("calls onPhraseChange callback when phrase is removed", () => {
       const callback = jest.fn();
       userPhrases.setOnPhraseChange(callback);
 
@@ -114,32 +114,32 @@ describe("UserPhrases", () => {
   });
 
   describe("getUnigrams", () => {
-    it("should return empty array for space", () => {
+    it("returns empty array for space", () => {
       const result = userPhrases.getUnigrams(" ");
       expect(result).toEqual([]);
     });
 
-    it("should return empty array for non-existing key", () => {
+    it("returns empty array for non-existing key", () => {
       const result = userPhrases.getUnigrams("nonexistent");
       expect(result).toEqual([]);
     });
   });
 
   describe("hasUnigrams", () => {
-    it("should return true for space", () => {
+    it("returns true for space", () => {
       expect(userPhrases.hasUnigrams(" ")).toBe(true);
     });
 
-    it("should return false for non-existing key", () => {
+    it("returns false for non-existing key", () => {
       expect(userPhrases.hasUnigrams("nonexistent")).toBe(false);
     });
 
-    it("should return true for existing key with phrases", () => {
+    it("returns true for existing key with phrases", () => {
       userPhrases.addUserPhrase("test", "測試");
       expect(userPhrases.hasUnigrams("test")).toBe(true);
     });
 
-    it("should return false for key with empty phrase list", () => {
+    it("returns false for key with empty phrase list", () => {
       const map = new Map<string, string[]>();
       map.set("empty", []);
       userPhrases.setUserPhrases(map);
@@ -156,13 +156,13 @@ describe("WebLanguageModel", () => {
   });
 
   describe("constructor", () => {
-    it("should create instance with data", () => {
+    it("creates instance with data", () => {
       expect(model).toBeInstanceOf(WebLanguageModel);
     });
   });
 
   describe("converters", () => {
-    it("should set and use macro converter", () => {
+    it("sets and use macro converter", () => {
       const converter = jest.fn((input: string) => input.toUpperCase());
       model.setMacroConverter(converter);
 
@@ -171,19 +171,19 @@ describe("WebLanguageModel", () => {
       expect(converter).toHaveBeenCalledWith("test");
     });
 
-    it("should handle undefined macro converter", () => {
+    it("handles undefined macro converter", () => {
       model.setMacroConverter(undefined);
       const result = model.convertMacro("test");
       expect(result).toBe("test");
     });
 
-    it("should set general converter", () => {
+    it("sets general converter", () => {
       const converter = jest.fn((input: string) => input + "_converted");
       model.setConverter(converter);
       // The converter is used internally in filterAndTransformUnigrams
     });
 
-    it("should set add user phrase converter", () => {
+    it("sets add user phrase converter", () => {
       const converter = jest.fn((input: string) => input + "_user");
       model.setAddUserPhraseConverter(converter);
 
@@ -191,7 +191,7 @@ describe("WebLanguageModel", () => {
       expect(converter).toHaveBeenCalledWith("phrase");
     });
 
-    it("should set excluded phrase converter", () => {
+    it("sets excluded phrase converter", () => {
       const converter = jest.fn((input: string) => input + "_excluded");
       model.setExcludedPhraseConverter(converter);
 
@@ -201,7 +201,7 @@ describe("WebLanguageModel", () => {
   });
 
   describe("convertTextToMap", () => {
-    it("should convert text with valid lines", () => {
+    it("converts text with valid lines", () => {
       const text = "測試 test\n考試 exam\n# comment\n\n空行 empty";
       model.setUserPhrases(text);
 
@@ -210,7 +210,7 @@ describe("WebLanguageModel", () => {
       expect(unigrams[0].value).toBe("測試");
     });
 
-    it("should skip comments and empty lines", () => {
+    it("skips comments and empty lines", () => {
       const text = "# This is a comment\n\n測試 test\n# Another comment";
       model.setUserPhrases(text);
 
@@ -219,7 +219,7 @@ describe("WebLanguageModel", () => {
       expect(unigrams[0].value).toBe("測試");
     });
 
-    it("should handle lines with insufficient parts", () => {
+    it("handles lines with insufficient parts", () => {
       const text = "invalid\n測試 test\nsingleword";
       model.setUserPhrases(text);
 
@@ -230,7 +230,7 @@ describe("WebLanguageModel", () => {
   });
 
   describe("setUserPhrases", () => {
-    it("should accept Map input", () => {
+    it("accepts Map input", () => {
       const map = new Map<string, string[]>();
       map.set("test", ["測試"]);
       model.setUserPhrases(map);
@@ -239,7 +239,7 @@ describe("WebLanguageModel", () => {
       expect(unigrams.length).toBeGreaterThan(0);
     });
 
-    it("should accept string input", () => {
+    it("accepts string input", () => {
       model.setUserPhrases("測試 test");
 
       const unigrams = model.getUnigrams("test");
@@ -248,21 +248,21 @@ describe("WebLanguageModel", () => {
   });
 
   describe("setExcludedPhrases", () => {
-    it("should accept Map input", () => {
+    it("accepts Map input", () => {
       const map = new Map<string, string[]>();
       map.set("test", ["測試"]);
       model.setExcludedPhrases(map);
       // Excluded phrases affect filtering in getUnigrams
     });
 
-    it("should accept string input", () => {
+    it("accepts string input", () => {
       model.setExcludedPhrases("測試 test");
       // Excluded phrases affect filtering in getUnigrams
     });
   });
 
   describe("callback setters", () => {
-    it("should set onPhraseChange callback", () => {
+    it("sets onPhraseChange callback", () => {
       const callback = jest.fn();
       model.setOnPhraseChange(callback);
 
@@ -270,7 +270,7 @@ describe("WebLanguageModel", () => {
       expect(callback).toHaveBeenCalled();
     });
 
-    it("should set onExcludedPhraseChange callback", () => {
+    it("sets onExcludedPhraseChange callback", () => {
       const callback = jest.fn();
       model.setOnExcludedPhraseChange(callback);
 
@@ -280,7 +280,7 @@ describe("WebLanguageModel", () => {
   });
 
   describe("addUserPhrase", () => {
-    it("should add user phrase", () => {
+    it("adds user phrase", () => {
       model.addUserPhrase("test", "測試");
 
       const unigrams = model.getUnigrams("test");
@@ -289,7 +289,7 @@ describe("WebLanguageModel", () => {
       expect(unigrams[0].value).toBe("測試");
     });
 
-    it("should remove from excluded phrases when adding user phrase", () => {
+    it("removes from excluded phrases when adding user phrase", () => {
       model.addExcludedPhrase("test", "測試");
       model.addUserPhrase("test", "測試");
 
@@ -300,12 +300,12 @@ describe("WebLanguageModel", () => {
   });
 
   describe("addExcludedPhrase", () => {
-    it("should add excluded phrase", () => {
+    it("adds excluded phrase", () => {
       model.addExcludedPhrase("test", "測試");
       // The effect is seen when getting unigrams - excluded phrases are filtered out
     });
 
-    it("should remove from user phrases when adding excluded phrase", () => {
+    it("removes from user phrases when adding excluded phrase", () => {
       model.addUserPhrase("test", "測試");
       model.addExcludedPhrase("test", "測試");
 
@@ -316,26 +316,26 @@ describe("WebLanguageModel", () => {
   });
 
   describe("getUnigrams", () => {
-    it("should return space unigram for space key", () => {
+    it("returns space unigram for space key", () => {
       const unigrams = model.getUnigrams(" ");
       expect(unigrams).toHaveLength(1);
       expect(unigrams[0].value).toBe(" ");
     });
 
-    it("should return unigrams for valid key", () => {
+    it("returns unigrams for valid key", () => {
       const unigrams = model.getUnigrams("ㄋㄧˇ");
       expect(unigrams.length).toBeGreaterThan(0);
       expect(unigrams[0].value).toBe("你");
     });
 
-    it("should prioritize user phrases", () => {
+    it("prioritizes user phrases", () => {
       model.addUserPhrase("ㄋㄧˇ", "我的自定義");
 
       const unigrams = model.getUnigrams("ㄋㄧˇ");
       expect(unigrams[0].value).toBe("我的自定義");
     });
 
-    it("should filter out excluded phrases", () => {
+    it("filters out excluded phrases", () => {
       const originalUnigrams = model.getUnigrams("ㄋㄧˇ");
       const firstValue = originalUnigrams[0].value;
 
@@ -345,11 +345,11 @@ describe("WebLanguageModel", () => {
       expect(values).not.toContain(firstValue);
     });
 
-    it("should handle multi-syllable keys", () => {
+    it("handles multi-syllable keys", () => {
       const unigrams = model.getUnigrams("ㄋㄧˇ-ㄏㄠˇ");
       expect(unigrams.length).toBeGreaterThan(0);
     });
-    it("should boost user phrase scores for mono-syllable keys", () => {
+    it("boosts user phrase scores for mono-syllable keys", () => {
       const originalUnigrams = model.getUnigrams("ㄋㄧˇ");
       const originalTopScore =
         originalUnigrams.length > 0 ? originalUnigrams[0].score : -1;
@@ -363,43 +363,43 @@ describe("WebLanguageModel", () => {
   });
 
   describe("hasUnigrams", () => {
-    it("should return true for space", () => {
+    it("returns true for space", () => {
       expect(model.hasUnigrams(" ")).toBe(true);
     });
 
-    it("should return true for valid keys", () => {
+    it("returns true for valid keys", () => {
       expect(model.hasUnigrams("ㄋㄧˇ")).toBe(true);
     });
 
-    it("should return false for invalid keys", () => {
+    it("returns false for invalid keys", () => {
       expect(model.hasUnigrams("invalid_key")).toBe(false);
     });
 
-    it("should return true for user phrases", () => {
+    it("returns true for user phrases", () => {
       model.addUserPhrase("custom", "自定義");
       expect(model.hasUnigrams("custom")).toBe(true);
     });
   });
 
   describe("maybeAbsoluteOrderKey", () => {
-    it("should handle simple keys", () => {
+    it("handles simple keys", () => {
       const result = WebLanguageModel.maybeAbsoluteOrderKey("ㄋㄧˇ");
       expect(result).toBeTruthy();
       expect(result).not.toBe("ㄋㄧˇ");
     });
 
-    it("should handle multi-syllable keys", () => {
+    it("handles multi-syllable keys", () => {
       const result = WebLanguageModel.maybeAbsoluteOrderKey("ㄋㄧˇ-ㄏㄠˇ");
       expect(result).toBeTruthy();
     });
 
-    it("should handle punctuation keys", () => {
+    it("handles punctuation keys", () => {
       const punctuationKey = "_punctuation_comma";
       const result = WebLanguageModel.maybeAbsoluteOrderKey(punctuationKey);
       expect(result).toBe(punctuationKey);
     });
 
-    it("should handle special punctuation keys with hyphens", () => {
+    it("handles special punctuation keys with hyphens", () => {
       const specialKey = "_punctuation_Hsu_-";
       const result = WebLanguageModel.maybeAbsoluteOrderKey(specialKey);
       expect(result).toBe(specialKey);
@@ -407,7 +407,7 @@ describe("WebLanguageModel", () => {
   });
 
   describe("filterAndTransformUnigrams", () => {
-    it("should filter excluded values", () => {
+    it("filters excluded values", () => {
       const unigrams = [new Unigram("test1", 1), new Unigram("test2", 2)];
       const excludedValues = new Set(["test1"]);
       const insertedValues = new Set<string>();
@@ -421,7 +421,7 @@ describe("WebLanguageModel", () => {
       expect(result[0].value).toBe("test2");
     });
 
-    it("should apply converters", () => {
+    it("applies converters", () => {
       const macroConverter = jest.fn((input: string) => input + "_macro");
       const converter = jest.fn((input: string) => input + "_general");
 
@@ -440,7 +440,7 @@ describe("WebLanguageModel", () => {
       expect(result[0].value).toBe("test_macro_general");
     });
 
-    it("should handle empty values after conversion", () => {
+    it("handles empty values after conversion", () => {
       const converter = jest.fn(() => "");
       model.setConverter(converter);
 
@@ -458,17 +458,17 @@ describe("WebLanguageModel", () => {
   });
 
   describe("getReading", () => {
-    it("should get reading for existing character", () => {
+    it("gets reading for existing character", () => {
       const reading = model.getReading("楊");
       expect(reading).toBe("ㄧㄤˊ");
     });
 
-    it("should return undefined for non-existing character", () => {
+    it("returns undefined for non-existing character", () => {
       const reading = model.getReading("不存在的字");
       expect(reading).toBeUndefined();
     });
 
-    it("should handle punctuation readings", () => {
+    it("handles punctuation readings", () => {
       // Test with a punctuation character if it exists in the data
       const reading = model.getReading("，");
       if (reading) {
@@ -476,13 +476,13 @@ describe("WebLanguageModel", () => {
       }
     });
 
-    it("should select highest scoring reading", () => {
+    it("selects highest scoring reading", () => {
       // This tests that the method returns the reading with highest score
       const reading = model.getReading("你");
       expect(reading).toBeTruthy();
     });
 
-    it("should build reverse map on first call", () => {
+    it("builds reverse map on first call", () => {
       // First call builds the reverse map
       const reading1 = model.getReading("你");
       // Second call uses the reverse map
@@ -490,14 +490,14 @@ describe("WebLanguageModel", () => {
       expect(reading1).toBe(reading2);
     });
 
-    it("should handle multi-syllable readings", () => {
+    it("handles multi-syllable readings", () => {
       const reading = model.getReading("中國");
       if (reading) {
         expect(reading).toContain("-");
       }
     });
 
-    it("should handle characters with letter/punctuation patterns", () => {
+    it("handles characters with letter/punctuation patterns", () => {
       // Test characters that might match the letter/punctuation pattern
       const testCases = ["a", "A", "1", "!"];
       testCases.forEach((char) => {
@@ -511,13 +511,13 @@ describe("WebLanguageModel", () => {
   });
 
   describe("edge cases and error handling", () => {
-    it("should handle empty constructor data", () => {
+    it("handles empty constructor data", () => {
       const emptyModel = new WebLanguageModel({});
       expect(emptyModel.hasUnigrams("test")).toBe(false);
       expect(emptyModel.getUnigrams("test")).toEqual([]);
     });
 
-    it("should handle malformed data in constructor", () => {
+    it("handles malformed data in constructor", () => {
       const malformedModel = new WebLanguageModel({
         invalid: "not_space_separated",
       });
@@ -525,7 +525,7 @@ describe("WebLanguageModel", () => {
       expect(() => malformedModel.getUnigrams("invalid")).not.toThrow();
     });
 
-    it("should handle undefined/null converter responses", () => {
+    it("handles undefined/null converter responses", () => {
       const converter = jest.fn(() => undefined);
       model.setConverter(converter);
 
@@ -535,13 +535,13 @@ describe("WebLanguageModel", () => {
       expect(unigrams.every((u) => u.value)).toBe(true);
     });
 
-    it("should handle very long keys", () => {
+    it("handles very long keys", () => {
       const longKey = "ㄋㄧˇ-ㄏㄠˇ-ㄉㄜ˙-ㄏㄣˇ-ㄏㄠˇ-ㄉㄜ˙";
       const result = model.hasUnigrams(longKey);
       expect(typeof result).toBe("boolean");
     });
 
-    it("should handle special characters in keys", () => {
+    it("handles special characters in keys", () => {
       const specialKeys = ["_test", "test-", "-test", "test_-_test"];
       specialKeys.forEach((key) => {
         expect(() => model.hasUnigrams(key)).not.toThrow();
@@ -551,7 +551,7 @@ describe("WebLanguageModel", () => {
   });
 
   describe("integration tests", () => {
-    it("should work with complete user phrase workflow", () => {
+    it("works with complete user phrase workflow", () => {
       // Add user phrase
       model.addUserPhrase("test", "測試詞彙");
 
@@ -568,7 +568,7 @@ describe("WebLanguageModel", () => {
       expect(values).not.toContain("測試詞彙");
     });
 
-    it("should handle multiple user phrases for same key", () => {
+    it("handles multiple user phrases for same key", () => {
       model.addUserPhrase("hello", "你好");
       model.addUserPhrase("hello", "哈囉");
       model.addUserPhrase("hello", "嗨");
@@ -581,7 +581,7 @@ describe("WebLanguageModel", () => {
       expect(values).toContain("嗨");
     });
 
-    it("should handle converter chain correctly", () => {
+    it("handles converter chain correctly", () => {
       const macroConverter = (input: string) => input + "_macro";
       const generalConverter = (input: string) => input + "_general";
 

@@ -50,7 +50,7 @@ function handleKeySequence(keyHandler: KeyHandler, keys: Key[]): InputState {
   return currentState;
 }
 
-describe("Test KeyHandler.test", () => {
+describe("KeyHandler", () => {
   let keyHandler: KeyHandler = new KeyHandler(new WebLanguageModel(webData));
   beforeEach(() => {
     let lm = new WebLanguageModel(webData);
@@ -60,7 +60,7 @@ describe("Test KeyHandler.test", () => {
   afterEach(() => {});
 
   describe("Basic configuration", () => {
-    test("Language code property management", () => {
+    test("manages languageCode property", () => {
       expect(keyHandler.languageCode).toBe("");
       keyHandler.languageCode = "zh-TW";
       expect(keyHandler.languageCode).toBe("zh-TW");
@@ -68,7 +68,7 @@ describe("Test KeyHandler.test", () => {
       expect(keyHandler.languageCode).toBe("en");
     });
 
-    test("Selecting phrase after cursor as candidate (enabled)", () => {
+    test("selects phrase after cursor when feature is enabled", () => {
       keyHandler.selectPhraseAfterCursorAsCandidate = true;
       expect(keyHandler.selectPhraseAfterCursorAsCandidate).toBe(true);
       let keys = asciiKey(["s", "u", "3", "c", "l", "3"]);
@@ -82,7 +82,7 @@ describe("Test KeyHandler.test", () => {
       expect(choosingCandidate.candidates[2].value).toBe("好");
     });
 
-    test("Selecting phrase after cursor as candidate (disabled)", () => {
+    test("skips phrase after cursor when feature is disabled", () => {
       keyHandler.selectPhraseAfterCursorAsCandidate = false;
       expect(keyHandler.selectPhraseAfterCursorAsCandidate).toBe(false);
       let keys = asciiKey(["s", "u", "3", "c", "l", "3"]);
@@ -98,25 +98,25 @@ describe("Test KeyHandler.test", () => {
   });
 
   describe("Empty State", () => {
-    test("Enter", () => {
+    test("keeps empty state when pressing Enter", () => {
       let keys = [Key.namedKey(KeyName.RETURN)];
       let state = handleKeySequence(keyHandler, keys);
       expect(state).toBeInstanceOf(Empty);
     });
 
-    test("Shift + Tab in Empty State", () => {
+    test("ignores Shift+Tab in empty state", () => {
       let keys = [Key.namedKey(KeyName.TAB, true, false)];
       let state = handleKeySequence(keyHandler, keys);
       expect(state).toBeInstanceOf(Empty);
     });
 
-    test("Tab", () => {
+    test("ignores Tab in empty state", () => {
       let keys = [Key.namedKey(KeyName.TAB)];
       let state = handleKeySequence(keyHandler, keys);
       expect(state).toBeInstanceOf(Empty);
     });
 
-    test("Esc", () => {
+    test("ignores Esc in empty state", () => {
       let keys = [Key.namedKey(KeyName.ESC)];
       let state = handleKeySequence(keyHandler, keys);
       expect(state).toBeInstanceOf(Empty);
@@ -124,7 +124,7 @@ describe("Test KeyHandler.test", () => {
   });
 
   describe("Keyboard layouts", () => {
-    test("Keyboard layout changes", () => {
+    test("applies different keyboard layouts", () => {
       expect(keyHandler.keyboardLayout).toBe(
         BopomofoKeyboardLayout.StandardLayout
       ); // StandardLayout is 0
@@ -173,7 +173,7 @@ describe("Test KeyHandler.test", () => {
       expect(inputting.cursorIndex).toBe(4);
     });
 
-    test("Switching keyboard layout affects punctuation mapping", () => {
+    test("switching keyboard layout preserves punctuation mapping", () => {
       // First test with standard layout
       let keys = asciiKey([">"]);
       let state = handleKeySequence(keyHandler, keys);
@@ -218,7 +218,7 @@ describe("Test KeyHandler.test", () => {
     });
 
     describe("Hanyu Pinyin", () => {
-      test("Hanyu Pinyin 1", () => {
+      test("types ni3 with Hanyu Pinyin layout", () => {
         expect(keyHandler.keyboardLayout).toBe(
           BopomofoKeyboardLayout.StandardLayout
         ); // StandardLayout is 0
@@ -236,7 +236,7 @@ describe("Test KeyHandler.test", () => {
         expect(inputting.cursorIndex).toBe(1);
       });
 
-      test("Hanyu Pinyin 2", () => {
+      test("types yang2 with Hanyu Pinyin layout", () => {
         expect(keyHandler.keyboardLayout).toBe(
           BopomofoKeyboardLayout.StandardLayout
         ); // StandardLayout is 0
@@ -254,7 +254,7 @@ describe("Test KeyHandler.test", () => {
         expect(inputting.cursorIndex).toBe(1);
       });
 
-      test("Hanyu Pinyin 3", () => {
+      test("supports deletion within Hanyu Pinyin layout", () => {
         expect(keyHandler.keyboardLayout).toBe(
           BopomofoKeyboardLayout.StandardLayout
         ); // StandardLayout is 0
@@ -277,7 +277,7 @@ describe("Test KeyHandler.test", () => {
   });
 
   describe("Letters", () => {
-    test("Normal letter", () => {
+    test("ignores uppercase letters by default", () => {
       keyHandler.keyboardLayout = BopomofoKeyboardLayout.StandardLayout;
       let currentState: InputState = new Empty();
       let key = new Key("A", KeyName.UNKNOWN, true, false, false);
@@ -291,7 +291,7 @@ describe("Test KeyHandler.test", () => {
       expect(currentState).toBeInstanceOf(Empty);
     });
 
-    test("Test putLowercaseLettersToComposingBuffer", () => {
+    test("appends lowercase letters when feature enabled", () => {
       keyHandler.putLowercaseLettersToComposingBuffer = true;
       expect(keyHandler.putLowercaseLettersToComposingBuffer).toBe(true);
       let currentState: InputState = new Empty();
@@ -310,7 +310,7 @@ describe("Test KeyHandler.test", () => {
   });
 
   describe("Candidate selection", () => {
-    test("Choosing candidate from list", () => {
+    test("selects candidate from displayed list", () => {
       keyHandler.selectPhraseAfterCursorAsCandidate = false;
       expect(keyHandler.selectPhraseAfterCursorAsCandidate).toBe(false);
       let keys = asciiKey(["s", "u", "3", "c", "l", "3"]);
@@ -332,7 +332,7 @@ describe("Test KeyHandler.test", () => {
       expect(buffer).toBe("擬好");
     });
 
-    test("Choosing candidate from list with moveCursorAfterSelection", () => {
+    test("selects candidate and moves cursor when configured", () => {
       keyHandler.selectPhraseAfterCursorAsCandidate = true;
       expect(keyHandler.selectPhraseAfterCursorAsCandidate).toBe(true);
       keyHandler.moveCursorAfterSelection = true;
@@ -358,7 +358,7 @@ describe("Test KeyHandler.test", () => {
       expect(keyHandler.cursor).toBe(2);
     });
 
-    test("Cancelling candidate selection", () => {
+    test("restores buffer after cancelling candidate panel", () => {
       keyHandler.selectPhraseAfterCursorAsCandidate = false;
       expect(keyHandler.selectPhraseAfterCursorAsCandidate).toBe(false);
       let keys = asciiKey(["s", "u", "3", "c", "l", "3"]);
@@ -377,7 +377,7 @@ describe("Test KeyHandler.test", () => {
       expect(buffer).toBe("你好");
     });
 
-    test("Traditional Mode #1", () => {
+    test("commits candidate while in traditional mode", () => {
       keyHandler.traditionalMode = true;
       expect(keyHandler.traditionalMode).toBe(true);
       let keys = asciiKey(["s", "u", "3"]);
@@ -393,7 +393,7 @@ describe("Test KeyHandler.test", () => {
       expect(committing.text).toBe("你");
     });
 
-    test("Traditional Mode #2", () => {
+    test("keeps empty state for incomplete syllable in traditional mode", () => {
       keyHandler.traditionalMode = true;
       expect(keyHandler.traditionalMode).toBe(true);
       let keys = asciiKey(["x", "u"]);
@@ -404,7 +404,7 @@ describe("Test KeyHandler.test", () => {
   });
 
   describe("ESC key behavior", () => {
-    test("Esc key clears entire buffer", () => {
+    test("clears buffer when ESC clearing is enabled", () => {
       keyHandler.escKeyClearsEntireComposingBuffer = true;
       expect(keyHandler.escKeyClearsEntireComposingBuffer).toBe(true);
       let keys = asciiKey(["s", "u", "3", "c", "l", "3"]);
@@ -414,7 +414,7 @@ describe("Test KeyHandler.test", () => {
       expect(state).toBeInstanceOf(EmptyIgnoringPrevious);
     });
 
-    test("ESC Key scenario #1", () => {
+    test("retains composing buffer when ESC clearing is disabled", () => {
       keyHandler.escKeyClearsEntireComposingBuffer = false;
       expect(keyHandler.escKeyClearsEntireComposingBuffer).toBe(false);
       let keys = asciiKey(["s", "u", "3", "c", "l", "3", "c", "8"]);
@@ -426,7 +426,7 @@ describe("Test KeyHandler.test", () => {
       expect(inputting.composingBuffer).toBe("你好");
     });
 
-    test("ESC Key scenario #2", () => {
+    test("leaves composed text intact when ESC clearing is disabled", () => {
       keyHandler.escKeyClearsEntireComposingBuffer = false;
       expect(keyHandler.escKeyClearsEntireComposingBuffer).toBe(false);
       let keys = asciiKey(["s", "u", "3", "c", "l", "3"]);
@@ -438,7 +438,7 @@ describe("Test KeyHandler.test", () => {
       expect(inputting.composingBuffer).toBe("你好");
     });
 
-    test("ESC Key scenario #3", () => {
+    test("clears buffer when ESC pressed during partial syllable", () => {
       keyHandler.escKeyClearsEntireComposingBuffer = false;
       expect(keyHandler.escKeyClearsEntireComposingBuffer).toBe(false);
       let keys = asciiKey(["s", "u"]);
@@ -448,7 +448,7 @@ describe("Test KeyHandler.test", () => {
       expect(state).toBeInstanceOf(EmptyIgnoringPrevious);
     });
 
-    test("ESC Key scenario #4", () => {
+    test("ignores ESC when buffer is already empty", () => {
       let keys = [];
       let esc = Key.namedKey(KeyName.ESC);
       keys.push(esc);
@@ -458,7 +458,7 @@ describe("Test KeyHandler.test", () => {
   });
 
   describe("Basic input handling", () => {
-    test("Handling empty key input", () => {
+    test("ignores empty key events", () => {
       let stateCallbackCalled = false;
       let errorCallbackCalled = false;
       keyHandler.handle(
@@ -471,7 +471,7 @@ describe("Test KeyHandler.test", () => {
       expect(errorCallbackCalled).toBe(false);
     });
 
-    test("Typing su3 leads to '你'", () => {
+    test("composes character for su3 input", () => {
       let keys = asciiKey(["s", "u", "3"]);
       let state = handleKeySequence(keyHandler, keys);
       expect(state).toBeInstanceOf(Inputting);
@@ -480,7 +480,7 @@ describe("Test KeyHandler.test", () => {
       expect(inputting.cursorIndex).toBe(1);
     });
 
-    test("Typing su3 leads to '你' in Traditional mode", () => {
+    test("opens candidate list for su3 in traditional mode", () => {
       keyHandler.traditionalMode = true;
       expect(keyHandler.traditionalMode).toBe(true);
       let keys = asciiKey(["s", "u", "3"]);
@@ -488,7 +488,7 @@ describe("Test KeyHandler.test", () => {
       expect(state).toBeInstanceOf(ChoosingCandidate);
     });
 
-    test("Typing su3cl3 leads to '你好'", () => {
+    test("composes phrase for su3cl3 input", () => {
       let keys = asciiKey(["s", "u", "3", "c", "l", "3"]);
       let state = handleKeySequence(keyHandler, keys);
       expect(state).toBeInstanceOf(Inputting);
@@ -499,13 +499,13 @@ describe("Test KeyHandler.test", () => {
       expect(keyHandler.cursor).toBe(2);
     });
 
-    test("Discard invalid input #1", () => {
+    test("clears state when typing invalid reading", () => {
       let keys = asciiKey(["r", "j", "3"]);
       let state = handleKeySequence(keyHandler, keys);
       expect(state).toBeInstanceOf(EmptyIgnoringPrevious);
     });
 
-    test("Discard invalid input #2", () => {
+    test("ignores trailing invalid reading", () => {
       let keys = asciiKey(["s", "u", "3", "r", "j", "3"]);
       let state = handleKeySequence(keyHandler, keys);
       expect(state).toBeInstanceOf(Inputting);
@@ -513,7 +513,7 @@ describe("Test KeyHandler.test", () => {
       expect(inputting.composingBuffer).toBe("你");
     });
 
-    test("Commit input upon pressing Enter", () => {
+    test("commits composing buffer on Enter", () => {
       let keys = asciiKey(["s", "u", "3", "c", "l", "3"]);
       let enter = Key.namedKey(KeyName.RETURN);
       keys.push(enter);
@@ -527,14 +527,14 @@ describe("Test KeyHandler.test", () => {
   });
 
   describe("Shift + Space", () => {
-    test("Test Shift + Space #1", () => {
+    test("keeps empty state when pressing Shift+Space", () => {
       let shiftSpace = new Key(" ", KeyName.SPACE, true, false, false);
       let keys = [shiftSpace];
       let state = handleKeySequence(keyHandler, keys);
       expect(state).toBeInstanceOf(Empty);
     });
 
-    test("Test Shift + Space #2", () => {
+    test("commits space when Shift+Space in composing state", () => {
       let keys = asciiKey(["s", "u", "3", "c", "l", "3"]);
       let shiftSpace = new Key(" ", KeyName.SPACE, true, false, false);
       keys.push(shiftSpace);
@@ -544,7 +544,7 @@ describe("Test KeyHandler.test", () => {
       expect(committing.text).toBe(" ");
     });
 
-    test("Test Shift + Space #3", () => {
+    test("appends space when Shift+Space with lowercase option", () => {
       keyHandler.putLowercaseLettersToComposingBuffer = true;
       expect(keyHandler.putLowercaseLettersToComposingBuffer).toBe(true);
       let keys = asciiKey(["s", "u", "3", "c", "l", "3"]);
@@ -558,7 +558,7 @@ describe("Test KeyHandler.test", () => {
   });
 
   describe("Punctuation handling", () => {
-    test("Typing punctuation #1", () => {
+    test("appends full-width comma with shift modifier", () => {
       let keys = asciiKey(["s", "u", "3", "c", "l", "3"]);
       let comma = new Key("<", KeyName.UNKNOWN, true, false, false);
       keys.push(comma);
@@ -568,7 +568,7 @@ describe("Test KeyHandler.test", () => {
       expect(inputting.composingBuffer).toBe("你好，");
     });
 
-    test("Typing punctuation #2", () => {
+    test("appends full-width comma with ctrl modifier", () => {
       let keys = asciiKey(["s", "u", "3", "c", "l", "3"]);
       let comma = new Key(",", KeyName.UNKNOWN, false, true, false);
       keys.push(comma);
@@ -578,7 +578,7 @@ describe("Test KeyHandler.test", () => {
       expect(inputting.composingBuffer).toBe("你好，");
     });
 
-    test("Typing punctuation #3", () => {
+    test("appends full-width exclamation mark", () => {
       let keys = asciiKey(["s", "u", "3", "c", "l", "3"]);
       let comma = new Key("!", KeyName.UNKNOWN, true, false, false);
       keys.push(comma);
@@ -588,7 +588,7 @@ describe("Test KeyHandler.test", () => {
       expect(inputting.composingBuffer).toBe("你好！");
     });
 
-    test("Typing punctuation in Traditional Mode #1", () => {
+    test("commits punctuation while in traditional mode", () => {
       keyHandler.traditionalMode = true;
       expect(keyHandler.traditionalMode).toBe(true);
       let comma = new Key("!", KeyName.UNKNOWN, true, false, false);
@@ -599,7 +599,7 @@ describe("Test KeyHandler.test", () => {
       expect(committing.text).toBe("！");
     });
 
-    test("Typing punctuation in Traditional Mode #2", () => {
+    test("cancels punctuation candidate in traditional mode", () => {
       keyHandler.traditionalMode = true;
       expect(keyHandler.traditionalMode).toBe(true);
       let comma = new Key("<", KeyName.UNKNOWN, true, false, false);
@@ -610,7 +610,7 @@ describe("Test KeyHandler.test", () => {
       expect(state).toBeInstanceOf(EmptyIgnoringPrevious);
     });
 
-    test("Typing punctuation in Traditional Mode #3", () => {
+    test("keeps candidate panel open when reusing punctuation key", () => {
       keyHandler.traditionalMode = true;
       expect(keyHandler.traditionalMode).toBe(true);
       let comma = new Key("<", KeyName.UNKNOWN, true, false, false);
@@ -626,7 +626,7 @@ describe("Test KeyHandler.test", () => {
       expect(state).toBeInstanceOf(ChoosingCandidate);
     });
 
-    test("Typing punctuation in Traditional Mode #4", () => {
+    test("commits punctuation from candidate panel in traditional mode", () => {
       keyHandler.traditionalMode = true;
       expect(keyHandler.traditionalMode).toBe(true);
       let comma = new Key("<", KeyName.UNKNOWN, true, false, false);
@@ -644,7 +644,7 @@ describe("Test KeyHandler.test", () => {
       expect(committing.text).toBe("，");
     });
 
-    test("Typing punctuation with Hanyu Pinyin", () => {
+    test("produces punctuation using Hanyu Pinyin layout", () => {
       keyHandler.keyboardLayout = BopomofoKeyboardLayout.HanyuPinyinLayout;
       expect(keyHandler.keyboardLayout).toBe(
         BopomofoKeyboardLayout.HanyuPinyinLayout
@@ -657,7 +657,7 @@ describe("Test KeyHandler.test", () => {
       expect(inputting.composingBuffer).toBe("，");
     });
 
-    test("Typing punctuation with Hsu", () => {
+    test("produces punctuation using Hsu layout", () => {
       keyHandler.keyboardLayout = BopomofoKeyboardLayout.HsuLayout;
       expect(keyHandler.keyboardLayout).toBe(BopomofoKeyboardLayout.HsuLayout);
       let comma = new Key(",", KeyName.UNKNOWN, false, false, false);
@@ -668,7 +668,7 @@ describe("Test KeyHandler.test", () => {
       expect(inputting.composingBuffer).toBe("，");
     });
 
-    test("Typing punctuation with Half-width #1", () => {
+    test("produces half-width punctuation when enabled", () => {
       keyHandler.halfWidthPunctuation = true;
       expect(keyHandler.halfWidthPunctuation).toBe(true);
       let comma = new Key("<", KeyName.UNKNOWN, true, false, false);
@@ -679,7 +679,7 @@ describe("Test KeyHandler.test", () => {
       expect(inputting.composingBuffer).toBe(",");
     });
 
-    test("Typing punctuation with Half-width #2", () => {
+    test("returns to full-width punctuation when toggled off", () => {
       keyHandler.halfWidthPunctuation = true;
       expect(keyHandler.halfWidthPunctuation).toBe(true);
       let comma = new Key(",", KeyName.UNKNOWN, false, true, false);
@@ -692,7 +692,7 @@ describe("Test KeyHandler.test", () => {
   });
 
   describe("Special keys", () => {
-    test("Typing backtick triggers candidate list", () => {
+    test("opens punctuation candidate list with backtick", () => {
       let keys = asciiKey(["`"]);
       let state = handleKeySequence(keyHandler, keys);
       expect(state).toBeInstanceOf(ChoosingCandidate);
@@ -700,7 +700,7 @@ describe("Test KeyHandler.test", () => {
       expect(inputting.composingBuffer).toBe("　");
     });
 
-    test("Shift + Tab cycles through candidates backwards", () => {
+    test("cycles candidates backward with Shift+Tab", () => {
       keyHandler.selectPhraseAfterCursorAsCandidate = false;
       let keys = asciiKey(["s", "u", "3"]); // Type "你"
       let state = handleKeySequence(keyHandler, keys);
@@ -752,7 +752,7 @@ describe("Test KeyHandler.test", () => {
       expect(inputting.composingBuffer).toBe("你");
     });
 
-    test("Shift + Tab in composing state with multiple characters", () => {
+    test("cycles candidates backward with multi-character buffer", () => {
       let keys = asciiKey(["s", "u", "3", "c", "l", "3"]); // Type "你好"
       let state = handleKeySequence(keyHandler, keys);
       expect(state).toBeInstanceOf(Inputting);
@@ -794,7 +794,7 @@ describe("Test KeyHandler.test", () => {
       expect((state as Inputting).composingBuffer).toBe("你好");
     });
 
-    test("Shift + Tab with no available previous candidates", () => {
+    test("leaves state unchanged when no previous candidate", () => {
       let keys = asciiKey(["j", "7", "2"]); // Type a character with limited candidates
       let state = handleKeySequence(keyHandler, keys);
 
@@ -821,7 +821,7 @@ describe("Test KeyHandler.test", () => {
       }
     });
 
-    test("Shift + Tab in empty reading buffer", () => {
+    test("ignores Shift+Tab after clearing reading buffer", () => {
       let keys = asciiKey(["s", "u", "3"]); // Type "你"
       let state = handleKeySequence(keyHandler, keys);
 
@@ -851,7 +851,7 @@ describe("Test KeyHandler.test", () => {
       expect(state).toBeInstanceOf(EmptyIgnoringPrevious);
     });
 
-    test("Shift + Tab during complex input sequence", () => {
+    test("handles Shift+Tab during long composition", () => {
       // Type a longer sequence
       let keys = asciiKey([
         "s",
@@ -915,7 +915,7 @@ describe("Test KeyHandler.test", () => {
       expect(state).toBeInstanceOf(Inputting);
     });
 
-    test("Tab key #1", () => {
+    test("cycles candidate with Tab key", () => {
       let keys = asciiKey(["s", "u", "3", "c", "l", "3"]);
       let enter = Key.namedKey(KeyName.TAB);
       keys.push(enter);
@@ -925,7 +925,7 @@ describe("Test KeyHandler.test", () => {
       expect(inputting.composingBuffer).toBe("妳好");
     });
 
-    test("Tab key #2", () => {
+    test("ignores Tab when no composition exists", () => {
       let keys = [];
       let tab = Key.namedKey(KeyName.TAB);
       keys.push(tab);
@@ -933,7 +933,7 @@ describe("Test KeyHandler.test", () => {
       expect(state).toBeInstanceOf(Empty);
     });
 
-    test("Tab key #3", () => {
+    test("continues composing when Tab pressed mid-syllable", () => {
       let keys = asciiKey(["s", "u"]);
       let tab = Key.namedKey(KeyName.TAB);
       keys.push(tab);
@@ -943,7 +943,7 @@ describe("Test KeyHandler.test", () => {
   });
 
   describe("State transitions", () => {
-    test("Marking state transition #1", () => {
+    test("enters marking state with shift selection", () => {
       let keys = asciiKey(["s", "u", "3", "c", "l", "3"]);
       let shiftLeft = Key.namedKey(KeyName.LEFT, true, false);
       keys.push(shiftLeft);
@@ -970,7 +970,7 @@ describe("Test KeyHandler.test", () => {
       expect(state).toBeInstanceOf(Inputting);
     });
 
-    test("Marking state transition #2", () => {
+    test("limits marking selection size", () => {
       let keys = asciiKey([
         "s",
         "u",
@@ -1024,7 +1024,7 @@ describe("Test KeyHandler.test", () => {
   });
 
   describe("Big5 input", () => {
-    test("Big5 code input #1", () => {
+    test("commits Big5 character after entering full code", () => {
       let currentState: InputState = new Big5();
       let commit: Committing | undefined = undefined;
       let keys = asciiKey(["a", "1", "4", "3"]);
@@ -1048,7 +1048,7 @@ describe("Test KeyHandler.test", () => {
       }
     });
 
-    test("Big5 code input #2", () => {
+    test("updates Big5 code when deleting digits", () => {
       let currentState: InputState = new Big5();
       let commit: Committing | undefined = undefined;
       let keys = asciiKey(["a", "1", "4"]);
@@ -1072,7 +1072,7 @@ describe("Test KeyHandler.test", () => {
       expect(big5.code).toBe("a1");
     });
 
-    test("Big5 code input #2", () => {
+    test("preserves Big5 state after delete", () => {
       let currentState: InputState = new Big5();
       let keys = asciiKey(["a", "1", "4"]);
       let deleteKey = Key.namedKey(KeyName.DELETE);
@@ -1092,7 +1092,7 @@ describe("Test KeyHandler.test", () => {
       expect(big5.code).toBe("a1");
     });
 
-    test("Big5 code input #3", () => {
+    test("clears Big5 state with ESC", () => {
       let currentState: InputState = new Big5();
 
       let keys = asciiKey(["a", "1", "4"]);
@@ -1113,7 +1113,7 @@ describe("Test KeyHandler.test", () => {
   });
 
   describe("Chinese number conversion", () => {
-    test("Chinese number conversion #1", () => {
+    test("converts lowercase Chinese number on Enter", () => {
       let currentState: InputState = new ChineseNumber(
         "",
         ChineseNumbersStateStyle.Lowercase
@@ -1142,7 +1142,7 @@ describe("Test KeyHandler.test", () => {
       }
     });
 
-    test("Chinese number conversion #2", () => {
+    test("converts decimal lowercase Chinese number", () => {
       let currentState: InputState = new ChineseNumber(
         "",
         ChineseNumbersStateStyle.Lowercase
@@ -1171,7 +1171,7 @@ describe("Test KeyHandler.test", () => {
       }
     });
 
-    test("Chinese number conversion #3", () => {
+    test("converts uppercase Chinese number on Enter", () => {
       let currentState: InputState = new ChineseNumber(
         "",
         ChineseNumbersStateStyle.Uppercase
@@ -1200,7 +1200,7 @@ describe("Test KeyHandler.test", () => {
       }
     });
     describe("Roman number conversion", () => {
-      test("Roman number conversion #1", () => {
+      test("produces lowercase full-width Roman numeral", () => {
         let currentState: InputState = new RomanNumber(
           "",
           RomanNumberStateStyle.FullWidthLower
@@ -1229,7 +1229,7 @@ describe("Test KeyHandler.test", () => {
         }
       });
 
-      test("Roman number conversion #2", () => {
+      test("produces uppercase ASCII Roman numeral", () => {
         let currentState: InputState = new RomanNumber(
           "",
           RomanNumberStateStyle.Alphabets
@@ -1258,7 +1258,7 @@ describe("Test KeyHandler.test", () => {
         }
       });
 
-      test("Roman number conversion #3", () => {
+      test("produces full-width Roman numeral for ninety-nine", () => {
         let currentState: InputState = new RomanNumber(
           "",
           RomanNumberStateStyle.FullWidthLower
@@ -1287,7 +1287,7 @@ describe("Test KeyHandler.test", () => {
         }
       });
 
-      test("Roman number conversion with backspace", () => {
+      test("removes last digit with backspace in Roman mode", () => {
         let currentState: InputState = new RomanNumber(
           "",
           RomanNumberStateStyle.Alphabets
@@ -1310,7 +1310,7 @@ describe("Test KeyHandler.test", () => {
         expect(romanNumber.number).toBe("12");
       });
 
-      test("Roman number conversion with delete", () => {
+      test("removes last digit with delete in Roman mode", () => {
         let currentState: InputState = new RomanNumber(
           "",
           RomanNumberStateStyle.Alphabets
@@ -1333,7 +1333,7 @@ describe("Test KeyHandler.test", () => {
         expect(romanNumber.number).toBe("5");
       });
 
-      test("Roman number conversion with ESC", () => {
+      test("exits Roman mode with ESC", () => {
         let currentState: InputState = new RomanNumber(
           "",
           RomanNumberStateStyle.Alphabets
@@ -1354,7 +1354,7 @@ describe("Test KeyHandler.test", () => {
         expect(currentState).toBeInstanceOf(Empty);
       });
 
-      test("Roman number with single digit", () => {
+      test("commits single-digit Roman numeral", () => {
         let currentState: InputState = new RomanNumber(
           "",
           RomanNumberStateStyle.FullWidthLower
@@ -1383,7 +1383,7 @@ describe("Test KeyHandler.test", () => {
         }
       });
 
-      test("Roman number with zero", () => {
+      test("retains zero input in Roman mode", () => {
         let currentState: InputState = new RomanNumber(
           "",
           RomanNumberStateStyle.Alphabets
@@ -1404,7 +1404,7 @@ describe("Test KeyHandler.test", () => {
         expect(romanNumber.number).toBe("0");
       });
 
-      test("Roman number with large number", () => {
+      test("handles large Arabic numbers in Roman mode", () => {
         let currentState: InputState = new RomanNumber(
           "",
           RomanNumberStateStyle.Alphabets
@@ -1430,7 +1430,7 @@ describe("Test KeyHandler.test", () => {
         expect(commit).toBeInstanceOf(Committing);
       });
 
-      test("Roman number uppercase style", () => {
+      test("commits uppercase Roman numeral", () => {
         let currentState: InputState = new RomanNumber(
           "",
           RomanNumberStateStyle.Alphabets
@@ -1459,7 +1459,7 @@ describe("Test KeyHandler.test", () => {
         }
       });
 
-      test("Roman number multiple backspaces", () => {
+      test("supports multiple backspaces in Roman mode", () => {
         let currentState: InputState = new RomanNumber(
           "",
           RomanNumberStateStyle.Alphabets
@@ -1483,7 +1483,7 @@ describe("Test KeyHandler.test", () => {
         expect(romanNumber.number).toBe("1");
       });
 
-      test("Roman number clear entire buffer with multiple deletes", () => {
+      test("clears Roman buffer with repeated deletes", () => {
         let currentState: InputState = new RomanNumber(
           "",
           RomanNumberStateStyle.Alphabets
@@ -1508,7 +1508,7 @@ describe("Test KeyHandler.test", () => {
         expect(romanNumber.number).toBe("");
       });
     });
-    test("Chinese number conversion #4", () => {
+    test("converts Suzhou numerals on Enter", () => {
       let currentState: InputState = new ChineseNumber(
         "",
         ChineseNumbersStateStyle.Suzhou
@@ -1537,7 +1537,7 @@ describe("Test KeyHandler.test", () => {
       }
     });
 
-    test("Chinese number conversion #4", () => {
+    test("clears Suzhou numeral with delete", () => {
       let currentState: InputState = new ChineseNumber(
         "",
         ChineseNumbersStateStyle.Suzhou
@@ -1561,7 +1561,7 @@ describe("Test KeyHandler.test", () => {
       expect(chineseNumber.number).toBe("");
     });
 
-    test("Chinese number conversion #5", () => {
+    test("ignores extra deletes in Suzhou mode", () => {
       let currentState: InputState = new ChineseNumber(
         "",
         ChineseNumbersStateStyle.Suzhou
@@ -1587,7 +1587,7 @@ describe("Test KeyHandler.test", () => {
       expect(chineseNumber.number).toBe("");
     });
 
-    test("Chinese number conversion #6", () => {
+    test("exits Suzhou mode with ESC", () => {
       let currentState: InputState = new ChineseNumber(
         "",
         ChineseNumbersStateStyle.Suzhou
@@ -1610,7 +1610,7 @@ describe("Test KeyHandler.test", () => {
   });
 
   describe("Enclosing numbers", () => {
-    test("Enclosing number #1", () => {
+    test("shows enclosing number candidates on Enter", () => {
       let currentState: InputState = new EnclosingNumber();
       let keys = asciiKey(["1"]);
       let enter = Key.namedKey(KeyName.RETURN);
@@ -1628,7 +1628,7 @@ describe("Test KeyHandler.test", () => {
       expect(currentState).toBeInstanceOf(ChoosingCandidate);
     });
 
-    test("Enclosing number #2", () => {
+    test("rejects out-of-range enclosing numbers", () => {
       let currentState: InputState = new EnclosingNumber();
       let keys = asciiKey(["3", "0"]);
       let enter = Key.namedKey(KeyName.RETURN);
@@ -1646,7 +1646,7 @@ describe("Test KeyHandler.test", () => {
       expect(currentState).toBeInstanceOf(Empty);
     });
 
-    test("Enclosing number #2", () => {
+    test("retains enclosing number after delete", () => {
       let currentState: InputState = new EnclosingNumber();
       let keys = asciiKey(["3", "0"]);
       let deleteKey = Key.namedKey(KeyName.DELETE);
@@ -1665,7 +1665,7 @@ describe("Test KeyHandler.test", () => {
       expect(currentState).toBeInstanceOf(EnclosingNumber);
     });
 
-    test("Enclosing number #2", () => {
+    test("cancels enclosing number mode with ESC", () => {
       let currentState: InputState = new EnclosingNumber();
       let keys = asciiKey(["3", "0"]);
       let escapeKey = Key.namedKey(KeyName.ESC);
@@ -1685,7 +1685,7 @@ describe("Test KeyHandler.test", () => {
   });
 
   describe("Feature selection", () => {
-    test("Test features", () => {
+    test("enters feature selection with Ctrl+\\", () => {
       let tab = new Key("\\", KeyName.UNKNOWN, false, true, false);
       let keys = [tab];
       let state = handleKeySequence(keyHandler, keys);
@@ -1694,7 +1694,7 @@ describe("Test KeyHandler.test", () => {
   });
 
   describe("Ctrl + Enter", () => {
-    test("Typing Option 1", () => {
+    test("outputs bopomofo syllables when option 1", () => {
       keyHandler.ctrlEnterOption = 1;
       expect(keyHandler.ctrlEnterOption).toBe(1);
       let keys = asciiKey(["s", "u", "3", "c", "l", "3"]);
@@ -1722,7 +1722,7 @@ describe("Test KeyHandler.test", () => {
       }
     });
 
-    test("Typing Option 2", () => {
+    test("outputs ruby markup when option 2", () => {
       keyHandler.ctrlEnterOption = 2;
       expect(keyHandler.ctrlEnterOption).toBe(2);
       let keys = asciiKey(["s", "u", "3", "c", "l", "3"]);
@@ -1752,7 +1752,7 @@ describe("Test KeyHandler.test", () => {
       }
     });
 
-    test("Typing Option 3", () => {
+    test("outputs Braille conversion when option 3", () => {
       keyHandler.ctrlEnterOption = 3;
       expect(keyHandler.ctrlEnterOption).toBe(3);
       let keys = asciiKey(["s", "u", "3", "c", "l", "3"]);
@@ -1780,7 +1780,7 @@ describe("Test KeyHandler.test", () => {
       }
     });
 
-    test("Typing Option 4", () => {
+    test("outputs ASCII pinyin when option 4", () => {
       keyHandler.ctrlEnterOption = 4;
       expect(keyHandler.ctrlEnterOption).toBe(4);
       let keys = asciiKey(["s", "u", "3", "c", "l", "3"]);
@@ -1810,14 +1810,14 @@ describe("Test KeyHandler.test", () => {
   });
 
   describe("Tab key handling in Inputting state", () => {
-    test("Tab key in empty state", () => {
+    test("keeps empty state when pressing Tab with no composition", () => {
       let tab = Key.namedKey(KeyName.TAB);
       let keys = [tab];
       let state = handleKeySequence(keyHandler, keys);
       expect(state).toBeInstanceOf(Empty);
     });
 
-    test("Tab key with non-empty reading buffer", () => {
+    test("inserts reading when Tab pressed mid syllable", () => {
       let keys = asciiKey(["s", "u"]);
       let tab = Key.namedKey(KeyName.TAB);
       keys.push(tab);
@@ -1827,7 +1827,7 @@ describe("Test KeyHandler.test", () => {
       expect(inputting.composingBuffer).toBe("ㄋㄧ");
     });
 
-    test("Tab key to cycle through candidates", () => {
+    test("cycles forward through candidates with Tab", () => {
       keyHandler.selectPhraseAfterCursorAsCandidate = false;
       let keys = asciiKey(["s", "u", "3"]); // Type "你"
       let state = handleKeySequence(keyHandler, keys);
@@ -1861,7 +1861,7 @@ describe("Test KeyHandler.test", () => {
       expect(inputting.composingBuffer).toBe("擬");
     });
 
-    test("Shift+Tab key to cycle backward through candidates", () => {
+    test("cycles backward through candidates with Shift+Tab", () => {
       keyHandler.selectPhraseAfterCursorAsCandidate = false;
       let keys = asciiKey(["s", "u", "3"]); // Type "你"
       let state = handleKeySequence(keyHandler, keys);
@@ -1901,7 +1901,7 @@ describe("Test KeyHandler.test", () => {
       expect(inputting.composingBuffer).toBe("妳");
     });
 
-    test("Tab key with multiple characters in buffer", () => {
+    test("cycles candidate at current cursor position", () => {
       let keys = asciiKey(["s", "u", "3", "c", "l", "3"]); // Type "你好"
       let state = handleKeySequence(keyHandler, keys);
       expect(state).toBeInstanceOf(Inputting);
@@ -1932,7 +1932,7 @@ describe("Test KeyHandler.test", () => {
       expect(inputting.composingBuffer).toBe("妳好");
     });
 
-    test("Tab key at the end of composing buffer", () => {
+    test("cycles candidate at end of composing buffer", () => {
       let keys = asciiKey(["s", "u", "3", "c", "l", "3"]); // Type "你好"
       let state = handleKeySequence(keyHandler, keys);
       expect(state).toBeInstanceOf(Inputting);
@@ -1951,7 +1951,7 @@ describe("Test KeyHandler.test", () => {
       expect(inputting.composingBuffer).toBe("妳好");
     });
 
-    test("Tab key with no available candidates", () => {
+    test("ignores Tab when no additional candidates", () => {
       let keys = asciiKey(["j", "7", "2"]); // Type a character with limited candidates
       let state = handleKeySequence(keyHandler, keys);
 
@@ -1980,7 +1980,7 @@ describe("Test KeyHandler.test", () => {
   });
 
   describe("Repeated punctuation to select candidate", () => {
-    test("Double punctuation selects candidate when enabled", () => {
+    test("cycles punctuation candidates when feature enabled", () => {
       keyHandler.repeatedPunctuationToSelectCandidateEnabled = true;
       expect(keyHandler.repeatedPunctuationToSelectCandidateEnabled).toBe(true);
 
@@ -2007,7 +2007,7 @@ describe("Test KeyHandler.test", () => {
       expect(inputting.composingBuffer).toBe("．");
     });
 
-    test("Double punctuation does nothing when disabled", () => {
+    test("appends identical punctuation when feature disabled", () => {
       keyHandler.repeatedPunctuationToSelectCandidateEnabled = false;
       expect(keyHandler.repeatedPunctuationToSelectCandidateEnabled).toBe(
         false
@@ -2036,7 +2036,7 @@ describe("Test KeyHandler.test", () => {
       expect(inputting.composingBuffer).toBe("。。");
     });
 
-    test("Double punctuation works with different punctuation marks", () => {
+    test("cycles punctuation candidates for different symbols", () => {
       keyHandler.repeatedPunctuationToSelectCandidateEnabled = true;
       expect(keyHandler.repeatedPunctuationToSelectCandidateEnabled).toBe(true);
 
@@ -2064,7 +2064,7 @@ describe("Test KeyHandler.test", () => {
       expect(inputting.composingBuffer).not.toBe("，");
     });
 
-    test("Repeated punctuation can cycle through multiple candidates", () => {
+    test("cycles through multiple punctuation candidates", () => {
       keyHandler.repeatedPunctuationToSelectCandidateEnabled = true;
 
       // Type > once to get "。"
@@ -2102,7 +2102,7 @@ describe("Test KeyHandler.test", () => {
       ).toBeTruthy();
     });
 
-    test("Typing different punctuation after repeated punctuation", () => {
+    test("supports different punctuation after repeated selection", () => {
       keyHandler.repeatedPunctuationToSelectCandidateEnabled = true;
 
       // Type > once to get "。"
@@ -2139,7 +2139,7 @@ describe("Test KeyHandler.test", () => {
   });
 
   describe("Ctrl + \\ feature selection", () => {
-    test("Ctrl + \\ enters SelectingFeature state", () => {
+    test("enters SelectingFeature state with Ctrl+\\", () => {
       let ctrlBackslash = new Key("\\", KeyName.UNKNOWN, false, true, false);
       let state = handleKeySequence(keyHandler, [ctrlBackslash]);
       expect(state).toBeInstanceOf(SelectingFeature);
@@ -2147,7 +2147,7 @@ describe("Test KeyHandler.test", () => {
   });
 
   describe("Big5 state handling", () => {
-    test("Big5 code input with valid hexadecimal values", () => {
+    test("commits Big5 code with valid hexadecimal input", () => {
       let currentState: InputState = new Big5();
       let commit: Committing | undefined = undefined;
       let keys = asciiKey(["a", "4", "e", "1"]);
@@ -2168,7 +2168,7 @@ describe("Test KeyHandler.test", () => {
       expect(commit).toBeInstanceOf(Committing);
     });
 
-    test("Big5 code input with invalid hexadecimal values", () => {
+    test("ignores invalid hexadecimal Big5 input", () => {
       let currentState: InputState = new Big5();
       let keys = asciiKey(["g", "h", "i", "j"]);
       for (let key of keys) {
@@ -2186,7 +2186,7 @@ describe("Test KeyHandler.test", () => {
       expect(big5.code).toBe("");
     });
 
-    test("Big5 code with return key without complete code", () => {
+    test("keeps Big5 mode when code entry incomplete", () => {
       let currentState: InputState = new Big5();
       let keys = asciiKey(["a", "4"]);
       let enter = Key.namedKey(KeyName.RETURN);
@@ -2204,7 +2204,7 @@ describe("Test KeyHandler.test", () => {
       expect(currentState).toBeInstanceOf(Big5);
     });
 
-    test("Big5 code with complete valid input", () => {
+    test("commits Big5 code when input complete", () => {
       let currentState: InputState = new Big5();
       let commit: Committing | undefined = undefined;
       let keys = asciiKey(["b", "9", "4", "3"]);
@@ -2224,7 +2224,7 @@ describe("Test KeyHandler.test", () => {
       expect(commit).toBeDefined();
     });
 
-    test("Big5 code with multiple backspaces", () => {
+    test("returns to empty after multiple Big5 backspaces", () => {
       let currentState: InputState = new Big5();
       let keys = asciiKey(["c", "1", "2", "3"]);
       let backspace = Key.namedKey(KeyName.BACKSPACE);
@@ -2254,7 +2254,7 @@ describe("Test KeyHandler.test", () => {
       expect(currentState).toBeInstanceOf(Empty);
     });
 
-    test("Big5 code transition to Empty state with ESC", () => {
+    test("cancels Big5 mode with ESC", () => {
       let currentState: InputState = new Big5();
       let keys = asciiKey(["f", "f", "1", "2"]);
       let esc = Key.namedKey(KeyName.ESC);
@@ -2282,7 +2282,7 @@ describe("Test KeyHandler.test", () => {
       expect(currentState).toBeInstanceOf(Empty);
     });
 
-    test("Big5 code with mixed upper and lowercase hex digits", () => {
+    test("ignores uppercase hexadecimal letters in Big5 mode", () => {
       let currentState: InputState = new Big5();
       let commit: Committing | undefined = undefined;
 
@@ -2312,37 +2312,37 @@ describe("Test KeyHandler.test", () => {
   });
 
   describe("Space and Tab handling in Empty state", () => {
-    test("Space key in empty state", () => {
+    test("keeps empty state when pressing Space", () => {
       let spaceKey = Key.namedKey(KeyName.SPACE);
       let state = handleKeySequence(keyHandler, [spaceKey]);
       expect(state).toBeInstanceOf(Empty);
     });
 
-    test("Tab key in empty state", () => {
+    test("keeps empty state when pressing Tab", () => {
       let tabKey = Key.namedKey(KeyName.TAB);
       let state = handleKeySequence(keyHandler, [tabKey]);
       expect(state).toBeInstanceOf(Empty);
     });
 
-    test("Shift+Space in empty state", () => {
+    test("keeps empty state when pressing Shift+Space", () => {
       let shiftSpace = new Key(" ", KeyName.SPACE, true, false, false);
       let state = handleKeySequence(keyHandler, [shiftSpace]);
       expect(state).toBeInstanceOf(Empty);
     });
 
-    test("Shift+Tab in empty state", () => {
+    test("keeps empty state when pressing Shift+Tab", () => {
       let shiftTab = Key.namedKey(KeyName.TAB, true, false);
       let state = handleKeySequence(keyHandler, [shiftTab]);
       expect(state).toBeInstanceOf(Empty);
     });
 
-    test("Ctrl+Space in empty state", () => {
+    test("keeps empty state when pressing Ctrl+Space", () => {
       let ctrlSpace = new Key(" ", KeyName.SPACE, false, true, false);
       let state = handleKeySequence(keyHandler, [ctrlSpace]);
       expect(state).toBeInstanceOf(Empty);
     });
 
-    test("Alt+Space in empty state", () => {
+    test("keeps empty state when pressing Alt+Space", () => {
       let altSpace = new Key(" ", KeyName.SPACE, false, false, true);
       let state = handleKeySequence(keyHandler, [altSpace]);
       expect(state).toBeInstanceOf(Empty);
@@ -2350,7 +2350,7 @@ describe("Test KeyHandler.test", () => {
   });
 
   describe("Numpad handling", () => {
-    test("Numpad keys in Chinese number mode", () => {
+    test("appends numerals with numpad in Chinese number mode", () => {
       let currentState: InputState = new ChineseNumber(
         "",
         ChineseNumbersStateStyle.Lowercase
@@ -2379,7 +2379,7 @@ describe("Test KeyHandler.test", () => {
       expect(chineseNumber.number).toBe("123");
     });
 
-    test("Numpad decimal point in Chinese number mode", () => {
+    test("accepts numpad decimal point in Chinese number mode", () => {
       let currentState: InputState = new ChineseNumber(
         "",
         ChineseNumbersStateStyle.Lowercase
@@ -2407,7 +2407,7 @@ describe("Test KeyHandler.test", () => {
       expect(chineseNumber.number).toBe("1.5");
     });
 
-    test("Numpad Enter commits Chinese number", () => {
+    test("commits Chinese number with numpad Enter", () => {
       let currentState: InputState = new ChineseNumber(
         "",
         ChineseNumbersStateStyle.Lowercase
@@ -2438,7 +2438,7 @@ describe("Test KeyHandler.test", () => {
       expect(commit).toBeInstanceOf(Committing);
     });
 
-    test("Numpad keys in empty state", () => {
+    test("ignores numpad digit in empty state", () => {
       let currentState: InputState = new Empty();
 
       let numpad7 = new Key("7", KeyName.UNKNOWN, false, false, true);
@@ -2455,7 +2455,7 @@ describe("Test KeyHandler.test", () => {
       expect(currentState).toBeInstanceOf(Empty);
     });
 
-    test("Numpad keys in Big5 state", () => {
+    test("appends digits to Big5 code using numpad", () => {
       let currentState: InputState = new Big5();
 
       let keys = [
@@ -2480,7 +2480,7 @@ describe("Test KeyHandler.test", () => {
       expect(big5.code).toBe("a12");
     });
 
-    test("Numpad keys in EnclosingNumber state", () => {
+    test("appends digits to EnclosingNumber using numpad", () => {
       let currentState: InputState = new EnclosingNumber();
 
       let keys = [
@@ -2504,7 +2504,7 @@ describe("Test KeyHandler.test", () => {
       expect(enclosingNumber.number).toBe("20");
     });
 
-    test("Numpad Enter in EnclosingNumber state", () => {
+    test("opens enclosing candidates with numpad Enter", () => {
       let currentState: InputState = new EnclosingNumber();
 
       let keys = [
@@ -2527,7 +2527,7 @@ describe("Test KeyHandler.test", () => {
       expect(currentState).toBeInstanceOf(ChoosingCandidate);
     });
 
-    test("Numpad keys in normal typing", () => {
+    test("commits composition when numpad digit pressed", () => {
       // Reset keyHandler
       keyHandler.reset();
 
@@ -2551,7 +2551,7 @@ describe("Test KeyHandler.test", () => {
       expect(state).toBeInstanceOf(Committing);
     });
 
-    test("Numpad arithmetic operators", () => {
+    test("commits composition after numpad operators", () => {
       // Reset keyHandler
       keyHandler.reset();
 
@@ -2584,7 +2584,7 @@ describe("Test KeyHandler.test", () => {
       expect(state).toBeInstanceOf(Committing);
     });
 
-    test("Numpad Enter in composing state", () => {
+    test("commits composition with numpad Enter", () => {
       // First type regular characters
       let keys = asciiKey(["s", "u", "3", "c", "l", "3"]);
       let state = handleKeySequence(keyHandler, keys);
