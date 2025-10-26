@@ -339,7 +339,6 @@ export class KeyHandler {
           let text = choosingCandidates.candidates[0].value;
           let committing = new Committing(text);
           stateCallback(committing);
-          stateCallback(new Empty());
         } else {
           stateCallback(choosingCandidates);
         }
