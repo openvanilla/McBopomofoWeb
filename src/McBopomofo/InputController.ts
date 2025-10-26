@@ -42,6 +42,7 @@ import { Key, KeyFromKeyboardEvent, KeyName } from "./Key";
 import { KeyHandler } from "./KeyHandler";
 import { LocalizedStrings } from "./LocalizedStrings";
 import { webData } from "./WebData";
+import { webDataPlain } from "./WebDataPlain";
 import { WebLanguageModel } from "./WebLanguageModel";
 
 const ChineseConvert = require("chinese_convert");
@@ -178,6 +179,8 @@ export class InputController {
 
   private state_: InputState = new Empty();
   private lm_: WebLanguageModel;
+  private mcBopomofoLm_: WebLanguageModel;
+  private plainBopomofoLm_: WebLanguageModel;
   private keyHandler_: KeyHandler;
   private candidateController_: CandidateController = new CandidateController();
   private ui_: InputUIController;
@@ -190,7 +193,9 @@ export class InputController {
 
   constructor(ui: InputUI) {
     this.ui_ = new InputUIController(ui);
-    this.lm_ = new WebLanguageModel(webData);
+    this.mcBopomofoLm_ = new WebLanguageModel(webData);
+    this.plainBopomofoLm_ = new WebLanguageModel(webDataPlain);
+    this.lm_ = this.mcBopomofoLm_;
     this.keyHandler_ = new KeyHandler(this.lm_);
     this.lm_.setMacroConverter((input) => inputMacroController.handle(input));
   }
@@ -209,7 +214,40 @@ export class InputController {
 
   /** Sets if the input controller should use traditional mode or not. */
   public setTraditionalMode(flag: boolean): void {
+    let languageCode = this.keyHandler_.languageCode;
+    let selectPhraseAfterCursorAsCandidate =
+      this.keyHandler_.selectPhraseAfterCursorAsCandidate;
+    let moveCursorAfterSelection = this.keyHandler_.moveCursorAfterSelection;
+    let putLowercaseLettersToComposingBuffer =
+      this.keyHandler_.putLowercaseLettersToComposingBuffer;
+    let escKeyClearsEntireComposingBuffer_ =
+      this.keyHandler_.escKeyClearsEntireComposingBuffer;
+    let keyboardLayout = this.keyHandler_.keyboardLayout;
+    let halfWidthPunctuation = this.keyHandler_.halfWidthPunctuation;
+    let repeatedPunctuationToSelectCandidateEnabled =
+      this.keyHandler_.repeatedPunctuationToSelectCandidateEnabled;
+
+    if (flag) {
+      this.lm_ = this.plainBopomofoLm_;
+    } else {
+      this.lm_ = this.mcBopomofoLm_;
+    }
+
+    this.lm_.setMacroConverter((input) => inputMacroController.handle(input));
+    this.keyHandler_ = new KeyHandler(this.lm_);
     this.keyHandler_.traditionalMode = flag;
+    this.keyHandler_.languageCode = languageCode;
+    this.keyHandler_.selectPhraseAfterCursorAsCandidate =
+      selectPhraseAfterCursorAsCandidate;
+    this.keyHandler_.moveCursorAfterSelection = moveCursorAfterSelection;
+    this.keyHandler_.putLowercaseLettersToComposingBuffer =
+      putLowercaseLettersToComposingBuffer;
+    this.keyHandler_.escKeyClearsEntireComposingBuffer =
+      escKeyClearsEntireComposingBuffer_;
+    this.keyHandler_.keyboardLayout = keyboardLayout;
+    this.keyHandler_.halfWidthPunctuation = halfWidthPunctuation;
+    this.keyHandler_.repeatedPunctuationToSelectCandidateEnabled =
+      repeatedPunctuationToSelectCandidateEnabled;
   }
 
   /**
