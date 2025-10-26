@@ -24,6 +24,7 @@ import { Empty } from "./McBopomofo/InputState";
  * @interface
  */
 interface Settings {
+  input_mode: string;
   /** The font size of the candidate window. */
   candidate_font_size: number;
   /**
@@ -99,6 +100,7 @@ interface UiState {
 
 /**  The default settings. */
 const defaultSettings: Settings = {
+  input_mode: "use_mcbopomofo",
   candidate_font_size: 16,
   layout: "standard",
   select_phrase: "before_cursor",
@@ -359,6 +361,9 @@ class PimeMcBopomofo {
 
   /** Applies the settings to the input controller. */
   public applySettings(): void {
+    let useTraditionalMode = this.settings.input_mode === "use_plainbopomofo";
+    this.inputController.setTraditionalMode(useTraditionalMode);
+
     this.inputController.setKeyboardLayout(this.settings.layout);
     this.inputController.setSelectPhrase(this.settings.select_phrase);
     this.inputController.setCandidateKeys(this.settings.candidate_keys);

@@ -226,6 +226,16 @@ export class InputController {
     let halfWidthPunctuation = this.keyHandler_.halfWidthPunctuation;
     let repeatedPunctuationToSelectCandidateEnabled =
       this.keyHandler_.repeatedPunctuationToSelectCandidateEnabled;
+    let onError = this.onError_;
+    let onOpenUrl = this.keyHandler_.onOpenUrl;
+    let ctrlEnterOption = this.keyHandler_.ctrlEnterOption;
+
+    let macroConverter = this.lm_.getMacroConverter();
+    let converter = this.lm_.getConverter();
+    let addUserPhraseConverter = this.lm_.getAddUserPhraseConverter();
+    let excludedPhraseConverter = this.lm_.getExcludedPhraseConverter();
+    let userPhrases = this.lm_.getUserPhrases();
+    let excludedPhrases = this.lm_.getExcludedPhrases();
 
     if (flag) {
       this.lm_ = this.plainBopomofoLm_;
@@ -233,7 +243,13 @@ export class InputController {
       this.lm_ = this.mcBopomofoLm_;
     }
 
-    this.lm_.setMacroConverter((input) => inputMacroController.handle(input));
+    this.lm_.setMacroConverter(macroConverter);
+    this.lm_.setConverter(converter);
+    this.lm_.setAddUserPhraseConverter(addUserPhraseConverter);
+    this.lm_.setExcludedPhraseConverter(excludedPhraseConverter);
+    this.lm_.setUserPhrases(userPhrases);
+    this.lm_.setExcludedPhrases(excludedPhrases);
+
     this.keyHandler_ = new KeyHandler(this.lm_);
     this.keyHandler_.traditionalMode = flag;
     this.keyHandler_.languageCode = languageCode;
@@ -248,6 +264,9 @@ export class InputController {
     this.keyHandler_.halfWidthPunctuation = halfWidthPunctuation;
     this.keyHandler_.repeatedPunctuationToSelectCandidateEnabled =
       repeatedPunctuationToSelectCandidateEnabled;
+    this.onError_ = onError;
+    this.keyHandler_.onOpenUrl = onOpenUrl;
+    this.keyHandler_.ctrlEnterOption = ctrlEnterOption;
   }
 
   /**
@@ -454,14 +473,26 @@ export class InputController {
     this.onError_ = onError;
   }
 
+  public getOnError(): Function | undefined {
+    return this.onError_;
+  }
+
   /** Help the controller to open a URL. */
   public setOnOpenUrl(input: ((input: string) => void) | undefined) {
     this.keyHandler_.onOpenUrl = input;
   }
 
+  public getOnOpenUrl(): ((input: string) => void) | undefined {
+    return this.keyHandler_.onOpenUrl;
+  }
+
   /** Sets the option for Ctrl + Enter key. */
   public setCtrlEnterOption(option: CtrlEnterOption): void {
     this.keyHandler_.ctrlEnterOption = option;
+  }
+
+  public getCtrlEnterOption(): CtrlEnterOption {
+    return this.keyHandler_.ctrlEnterOption;
   }
 
   /**
