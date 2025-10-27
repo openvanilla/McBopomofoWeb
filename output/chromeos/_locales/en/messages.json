@@ -13,7 +13,7 @@
   "menuUserPhrases": { "message": "User Phrases" },
   "homepage": { "message": "Homepage" },
   "tooltip": { "message": "Tooltip" },
-  "optionTitle": { "message": "McBompofo Options" },
+  "optionTitle": { "message": "McBopomofo Options" },
   "optionKeyboardLayout": { "message": "Keyboard Layout:" },
   "optionKeyboardLayoutStandard": { "message": "Standard" },
   "optionKeyboardLayoutEten": { "message": "ETen" },
@@ -100,5 +100,8 @@
   "when_choosing_candidates": { "message": "When Choosing Candidates:" },
   "moving_cursor_is_not_allowed": { "message": "Moving cursor is not allowed" },
   "jk_keys_move_the_cursor": { "message": "JK keys move the cursor" },
-  "hl_keys_move_the_cursor": { "message": "HL keys move the cursor" }
+  "hl_keys_move_the_cursor": { "message": "HL keys move the cursor" },
+  "input_mode_title": { "message": "Input Mode:" },
+  "use_mcbopomofo": { "message": "Use McBopomofo" },
+  "use_plainbopomofo": { "message": "Use Plain Bopomofo" }
 }

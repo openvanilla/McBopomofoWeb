@@ -1,6 +1,7 @@
 window.onload = () => {
   let settings = {};
   const defaultSettings = {
+    input_mode: "use_mcbopomofo",
     candidate_font_size: 16,
     layout: "standard",
     select_phrase: "before_cursor",
@@ -20,6 +21,13 @@ window.onload = () => {
   };
 
   function applySettings(settings) {
+    {
+      if (settings.input_mode === "use_plainbopomofo") {
+        document.getElementById("use_plainbopomofo").checked = true;
+      } else {
+        document.getElementById("use_mcbopomofo").checked = true;
+      }
+    }
     {
       let select = document.getElementById("font_size");
       let options = select.getElementsByTagName("option");
@@ -177,6 +185,16 @@ window.onload = () => {
     xhttp.open("GET", "/config");
     xhttp.send("");
   })();
+
+  document.getElementById("use_mcbopomofo").onchange = (event) => {
+    settings.input_mode = "use_mcbopomofo";
+    saveSettings(settings);
+  };
+
+  document.getElementById("use_plainbopomofo").onchange = (event) => {
+    settings.input_mode = "use_plainbopomofo";
+    saveSettings(settings);
+  };
 
   document.getElementById("font_size").onchange = (event) => {
     let value = document.getElementById("font_size").value;

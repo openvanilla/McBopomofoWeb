@@ -399,7 +399,7 @@ describe("KeyHandler", () => {
       let keys = asciiKey(["x", "u"]);
       keys.push(Key.namedKey(KeyName.SPACE));
       let state = handleKeySequence(keyHandler, keys);
-      expect(state).toBeInstanceOf(Empty);
+      expect(state).toBeInstanceOf(Committing);
     });
   });
 

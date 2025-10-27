@@ -21,6 +21,7 @@ const largeSync = new LargeSync();
  * Represents the settings for the McBopomofo IME on ChromeOS.
  */
 type ChromeMcBopomofoSettings = {
+  input_mode: string;
   /** The keyboard layout. */
   layout: string;
   /** Whether to select the phrase before or after the cursor. */
@@ -63,6 +64,7 @@ class ChromeMcBopomofo {
 
   // The default settings.
   readonly defaultSettings: ChromeMcBopomofoSettings = {
+    input_mode: "use_mcbopomofo",
     layout: "standard",
     select_phrase: "before_cursor",
     candidate_keys: "123456789",
@@ -79,6 +81,7 @@ class ChromeMcBopomofo {
     repeated_punctuation_choose_candidate: false,
   };
   settings: ChromeMcBopomofoSettings = {
+    input_mode: "use_mcbopomofo",
     layout: "standard",
     select_phrase: "before_cursor",
     candidate_keys: "123456789",
@@ -131,6 +134,12 @@ class ChromeMcBopomofo {
       if (this.settings === undefined) {
         this.settings = this.defaultSettings;
       }
+      if (this.settings.input_mode === "use_plainbopomofo") {
+        this.inputController.setTraditionalMode(true);
+      } else {
+        this.inputController.setTraditionalMode(false);
+      }
+
       if (
         this.settings.shift_key_toggle_alphabet_mode === undefined ||
         this.settings.shift_key_toggle_alphabet_mode === null

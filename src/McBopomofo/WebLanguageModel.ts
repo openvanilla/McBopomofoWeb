@@ -96,10 +96,20 @@ export class WebLanguageModel implements LanguageModel {
     this.macroConverter_ = converter;
   }
 
+  public getMacroConverter():
+    | ((input: string) => string | undefined)
+    | undefined {
+    return this.macroConverter_;
+  }
+
   private converter_?: (input: string) => string | undefined;
   /** Sets the string converter. */
   public setConverter(converter?: (input: string) => string | undefined): void {
     this.converter_ = converter;
+  }
+
+  public getConverter(): ((input: string) => string | undefined) | undefined {
+    return this.converter_;
   }
 
   /** Converts a macro. */
@@ -118,11 +128,23 @@ export class WebLanguageModel implements LanguageModel {
     this.addUserPhraseConverter = converter;
   }
 
+  public getAddUserPhraseConverter():
+    | ((input: string) => string | undefined)
+    | undefined {
+    return this.addUserPhraseConverter;
+  }
+
   /** Sets the string converter. */
   public setExcludedPhraseConverter(
     converter?: (input: string) => string | undefined
   ): void {
     this.excludedPhraseConverter = converter;
+  }
+
+  public getExcludedPhraseConverter():
+    | ((input: string) => string | undefined)
+    | undefined {
+    return this.excludedPhraseConverter;
   }
 
   private convertTextToMap(input: String): Map<string, string[]> {
@@ -163,6 +185,10 @@ export class WebLanguageModel implements LanguageModel {
     this.userPhrases_.setUserPhrases(map);
   }
 
+  public getUserPhrases(): Map<string, string[]> {
+    return this.userPhrases_["userPhrases_"];
+  }
+
   /** Sets the excluded phrases. */
   public setExcludedPhrases(input: Map<string, string[]> | string): void {
     let map: Map<string, string[]> | undefined = undefined;
@@ -172,6 +198,10 @@ export class WebLanguageModel implements LanguageModel {
       map = input;
     }
     this.excludedPhrases_.setUserPhrases(map);
+  }
+
+  public getExcludedPhrases(): Map<string, string[]> {
+    return this.excludedPhrases_["userPhrases_"];
   }
 
   /**
