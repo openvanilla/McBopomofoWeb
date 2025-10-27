@@ -1,6 +1,7 @@
 window.onload = () => {
   let settings = {};
   const defaultSettings = {
+    input_mode: "use_mcbopomofo",
     layout: "standard",
     select_phrase: "before_cursor",
     candidate_keys: "123456789",
@@ -18,6 +19,13 @@ window.onload = () => {
   };
 
   function applySettings(settings) {
+    {
+      if (settings.input_mode === "use_plainbopomofo") {
+        document.getElementById("use_plainbopomofo").checked = true;
+      } else {
+        document.getElementById("use_mcbopomofo").checked = true;
+      }
+    }
     {
       let select = document.getElementById("layout");
       let options = select.getElementsByTagName("option");
@@ -58,7 +66,6 @@ window.onload = () => {
       }
     }
     {
-      controller.setMovingCursorOption(settings.moving_cursor_option);
       let select = document.getElementById("moving_cursor_option");
       let options = select.getElementsByTagName("option");
       for (let option of options) {
@@ -118,6 +125,16 @@ window.onload = () => {
     }
     applySettings(settings);
   });
+
+  document.getElementById("use_mcbopomofo").onchange = (event) => {
+    settings.input_mode = "use_mcbopomofo";
+    saveSettings(settings);
+  };
+
+  document.getElementById("use_plainbopomofo").onchange = (event) => {
+    settings.input_mode = "use_plainbopomofo";
+    saveSettings(settings);
+  };
 
   document.getElementById("layout").onchange = (event) => {
     let value = document.getElementById("layout").value;
@@ -226,6 +243,14 @@ window.onload = () => {
   };
 
   window.document.title = chrome.i18n.getMessage("optionTitle");
+
+  document.getElementById("input_mode_title").innerText =
+    chrome.i18n.getMessage("input_mode_title");
+  document.getElementById("use_mcbopomofo_label").innerText =
+    chrome.i18n.getMessage("use_mcbopomofo");
+  document.getElementById("use_plainbopomofo_label").innerText =
+    chrome.i18n.getMessage("use_plainbopomofo");
+
   document.getElementById("options_title").innerText =
     chrome.i18n.getMessage("optionTitle");
   document.getElementById("keyboard_layout").innerText = chrome.i18n.getMessage(
