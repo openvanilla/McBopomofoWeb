@@ -13,7 +13,7 @@
   "menuUserPhrases": { "message": "User Phrases" },
   "homepage": { "message": "Homepage" },
   "tooltip": { "message": "Tooltip" },
-  "optionTitle": { "message": "McBompofo Options" },
+  "optionTitle": { "message": "McBopomofo Options" },
   "optionKeyboardLayout": { "message": "Keyboard Layout:" },
   "optionKeyboardLayoutStandard": { "message": "Standard" },
   "optionKeyboardLayoutEten": { "message": "ETen" },
