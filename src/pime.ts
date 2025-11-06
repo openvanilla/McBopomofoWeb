@@ -12,7 +12,6 @@ import {
 } from "./McBopomofo/InputController";
 import { InputUI } from "./McBopomofo/InputUI";
 import { KeyFromKeyboardEvent, VK_Keys } from "./pime_keys";
-import { List } from "lodash";
 import child_process from "child_process";
 import fs from "fs";
 import path from "path";
@@ -89,7 +88,7 @@ interface UiState {
   /** Whether to show the candidate window. */
   showCandidates: boolean;
   /** The list of candidates. */
-  candidateList: List<string>;
+  candidateList: string[];
   /** The cursor position in the candidate list. */
   candidateCursor: number;
   /** The message to be shown. */
