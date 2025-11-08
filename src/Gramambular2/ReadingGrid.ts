@@ -22,6 +22,9 @@ import { LanguageModel, Unigram } from "./LanguageModel";
  * @class
  */
 export class ReadingGrid {
+  static kMaximumSpanLength: number = 8;
+  static kDefaultSeparator: string = "-";
+
   private cursor_: number = 0;
   private separator_: string = ReadingGrid.kDefaultSeparator;
   private spans_: Span[] = [];
@@ -126,9 +129,6 @@ export class ReadingGrid {
     this.update();
     return false;
   }
-
-  static kMaximumSpanLength: number = 8;
-  static kDefaultSeparator: string = "-";
 
   /**
    * Find the weightiest path in the grid graph. The path represents the most
