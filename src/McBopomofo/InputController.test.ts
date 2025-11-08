@@ -401,7 +401,7 @@ describe("InputController", () => {
 
       state = controller.state;
       let parsed = JSON.parse(lastState);
-      let candidates = parsed.candidates;
+      const candidates = parsed.candidates;
       expect(candidates.length).toBe(9);
     });
 
@@ -1178,7 +1178,7 @@ describe("InputController", () => {
 
   describe("Arrow Keys", () => {
     let uiState = { candidates: [] };
-    let ui = {
+    const ui = {
       reset: () => {},
       commitString: (text: string) => {},
       update: (state: string) => {

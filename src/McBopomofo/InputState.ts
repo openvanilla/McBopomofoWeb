@@ -352,7 +352,7 @@ export class SelectingDateMacro implements InputState {
   readonly menu: string[] = [];
   constructor(converter: (input: string) => string) {
     for (let macro of SelectingDateMacro.macros) {
-      let value = converter(macro);
+      const value = converter(macro);
       if (value) {
         this.menu.push(value);
       }
@@ -392,7 +392,7 @@ export class SelectingFeature implements InputState {
 
     try {
       // Note: old JS engines may not support big5 encoding.
-      let _ = new TextDecoder("big5");
+      const _ = new TextDecoder("big5");
       features.push(new Feature("Big5 內碼輸入", () => new Big5()));
     } catch (e) {
       // bypass

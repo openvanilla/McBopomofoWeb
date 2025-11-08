@@ -87,7 +87,7 @@ export namespace FullWidthPunctuation {
     return map.get(c) as string;
   }
   export function supposedToBeAtStart(c: FullWidthPunctuation): boolean {
-    let validPunctuation = [
+    const validPunctuation = [
       FullWidthPunctuation.singleQuotationMarkLeft,
       FullWidthPunctuation.doubleQuotationMarkLeft,
       FullWidthPunctuation.parenthesesLeft,

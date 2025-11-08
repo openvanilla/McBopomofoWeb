@@ -22,7 +22,7 @@ export function TrimZerosAtStart(string: string): string {
   let nonZeroFound = false;
   let output = "";
   for (let i = 0; i < string.length; i++) {
-    let c = string.charAt(i);
+    const c = string.charAt(i);
     if (nonZeroFound) {
       output += c;
     } else if (c != "0") {

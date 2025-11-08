@@ -53,7 +53,7 @@ function handleKeySequence(keyHandler: KeyHandler, keys: Key[]): InputState {
 describe("KeyHandler", () => {
   let keyHandler: KeyHandler = new KeyHandler(new WebLanguageModel(webData));
   beforeEach(() => {
-    let lm = new WebLanguageModel(webData);
+    const lm = new WebLanguageModel(webData);
     keyHandler = new KeyHandler(lm);
   });
 
@@ -384,7 +384,7 @@ describe("KeyHandler", () => {
       let state = handleKeySequence(keyHandler, keys);
       expect(state).toBeInstanceOf(ChoosingCandidate);
       let choosingCandidate = state as ChoosingCandidate;
-      let candidate = choosingCandidate.candidates[0];
+      const candidate = choosingCandidate.candidates[0];
       keyHandler.candidateSelected(candidate, 0, (newState) => {
         state = newState;
       });
@@ -956,7 +956,7 @@ describe("KeyHandler", () => {
       expect(marking.head).toBe("");
       expect(marking.markedText).toBe("你好");
       expect(marking.tail).toBe("");
-      let right = Key.namedKey(KeyName.RIGHT, true, false);
+      const right = Key.namedKey(KeyName.RIGHT, true, false);
       keys = [right, right];
 
       for (let key of keys) {
@@ -1668,7 +1668,7 @@ describe("KeyHandler", () => {
     test("cancels enclosing number mode with ESC", () => {
       let currentState: InputState = new EnclosingNumber();
       let keys = asciiKey(["3", "0"]);
-      let escapeKey = Key.namedKey(KeyName.ESC);
+      const escapeKey = Key.namedKey(KeyName.ESC);
       keys.push(escapeKey);
       for (let key of keys) {
         keyHandler.handle(
@@ -2096,7 +2096,7 @@ describe("KeyHandler", () => {
       );
 
       // Either we get a new candidate or we cycle back to the first
-      let thirdPunctuationResult = (state as Inputting).composingBuffer;
+      const thirdPunctuationResult = (state as Inputting).composingBuffer;
       expect(
         thirdPunctuationResult === "。" || thirdPunctuationResult !== "．"
       ).toBeTruthy();
@@ -2122,7 +2122,7 @@ describe("KeyHandler", () => {
       expect((state as Inputting).composingBuffer).toBe("．");
 
       // Now type a different punctuation
-      let differentPunctuation = Key.asciiKey("<");
+      const differentPunctuation = Key.asciiKey("<");
       keyHandler.handle(
         differentPunctuation,
         state,
@@ -2140,7 +2140,7 @@ describe("KeyHandler", () => {
 
   describe("Ctrl + \\ feature selection", () => {
     test("enters SelectingFeature state with Ctrl+\\", () => {
-      let ctrlBackslash = new Key("\\", KeyName.UNKNOWN, false, true, false);
+      const ctrlBackslash = new Key("\\", KeyName.UNKNOWN, false, true, false);
       let state = handleKeySequence(keyHandler, [ctrlBackslash]);
       expect(state).toBeInstanceOf(SelectingFeature);
     });
@@ -2319,7 +2319,7 @@ describe("KeyHandler", () => {
     });
 
     test("keeps empty state when pressing Tab", () => {
-      let tabKey = Key.namedKey(KeyName.TAB);
+      const tabKey = Key.namedKey(KeyName.TAB);
       let state = handleKeySequence(keyHandler, [tabKey]);
       expect(state).toBeInstanceOf(Empty);
     });
@@ -2337,13 +2337,13 @@ describe("KeyHandler", () => {
     });
 
     test("keeps empty state when pressing Ctrl+Space", () => {
-      let ctrlSpace = new Key(" ", KeyName.SPACE, false, true, false);
+      const ctrlSpace = new Key(" ", KeyName.SPACE, false, true, false);
       let state = handleKeySequence(keyHandler, [ctrlSpace]);
       expect(state).toBeInstanceOf(Empty);
     });
 
     test("keeps empty state when pressing Alt+Space", () => {
-      let altSpace = new Key(" ", KeyName.SPACE, false, false, true);
+      const altSpace = new Key(" ", KeyName.SPACE, false, false, true);
       let state = handleKeySequence(keyHandler, [altSpace]);
       expect(state).toBeInstanceOf(Empty);
     });
@@ -2441,7 +2441,7 @@ describe("KeyHandler", () => {
     test("ignores numpad digit in empty state", () => {
       let currentState: InputState = new Empty();
 
-      let numpad7 = new Key("7", KeyName.UNKNOWN, false, false, true);
+      const numpad7 = new Key("7", KeyName.UNKNOWN, false, false, true);
       keyHandler.handle(
         numpad7,
         currentState,
@@ -2500,7 +2500,7 @@ describe("KeyHandler", () => {
       }
 
       expect(currentState).toBeInstanceOf(EnclosingNumber);
-      let enclosingNumber = currentState as EnclosingNumber;
+      const enclosingNumber = currentState as EnclosingNumber;
       expect(enclosingNumber.number).toBe("20");
     });
 
@@ -2537,7 +2537,7 @@ describe("KeyHandler", () => {
       expect(state).toBeInstanceOf(Inputting);
 
       // Then add a numpad key
-      let numpad5 = new Key("5", KeyName.UNKNOWN, false, false, true);
+      const numpad5 = new Key("5", KeyName.UNKNOWN, false, false, true);
       keyHandler.handle(
         numpad5,
         state,
@@ -2560,7 +2560,7 @@ describe("KeyHandler", () => {
       let state = handleKeySequence(keyHandler, keys);
 
       // Then add numpad operators
-      let numpadPlus = new Key("+", KeyName.UNKNOWN, false, false, true);
+      const numpadPlus = new Key("+", KeyName.UNKNOWN, false, false, true);
       keyHandler.handle(
         numpadPlus,
         state,
@@ -2570,7 +2570,7 @@ describe("KeyHandler", () => {
         () => {}
       );
 
-      let numpadMinus = new Key("-", KeyName.UNKNOWN, false, false, true);
+      const numpadMinus = new Key("-", KeyName.UNKNOWN, false, false, true);
       keyHandler.handle(
         numpadMinus,
         state,
@@ -2591,7 +2591,7 @@ describe("KeyHandler", () => {
       expect(state).toBeInstanceOf(Inputting);
 
       // Press numpad Enter
-      let numpadEnter = new Key("", KeyName.RETURN, false, false, true);
+      const numpadEnter = new Key("", KeyName.RETURN, false, false, true);
       keyHandler.handle(
         numpadEnter,
         state,

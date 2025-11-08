@@ -597,7 +597,7 @@ export class BopomofoSyllable {
           throw new Error("Invalid Bopomofo: multiple vowels");
         }
         if (middleVowel != undefined) {
-          let result = MiddleVowel.buildCombination(middleVowel, c);
+          const result = MiddleVowel.buildCombination(middleVowel, c);
           if (result == undefined) {
             throw new Error("Invalid Bopomofo: invalid combination");
           }
@@ -821,7 +821,7 @@ export class BopomofoSyllable {
       throw new Error("Invalid Braille: invalid character");
     }
 
-    let bpmf = BopomofoSyllable.makeBpmf(consonant, middleVowel, vowel, tone);
+    const bpmf = BopomofoSyllable.makeBpmf(consonant, middleVowel, vowel, tone);
     return new BopomofoSyllable(bpmf, braille);
   }
 }

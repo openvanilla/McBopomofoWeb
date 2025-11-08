@@ -202,7 +202,7 @@ describe("Test Pinyin", () => {
 
   test("Test HanyuPinyinString special cases", () => {
     // Test empty syllable
-    let emptySyllable = new BopomofoSyllable();
+    const emptySyllable = new BopomofoSyllable();
     expect(emptySyllable.HanyuPinyinString(true, false)).toBe("");
 
     // Test special combinations
@@ -225,15 +225,25 @@ describe("Test Pinyin", () => {
 
   test("Test additional pinyin parsing edge cases", () => {
     // Test "ing" parsing
-    expect(BopomofoSyllable.FromHanyuPinyin("bing1").composedString).toBe("ㄅㄧㄥ");
-    expect(BopomofoSyllable.FromHanyuPinyin("ding2").composedString).toBe("ㄉㄧㄥˊ");
-    
+    expect(BopomofoSyllable.FromHanyuPinyin("bing1").composedString).toBe(
+      "ㄅㄧㄥ"
+    );
+    expect(BopomofoSyllable.FromHanyuPinyin("ding2").composedString).toBe(
+      "ㄉㄧㄥˊ"
+    );
+
     // Test "ien" parsing (less common)
-    expect(BopomofoSyllable.FromHanyuPinyin("bien3").composedString).toBe("ㄅㄧㄣˇ");
-    
+    expect(BopomofoSyllable.FromHanyuPinyin("bien3").composedString).toBe(
+      "ㄅㄧㄣˇ"
+    );
+
     // Test "fung" -> "feng" special case
-    expect(BopomofoSyllable.FromHanyuPinyin("fung1").composedString).toBe("ㄈㄥ");
-    expect(BopomofoSyllable.FromHanyuPinyin("fong2").composedString).toBe("ㄈㄥˊ");
+    expect(BopomofoSyllable.FromHanyuPinyin("fung1").composedString).toBe(
+      "ㄈㄥ"
+    );
+    expect(BopomofoSyllable.FromHanyuPinyin("fong2").composedString).toBe(
+      "ㄈㄥˊ"
+    );
   });
 
   test("Test consonant-only syllables in HanyuPinyinString", () => {
@@ -257,34 +267,40 @@ describe("Test Pinyin", () => {
   test("Test FromComposedString edge cases", () => {
     // Test empty string
     expect(BopomofoSyllable.FromComposedString("").composedString).toBe("");
-    
+
     // Test valid composed strings
-    expect(BopomofoSyllable.FromComposedString("ㄅㄚ").composedString).toBe("ㄅㄚ");
-    expect(BopomofoSyllable.FromComposedString("ㄆㄛˊ").composedString).toBe("ㄆㄛˊ");
-    
+    expect(BopomofoSyllable.FromComposedString("ㄅㄚ").composedString).toBe(
+      "ㄅㄚ"
+    );
+    expect(BopomofoSyllable.FromComposedString("ㄆㄛˊ").composedString).toBe(
+      "ㄆㄛˊ"
+    );
+
     // Test complex syllables
-    expect(BopomofoSyllable.FromComposedString("ㄓㄨㄤˋ").composedString).toBe("ㄓㄨㄤˋ");
+    expect(BopomofoSyllable.FromComposedString("ㄓㄨㄤˋ").composedString).toBe(
+      "ㄓㄨㄤˋ"
+    );
   });
 
   test("Test BopomofoSyllable properties", () => {
     let syllable = BopomofoSyllable.FromHanyuPinyin("zhuang1");
-    
+
     // Test component getters
     expect(syllable.consonantComponent).toBe(BopomofoSyllable.ZH);
     expect(syllable.middleVowelComponent).toBe(BopomofoSyllable.U);
     expect(syllable.vowelComponent).toBe(BopomofoSyllable.ANG);
     expect(syllable.toneMarkerComponent).toBe(BopomofoSyllable.Tone1);
-    
+
     // Test isEmpty
     expect(syllable.isEmpty).toBe(false);
     expect(new BopomofoSyllable().isEmpty).toBe(true);
-    
+
     // Test hasConsonant, hasMiddleVowel, hasVowel, hasToneMarker
     expect(syllable.hasConsonant).toBe(true);
     expect(syllable.hasMiddleVowel).toBe(true);
     expect(syllable.hasVowel).toBe(true);
     expect(syllable.hasToneMarker).toBe(false); // Tone1 is 0
-    
+
     // Test with tone marker
     let syllable2 = BopomofoSyllable.FromHanyuPinyin("zhuang2");
     expect(syllable2.hasToneMarker).toBe(true);
@@ -311,28 +327,52 @@ describe("Test Pinyin", () => {
 
   test("Test maskType and classification properties", () => {
     // Test belongsToJQXClass
-    expect(BopomofoSyllable.FromComposedString("ㄐ").belongsToJQXClass).toBe(true);
-    expect(BopomofoSyllable.FromComposedString("ㄑ").belongsToJQXClass).toBe(true);
-    expect(BopomofoSyllable.FromComposedString("ㄒ").belongsToJQXClass).toBe(true);
-    expect(BopomofoSyllable.FromComposedString("ㄅ").belongsToJQXClass).toBe(false);
-    
+    expect(BopomofoSyllable.FromComposedString("ㄐ").belongsToJQXClass).toBe(
+      true
+    );
+    expect(BopomofoSyllable.FromComposedString("ㄑ").belongsToJQXClass).toBe(
+      true
+    );
+    expect(BopomofoSyllable.FromComposedString("ㄒ").belongsToJQXClass).toBe(
+      true
+    );
+    expect(BopomofoSyllable.FromComposedString("ㄅ").belongsToJQXClass).toBe(
+      false
+    );
+
     // Test belongsToZCSRClass
-    expect(BopomofoSyllable.FromComposedString("ㄓ").belongsToZCSRClass).toBe(true);
-    expect(BopomofoSyllable.FromComposedString("ㄔ").belongsToZCSRClass).toBe(true);
-    expect(BopomofoSyllable.FromComposedString("ㄕ").belongsToZCSRClass).toBe(true);
-    expect(BopomofoSyllable.FromComposedString("ㄖ").belongsToZCSRClass).toBe(true);
-    expect(BopomofoSyllable.FromComposedString("ㄗ").belongsToZCSRClass).toBe(true);
-    expect(BopomofoSyllable.FromComposedString("ㄘ").belongsToZCSRClass).toBe(true);
-    expect(BopomofoSyllable.FromComposedString("ㄙ").belongsToZCSRClass).toBe(true);
-    expect(BopomofoSyllable.FromComposedString("ㄅ").belongsToZCSRClass).toBe(false);
+    expect(BopomofoSyllable.FromComposedString("ㄓ").belongsToZCSRClass).toBe(
+      true
+    );
+    expect(BopomofoSyllable.FromComposedString("ㄔ").belongsToZCSRClass).toBe(
+      true
+    );
+    expect(BopomofoSyllable.FromComposedString("ㄕ").belongsToZCSRClass).toBe(
+      true
+    );
+    expect(BopomofoSyllable.FromComposedString("ㄖ").belongsToZCSRClass).toBe(
+      true
+    );
+    expect(BopomofoSyllable.FromComposedString("ㄗ").belongsToZCSRClass).toBe(
+      true
+    );
+    expect(BopomofoSyllable.FromComposedString("ㄘ").belongsToZCSRClass).toBe(
+      true
+    );
+    expect(BopomofoSyllable.FromComposedString("ㄙ").belongsToZCSRClass).toBe(
+      true
+    );
+    expect(BopomofoSyllable.FromComposedString("ㄅ").belongsToZCSRClass).toBe(
+      false
+    );
   });
 
   test("Test addEqual method", () => {
-    let syllable1 = new BopomofoSyllable(BopomofoSyllable.B);
+    const syllable1 = new BopomofoSyllable(BopomofoSyllable.B);
     let syllable2 = new BopomofoSyllable(BopomofoSyllable.A);
-    
+
     syllable1.addEqual(syllable2);
-    
+
     expect(syllable1.consonantComponent).toBe(BopomofoSyllable.B);
     expect(syllable1.vowelComponent).toBe(BopomofoSyllable.A);
   });

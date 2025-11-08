@@ -145,7 +145,7 @@ describe("Service", () => {
     let service = new Service();
     let input = "小麥注音輸入法";
     let result = service.convertTextToHtmlRuby(input);
-    let expected =
+    const expected =
       "<ruby>小<rp>(</rp><rt>ㄒㄧㄠˇ</rt><rp>)</rp></ruby><ruby>麥<rp>(</rp><rt>ㄇㄞˋ</rt><rp>)</rp></ruby><ruby>注<rp>(</rp><rt>ㄓㄨˋ</rt><rp>)</rp></ruby><ruby>音<rp>(</rp><rt>ㄧㄣ</rt><rp>)</rp></ruby><ruby>輸<rp>(</rp><rt>ㄕㄨ</rt><rp>)</rp></ruby><ruby>入<rp>(</rp><rt>ㄖㄨˋ</rt><rp>)</rp></ruby><ruby>法<rp>(</rp><rt>ㄈㄚˇ</rt><rp>)</rp></ruby>";
     expect(result).toBe(expected);
   });

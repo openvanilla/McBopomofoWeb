@@ -106,7 +106,7 @@ export class ChineseNumbers {
     let output = "";
     const currentDigits = digits(numberCase);
     for (let i = 0; i < 4; i++) {
-      let c: string = subString[i];
+      const c: string = subString[i];
       switch (c) {
         case " ":
           continue;
@@ -153,9 +153,9 @@ export class ChineseNumbers {
     } else if (intPart === "0") {
       output += currentDigits.get("0");
     } else {
-      let intSectionCount = Math.ceil(intTrimmed.length / 4);
-      let filledLength = intSectionCount * 4;
-      let filled = intTrimmed.padStart(filledLength, " ");
+      const intSectionCount = Math.ceil(intTrimmed.length / 4);
+      const filledLength = intSectionCount * 4;
+      const filled = intTrimmed.padStart(filledLength, " ");
       let readHead = 0;
       let zeroEverHappened = false;
       while (readHead < filledLength) {

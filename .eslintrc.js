@@ -11,6 +11,7 @@ module.exports = {
                 null: 'ignore'
             }
         ],
-        'typescript/class-name-casing': 'error'
+        'typescript/class-name-casing': 'error',
+        'prefer-const': 'error'
     }
 }

@@ -88,7 +88,7 @@ class HttpBasedDictionary implements DictionaryService {
  * compiled with Webpack, we want to put as much stuff into the compiled file as
  * possible.
  */
-let httpBasedDictionaryServices = {
+const httpBasedDictionaryServices = {
   services: [
     {
       name: "萌典",
@@ -192,7 +192,7 @@ export class DictionaryServices {
    */
   /* istanbul ignore next */
   buildMenu(phrase: string): string[] {
-    let output: string[] = [];
+    const output: string[] = [];
     for (let service of this.services) {
       output.push(service.textForMenu(phrase, this.localizedStrings));
     }

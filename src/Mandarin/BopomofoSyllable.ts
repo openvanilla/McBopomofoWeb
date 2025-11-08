@@ -82,7 +82,7 @@ export class BopomofoSyllable {
     }
 
     // try the first character
-    let c: string = pinyin.text.length > 0 ? pinyin.text.charAt(0) : "";
+    const c: string = pinyin.text.length > 0 ? pinyin.text.charAt(0) : "";
     switch (c) {
       case "b":
         firstComponent = BopomofoSyllable.B;
@@ -329,10 +329,10 @@ export class BopomofoSyllable {
     let vowel = "";
     let tone = "";
 
-    let cc = this.consonantComponent;
-    let mvc = this.middleVowelComponent;
-    let vc = this.vowelComponent;
-    let hasNoMVCOrVC = !(mvc || vc);
+    const cc = this.consonantComponent;
+    const mvc = this.middleVowelComponent;
+    const vc = this.vowelComponent;
+    const hasNoMVCOrVC = !(mvc || vc);
 
     switch (cc) {
       case BopomofoSyllable.B:
@@ -555,10 +555,10 @@ export class BopomofoSyllable {
   }
 
   static FromComposedString(str: string): BopomofoSyllable {
-    let syllable = new BopomofoSyllable(0);
+    const syllable = new BopomofoSyllable(0);
     for (let i = 0; i < str.length; i++) {
       let char = str.charAt(i);
-      let component =
+      const component =
         BopomofoCharacterMap.sharedInstance.characterToComponent.get(char);
       if (component != undefined) {
         syllable.addEqual(new BopomofoSyllable(component));
@@ -589,7 +589,7 @@ export class BopomofoSyllable {
 
   static FromAbsoluteOrder(order: number): BopomofoSyllable {
     let copy = order;
-    let consonantMask = copy % 22;
+    const consonantMask = copy % 22;
     copy -= consonantMask;
     let middleVowelMask = (copy % (22 * 4)) / 22;
     copy -= middleVowelMask * 22;
@@ -616,18 +616,18 @@ export class BopomofoSyllable {
   }
 
   static FromAbsoluteOrderString(orderString: string) {
-    let lowCode = orderString.charCodeAt(0);
-    let highCode = orderString.charCodeAt(1);
+    const lowCode = orderString.charCodeAt(0);
+    const highCode = orderString.charCodeAt(1);
     let low = lowCode - 48;
-    let High = (highCode - 48) * 79;
+    const High = (highCode - 48) * 79;
     return BopomofoSyllable.FromAbsoluteOrder(low + High);
   }
 
   get absoluteOrderString(): string {
     // 5*14*4*22 = 6160, we use a 79*79 encoding to represent that
-    let order = this.absoluteOrder;
+    const order = this.absoluteOrder;
     let low = 48 + (order % 79);
-    let high = 48 + ((order / 79) & 127);
+    const high = 48 + ((order / 79) & 127);
     return String.fromCharCode(low, high);
   }
 

@@ -42,11 +42,11 @@ export class BopomofoReadingBuffer {
     }
     if (k.length != 1) return false;
 
-    let lk = k.toLowerCase();
+    const lk = k.toLowerCase();
     if (lk >= "a" && lk <= "z") {
       // if a tone marker is already in place
       if (this.pinyinSequence_.length > 0) {
-        let lastc = this.pinyinSequence_.charAt(
+        const lastc = this.pinyinSequence_.charAt(
           this.pinyinSequence_.length - 1
         );
         if (lastc >= "2" && lastc <= "5") {

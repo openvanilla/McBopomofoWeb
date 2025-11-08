@@ -395,14 +395,14 @@ describe("Test BopomofoBrailleConverter", () => {
 
   describe("Performance and boundary tests", () => {
     test("should handle long input strings", () => {
-      let longInput = "ㄊㄞˊㄨㄢ".repeat(100);
+      const longInput = "ㄊㄞˊㄨㄢ".repeat(100);
       let r1 = BopomofoBrailleConverter.convertBpmfToBraille(longInput);
       let r2 = BopomofoBrailleConverter.convertBrailleToBpmf(r1);
       expect(r2).toBe(longInput);
     });
 
     test("should handle character conversions correctly", () => {
-      let validChars = [
+      const validChars = [
         { input: "ㄞ", expected: "⠺⠄" }, // Corrected expected value
         // { input: "ˊ", expected: "⠂" },
         // { input: "1", expectedContains: "⠁" },
@@ -452,15 +452,15 @@ describe("Test BopomofoBrailleConverter", () => {
       let input = "ㄒㄧㄠˇㄇㄞˋㄓㄨˋㄧㄣ 25°C";
       let r1 = BopomofoBrailleConverter.convertBpmfToBraille(input);
       let r2 = BopomofoBrailleConverter.convertBrailleToBpmf(r1);
-      let r3 = BopomofoBrailleConverter.convertBpmfToBraille(r2);
-      let r4 = BopomofoBrailleConverter.convertBrailleToBpmf(r3);
+      const r3 = BopomofoBrailleConverter.convertBpmfToBraille(r2);
+      const r4 = BopomofoBrailleConverter.convertBrailleToBpmf(r3);
 
       expect(r2).toBe(r4);
     });
 
     test("should handle whitespace normalization", () => {
-      let input1 = "ㄊㄞˊ ㄨㄢ";
-      let input2 = "ㄊㄞˊ  ㄨㄢ";
+      const input1 = "ㄊㄞˊ ㄨㄢ";
+      const input2 = "ㄊㄞˊ  ㄨㄢ";
 
       let r1 = BopomofoBrailleConverter.convertBpmfToBraille(input1);
       let r2 = BopomofoBrailleConverter.convertBpmfToBraille(input2);
@@ -517,7 +517,7 @@ describe("Test BopomofoBrailleConverter", () => {
       });
 
       test("should handle very long digit sequences", () => {
-        let longDigits = "1234567890".repeat(10);
+        const longDigits = "1234567890".repeat(10);
         let r1 = BopomofoBrailleConverter.convertBpmfToBraille(longDigits);
         expect(r1).toContain("⠼"); // Should contain digit prefix
         let r2 = BopomofoBrailleConverter.convertBrailleToBpmf(r1);
@@ -526,7 +526,7 @@ describe("Test BopomofoBrailleConverter", () => {
       });
 
       test("should handle very long letter sequences", () => {
-        let longLetters = "abcdefghijklmnopqrstuvwxyz".repeat(5);
+        const longLetters = "abcdefghijklmnopqrstuvwxyz".repeat(5);
         let r1 = BopomofoBrailleConverter.convertBpmfToBraille(longLetters);
         let r2 = BopomofoBrailleConverter.convertBrailleToBpmf(r1);
         expect(r2).toContain("abc");

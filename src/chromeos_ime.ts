@@ -494,14 +494,14 @@ class ChromeMcBopomofo {
         });
 
         if (candidates.length) {
-          let chromeCandidates = [];
+          const chromeCandidates = [];
           let index = 0;
           let selectedIndex = 0;
           for (let candidate of state.candidates) {
             if (candidate.selected) {
               selectedIndex = index;
             }
-            let item = {
+            const item = {
               candidate: candidate.candidate.displayedText,
               annotation: "",
               id: index++,
@@ -575,7 +575,7 @@ class ChromeMcBopomofo {
   }
 }
 
-let chromeMcBopomofo = new ChromeMcBopomofo();
+const chromeMcBopomofo = new ChromeMcBopomofo();
 
 chrome.input?.ime.onActivate.addListener((engineID) => {
   chromeMcBopomofo.engineID = engineID;

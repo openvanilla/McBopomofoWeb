@@ -360,7 +360,7 @@ class PimeMcBopomofo {
 
   /** Applies the settings to the input controller. */
   public applySettings(): void {
-    let useTraditionalMode = this.settings.input_mode === "use_plainbopomofo";
+    const useTraditionalMode = this.settings.input_mode === "use_plainbopomofo";
     this.inputController.setTraditionalMode(useTraditionalMode);
 
     this.inputController.setKeyboardLayout(this.settings.layout);
@@ -406,7 +406,7 @@ class PimeMcBopomofo {
       console.log(data);
       try {
         console.log("Try to load settings");
-        let newSettings = JSON.parse(data.toString());
+        const newSettings = JSON.parse(data.toString());
         this.settings = Object.assign({}, defaultSettings, newSettings);
         console.log(
           "Loaded settings: " + JSON.stringify(this.settings, null, 2)
@@ -445,7 +445,7 @@ class PimeMcBopomofo {
    * @returns The InputUI object.
    */
   public makeUI(instance: PimeMcBopomofo): InputUI {
-    let that: InputUI = {
+    const that: InputUI = {
       reset: () => {
         instance.uiState = {
           commitString: "",
@@ -460,7 +460,7 @@ class PimeMcBopomofo {
       },
       commitString(text: string) {
         console.log("commitString: " + text);
-        let joinedCommitString = instance.uiState.compositionString + text;
+        const joinedCommitString = instance.uiState.compositionString + text;
         console.log("joinedCommitString: " + joinedCommitString);
         instance.uiState = {
           commitString: joinedCommitString,
@@ -475,11 +475,11 @@ class PimeMcBopomofo {
       },
       update(stateString: string) {
         let state = JSON.parse(stateString);
-        let composingBuffer = state.composingBuffer;
-        let candidates = state.candidates;
+        const composingBuffer = state.composingBuffer;
+        const candidates = state.candidates;
         let selectedIndex = 0;
         let index = 0;
-        let candidateList = [];
+        const candidateList = [];
         for (let candidate of state.candidates) {
           if (candidate.selected) {
             selectedIndex = index;
@@ -495,14 +495,14 @@ class PimeMcBopomofo {
           compositionString += item.text;
         }
 
-        let tooltip = state.tooltip;
+        const tooltip = state.tooltip;
         let showMessage = {};
         let hideMessage = true;
         if (tooltip) {
           showMessage = { message: tooltip, duration: 3 };
           hideMessage = false;
         }
-        let commitString = instance.uiState.commitString;
+        const commitString = instance.uiState.commitString;
         instance.uiState = {
           commitString: commitString,
           compositionString: compositionString,
@@ -541,9 +541,9 @@ class PimeMcBopomofo {
       }
     }
 
-    let windowsModeIconPath = path.join(__dirname, "icons", windowsModeIcon);
-    let settingsIconPath = path.join(__dirname, "icons", "config.ico");
-    let object: any = {};
+    const windowsModeIconPath = path.join(__dirname, "icons", windowsModeIcon);
+    const settingsIconPath = path.join(__dirname, "icons", "config.ico");
+    const object: any = {};
     let changeButton: any[] = [];
     if (this.isWindows8Above) {
       changeButton.push({ icon: windowsModeIconPath, id: "windows-mode-icon" });
