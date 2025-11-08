@@ -66,6 +66,7 @@ textarea#feature_user_phrases_text_area {
 #function {
   position: absolute;
   padding: 10px 0 0 10px;
+  color: #000;
 }
 
 #composing_buffer p {
