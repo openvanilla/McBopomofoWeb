@@ -76,6 +76,7 @@ textarea#feature_user_phrases_text_area {
   border: 1px solid #ccc;
   display: inline-block;
   font-size: 14pt;
+  color: #000;
 }
 
 #candidates {
