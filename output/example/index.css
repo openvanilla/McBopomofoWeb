@@ -34,14 +34,14 @@ textarea {
 }
 
 textarea#text_area {
-  background-color: gray;
+  background-color: darkblue;
   font-size: 14pt;
-  color: #fff;
+  line-height: 16pt;
+  color: ccc;
   border: 0;
   margin: 0;
   width: 100%;
-  height: 70%;
-  /* max-height: 100%; */
+  height: 80%;
   ime-mode: disabled;
   -webkit-ime-mode: disabled;
   -moz-ime-mode: disabled;
@@ -49,45 +49,41 @@ textarea#text_area {
 }
 
 textarea#text_area::placeholder {
-  color: #003;
+  color: #666;
 }
 
 textarea#text_area:focus {
   background-color: blue;
   border: 0;
   outline: none;
+  color: white;
 }
 
 textarea#feature_user_phrases_text_area {
   height: 70%;
 }
 
-.function {
+#function {
+  position: absolute;
+  padding: 10px 0 0 10px;
+}
+
+#composing_buffer p {
+  padding: 4px;
+  background-color: #fff;
+  margin-top: -10px;
+  margin-bottom: 10px;
   border: 1px solid #ccc;
-  padding: 10px;
-  height: 4em;
-  background-color: green;
-  color: #fff;
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
-
-.function table td {
-  font-size: 10pt !important;
-  color: #fff;
-}
-
-#composing_buffer {
-  white-space: nowrap;
+  display: inline-block;
+  font-size: 14pt;
 }
 
 #candidates {
-  white-space: nowrap;
-  margin-top: 10px;
+  padding: 4px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
 }
 
 .left {
@@ -133,12 +129,11 @@ textarea#feature_user_phrases_text_area {
   max-width: 1320px;
   margin-left: auto;
   margin-right: auto;
-  /* margin-top: 10px;
-  margin-bottom: 10px; */
 }
 
 .cursor {
-  animation: blinker 1s linear infinite;
+  color: red;
+  animation: blink 0.7s infinite;
 }
 
 .marking {
@@ -146,8 +141,7 @@ textarea#feature_user_phrases_text_area {
 }
 
 .highlighted_candidate {
-  background-color: white;
-  color: green;
+  background-color: lightcyan;
   font-weight: bold;
 }
 

@@ -17,28 +17,31 @@ function toggle_feature(id) {
   document.getElementById(id).style.display = "block";
   if (id === "feature_input") {
     document.getElementById("text_area").focus();
-    document.title = "輸入功能";
+    document.title = "小麥注音輸入法 - 輸入功能";
   } else if (id === "feature_user_phrases") {
-    document.title = "自定詞管理";
+    document.title = "小麥注音輸入法 - 自定詞管理";
   } else if (id === "feature_excluded_phrases") {
-    document.title = "管理排除的詞彙";
+    document.title = "小麥注音輸入法 - 管理排除的詞彙";
   } else if (id === "feature_text_to_braille") {
     document.getElementById("text_to_braille_text_area").focus();
-    document.title = "中文轉注音點字";
+    document.title = "小麥注音輸入法 - 中文轉注音點字";
   } else if (id === "feature_braille_to_text") {
     document.getElementById("braille_to_text_text_area").focus();
-    document.title = "注音點字轉中文";
+    document.title = "小麥注音輸入法 - 注音點字轉中文";
   } else if (id === "feature_add_bpmf") {
     document.getElementById("add_bpmf_text_area").focus();
-    document.title = "國字加注音";
+    document.title = "小麥注音輸入法 - 國字加注音";
   } else if (id === "feature_convert_hanyupnyin") {
     document.getElementById("convert_hanyupnyin_text_area").focus();
-    document.title = "國字轉拼音";
+    document.title = "小麥注音輸入法 - 國字轉拼音";
   }
 }
 
 function resetUI() {
-  let renderText = alphabetMode ? "【英】" : "【麥】";
+  document.getElementById("function").style.visibility = "hidden";
+  document.getElementById("composing_buffer").style.visibility = "hidden";
+  document.getElementById("candidates").style.visibility = "hidden";
+  let renderText = "";
   renderText += "<span class='cursor'>|</span>";
   document.getElementById("composing_buffer").innerHTML = renderText;
   document.getElementById("candidates").innerHTML = "";
@@ -57,11 +60,11 @@ let ui = (function () {
   that.reset = resetUI;
 
   that.commitString = function (string) {
-    var selectionStart = document.getElementById("text_area").selectionStart;
-    var selectionEnd = document.getElementById("text_area").selectionEnd;
-    var text = document.getElementById("text_area").value;
-    var head = text.substring(0, selectionStart);
-    var tail = text.substring(selectionEnd);
+    let selectionStart = document.getElementById("text_area").selectionStart;
+    let selectionEnd = document.getElementById("text_area").selectionEnd;
+    let text = document.getElementById("text_area").value;
+    let head = text.substring(0, selectionStart);
+    let tail = text.substring(selectionEnd);
     document.getElementById("text_area").value = head + string + tail;
     let start = selectionStart + string.length;
     document.getElementById("text_area").setSelectionRange(start, start);
@@ -72,52 +75,127 @@ let ui = (function () {
     let state = JSON.parse(string);
     {
       let buffer = state.composingBuffer;
-      let renderText = alphabetMode ? "【英】" : "【麥】";
+      document.getElementById("status").innerText = alphabetMode
+        ? "【英文】"
+        : "【中文】";
+      let renderText = "<p>";
       let plainText = "";
-      let i = 0;
-      for (let item of buffer) {
-        if (item.style === "highlighted") {
-          renderText += '<span class="marking">';
-        }
-        let text = item.text;
-        plainText += text;
-        for (let c of text) {
-          if (i === state.cursorIndex) {
-            renderText += "<span class='cursor'>|</span>";
-          }
-          renderText += c;
-          i++;
-        }
-        if (item.style === "highlighted") {
-          renderText += "</span>";
-        }
-      }
-      if (i === state.cursorIndex) {
+      if (buffer.length === 0) {
         renderText += "<span class='cursor'>|</span>";
+        document.getElementById("composing_buffer").style.visibility = "hidden";
+      } else {
+        let i = 0;
+        for (let item of buffer) {
+          if (item.style === "highlighted") {
+            renderText += '<span class="marking">';
+          }
+          let text = item.text;
+          plainText += text;
+          for (let c of text) {
+            if (i === state.cursorIndex) {
+              renderText += "<span class='cursor'>|</span>";
+            }
+            renderText += c;
+            i++;
+          }
+          if (item.style === "highlighted") {
+            renderText += "</span>";
+          }
+        }
+        if (i === state.cursorIndex) {
+          renderText += "<span class='cursor'>|</span>";
+        }
+        renderText += "</p>";
+        document.getElementById("composing_buffer").innerHTML = renderText;
+        document.getElementById("composing_buffer").style.visibility =
+          "visible";
+        composingBuffer = plainText;
       }
-      document.getElementById("composing_buffer").innerHTML = renderText;
-      composingBuffer = plainText;
     }
 
     if (state.candidates.length) {
-      let s = "<table><tr>";
+      let s = "<table>";
       for (let candidate of state.candidates) {
-        s += "<td>";
-        if (candidate.selected) s += '<span class="highlighted_candidate"> ';
-        s += '<span class="keycap">';
+        if (candidate.selected) {
+          s += '<tr class="highlighted_candidate"> ';
+        } else {
+          s += "<tr>";
+        }
+        s += '<td class="keycap">';
         s += candidate.keyCap;
-        s += "</span>";
-        s += '<span class="candidiate">';
-        s += candidate.candidate.displayedText;
-        s += "</span>";
-        if (candidate.selected) s += "</span>";
         s += "</td>";
+        s += '<td class="candidate">';
+        s += candidate.candidate.displayedText;
+        s += "</td>";
+        s += "</tr>";
       }
-      s += "</tr></table>";
+      s += '<tr class="page_info"> ';
+      s += '<td colspan="2" style="text-align: right;">';
+      s += "" + state.candidatePageIndex + " / " + state.candidatePageCount;
+      s += "</td>";
+      s += "</tr>";
+      s += "</table>";
+
       document.getElementById("candidates").innerHTML = s;
-    } else if (state.tooltip.length) {
-      document.getElementById("candidates").innerHTML = state.tooltip;
     }
+
+    document.getElementById("candidates").style.visibility = state.candidates
+      .length
+      ? "visible"
+      : "hidden";
+
+    document.getElementById("function").style.visibility = "visible";
+    const textArea = document.getElementById("text_area");
+    const functionDiv = document.getElementById("function");
+    const rect = textArea.getBoundingClientRect();
+    const textAreaStyle = window.getComputedStyle(textArea);
+    const lineHeight = parseInt(textAreaStyle.lineHeight) || 20;
+
+    // Create a temporary mirror div to measure actual caret position
+    const mirror = document.createElement("div");
+    const styles = [
+      "fontFamily",
+      "fontSize",
+      "fontWeight",
+      "letterSpacing",
+      "wordWrap",
+      "whiteSpace",
+      "lineHeight",
+      "padding",
+      "border",
+      "boxSizing",
+      "width",
+    ];
+    styles.forEach((style) => {
+      mirror.style[style] = textAreaStyle[style];
+    });
+    mirror.style.position = "absolute";
+    mirror.style.visibility = "hidden";
+    mirror.style.whiteSpace = "pre-wrap";
+    mirror.style.wordWrap = "break-word";
+    mirror.style.overflowWrap = "break-word";
+
+    const caretPos = textArea.selectionStart;
+    const textBeforeCaret = textArea.value.substring(0, caretPos);
+    mirror.textContent = textBeforeCaret;
+
+    const caretSpan = document.createElement("span");
+    caretSpan.textContent = "|";
+    mirror.appendChild(caretSpan);
+
+    document.body.appendChild(mirror);
+
+    const caretRect = caretSpan.getBoundingClientRect();
+    const mirrorRect = mirror.getBoundingClientRect();
+
+    const relativeTop = caretRect.top - mirrorRect.top;
+    const relativeLeft = caretRect.left - mirrorRect.left;
+
+    document.body.removeChild(mirror);
+
+    functionDiv.style.position = "absolute";
+    functionDiv.style.top = rect.top + relativeTop + lineHeight + "px";
+    functionDiv.style.left = rect.left + relativeLeft + "px";
   };
 
   return that;
@@ -125,6 +203,7 @@ let ui = (function () {
 
 const { InputController, Service } = window.mcbopomofo;
 let controller = new InputController(ui);
+controller.setUserVerticalCandidates(true);
 
 controller.setOnPhraseChange((userPhrases) => {
   console.log("userPhrases changed");
