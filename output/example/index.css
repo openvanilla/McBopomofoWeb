@@ -89,8 +89,9 @@ textarea#feature_user_phrases_text_area {
 .left {
   width: 70%;
   float: left;
-  min-height: 90%;
+  min-height: 80%;
   overflow: auto !important;
+  padding: 10px;
 }
 
 .right {
