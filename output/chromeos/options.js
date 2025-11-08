@@ -1,5 +1,4 @@
 window.onload = () => {
-  let settings = {};
   const defaultSettings = {
     input_mode: "use_mcbopomofo",
     layout: "standard",
@@ -18,6 +17,8 @@ window.onload = () => {
     repeated_punctuation_choose_candidate: false,
   };
 
+  let settings = {};
+
   function applySettings(settings) {
     {
       if (settings.input_mode === "use_plainbopomofo") {
@@ -27,9 +28,9 @@ window.onload = () => {
       }
     }
     {
-      let select = document.getElementById("layout");
-      let options = select.getElementsByTagName("option");
-      for (let option of options) {
+      const select = document.getElementById("layout");
+      const options = select.getElementsByTagName("option");
+      for (const option of options) {
         if (option.value === settings.layout) {
           option.selected = "selected";
           break;
@@ -37,9 +38,9 @@ window.onload = () => {
       }
     }
     {
-      let select = document.getElementById("keys");
-      let options = select.getElementsByTagName("option");
-      for (let option of options) {
+      const select = document.getElementById("keys");
+      const options = select.getElementsByTagName("option");
+      for (const option of options) {
         if (option.value === settings.candidate_keys) {
           option.selected = "selected";
           break;
@@ -47,9 +48,9 @@ window.onload = () => {
       }
     }
     {
-      let select = document.getElementById("keys_count");
-      let options = select.getElementsByTagName("option");
-      for (let option of options) {
+      const select = document.getElementById("keys_count");
+      const options = select.getElementsByTagName("option");
+      for (const option of options) {
         if (option.value == settings.candidate_keys_count) {
           option.selected = "selected";
           break;
@@ -66,9 +67,9 @@ window.onload = () => {
       }
     }
     {
-      let select = document.getElementById("moving_cursor_option");
-      let options = select.getElementsByTagName("option");
-      for (let option of options) {
+      const select = document.getElementById("moving_cursor_option");
+      const options = select.getElementsByTagName("option");
+      for (const option of options) {
         if (option.value === settings.moving_cursor_option) {
           option.selected = "selected";
           break;
@@ -96,9 +97,9 @@ window.onload = () => {
       }
     }
     {
-      let select = document.getElementById("ctrl_enter_option");
-      let options = select.getElementsByTagName("option");
-      for (let option of options) {
+      const select = document.getElementById("ctrl_enter_option");
+      const options = select.getElementsByTagName("option");
+      for (const option of options) {
         if (option.value == settings.ctrl_enter_option) {
           option.selected = "selected";
           break;
@@ -137,19 +138,19 @@ window.onload = () => {
   };
 
   document.getElementById("layout").onchange = (event) => {
-    let value = document.getElementById("layout").value;
+    const value = document.getElementById("layout").value;
     settings.layout = value;
     saveSettings(settings);
   };
 
   document.getElementById("keys").onchange = (event) => {
-    let value = document.getElementById("keys").value;
+    const value = document.getElementById("keys").value;
     settings.candidate_keys = value;
     saveSettings(settings);
   };
 
   document.getElementById("keys_count").onchange = (event) => {
-    let value = document.getElementById("keys_count").value;
+    const value = document.getElementById("keys_count").value;
     settings.candidate_keys_count = +value;
     saveSettings(settings);
   };
@@ -165,25 +166,25 @@ window.onload = () => {
   };
 
   document.getElementById("esc_key").onchange = (event) => {
-    let checked = document.getElementById("esc_key").checked;
+    const checked = document.getElementById("esc_key").checked;
     settings.esc_key_clear_entire_buffer = checked;
     saveSettings(settings);
   };
 
   document.getElementById("moving_cursor_option").onchange = function (event) {
-    let value = document.getElementById("moving_cursor_option").value;
+    const value = document.getElementById("moving_cursor_option").value;
     settings.moving_cursor_option = +value;
     saveSettings(settings);
   };
 
   document.getElementById("use_notification").onchange = function (event) {
-    let checked = document.getElementById("use_notification").checked;
+    const checked = document.getElementById("use_notification").checked;
     settings.use_notification = checked;
     saveSettings(settings);
   };
 
   document.getElementById("shift_key").onchange = (event) => {
-    let checked = document.getElementById("shift_key").checked;
+    const checked = document.getElementById("shift_key").checked;
     settings.shift_key_toggle_alphabet_mode = checked;
     saveSettings(settings);
   };
@@ -199,7 +200,7 @@ window.onload = () => {
   };
 
   document.getElementById("move_cursor").onchange = (event) => {
-    let checked = document.getElementById("move_cursor").checked;
+    const checked = document.getElementById("move_cursor").checked;
     settings.move_cursor = checked;
     saveSettings(settings);
   };
@@ -207,7 +208,7 @@ window.onload = () => {
   document.getElementById("repeated_punctuation_choose_candidate").onchange = (
     event
   ) => {
-    let checked = document.getElementById(
+    const checked = document.getElementById(
       "repeated_punctuation_choose_candidate"
     ).checked;
     settings.repeated_punctuation_choose_candidate = checked;
@@ -221,7 +222,7 @@ window.onload = () => {
           chrome.tabs.create({ active: true, url: url });
           return;
         }
-        let tabId = tabs[0].id;
+        const tabId = tabs[0].id;
         if (tabId === undefined) {
           chrome.tabs.create({ active: true, url: url });
         } else {
@@ -229,15 +230,14 @@ window.onload = () => {
         }
       });
     }
-    let page = "user_phrase.html";
-    let url = chrome.runtime.getURL(page);
+    const page = "user_phrase.html";
+    const url = chrome.runtime.getURL(page);
     tryOpen(url);
     return false;
   };
 
   document.getElementById("ctrl_enter_option").onchange = (event) => {
-    let value = document.getElementById("ctrl_enter_option").value;
-    value = +value;
+    const value = +document.getElementById("ctrl_enter_option").value;
     settings.ctrl_enter_option = value;
     saveSettings(settings);
   };

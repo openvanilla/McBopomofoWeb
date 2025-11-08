@@ -254,9 +254,7 @@ const defaultSettings = {
   beep_on_error: true,
   repeated_punctuation_choose_candidate: false,
 };
-let settings = {};
-
-function loadSettings() {
+const loadSettings = () => {
   const result = window.localStorage.getItem("user_settings");
   try {
     const obj = JSON.parse(result);
@@ -274,6 +272,8 @@ function loadSettings() {
   } catch (e) {}
   return defaultSettings;
 }
+
+let settings = loadSettings();
 
 function saveSettings(settings) {
   const s = JSON.stringify(settings);
@@ -411,10 +411,7 @@ function applySettings(settings) {
 }
 
 function loadUserPhrases() {
-  let result = window.localStorage.getItem("user_phrases");
-  if (result === undefined || result === null || result.length === 0) {
-    result = "";
-  }
+  const result = window.localStorage.getItem("user_phrases") || "";
   document.getElementById("feature_user_phrases_text_area").value = result;
   console.log("userPhrases:\n" + result);
   controller.setUserPhrases(result);
@@ -429,10 +426,7 @@ function saveUserPhrases(result) {
 }
 
 function loadExcludedPhrases() {
-  let result = window.localStorage.getItem("excluded_phrases");
-  if (result === undefined || result === null || result.length === 0) {
-    result = "";
-  }
+  const result = window.localStorage.getItem("excluded_phrases") || "";
   document.getElementById("feature_excluded_phrases_text_area").value = result;
   console.log("userPhrases:\n" + result);
   controller.setExcludedPhrases(result);
@@ -446,7 +440,6 @@ function saveExcludedPhrases(result) {
   document.getElementById("feature_excluded_phrases_text_area").value = result;
 }
 
-settings = loadSettings();
 applySettings(settings);
 loadUserPhrases();
 loadExcludedPhrases();
@@ -663,8 +656,7 @@ resetUI();
 document.getElementById("text_area").focus();
 
 function textToBraille() {
-  let text = document.getElementById("text_to_braille_text_area").value;
-  text = text.trim();
+  const text = document.getElementById("text_to_braille_text_area").value.trim();
   if (text.length === 0) {
     document.getElementById("text_to_braille_output").innerHTML =
       "<p>您沒有輸入任何內容！</p>";
@@ -683,8 +675,7 @@ function textToBraille() {
 }
 
 function brailleToText() {
-  let text = document.getElementById("braille_to_text_text_area").value;
-  text = text.trim();
+  const text = document.getElementById("braille_to_text_text_area").value.trim();
   if (text.length === 0) {
     document.getElementById("braille_to_text_output").innerHTML =
       "<p>您沒有輸入任何內容！</p>";
@@ -703,8 +694,7 @@ function brailleToText() {
 }
 
 function addBpmf() {
-  let text = document.getElementById("add_bpmf_text_area").value;
-  text = text.trim();
+  const text = document.getElementById("add_bpmf_text_area").value.trim();
   if (text.length === 0) {
     document.getElementById("add_bpmf_output").innerHTML =
       "<p>您沒有輸入任何內容！</p>";
@@ -730,8 +720,7 @@ function addBpmf() {
 }
 
 function convertHanyuPinyin() {
-  let text = document.getElementById("convert_hanyupnyin_text_area").value;
-  text = text.trim();
+  const text = document.getElementById("convert_hanyupnyin_text_area").value.trim();
   if (text.length === 0) {
     document.getElementById("convert_hanyupnyin_output").innerHTML =
       "<p>您沒有輸入任何內容！</p>";

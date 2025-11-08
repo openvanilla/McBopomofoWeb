@@ -1,16 +1,16 @@
 'use strict';
 
-let nime = require('nime');
-let fs   = require('fs');
-let path = require('path');
+const nime = require('nime');
+const fs   = require('fs');
+const path = require('path');
 
-let service = require('./index');
+const service = require('./index');
 
-let configFile = fs.readFileSync(path.join(process.cwd(), 'ime.json'), 'utf8');
-let config = JSON.parse(configFile);
+const configFile = fs.readFileSync(path.join(process.cwd(), 'ime.json'), 'utf8');
+const config = JSON.parse(configFile);
 
 config['textService'] = service;
 
-let server = nime.createServer(undefined, [config]);
+const server = nime.createServer(undefined, [config]);
 
 server.listen();

@@ -3,18 +3,18 @@
 //The content script then replaces the selected text with the converted text.
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   function replaceSelectedText(replacementText, isHtml) {
-    var sel, range;
+    let sel, range;
     if (window.getSelection) {
       sel = window.getSelection();
-      let activeElement = document.activeElement;
+      const activeElement = document.activeElement;
       if (
         activeElement.nodeName === "TEXTAREA" ||
         (activeElement.nodeName === "INPUT" &&
           activeElement.type.toLowerCase() === "text")
       ) {
-        let val = activeElement.value,
-          start = activeElement.selectionStart,
-          end = activeElement.selectionEnd;
+        const val = activeElement.value;
+        const start = activeElement.selectionStart;
+        const end = activeElement.selectionEnd;
         activeElement.value =
           val.slice(0, start) + replacementText + val.slice(end);
       } else {
@@ -26,9 +26,9 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             div.innerHTML = replacementText;
             range.insertNode(div);
           } else {
-            let lines = replacementText.split("\n").reverse();
+            const lines = replacementText.split("\n").reverse();
             if (lines.length > 1) {
-              for (let line of lines) {
+              for (const line of lines) {
                 const p = document.createElement("p");
                 p.innerText = line;
                 range.insertNode(p);
@@ -47,7 +47,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     }
   }
 
-  let text = request.text;
-  let isHtml = request.isHtml;
+  const text = request.text;
+  const isHtml = request.isHtml;
   replaceSelectedText(text, isHtml);
 });

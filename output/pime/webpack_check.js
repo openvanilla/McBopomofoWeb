@@ -1,7 +1,7 @@
 const { exit } = require("process");
-let service = require("./index");
-let textReducer = service.textReducer;
-let response = service.response;
+const service = require("./index");
+const textReducer = service.textReducer;
+const response = service.response;
 
 if (!service) { 
     console.error("service not found");

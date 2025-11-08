@@ -3,9 +3,9 @@ window.onload = () => {
   // the editor convert the JSON to phrases per line.
   function mapToText(map) {
     let text = "";
-    for (let k in map) {
-      let list = map[k];
-      for (let v of list) {
+    for (const k in map) {
+      const list = map[k];
+      for (const v of list) {
         text += v + " " + k + "\n";
       }
     }
@@ -13,15 +13,15 @@ window.onload = () => {
   }
 
   function textToMap(text) {
-    let lines = text.split("\n");
-    let map = {};
-    for (let line of lines) {
-      let kv = line.split(" ");
+    const lines = text.split("\n");
+    const map = {};
+    for (const line of lines) {
+      const kv = line.split(" ");
       if (kv.length != 2) {
         continue;
       }
-      let k = kv[1];
-      let v = kv[0];
+      const k = kv[1];
+      const v = kv[0];
       let list = map[k];
       if (list === undefined) {
         list = [];
@@ -37,13 +37,13 @@ window.onload = () => {
 
   function load_user_phrases() {
     chrome.storage.largeSync.get(["user_phrase"], (value) => {
-      let jsonString = value.user_phrase;
+      const jsonString = value.user_phrase;
 
       if (jsonString !== undefined) {
         try {
-          let obj = JSON.parse(jsonString);
+          const obj = JSON.parse(jsonString);
           if (obj) {
-            let s = mapToText(obj);
+            const s = mapToText(obj);
             document.getElementById("text_area").value = s;
           }
         } catch (e) {
@@ -55,13 +55,13 @@ window.onload = () => {
 
   function load_excluded_phrases() {
     chrome.storage.largeSync.get(["excluded_phrase"], (value) => {
-      let jsonString = value.user_phrase;
+      const jsonString = value.user_phrase;
 
       if (jsonString !== undefined) {
         try {
-          let obj = JSON.parse(jsonString);
+          const obj = JSON.parse(jsonString);
           if (obj) {
-            let s = mapToText(obj);
+            const s = mapToText(obj);
             document.getElementById("text_area_excluded_phrase").value = s;
           }
         } catch (e) {
@@ -95,9 +95,9 @@ window.onload = () => {
   };
 
   document.getElementById("save").onclick = () => {
-    let text = document.getElementById("text_area").value;
-    let map = textToMap(text);
-    let jsonString = JSON.stringify(map);
+    const text = document.getElementById("text_area").value;
+    const map = textToMap(text);
+    const jsonString = JSON.stringify(map);
     chrome.storage.largeSync.set({ user_phrase: jsonString });
     console.log("write user_phrase done");
 
@@ -115,9 +115,9 @@ window.onload = () => {
   };
 
   document.getElementById("save_excluded_phrases").onclick = () => {
-    let text = document.getElementById("text_area_excluded_phrases").value;
-    let map = textToMap(text);
-    let jsonString = JSON.stringify(map);
+    const text = document.getElementById("text_area_excluded_phrases").value;
+    const map = textToMap(text);
+    const jsonString = JSON.stringify(map);
     chrome.storage.largeSync.set({ excluded_phrase: jsonString });
     console.log("write user_phrase done");
 

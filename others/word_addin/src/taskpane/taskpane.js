@@ -20,14 +20,14 @@ export async function textToBraille() {
       return;
     }
 
-    let selection = context.document.getSelection();
+    const selection = context.document.getSelection();
     context.load(selection, "text");
     await context.sync();
-    let lines = selection.text.split("\n");
+    const lines = selection.text.split("\n");
     selection.clear();
     for (let i = 0; i < lines.length; i++) {
-      let line = lines[i];
-      let converted = service.convertTextToBraille(line);
+      const line = lines[i];
+      const converted = service.convertTextToBraille(line);
       selection.insertText(converted);
       if (i < lines.length - 1) {
         selection.insertBreak(Word.BreakType.line);
@@ -42,14 +42,14 @@ export async function brailleToText() {
       return;
     }
 
-    let selection = context.document.getSelection();
+    const selection = context.document.getSelection();
     context.load(selection, "text");
     await context.sync();
-    let lines = selection.text.split("\n");
+    const lines = selection.text.split("\n");
     selection.clear();
     for (let i = 0; i < lines.length; i++) {
-      let line = lines[i];
-      let converted = service.convertBrailleToText(line);
+      const line = lines[i];
+      const converted = service.convertBrailleToText(line);
       selection.insertText(converted);
       if (i < lines.length - 1) {
         selection.insertBreak(Word.BreakType.line);
