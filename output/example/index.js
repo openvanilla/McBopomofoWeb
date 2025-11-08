@@ -1,4 +1,5 @@
 let alphabetMode = false;
+let menuVisible = true;
 let composingBuffer = "";
 
 function toggle_feature(id) {
@@ -70,13 +71,29 @@ const ui = (function () {
     composingBuffer = "";
   };
 
+  that.updateMenu = function () {
+    document.getElementById("menu").style.display = menuVisible
+      ? "block"
+      : "none";
+    document.getElementById("feature_input_area").style.width = menuVisible
+      ? "70%"
+      : "100%";
+    document.getElementById("menu_visible").innerHTML = menuVisible
+      ? '<a href="" onclick="hideMenu(); return false;">隱藏設定</a>'
+      : '<a href="" onclick="showMenu(); return false;">顯示設定</a>';
+  };
+
+  that.updateByAlphabetMode = function () {
+    document.getElementById("status").innerHTML = alphabetMode
+      ? '<a href="" onclick="enterChineseMode(); return false;">【英文】</a>'
+      : '<a href="" onclick="enterAlphabetMode(); return false;">【中文】</a>';
+  };
+
   that.update = function (string) {
     const state = JSON.parse(string);
     {
+      that.updateByAlphabetMode();
       const buffer = state.composingBuffer;
-      document.getElementById("status").innerText = alphabetMode
-        ? "【英文】"
-        : "【中文】";
       let renderText = "<p>";
       let plainText = "";
       if (buffer.length === 0) {
@@ -143,6 +160,7 @@ const ui = (function () {
       ? "visible"
       : "hidden";
 
+    // Create a temporary mirror div to measure actual caret position
     document.getElementById("function").style.visibility = "visible";
     const textArea = document.getElementById("text_area");
     const functionDiv = document.getElementById("function");
@@ -157,7 +175,7 @@ const ui = (function () {
       "fontSize",
       "fontWeight",
       "letterSpacing",
-      "wordWrap",
+      "overflowWrap",
       "whiteSpace",
       "lineHeight",
       "padding",
@@ -171,7 +189,6 @@ const ui = (function () {
     mirror.style.position = "absolute";
     mirror.style.visibility = "hidden";
     mirror.style.whiteSpace = "pre-wrap";
-    mirror.style.wordWrap = "break-word";
     mirror.style.overflowWrap = "break-word";
 
     const caretPos = textArea.selectionStart;
@@ -192,13 +209,46 @@ const ui = (function () {
 
     document.body.removeChild(mirror);
 
+    // Account for textarea scroll position
+    const scrollTop = textArea.scrollTop;
+    const scrollLeft = textArea.scrollLeft;
+
     functionDiv.style.position = "absolute";
-    functionDiv.style.top = rect.top + relativeTop + lineHeight + "px";
-    functionDiv.style.left = rect.left + relativeLeft + "px";
+    functionDiv.style.top =
+      rect.top + relativeTop + lineHeight - scrollTop + "px";
+    functionDiv.style.left = rect.left + relativeLeft - scrollLeft + "px";
   };
 
+  that.updateByAlphabetMode();
+  that.updateMenu();
   return that;
 })();
+
+function enterAlphabetMode() {
+  alphabetMode = true;
+  ui.updateByAlphabetMode();
+  controller.reset();
+  document.getElementById("text_area").focus();
+}
+
+function enterChineseMode() {
+  alphabetMode = false;
+  ui.updateByAlphabetMode();
+  controller.reset();
+  document.getElementById("text_area").focus();
+}
+
+function hideMenu() {
+  menuVisible = false;
+  ui.updateMenu();
+  document.getElementById("text_area").focus();
+}
+
+function showMenu() {
+  menuVisible = true;
+  ui.updateMenu();
+  document.getElementById("text_area").focus();
+}
 
 const { InputController, Service } = window.mcbopomofo;
 const controller = new InputController(ui);
@@ -271,7 +321,7 @@ const loadSettings = () => {
     return obj;
   } catch (e) {}
   return defaultSettings;
-}
+};
 
 let settings = loadSettings();
 
@@ -656,7 +706,9 @@ resetUI();
 document.getElementById("text_area").focus();
 
 function textToBraille() {
-  const text = document.getElementById("text_to_braille_text_area").value.trim();
+  const text = document
+    .getElementById("text_to_braille_text_area")
+    .value.trim();
   if (text.length === 0) {
     document.getElementById("text_to_braille_output").innerHTML =
       "<p>您沒有輸入任何內容！</p>";
@@ -675,7 +727,9 @@ function textToBraille() {
 }
 
 function brailleToText() {
-  const text = document.getElementById("braille_to_text_text_area").value.trim();
+  const text = document
+    .getElementById("braille_to_text_text_area")
+    .value.trim();
   if (text.length === 0) {
     document.getElementById("braille_to_text_output").innerHTML =
       "<p>您沒有輸入任何內容！</p>";
@@ -720,7 +774,9 @@ function addBpmf() {
 }
 
 function convertHanyuPinyin() {
-  const text = document.getElementById("convert_hanyupnyin_text_area").value.trim();
+  const text = document
+    .getElementById("convert_hanyupnyin_text_area")
+    .value.trim();
   if (text.length === 0) {
     document.getElementById("convert_hanyupnyin_output").innerHTML =
       "<p>您沒有輸入任何內容！</p>";
