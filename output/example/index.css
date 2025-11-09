@@ -101,6 +101,11 @@ textarea#feature_excluded_phrases_text_area {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
   float: left;
+  color: black;
+}
+
+#candidates td {
+  color: black;
 }
 
 #tooltip {
