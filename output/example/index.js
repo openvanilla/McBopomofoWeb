@@ -257,7 +257,7 @@ const controller = (function () {
     window.open(url);
   });
   controller.setOnError(function () {
-    if (settings.beep_on_error) {
+    if (settingsManager.settings.beep_on_error) {
       ui.beep();
     }
   });
@@ -788,9 +788,9 @@ settingsManager.loadExcludedPhrases();
   document.getElementById("loading").innerText = "載入完畢！";
   setTimeout(function () {
     document.getElementById("loading").style.display = "none";
+    onHashChange();
   }, 2000);
   ui.reset();
-  document.getElementById("text_area").focus();
 
   function toggle_feature(id) {
     const features = [

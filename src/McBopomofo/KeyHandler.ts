@@ -1317,8 +1317,13 @@ export class KeyHandler {
           (bytes[2] << 4) | bytes[3],
         ]);
         let result = textDecoder.decode(uint8array);
-        stateCallback(new Committing(result));
-        stateCallback(new Empty());
+        if (!result || result.length !== 1 || result.charCodeAt(0) < 32) {
+          errorCallback();
+          stateCallback(new Empty());
+        } else {
+          stateCallback(new Committing(result));
+          stateCallback(new Empty());
+        }
       } else {
         let newState = new Big5(appended);
         stateCallback(newState);

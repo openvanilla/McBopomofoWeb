@@ -73,6 +73,10 @@ textarea#feature_user_phrases_text_area {
   height: 70%;
 }
 
+textarea#feature_excluded_phrases_text_area {
+  height: 70%;
+}
+
 #function {
   position: absolute;
   padding: 10px 0 0 10px;
