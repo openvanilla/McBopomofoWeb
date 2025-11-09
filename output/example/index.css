@@ -1,10 +1,17 @@
+html,
 body {
   font-family: Helvetica, Arial, sans-serif;
   font-size: 14pt;
+  height: 100%;
+  overflow: hidden;
 }
 
 #edit_area {
+  display: flex;
+  flex-direction: column;
   border: 2px solid #000;
+  height: 100%;
+  overflow: auto !important;
 }
 
 .navi {
@@ -31,9 +38,17 @@ textarea {
   resize: none;
   width: 100%;
   font-size: 14pt;
+  border: 1px solid #ccc;
+  border-radius: 0;
+}
+
+textarea:focus {
+  border: 1px solid black;
+  outline: none; /* Removes the blue ring */
 }
 
 textarea#text_area {
+  flex-grow: 1;
   background-color: darkgray;
   font-size: 14pt;
   line-height: 16pt;
@@ -41,7 +56,6 @@ textarea#text_area {
   border: 0;
   margin: 0;
   width: 100%;
-  height: 80%;
   ime-mode: disabled;
   -webkit-ime-mode: disabled;
   -moz-ime-mode: disabled;
@@ -60,6 +74,10 @@ textarea#text_area:focus {
 }
 
 textarea#feature_user_phrases_text_area {
+  height: 70%;
+}
+
+textarea#feature_excluded_phrases_text_area {
   height: 70%;
 }
 
@@ -86,20 +104,52 @@ textarea#feature_user_phrases_text_area {
   border: 1px solid #ccc;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
+  float: left;
+  color: black;
+}
+
+#candidates td {
+  color: black;
+  font-size: 12pt;
+  padding: 2px 2px;
+}
+
+.page_info {
+  font-size: 10pt;
+  color: #666;
+  text-align: right;
+}
+
+#tooltip {
+  background-color: lightyellow;
+  color: #000;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  float: left;
+  padding: 4px 8px;
+}
+
+.feature {
+  flex-direction: row;
+  justify-content: space-between;
+  min-height: 80%;
+  height: 100%;
 }
 
 .left {
   width: 70%;
-  float: left;
-  min-height: 80%;
-  overflow: auto !important;
+  overflow: hidden !important;
 }
 
 .right {
-  width: 28%;
-  float: right;
-  height: 90%;
+  width: 30%;
   overflow: auto !important;
+  padding-left: 20px;
+  margin: 0;
+}
+
+.right h2 {
+  margin-top: 0;
 }
 
 .right table {
@@ -131,6 +181,16 @@ textarea#feature_user_phrases_text_area {
   max-width: 1320px;
   margin-left: auto;
   margin-right: auto;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.content {
+  height: 100%;
+  max-height: 100%;
+  overflow: hidden;
 }
 
 .cursor {
@@ -140,6 +200,7 @@ textarea#feature_user_phrases_text_area {
 
 .marking {
   text-decoration: underline;
+  background-color: lightcyan;
 }
 
 .highlighted_candidate {
@@ -224,11 +285,12 @@ div.braille_to_text_output {
 
 .credit {
   font-size: 10pt;
+  height: 20px;
 }
 
 blockquote {
   background-color: #eee;
-  margin: 0;
+  margin: 10px 0 10px 0;
   padding: 20px;
 }
 
@@ -262,6 +324,25 @@ blockquote {
 #menu_visible a {
   text-decoration: none;
   color: #666;
+}
+
+.phrase_generate {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  height: 100%;
+}
+
+.phrase_generate_input_output_container {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+}
+
+.phrase_generate_input_output_container textarea {
+  height: 100%;
+  box-sizing: border-box;
 }
 
 @media (prefers-color-scheme: dark) {
