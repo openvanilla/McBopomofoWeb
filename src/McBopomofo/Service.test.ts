@@ -200,4 +200,11 @@ describe("Service", () => {
     result = service.appendBpmfReadingsToText(input);
     expect(result).toBe("第(ㄉㄧˋ)AB名(ㄇㄧㄥˊ)");
   });
+
+  test("test convertTextToRawReadings", () => {
+    let service = new Service();
+    let input = "小麥注音輸入法";
+    let result = service.convertTextToRawReadings(input);
+    expect(result).toBe("ㄒㄧㄠˇ-ㄇㄞˋ-ㄓㄨˋ-ㄧㄣ-ㄕㄨ-ㄖㄨˋ-ㄈㄚˇ");
+  });
 });

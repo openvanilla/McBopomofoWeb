@@ -41,6 +41,8 @@
     <p class="navi">功能展示：
       <a href="#feature_input" title="可以直接在網頁中使用的小麥注音輸入法">輸入功能</a>
       <span>｜</span>
+      <a href="#feature_generate_phrases" title="產生詞庫">詞庫產生工具</a>
+      <span>｜</span>
       <a href="#feature_text_to_braille" title="將國字轉換成點字">國字轉注音點字</a>
       <a href="#feature_braille_to_text" title="將點字轉換成國字">注音點字轉國字</a>
       <a href="#feature_add_bpmf" title="將國字加上注音">國字加注音</a>
@@ -304,6 +306,47 @@
           </blockquote>
         </div>
       </div>
+
+      <div id="feature_generate_phrases" class="feature">
+        <div class="left">
+          <div class="phrase_generate">
+            <div class="phrase_generate_input_output_container">
+              <textarea placeholder="請在此輸入要產生注音的詞條，一行一條" id="phrase_generate_input" rows="10" cols="50"
+                title="詞庫輸入"></textarea>
+            </div>
+            <div class="phrase_generate_input_output_container">
+              <textarea placeholder="這邊會產生轉換結果" id="phrase_generate_output" rows="10" cols="50"
+                title="詞庫產生結果"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="right">
+          <h2>詞庫產生工具</h2>
+
+          <p>
+            <button onclick="example.service.generatePhrases(); return false;">轉換</button>
+          </p>
+          <hr />
+
+          <p>如果您有多筆詞條，想要轉換成小麥注音使用的詞庫，您可以使用這個工具，一次產生所有詞條的注音。</p>
+          <p>使用流程如下</p>
+          <ul>
+            <li>先將要轉換的詞條輸入到左方的輸入框中</li>
+            <li>按下「轉換」按鈕</li>
+            <li>轉換結果將顯示在又方的輸出框中</li>
+          </ul>
+          <p>範例輸入</p>
+          <blockquote>
+            <p>小麥注音輸入法</p>
+          </blockquote>
+          <p>範例輸出</p>
+          <blockquote>
+            <p>小麥注音輸入法 ㄒㄧㄠˇ-ㄇㄞˋ-ㄓㄨˋ-ㄧㄣ-ㄕㄨ-ㄖㄨˋ-ㄈㄚˇ</p>
+          </blockquote>
+          <p>產生的詞條可以用在小麥注音的 macOS、Linux 等各平台版本。</p>
+        </div>
+      </div>
+
 
       <div id="feature_text_to_braille" class="feature">
         <div class="left">

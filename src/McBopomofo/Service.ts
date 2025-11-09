@@ -6,6 +6,7 @@ import { ReadingGrid } from "../Gramambular2";
 import { webData } from "./WebData";
 import { WebLanguageModel } from "./WebLanguageModel";
 import { BopomofoSyllable as MandarinBopomofoSyllable } from "../Mandarin";
+import { read } from "fs";
 
 const ChineseConvert = require("chinese_convert");
 
@@ -255,6 +256,22 @@ export class Service {
         return input;
       }
     );
+  }
+
+  public convertTextToRawReadings(input: string): string {
+    let output = this.convertText(
+      input,
+      (reading: string, value: string) => {
+        return reading + "-";
+      },
+      (input: string) => {
+        return input;
+      }
+    );
+    if (output.endsWith("-")) {
+      output = output.substring(0, output.length - 1);
+    }
+    return output;
   }
 
   /**

@@ -326,6 +326,25 @@ blockquote {
   color: #666;
 }
 
+.phrase_generate {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  height: 100%;
+}
+
+.phrase_generate_input_output_container {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+}
+
+.phrase_generate_input_output_container textarea {
+  height: 100%;
+  box-sizing: border-box;
+}
+
 @media (prefers-color-scheme: dark) {
   body {
     background-color: #333;

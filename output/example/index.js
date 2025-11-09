@@ -362,6 +362,30 @@ let example = (() => {
       document.getElementById("convert_hanyupnyin_output").innerHTML = html;
       document.getElementById("convert_hanyupnyin_text_area").focus();
     };
+
+    that.generatePhrases = () => {
+      const text = document.getElementById("phrase_generate_input");
+      const lines = text.value.trim().split("\n");
+      if (lines.length === 0) {
+        document.getElementById(
+          "phrase_generate_input_output_container"
+        ).innerHTML = "<p>您沒有輸入任何內容！</p>";
+        document.getElementById("phrase_generate_output").focus();
+        return;
+      }
+      let output = [];
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].trim();
+        const reading = that.service.convertTextToRawReadings(line);
+        const perline = line + " " + reading;
+        output.push(perline);
+      }
+      let finalOutput = output.join("\n");
+      let outputTextArea = document.getElementById("phrase_generate_output");
+      outputTextArea.value = finalOutput;
+      outputTextArea.focus();
+    };
+
     return that;
   })();
 
@@ -813,6 +837,7 @@ let example = (() => {
         "feature_braille_to_text",
         "feature_add_bpmf",
         "feature_convert_hanyupnyin",
+        "feature_generate_phrases",
       ];
       for (const feature of features) {
         document.getElementById(feature).style.display = "none";
@@ -839,6 +864,9 @@ let example = (() => {
       } else if (id === "feature_convert_hanyupnyin") {
         document.getElementById("convert_hanyupnyin_text_area").focus();
         document.title = "小麥注音輸入法 - 國字轉拼音";
+      } else if (id === "feature_generate_phrases") {
+        document.getElementById("phrase_generate_input").focus();
+        document.title = "小麥注音輸入法 - 詞庫產生工具";
       }
     }
 
