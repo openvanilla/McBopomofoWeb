@@ -110,6 +110,14 @@ textarea#feature_excluded_phrases_text_area {
 
 #candidates td {
   color: black;
+  font-size: 12pt;
+  padding: 2px 2px;
+}
+
+.page_info {
+  font-size: 10pt;
+  color: #666;
+  text-align: right;
 }
 
 #tooltip {

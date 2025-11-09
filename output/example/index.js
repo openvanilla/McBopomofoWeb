@@ -36,14 +36,14 @@ let example = (() => {
       document.getElementById("feature_input_area").style.width =
         globalUi.menuVisible ? "70%" : "100%";
       document.getElementById("menu_visible").innerHTML = globalUi.menuVisible
-        ? '<a href="" onclick="globalUi.hideMenu(); return false;">隱藏設定</a>'
-        : '<a href="" onclick="globalUi.showMenu(); return false;">顯示設定</a>';
+        ? '<a href="" onclick="example.globalUi.hideMenu(); return false;">隱藏設定</a>'
+        : '<a href="" onclick="example.globalUi.showMenu(); return false;">顯示設定</a>';
     };
 
     that.updateByAlphabetMode = () => {
       document.getElementById("status").innerHTML = globalUi.alphabetMode
-        ? '<a href="" onclick="globalUi.enterChineseMode(); return false;">【英文】</a>'
-        : '<a href="" onclick="globalUi.enterAlphabetMode(); return false;">【中文】</a>';
+        ? '<a href="" onclick="example.globalUi.enterChineseMode(); return false;">【英文】</a>'
+        : '<a href="" onclick="example.globalUi.enterAlphabetMode(); return false;">【中文】</a>';
     };
 
     that.update = (string) => {
@@ -104,7 +104,7 @@ let example = (() => {
           s += "</tr>";
         }
         s += '<tr class="page_info"> ';
-        s += '<td colspan="2" style="text-align: right;">';
+        s += '<td colspan="2">';
         s += "" + state.candidatePageIndex + " / " + state.candidatePageCount;
         s += "</td>";
         s += "</tr>";
@@ -861,6 +861,7 @@ let example = (() => {
 
   let example = {};
   example.ui = ui;
+  example.globalUi = globalUi;
   example.controller = controller;
   example.service = service;
   example.settingsManager = settingsManager;
