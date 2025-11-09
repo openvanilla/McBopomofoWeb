@@ -308,8 +308,13 @@
       <div id="feature_text_to_braille" class="feature">
         <div class="left">
           <textarea placeholder="請在此輸入國字" id="text_to_braille_text_area" rows="10" cols="50" title="輸入區"></textarea>
-          <p><input type="button" value="轉換" onclick="example.service.textToBraille();"></p>
-          <div id="text_to_braille_output"></div>
+          <p><input type="button" value="轉換" onclick="example.service.textToBraille();">
+            <button id="text_to_braille_output_copy_button"
+              onclick="navigator.clipboard.writeText(document.getElementById('text_to_braille_output').innerText); alert('已複製到剪貼簿');">複製結果</button>
+          </p>
+          <div id="text_to_braille_output">
+            尚未有轉換結果
+          </div>
         </div>
         <div class="right">
           <h2>國字轉點字</h2>
@@ -321,8 +326,13 @@
       <div id="feature_braille_to_text" class="feature">
         <div class="left">
           <textarea placeholder="請在此輸入六點注音" id="braille_to_text_text_area" rows="10" cols="50" title="輸入區"></textarea>
-          <p> <input type="button" value="轉換" onclick="example.service.brailleToText();"></p>
-          <div id="braille_to_text_output"></div>
+          <p> <input type="button" value="轉換" onclick="example.service.brailleToText();">
+            <button id="braille_to_text_output_copy_button"
+              onclick="navigator.clipboard.writeText(document.getElementById('braille_to_text_output').innerText); alert('已複製到剪貼簿');">複製結果</button>
+          </p>
+          <div id="braille_to_text_output">
+            尚未有轉換結果
+          </div>
         </div>
         <div class="right">
           <h2>點字轉國字</h2>
@@ -334,8 +344,13 @@
       <div id="feature_add_bpmf" class="feature">
         <div class="left">
           <textarea placeholder="請在此輸入國字" id="add_bpmf_text_area" rows="10" cols="50" title="輸入區"></textarea>
-          <p><input type="button" value="轉換" onclick="example.service.addBpmf();"></p>
-          <div id="add_bpmf_output"></div>
+          <p><input type="button" value="轉換" onclick="example.service.addBpmf();">
+            <button id="add_bpmf_outputt_copy_button"
+              onclick="navigator.clipboard.writeText(document.getElementById('add_bpmf_output').innerText); alert('已複製到剪貼簿');">複製結果</button>
+          </p>
+          <div id="add_bpmf_output">
+            尚未有轉換結果
+          </div>
         </div>
         <div class="right">
           <h2>國字加注音</h2>
@@ -363,8 +378,14 @@
       <div id="feature_convert_hanyupnyin" class="feature">
         <div class="left">
           <textarea placeholder="請在此輸入國字" id="convert_hanyupnyin_text_area" rows="10" cols="50" title="輸入區"></textarea>
-          <p><input type="button" value="轉換" onclick="example.service.convertHanyuPinyin();"></p>
-          <div id="convert_hanyupnyin_output"></div>
+          <p>
+            <input type="button" value="轉換" onclick="example.service.convertHanyuPinyin();">
+            <button id="convert_hanyupnyin_output_copy_button"
+              onclick="navigator.clipboard.writeText(document.getElementById('convert_hanyupnyin_output').innerText); alert('已複製到剪貼簿');">複製結果</button>
+          </p>
+          <div id="convert_hanyupnyin_output">
+            尚未有轉換結果
+          </div>
         </div>
         <div class="right">
           <h2>國字轉漢語拼音</h2>
