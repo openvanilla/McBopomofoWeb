@@ -3,6 +3,7 @@ body {
   font-family: Helvetica, Arial, sans-serif;
   font-size: 14pt;
   height: 100%;
+  overflow: hidden;
 }
 
 #edit_area {
@@ -121,9 +122,10 @@ textarea#feature_excluded_phrases_text_area {
 }
 
 .feature {
-  display: flex;
   flex-direction: row;
   justify-content: space-between;
+  min-height: 80%;
+  height: 100%;
 }
 
 .left {
@@ -173,6 +175,8 @@ textarea#feature_excluded_phrases_text_area {
   margin-right: auto;
   display: flex;
   flex-direction: column;
+  height: 100%;
+  overflow: hidden;
 }
 
 .content {
@@ -273,11 +277,12 @@ div.braille_to_text_output {
 
 .credit {
   font-size: 10pt;
+  height: 20px;
 }
 
 blockquote {
   background-color: #eee;
-  margin: 0;
+  margin: 10px 0 10px 0;
   padding: 20px;
 }
 
