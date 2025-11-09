@@ -40,8 +40,6 @@
 
     <p class="navi">功能展示：
       <a href="#feature_input" title="可以直接在網頁中使用的小麥注音輸入法">輸入功能</a>
-      <a href="#feature_user_phrases" title="自行添加自訂詞">自訂詞管理</a>
-      <a href="#feature_excluded_phrases" title="自行管理排除的詞彙">管理排除的詞彙</a>
       <span>｜</span>
       <a href="#feature_text_to_braille" title="將國字轉換成點字">國字轉注音點字</a>
       <a href="#feature_braille_to_text" title="將點字轉換成國字">注音點字轉國字</a>
@@ -50,327 +48,331 @@
       <span>｜</span>
       <a href="https://openvanilla.github.io/McBopomofoWeb/docs/" target="_top" title="API Reference">API Reference</a>
     </p>
+    <div class="content">
+      <div id="feature_input" class="feature">
+        <div class="left" id="feature_input_area">
+          <div id="edit_area">
+            <div class="status_area">
+              <div class="status" id="status">【中文】</div>
+              <div class="menu_visible" id="menu_visible">隱藏設定</div>
+            </div>
+            <textarea placeholder="請在此直接使用英數鍵盤打字" id="text_area" rows="10" cols="50" title="輸入區"></textarea>
+            <div class="function" id="function">
+              <div class="composing_buffer" id="composing_buffer"></div>
+              <div class="tooltip" id="tooltip"></div>
+              <div class="candidates" id="candidates"></div>
+            </div>
+          </div>
+        </div>
 
-    <div id="feature_input">
-      <div class="left" id="feature_input_area">
-        <div id="edit_area">
-          <div class="status_area">
-            <div class="status" id="status">【中文】</div>
-            <div class="menu_visible" id="menu_visible">隱藏設定</div>
+        <div class="right" id="menu">
+          <div id="note">
+            <p>這個網頁不支援手機在上使用，請使用電腦上的瀏覽器開啟。在電腦上，您可以直接透過鍵盤以及網頁上的注音輸入法來輸入中文。</p>
           </div>
-          <textarea placeholder="請在此直接使用英數鍵盤打字" id="text_area" rows="10" cols="50" title="輸入區"></textarea>
-          <div class="function" id="function">
-            <div class="composing_buffer" id="composing_buffer"></div>
-            <div class="tooltip" id="tooltip"></div>
-            <div class="candidates" id="candidates"></div>
-          </div>
+          <details open>
+            <summary> 自訂詞 </summary>
+            <ul>
+              <li><a href="#feature_user_phrases" title="自行添加自訂詞">管理自訂詞</a></li>
+              <li><a href="#feature_excluded_phrases" title="自行管理排除的詞彙">管理排除的詞彙</a></li>
+            </ul>
+          </details>
+          <details open>
+            <summary> 設定 </summary>
+            <table>
+              <tr>
+                <td class="option_title">模式：</td>
+                <td>
+                  <input type="radio" name="input_mode" value="use_mcbopomofo" id="use_mcbopomofo" checked="checked">
+                  <label for="use_mcbopomofo">小麥注音 (自動選字)</label><br>
+                  <input type="radio" name="input_mode" value="use_plainbopomofo" id="use_plainbopomofo">
+                  <label for="use_plainbopomofo">傳統注音 (手動選字)</label>
+                </td>
+              </tr>
+              <tr>
+                <td class="option_title">簡繁轉換：</td>
+                <td>
+                  <input type="radio" name="chinese_convert" value="trad" id="chinese_convert_trad"
+                    checked="checked"><label for="chinese_convert_trad">繁體中文</label><br>
+                  <input type="radio" name="chinese_convert" value="simp" id="chinese_convert_simp"><label
+                    for="chinese_convert_simp">簡體中文</label>
+                </td>
+              </tr>
+              <tr>
+                <td class="option_title">標點符號：</td>
+                <td>
+                  <input type="radio" name="punctuation" value="0" id="full_width_punctuation" checked="checked"><label
+                    for="full_width_punctuation">全形標點</label><br>
+                  <input type="radio" name="punctuation" value="1" id="half_width_punctuation"><label
+                    for="half_width_punctuation">半形標點</label>
+                </td>
+              </tr>
+              <tr>
+                <td class="option_title">鍵盤配置：</td>
+                <td>
+                  <select id="layout" title="鍵盤配置">
+                    <option value="Standard">標準</option>
+                    <option value="ETen">倚天</option>
+                    <option value="Hsu">許式</option>
+                    <option value="ETen26">倚天 26</option>
+                    <option value="HanyuPinyin">漢語拼音</option>
+                    <option value="IBM">IBM</option>
+                  </select><br />
+                  <p>關於各種鍵盤配置的差異，請參見 <a
+                      href="https://zh.wikipedia.org/zh-tw/%E6%B3%A8%E9%9F%B3%E8%BC%B8%E5%85%A5%E6%B3%95"
+                      target="_blank">Wikipedia</a>。</p>
+                </td>
+              </tr>
+              <tr>
+                <td class="option_title">選字按鍵：</td>
+                <td>
+                  <select id="keys" title="選字按鍵">
+                    <option value="123456789">123456789</option>
+                    <option value="asdfghjkl">asdfghjkl</option>
+                    <option value="asdfzxcvb">asdfzxcvb</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td class="option_title">選字鍵數量：</td>
+                <td>
+                  <select id="keys_count" title="選字按鍵">
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9" selected="selected">9</option>
+                  </select>
+                  <br />
+                </td>
+              </tr>
+              <tr>
+                <td class="option_title">選字時：</td>
+                <td>
+                  <select id="moving_cursor_option" title="選字時移動游標">
+                    <option value="0" selected="selected">不移動游標</option>
+                    <option value="1">JK 按鍵移動游標</option>
+                    <option value="2">HL 按鍵移動游標</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td class="option_title">選字模式：</td>
+                <td>
+                  <input type="radio" name="select_phrase" value="before_cursor" id="before_cursor"
+                    checked="checked"><label for="before_cursor">選擇游標前的字詞</label><br>
+                  <input type="radio" name="select_phrase" value="after_cursor" id="after_cursor"><label
+                    for="after_cursor">選擇游標後的字詞</label><br>
+                  <input type="checkbox" name="move_cursor" id="move_cursor"><label for="move_cursor">選字之後自動移動游標</label>
+                </td>
+              </tr>
+              <tr>
+                <td class="option_title">ESC 按鍵：</td>
+                <td>
+                  <input type="checkbox" name="esc_key" id="esc_key"><label for="esc_key">ESC 按鍵清除整個輸入緩衝區</label>
+                </td>
+              </tr>
+              <tr>
+                <td class="option_title">Shift + 字母：</td>
+                <td>
+                  <input type="radio" name="letters" value="uppercase_letters" id="uppercase_letters"
+                    checked="checked"><label for="uppercase_letters">輸入大寫字母</label><br>
+                  <input type="radio" name="letters" value="lowercase_letters" id="lowercase_letters"><label
+                    for="lowercase_letters">輸入小寫字母</label>
+                </td>
+              </tr>
+              <tr>
+                <td class="option_title">Ctrl + Enter：</td>
+                <td>
+                  <select id="ctrl_enter_option" title="按下 Ctrl 與 Enter 時的行為">
+                    <option value="0">不使用</option>
+                    <option value="1">輸入注音符號</option>
+                    <option value="2">輸入 HTML Ruby</option>
+                    <option value="3">輸入台灣點字</option>
+                    <option value="4">輸入漢語拼音</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td class="option_title">標點符號：</td>
+                <td>
+                  <input type="checkbox" name="repeated_punctuation_choose_candidate"
+                    id="repeated_punctuation_choose_candidate"><label
+                    for="repeated_punctuation_choose_candidate">重複按下標點符號，選擇下一個候選標點</label>
+                </td>
+              </tr>
+
+              <tr>
+                <td class="option_title">其他：</td>
+                <td>
+                  <input type="checkbox" name="beep_on_error" id="beep_on_error"><label for="beep_on_error">錯誤時發出<a
+                      onclick="beep(); return false;">
+                      嗶聲</a></label><br />
+                  <a href="#" id="fullscreen">全螢幕編輯</a><br />
+                  <!-- <a href="#" id="dump_user_phrases">印出使用者詞彙</a><br /> -->
+                </td>
+              </tr>
+            </table>
+          </details>
+          <details>
+            <summary> 說明 </summary>
+            <p>小麥注音是一套自動選字的注音輸入法，基本操作類似自然、酷音等。您可以在左方的輸入框中直接使用線上版本的小麥注音，無須安裝系統輸入法。使用方式如下</p>
+            <ul>
+              <li>輸入鍵盤按鍵，就會輸入注音或標點符號，在標準鍵盤下：
+                <ul>
+                  <li>Shift + , 輸入逗號</li>
+                  <li>Shift + . 輸入句號</li>
+                  <li>Shift + / 輸入問號</li>
+                </ul>
+              </li>
+
+              <li>空白鍵選字</li>
+              <li>按下 ` 會出現符號表</li>
+              <li>按一下 Shift 用來切換中英文</li>
+            </ul>
+          </details>
+          <details>
+            <summary> 特殊功能 </summary>
+            <p>小麥注音有一些特殊功能：</p>
+            <ul>
+              <li>一些特殊詞句，例如「火」，可以出現特別符號如「🔥」。</li>
+              <li>打「今年」、「今年」等詞彙，可以展開當天日期。</li>
+              <li>在出現選字窗時，在候選字上按下問題（？），就可以展開可用字典查詢這個候選字。同樣地，在使用 Shift 與左右按鍵選擇一段範圍後，也可以按下問號，查詢所選範圍的字。</li>
+              <li>打了一些內容後，可以選擇用 Ctrl + Enter 按鍵，輸出原本的注音符號，或是台灣通行的點字。</li>
+            </ul>
+
+          </details>
+          <details>
+            <summary> 其他 </summary>
+            <ul>
+              <li><a href="https://mcbopomofo.openvanilla.org/" target="_blank">小麥注音輸入法官網</a></li>
+              <li><a href="https://github.com/openvanilla/McBopomofo" target="_blank">小麥注音輸入法 macOS 版本</a></li>
+              <li><a href="https://github.com/openvanilla/fcitx5-mcbopomofo" target="_blank">小麥注音輸入法 fcitx5 版本</a></li>
+              <li><a href="https://github.com/openvanilla/McBopomofoWeb" target="_blank">小麥注音輸入法網頁版專案首頁</a></li>
+            </ul>
+          </details>
+
         </div>
       </div>
 
-      <div class="right" id="menu">
-        <div id="note">
-          <p>這個網頁不支援手機在上使用，請使用電腦上的瀏覽器開啟。在電腦上，您可以直接透過鍵盤以及網頁上的注音輸入法來輸入中文。</p>
+      <div id="feature_user_phrases" class="feature">
+        <div class="left">
+          <textarea placeholder="小麥注音 ㄒㄧㄠˇ-ㄇㄞˋ-ㄓㄨˋ-ㄧㄣ" id="feature_user_phrases_text_area" rows="10" cols="50"
+            title="輸入區"></textarea>
         </div>
+        <div class="right">
+          <p>
+            <input type="button" value="重新載入"
+              onclick="example.settingsManager.loadUserPhrases();alert('已重新載入之前儲存的詞庫');return false; ">
+            <input type="button" value="更新詞庫"
+              onclick="example.settingsManager.saveUserPhrases(document.getElementById('feature_user_phrases_text_area').value); alert('已經儲存更新的詞庫，並更新到輸入法與轉換功能中'); return false;">
+          </p>
 
-        <details open>
-          <summary> 設定 </summary>
-          <table>
-            <tr>
-              <td class="option_title">模式：</td>
-              <td>
-                <input type="radio" name="input_mode" value="use_mcbopomofo" id="use_mcbopomofo" checked="checked">
-                <label for="use_mcbopomofo">小麥注音 (自動選字)</label><br>
-                <input type="radio" name="input_mode" value="use_plainbopomofo" id="use_plainbopomofo">
-                <label for="use_plainbopomofo">傳統注音 (手動選字)</label>
-              </td>
-            </tr>
-            <tr>
-              <td class="option_title">簡繁轉換：</td>
-              <td>
-                <input type="radio" name="chinese_convert" value="trad" id="chinese_convert_trad"
-                  checked="checked"><label for="chinese_convert_trad">繁體中文</label><br>
-                <input type="radio" name="chinese_convert" value="simp" id="chinese_convert_simp"><label
-                  for="chinese_convert_simp">簡體中文</label>
-              </td>
-            </tr>
-            <tr>
-              <td class="option_title">標點符號：</td>
-              <td>
-                <input type="radio" name="punctuation" value="0" id="full_width_punctuation" checked="checked"><label
-                  for="full_width_punctuation">全形標點</label><br>
-                <input type="radio" name="punctuation" value="1" id="half_width_punctuation"><label
-                  for="half_width_punctuation">半形標點</label>
-              </td>
-            </tr>
-            <tr>
-              <td class="option_title">鍵盤配置：</td>
-              <td>
-                <select id="layout" title="鍵盤配置">
-                  <option value="Standard">標準</option>
-                  <option value="ETen">倚天</option>
-                  <option value="Hsu">許式</option>
-                  <option value="ETen26">倚天 26</option>
-                  <option value="HanyuPinyin">漢語拼音</option>
-                  <option value="IBM">IBM</option>
-                </select><br />
-                <p>關於各種鍵盤配置的差異，請參見 <a
-                    href="https://zh.wikipedia.org/zh-tw/%E6%B3%A8%E9%9F%B3%E8%BC%B8%E5%85%A5%E6%B3%95"
-                    target="_blank">Wikipedia</a>。</p>
-              </td>
-            </tr>
-            <tr>
-              <td class="option_title">選字按鍵：</td>
-              <td>
-                <select id="keys" title="選字按鍵">
-                  <option value="123456789">123456789</option>
-                  <option value="asdfghjkl">asdfghjkl</option>
-                  <option value="asdfzxcvb">asdfzxcvb</option>
-                </select>
-              </td>
-            </tr>
-            <tr>
-              <td class="option_title">選字鍵數量：</td>
-              <td>
-                <select id="keys_count" title="選字按鍵">
-                  <option value="4">4</option>
-                  <option value="5">5</option>
-                  <option value="6">6</option>
-                  <option value="7">7</option>
-                  <option value="8">8</option>
-                  <option value="9" selected="selected">9</option>
-                </select>
-                <br />
-              </td>
-            </tr>
-            <tr>
-              <td class="option_title">選字時：</td>
-              <td>
-                <select id="moving_cursor_option" title="選字時移動游標">
-                  <option value="0" selected="selected">不移動游標</option>
-                  <option value="1">JK 按鍵移動游標</option>
-                  <option value="2">HL 按鍵移動游標</option>
-                </select>
-              </td>
-            </tr>
-            <tr>
-              <td class="option_title">選字模式：</td>
-              <td>
-                <input type="radio" name="select_phrase" value="before_cursor" id="before_cursor"
-                  checked="checked"><label for="before_cursor">選擇游標前的字詞</label><br>
-                <input type="radio" name="select_phrase" value="after_cursor" id="after_cursor"><label
-                  for="after_cursor">選擇游標後的字詞</label><br>
-                <input type="checkbox" name="move_cursor" id="move_cursor"><label for="move_cursor">選字之後自動移動游標</label>
-              </td>
-            </tr>
-            <tr>
-              <td class="option_title">ESC 按鍵：</td>
-              <td>
-                <input type="checkbox" name="esc_key" id="esc_key"><label for="esc_key">ESC 按鍵清除整個輸入緩衝區</label>
-              </td>
-            </tr>
-            <tr>
-              <td class="option_title">Shift + 字母：</td>
-              <td>
-                <input type="radio" name="letters" value="uppercase_letters" id="uppercase_letters"
-                  checked="checked"><label for="uppercase_letters">輸入大寫字母</label><br>
-                <input type="radio" name="letters" value="lowercase_letters" id="lowercase_letters"><label
-                  for="lowercase_letters">輸入小寫字母</label>
-              </td>
-            </tr>
-            <tr>
-              <td class="option_title">Ctrl + Enter：</td>
-              <td>
-                <select id="ctrl_enter_option" title="按下 Ctrl 與 Enter 時的行為">
-                  <option value="0">不使用</option>
-                  <option value="1">輸入注音符號</option>
-                  <option value="2">輸入 HTML Ruby</option>
-                  <option value="3">輸入台灣點字</option>
-                  <option value="4">輸入漢語拼音</option>
-                </select>
-              </td>
-            </tr>
-            <tr>
-              <td class="option_title">標點符號：</td>
-              <td>
-                <input type="checkbox" name="repeated_punctuation_choose_candidate"
-                  id="repeated_punctuation_choose_candidate"><label
-                  for="repeated_punctuation_choose_candidate">重複按下標點符號，選擇下一個候選標點</label>
-              </td>
-            </tr>
-
-            <tr>
-              <td class="option_title">其他：</td>
-              <td>
-                <input type="checkbox" name="beep_on_error" id="beep_on_error"><label for="beep_on_error">錯誤時發出<a
-                    onclick="beep(); return false;">
-                    嗶聲</a></label><br />
-                <a href="#" id="fullscreen">全螢幕編輯</a><br />
-                <!-- <a href="#" id="dump_user_phrases">印出使用者詞彙</a><br /> -->
-              </td>
-            </tr>
-          </table>
-        </details>
-        <details>
-          <summary> 說明 </summary>
-          <p>小麥注音是一套自動選字的注音輸入法，基本操作類似自然、酷音等。您可以在左方的輸入框中直接使用線上版本的小麥注音，無須安裝系統輸入法。使用方式如下</p>
-          <ul>
-            <li>輸入鍵盤按鍵，就會輸入注音或標點符號，在標準鍵盤下：
-              <ul>
-                <li>Shift + , 輸入逗號</li>
-                <li>Shift + . 輸入句號</li>
-                <li>Shift + / 輸入問號</li>
-              </ul>
-            </li>
-
-            <li>空白鍵選字</li>
-            <li>按下 ` 會出現符號表</li>
-            <li>按一下 Shift 用來切換中英文</li>
-          </ul>
-        </details>
-        <details>
-          <summary> 特殊功能 </summary>
-          <p>小麥注音有一些特殊功能：</p>
-          <ul>
-            <li>一些特殊詞句，例如「火」，可以出現特別符號如「🔥」。</li>
-            <li>打「今年」、「今年」等詞彙，可以展開當天日期。</li>
-            <li>在出現選字窗時，在候選字上按下問題（？），就可以展開可用字典查詢這個候選字。同樣地，在使用 Shift 與左右按鍵選擇一段範圍後，也可以按下問號，查詢所選範圍的字。</li>
-            <li>打了一些內容後，可以選擇用 Ctrl + Enter 按鍵，輸出原本的注音符號，或是台灣通行的點字。</li>
-          </ul>
-
-        </details>
-        <details>
-          <summary> 其他 </summary>
-          <ul>
-            <li><a href="https://mcbopomofo.openvanilla.org/" target="_blank">小麥注音輸入法官網</a></li>
-            <li><a href="https://github.com/openvanilla/McBopomofo" target="_blank">小麥注音輸入法 macOS 版本</a></li>
-            <li><a href="https://github.com/openvanilla/fcitx5-mcbopomofo" target="_blank">小麥注音輸入法 fcitx5 版本</a></li>
-            <li><a href="https://github.com/openvanilla/McBopomofoWeb" target="_blank">小麥注音輸入法網頁版專案首頁</a></li>
-          </ul>
-        </details>
-
+          <h2>自訂詞管理</h2>
+          <p>您可以在這裡添加自訂詞，加入自訂詞之後，請按下「更新」按鈕，這些自訂詞彙加入到線上輸入法功能以及其他文字轉換功能中。</p>
+          <p>這些自訂詞會儲存在瀏覽器本機資料中，不會同步到其他電腦，也不會備份，請自行保存這些自訂詞。</p>
+          <h3>詞庫格式</h3>
+          <p>小麥網頁版本的詞庫格式就和其他平台一樣，每行一筆，前面是國字，一個空格之後是用「-」連接的注音。範例如下</p>
+          <blockquote>
+            <p>小麥注音 ㄒㄧㄠˇ-ㄇㄞˋ-ㄓㄨˋ-ㄧㄣ</p>
+          </blockquote>
+        </div>
       </div>
+
+      <div id="feature_excluded_phrases" class="feature">
+        <div class="left">
+          <textarea placeholder="小麥注音 ㄒㄧㄠˇ-ㄇㄞˋ-ㄓㄨˋ-ㄧㄣ" id="feature_excluded_phrases_text_area" rows="10" cols="50"
+            title="輸入區"></textarea>
+        </div>
+        <div class="right">
+          <p>
+            <input type="button" value="重新載入"
+              onclick="example.settingsManager. loadExcludedPhrases();alert('已重新載入之前儲存的詞庫');return false; ">
+            <input type="button" value="更新詞庫"
+              onclick="example.settingsManager.saveExcludedPhrases(document.getElementById('feature_excluded_phrases_text_area').value); alert('已經儲存更新的詞庫，並更新到輸入法與轉換功能中'); return false;">
+          </p>
+
+          <h2>管理已經排除的詞彙</h2>
+          <p>您可以在這裡添加要排除的詞彙，加入自訂詞之後，請按下「更新」按鈕，這些自訂詞彙加入到線上輸入法功能以及其他文字轉換功能中。</p>
+          <p>這些自訂詞會儲存在瀏覽器本機資料中，不會同步到其他電腦，也不會備份，請自行保存這些自訂詞。</p>
+          <h3>詞庫格式</h3>
+          <p>小麥網頁版本的詞庫格式就和其他平台一樣，每行一筆，前面是國字，一個空格之後是用「-」連接的注音。範例如下</p>
+          <blockquote>
+            <p>小麥注音 ㄒㄧㄠˇ-ㄇㄞˋ-ㄓㄨˋ-ㄧㄣ</p>
+          </blockquote>
+        </div>
+      </div>
+
+      <div id="feature_text_to_braille" class="feature">
+        <div class="left">
+          <textarea placeholder="請在此輸入國字" id="text_to_braille_text_area" rows="10" cols="50" title="輸入區"></textarea>
+          <p><input type="button" value="轉換" onclick="example.service.textToBraille();"></p>
+          <div id="text_to_braille_output"></div>
+        </div>
+        <div class="right">
+          <h2>國字轉點字</h2>
+          <p>請在輸入框中輸入中文，按下「轉換」即可轉換成台灣六點點字。</p>
+          <p>範例：「小麥注音輸入法」可以轉換成「⠑⠪⠈⠍⠺⠐⠁⠌⠐⠹⠄⠊⠌⠄⠛⠌⠐⠟⠜⠈」</p>
+        </div>
+      </div>
+
+      <div id="feature_braille_to_text" class="feature">
+        <div class="left">
+          <textarea placeholder="請在此輸入六點注音" id="braille_to_text_text_area" rows="10" cols="50" title="輸入區"></textarea>
+          <p> <input type="button" value="轉換" onclick="example.service.brailleToText();"></p>
+          <div id="braille_to_text_output"></div>
+        </div>
+        <div class="right">
+          <h2>點字轉國字</h2>
+          <p>請在輸入框中輸入六點注音點字（Unicode），按下「轉換」即可轉換成中文。</p>
+          <p>範例：「⠑⠪⠈⠍⠺⠐⠁⠌⠐⠹⠄⠊⠌⠄⠛⠌⠐⠟⠜⠈」可以轉換成「小麥注音輸入法」</p>
+        </div>
+      </div>
+
+      <div id="feature_add_bpmf" class="feature">
+        <div class="left">
+          <textarea placeholder="請在此輸入國字" id="add_bpmf_text_area" rows="10" cols="50" title="輸入區"></textarea>
+          <p><input type="button" value="轉換" onclick="example.service.addBpmf();"></p>
+          <div id="add_bpmf_output"></div>
+        </div>
+        <div class="right">
+          <h2>國字加注音</h2>
+          <p>請在輸入框中輸入國字，按下「轉換」就可以加上注音。</p>
+          <h3>轉換選項</h3>
+          <form>
+            <table>
+              <tr>
+                <td><input type="radio" name="bpomofo_mode" value="html_ruby" id="html_ruby" checked="checked"></td>
+                <td><label for="html_ruby">以 HTML Ruby 方式加上注音</label></td>
+              </tr>
+              <tr>
+                <td><input type="radio" name="bpomofo_mode" value="convert_to_reading" id="convert_to_reading"></td>
+                <td><label for="convert_to_reading">國字轉換成注音</label></td>
+              </tr>
+              <tr>
+                <td><input type="radio" name="bpomofo_mode" value="add_reading" id="add_reading"></td>
+                <td><label for="add_reading">國字加上注音</label></td>
+              </tr>
+            </table>
+          </form>
+        </div>
+      </div>
+
+      <div id="feature_convert_hanyupnyin" class="feature">
+        <div class="left">
+          <textarea placeholder="請在此輸入國字" id="convert_hanyupnyin_text_area" rows="10" cols="50" title="輸入區"></textarea>
+          <p><input type="button" value="轉換" onclick="example.service.convertHanyuPinyin();"></p>
+          <div id="convert_hanyupnyin_output"></div>
+        </div>
+        <div class="right">
+          <h2>國字轉漢語拼音</h2>
+          <p>請在輸入框中輸入國字，按下「轉換」就可以轉換成漢語拼音。</p>
+        </div>
+      </div>
+      <p class="credit">Copyright (c) 2022 and onwards The McBopomofo Authors. This code is released under the MIT
+        license.版本：1.8.6. <a href="privacy_policy.html">隱私權政策</a></p>
     </div>
-
-    <div id="feature_user_phrases">
-      <div class="left">
-        <textarea placeholder="小麥注音 ㄒㄧㄠˇ-ㄇㄞˋ-ㄓㄨˋ-ㄧㄣ" id="feature_user_phrases_text_area" rows="10" cols="50"
-          title="輸入區"></textarea>
-      </div>
-      <div class="right">
-        <p>
-          <input type="button" value="重新載入"
-            onclick="settingsManager.loadUserPhrases();alert('已重新載入之前儲存的詞庫');return false; ">
-          <input type="button" value="更新詞庫"
-            onclick="settingsManager.saveUserPhrases(document.getElementById('feature_user_phrases_text_area').value); alert('已經儲存更新的詞庫，並更新到輸入法與轉換功能中'); return false;">
-        </p>
-
-        <h2>自訂詞管理</h2>
-        <p>您可以在這裡添加自訂詞，加入自訂詞之後，請按下「更新」按鈕，這些自訂詞彙加入到線上輸入法功能以及其他文字轉換功能中。</p>
-        <p>這些自訂詞會儲存在瀏覽器本機資料中，不會同步到其他電腦，也不會備份，請自行保存這些自訂詞。</p>
-        <h3>詞庫格式</h3>
-        <p>小麥網頁版本的詞庫格式就和其他平台一樣，每行一筆，前面是國字，一個空格之後是用「-」連接的注音。範例如下</p>
-        <blockquote>
-          <p>小麥注音 ㄒㄧㄠˇ-ㄇㄞˋ-ㄓㄨˋ-ㄧㄣ</p>
-        </blockquote>
-      </div>
-    </div>
-
-    <div id="feature_excluded_phrases">
-      <div class="left">
-        <textarea placeholder="小麥注音 ㄒㄧㄠˇ-ㄇㄞˋ-ㄓㄨˋ-ㄧㄣ" id="feature_excluded_phrases_text_area" rows="10" cols="50"
-          title="輸入區"></textarea>
-      </div>
-      <div class="right">
-        <p>
-          <input type="button" value="重新載入"
-            onclick="settingsManager. loadExcludedPhrases();alert('已重新載入之前儲存的詞庫');return false; ">
-          <input type="button" value="更新詞庫"
-            onclick="settingsManager.saveExcludedPhrases(document.getElementById('feature_excluded_phrases_text_area').value); alert('已經儲存更新的詞庫，並更新到輸入法與轉換功能中'); return false;">
-        </p>
-
-        <h2>管理已經排除的詞彙</h2>
-        <p>您可以在這裡添加要排除的詞彙，加入自訂詞之後，請按下「更新」按鈕，這些自訂詞彙加入到線上輸入法功能以及其他文字轉換功能中。</p>
-        <p>這些自訂詞會儲存在瀏覽器本機資料中，不會同步到其他電腦，也不會備份，請自行保存這些自訂詞。</p>
-        <h3>詞庫格式</h3>
-        <p>小麥網頁版本的詞庫格式就和其他平台一樣，每行一筆，前面是國字，一個空格之後是用「-」連接的注音。範例如下</p>
-        <blockquote>
-          <p>小麥注音 ㄒㄧㄠˇ-ㄇㄞˋ-ㄓㄨˋ-ㄧㄣ</p>
-        </blockquote>
-      </div>
-    </div>
-
-    <div id="feature_text_to_braille">
-      <div class="left">
-        <textarea placeholder="請在此輸入國字" id="text_to_braille_text_area" rows="10" cols="50" title="輸入區"></textarea>
-        <p><input type="button" value="轉換" onclick="service.textToBraille();"></p>
-        <div id="text_to_braille_output"></div>
-      </div>
-      <div class="right">
-        <h2>國字轉點字</h2>
-        <p>請在輸入框中輸入中文，按下「轉換」即可轉換成台灣六點點字。</p>
-        <p>範例：「小麥注音輸入法」可以轉換成「⠑⠪⠈⠍⠺⠐⠁⠌⠐⠹⠄⠊⠌⠄⠛⠌⠐⠟⠜⠈」</p>
-      </div>
-    </div>
-
-    <div id="feature_braille_to_text">
-      <div class="left">
-        <textarea placeholder="請在此輸入六點注音" id="braille_to_text_text_area" rows="10" cols="50" title="輸入區"></textarea>
-        <p> <input type="button" value="轉換" onclick="service.brailleToText();"></p>
-        <div id="braille_to_text_output"></div>
-      </div>
-      <div class="right">
-        <h2>點字轉國字</h2>
-        <p>請在輸入框中輸入六點注音點字（Unicode），按下「轉換」即可轉換成中文。</p>
-        <p>範例：「⠑⠪⠈⠍⠺⠐⠁⠌⠐⠹⠄⠊⠌⠄⠛⠌⠐⠟⠜⠈」可以轉換成「小麥注音輸入法」</p>
-      </div>
-    </div>
-
-    <div id="feature_add_bpmf">
-      <div class="left">
-        <textarea placeholder="請在此輸入國字" id="add_bpmf_text_area" rows="10" cols="50" title="輸入區"></textarea>
-        <p><input type="button" value="轉換" onclick="service.addBpmf();"></p>
-        <div id="add_bpmf_output"></div>
-      </div>
-      <div class="right">
-        <h2>國字加注音</h2>
-        <p>請在輸入框中輸入國字，按下「轉換」就可以加上注音。</p>
-        <h3>轉換選項</h3>
-        <form>
-          <table>
-            <tr>
-              <td><input type="radio" name="bpomofo_mode" value="html_ruby" id="html_ruby" checked="checked"></td>
-              <td><label for="html_ruby">以 HTML Ruby 方式加上注音</label></td>
-            </tr>
-            <tr>
-              <td><input type="radio" name="bpomofo_mode" value="convert_to_reading" id="convert_to_reading"></td>
-              <td><label for="convert_to_reading">國字轉換成注音</label></td>
-            </tr>
-            <tr>
-              <td><input type="radio" name="bpomofo_mode" value="add_reading" id="add_reading"></td>
-              <td><label for="add_reading">國字加上注音</label></td>
-            </tr>
-          </table>
-        </form>
-      </div>
-    </div>
-
-    <div id="feature_convert_hanyupnyin">
-      <div class="left">
-        <textarea placeholder="請在此輸入國字" id="convert_hanyupnyin_text_area" rows="10" cols="50" title="輸入區"></textarea>
-        <p><input type="button" value="轉換" onclick="service.convertHanyuPinyin();"></p>
-        <div id="convert_hanyupnyin_output"></div>
-      </div>
-      <div class="right">
-        <h2>國字轉漢語拼音</h2>
-        <p>請在輸入框中輸入國字，按下「轉換」就可以轉換成漢語拼音。</p>
-      </div>
-    </div>
-    <br break="all" />
-    <p class="credit">Copyright (c) 2022 and onwards The McBopomofo Authors. This code is released under the MIT
-      license.版本：1.8.6. <a href="privacy_policy.html">隱私權政策</a></p>
   </div>
-
-
 </bodY>
 
 <script lang="javascript" src="bundle.js"></script>

@@ -458,6 +458,9 @@ export class WebLanguageModel implements LanguageModel {
       return undefined;
     }
 
+    if (result === "_punctuation_list") {
+      return result;
+    }
     if (
       result.startsWith("_") &&
       result.charAt(result.length - 2) === "_" &&

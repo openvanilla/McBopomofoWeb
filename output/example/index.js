@@ -1,4 +1,4 @@
-(() => {
+let example = (() => {
   const ui = (() => {
     const that = {};
     that.beep = () => {
@@ -326,7 +326,7 @@
       }
       let output = "";
       if (document.getElementById("convert_to_reading").checked) {
-        output = service.convertTextToBpmfReadings(text);
+        output = that.service.convertTextToBpmfReadings(text);
       } else if (document.getElementById("add_reading").checked) {
         output = that.service.appendBpmfReadingsToText(text);
       } else {
@@ -817,7 +817,7 @@
       for (const feature of features) {
         document.getElementById(feature).style.display = "none";
       }
-      document.getElementById(id).style.display = "block";
+      document.getElementById(id).style.display = "flex";
       if (id === "feature_input") {
         document.getElementById("text_area").focus();
         document.title = "小麥注音輸入法 - 輸入功能";
@@ -858,4 +858,12 @@
       onHashChange();
     });
   })();
+
+  let example = {};
+  example.ui = ui;
+  example.controller = controller;
+  example.service = service;
+  example.settingsManager = settingsManager;
+  window.example = example;
+  return example;
 })();
