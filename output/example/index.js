@@ -1,42 +1,6 @@
 let alphabetMode = false;
 let menuVisible = true;
 
-function toggle_feature(id) {
-  const features = [
-    "feature_input",
-    "feature_user_phrases",
-    "feature_excluded_phrases",
-    "feature_text_to_braille",
-    "feature_braille_to_text",
-    "feature_add_bpmf",
-    "feature_convert_hanyupnyin",
-  ];
-  for (const feature of features) {
-    document.getElementById(feature).style.display = "none";
-  }
-  document.getElementById(id).style.display = "block";
-  if (id === "feature_input") {
-    document.getElementById("text_area").focus();
-    document.title = "小麥注音輸入法 - 輸入功能";
-  } else if (id === "feature_user_phrases") {
-    document.title = "小麥注音輸入法 - 自定詞管理";
-  } else if (id === "feature_excluded_phrases") {
-    document.title = "小麥注音輸入法 - 管理排除的詞彙";
-  } else if (id === "feature_text_to_braille") {
-    document.getElementById("text_to_braille_text_area").focus();
-    document.title = "小麥注音輸入法 - 中文轉注音點字";
-  } else if (id === "feature_braille_to_text") {
-    document.getElementById("braille_to_text_text_area").focus();
-    document.title = "小麥注音輸入法 - 注音點字轉中文";
-  } else if (id === "feature_add_bpmf") {
-    document.getElementById("add_bpmf_text_area").focus();
-    document.title = "小麥注音輸入法 - 國字加注音";
-  } else if (id === "feature_convert_hanyupnyin") {
-    document.getElementById("convert_hanyupnyin_text_area").focus();
-    document.title = "小麥注音輸入法 - 國字轉拼音";
-  }
-}
-
 const ui = (function () {
   const that = {};
   that.beep = function () {
@@ -300,213 +264,322 @@ const controller = (function () {
   return controller;
 })();
 
-const service = new Service();
+const service = (function () {
+  let that = {};
 
-const defaultSettings = {
-  trad_mode: false,
-  chinese_conversion: false,
-  half_width_punctuation: false,
-  layout: "standard",
-  candidate_keys: "123456789",
-  candidate_keys_count: 9,
-  select_phrase: "before_cursor",
-  esc_key_clear_entire_buffer: false,
-  move_cursor: false,
-  letter_mode: "upper",
-  ctrl_enter_option: 0,
-  moving_cursor_option: 0,
-  beep_on_error: true,
-  repeated_punctuation_choose_candidate: false,
-};
-const loadSettings = () => {
-  const result = window.localStorage.getItem("user_settings");
-  try {
-    const obj = JSON.parse(result);
-    if (!obj) {
-      return defaultSettings;
+  that.service = new Service();
+
+  that.textToBraille = function () {
+    const text = document
+      .getElementById("text_to_braille_text_area")
+      .value.trim();
+    if (text.length === 0) {
+      document.getElementById("text_to_braille_output").innerHTML =
+        "<p>您沒有輸入任何內容！</p>";
+      document.getElementById("text_to_braille_text_area").focus();
+      return;
+    }
+    const output = that.service.convertTextToBraille(text);
+    const lines = output.split("\n");
+    let html = "<h2>轉換結果如下</h2>";
+    for (const line of lines) {
+      html += "<p>" + line + "</p>";
     }
 
-    for (const key in defaultSettings) {
-      if (!(key in obj)) {
-        obj[key] = defaultSettings[key];
-      }
+    document.getElementById("text_to_braille_output").innerHTML = html;
+    document.getElementById("text_to_braille_text_area").focus();
+  };
+
+  that.brailleToText = function () {
+    const text = document
+      .getElementById("braille_to_text_text_area")
+      .value.trim();
+    if (text.length === 0) {
+      document.getElementById("braille_to_text_output").innerHTML =
+        "<p>您沒有輸入任何內容！</p>";
+      document.getElementById("braille_to_text_text_area").focus();
+      return;
+    }
+    const output = that.service.convertBrailleToText(text);
+    const lines = output.split("\n");
+    let html = "<h2>轉換結果如下</h2>";
+    for (const line of lines) {
+      html += "<p>" + line + "</p>";
     }
 
-    return obj;
-  } catch (e) {}
-  return defaultSettings;
-};
+    document.getElementById("braille_to_text_output").innerHTML = html;
+    document.getElementById("braille_to_text_text_area").focus();
+  };
 
-let settings = loadSettings();
-
-function saveSettings(settings) {
-  const s = JSON.stringify(settings);
-  window.localStorage.setItem("user_settings", s);
-}
-
-function applySettings(settings) {
-  {
-    controller.setTraditionalMode(settings.trad_mode);
-    if (settings.trad_mode) {
-      document.getElementById("use_plainbopomofo").checked = true;
-      document.getElementById("use_mcbopomofo").checked = false;
+  that.addBpmf = function () {
+    const text = document.getElementById("add_bpmf_text_area").value.trim();
+    if (text.length === 0) {
+      document.getElementById("add_bpmf_output").innerHTML =
+        "<p>您沒有輸入任何內容！</p>";
+      document.getElementById("add_bpmf_text_area").focus();
+      return;
+    }
+    let output = "";
+    if (document.getElementById("convert_to_reading").checked) {
+      output = service.convertTextToBpmfReadings(text);
+    } else if (document.getElementById("add_reading").checked) {
+      output = that.service.appendBpmfReadingsToText(text);
     } else {
-      document.getElementById("use_mcbopomofo").checked = true;
-      document.getElementById("use_plainbopomofo").checked = false;
+      output = that.service.convertTextToHtmlRuby(text);
     }
-  }
-  {
-    controller.setChineseConversionEnabled(settings.chinese_conversion);
-    if (settings.chinese_conversion) {
-      document.getElementById("chinese_convert_simp").checked = true;
-      document.getElementById("chinese_convert_trad").checked = false;
-    } else {
-      document.getElementById("chinese_convert_trad").checked = true;
-      document.getElementById("chinese_convert_simp").checked = false;
+    const lines = output.split("\n");
+    let html = "<h2>轉換結果如下</h2>";
+    for (const line of lines) {
+      html += "<p>" + line + "</p>";
     }
-  }
-  {
-    controller.setHalfWidthPunctuationEnabled(settings.half_width_punctuation);
-    if (settings.half_width_punctuation) {
-      document.getElementById("full_width_punctuation").checked = true;
-      document.getElementById("half_width_punctuation").checked = false;
-    } else {
-      document.getElementById("full_width_punctuation").checked = true;
-      document.getElementById("half_width_punctuation").checked = false;
+
+    document.getElementById("add_bpmf_output").innerHTML = html;
+    document.getElementById("add_bpmf_text_area").focus();
+  };
+
+  that.convertHanyuPinyin = function () {
+    const text = document
+      .getElementById("convert_hanyupnyin_text_area")
+      .value.trim();
+    if (text.length === 0) {
+      document.getElementById("convert_hanyupnyin_output").innerHTML =
+        "<p>您沒有輸入任何內容！</p>";
+      document.getElementById("convert_hanyupnyin_text_area").focus();
+      return;
     }
-  }
-  {
-    controller.setKeyboardLayout(settings.layout);
-    const select = document.getElementById("layout");
-    const options = select.getElementsByTagName("option");
-    for (const option of options) {
-      if (option.value === settings.layout) {
-        option.selected = "selected";
-        break;
+    const output = that.service.convertTextToPinyin(text);
+    const lines = output.split("\n");
+    let html = "<h2>轉換結果如下</h2>";
+    for (const line of lines) {
+      html += "<p>" + line + "</p>";
+    }
+
+    document.getElementById("convert_hanyupnyin_output").innerHTML = html;
+    document.getElementById("convert_hanyupnyin_text_area").focus();
+  };
+  return that;
+})();
+
+const settingsManager = (() => {
+  let that = {};
+  that.defaultSettings = {
+    trad_mode: false,
+    chinese_conversion: false,
+    half_width_punctuation: false,
+    layout: "standard",
+    candidate_keys: "123456789",
+    candidate_keys_count: 9,
+    select_phrase: "before_cursor",
+    esc_key_clear_entire_buffer: false,
+    move_cursor: false,
+    letter_mode: "upper",
+    ctrl_enter_option: 0,
+    moving_cursor_option: 0,
+    beep_on_error: true,
+    repeated_punctuation_choose_candidate: false,
+  };
+
+  that.settings = that.defaultSettings;
+  that.loadSettings = () => {
+    const result = window.localStorage.getItem("user_settings");
+    try {
+      const obj = JSON.parse(result);
+      if (!obj) {
+        that.settings = that.defaultSettings;
+      }
+
+      for (const key in defaultSettings) {
+        if (!(key in obj)) {
+          obj[key] = defaultSettings[key];
+        }
+      }
+      that.settings = obj;
+      return obj;
+    } catch (e) {}
+  };
+
+  that.saveSettings = function () {
+    const s = JSON.stringify(that.settings);
+    window.localStorage.setItem("user_settings", s);
+  };
+
+  that.applySettings = function () {
+    const settings = that.settings;
+    {
+      controller.setTraditionalMode(settings.trad_mode);
+      if (settings.trad_mode) {
+        document.getElementById("use_plainbopomofo").checked = true;
+        document.getElementById("use_mcbopomofo").checked = false;
+      } else {
+        document.getElementById("use_mcbopomofo").checked = true;
+        document.getElementById("use_plainbopomofo").checked = false;
       }
     }
-  }
-  {
-    controller.setCandidateKeys(settings.candidate_keys);
-    const select = document.getElementById("keys");
-    const options = select.getElementsByTagName("option");
-    for (const option of options) {
-      if (option.value === settings.candidate_keys) {
-        option.selected = "selected";
-        break;
+    {
+      controller.setChineseConversionEnabled(settings.chinese_conversion);
+      if (settings.chinese_conversion) {
+        document.getElementById("chinese_convert_simp").checked = true;
+        document.getElementById("chinese_convert_trad").checked = false;
+      } else {
+        document.getElementById("chinese_convert_trad").checked = true;
+        document.getElementById("chinese_convert_simp").checked = false;
       }
     }
-  }
-  {
-    controller.setCandidateKeysCount(settings.candidate_keys_count);
-    const select = document.getElementById("keys_count");
-    const options = select.getElementsByTagName("option");
-    for (const option of options) {
-      if (option.value === settings.candidate_keys_count) {
-        option.selected = "selected";
-        break;
+    {
+      controller.setHalfWidthPunctuationEnabled(
+        settings.half_width_punctuation
+      );
+      if (settings.half_width_punctuation) {
+        document.getElementById("full_width_punctuation").checked = true;
+        document.getElementById("half_width_punctuation").checked = false;
+      } else {
+        document.getElementById("full_width_punctuation").checked = true;
+        document.getElementById("half_width_punctuation").checked = false;
       }
     }
-  }
-  {
-    if (settings.select_phrase === "before_cursor") {
-      controller.setSelectPhrase("before_cursor");
-      document.getElementById("before_cursor").checked = true;
-      document.getElementById("after_cursor").checked = false;
-    } else if (settings.select_phrase === "after_cursor") {
-      controller.setSelectPhrase("after_cursor");
-      document.getElementById("before_cursor").checked = false;
-      document.getElementById("after_cursor").checked = true;
-    }
-  }
-  {
-    controller.setEscClearEntireBuffer(settings.esc_key_clear_entire_buffer);
-    document.getElementById("esc_key").checked =
-      settings.esc_key_clear_entire_buffer;
-  }
-  {
-    controller.setRepeatedPunctuationChooseCandidate(
-      settings.repeated_punctuation_choose_candidate
-    );
-    document.getElementById("repeated_punctuation_choose_candidate").checked =
-      settings.repeated_punctuation_choose_candidate;
-  }
-  {
-    controller.setMovingCursorOption(settings.moving_cursor_option);
-    const select = document.getElementById("moving_cursor_option");
-    const options = select.getElementsByTagName("option");
-    for (const option of options) {
-      if (option.value === settings.moving_cursor_option) {
-        option.selected = "selected";
-        break;
+    {
+      controller.setKeyboardLayout(settings.layout);
+      const select = document.getElementById("layout");
+      const options = select.getElementsByTagName("option");
+      for (const option of options) {
+        if (option.value === settings.layout) {
+          option.selected = "selected";
+          break;
+        }
       }
     }
-  }
-  {
-    document.getElementById("beep_on_error").checked = settings.beep_on_error;
-  }
-  {
-    document.getElementById("move_cursor").checked = settings.move_cursor;
-    controller.setMoveCursorAfterSelection(settings.move_cursor);
-  }
-
-  {
-    if (settings.letter_mode === "upper") {
-      document.getElementById("uppercase_letters").checked = true;
-      document.getElementById("lowercase_letters").checked = false;
-      controller.setLetterMode("upper");
-    } else if (settings.letter_mode === "lower") {
-      document.getElementById("uppercase_letters").checked = false;
-      document.getElementById("lowercase_letters").checked = true;
-      controller.setLetterMode("lower");
-    }
-  }
-  {
-    controller.setCtrlEnterOption(settings.ctrl_enter_option);
-    const select = document.getElementById("ctrl_enter_option");
-    const options = select.getElementsByTagName("option");
-    for (const option of options) {
-      if (option.value === settings.ctrl_enter_option) {
-        option.selected = "selected";
-        break;
+    {
+      controller.setCandidateKeys(settings.candidate_keys);
+      const select = document.getElementById("keys");
+      const options = select.getElementsByTagName("option");
+      for (const option of options) {
+        if (option.value === settings.candidate_keys) {
+          option.selected = "selected";
+          break;
+        }
       }
     }
-  }
-}
+    {
+      controller.setCandidateKeysCount(settings.candidate_keys_count);
+      const select = document.getElementById("keys_count");
+      const options = select.getElementsByTagName("option");
+      for (const option of options) {
+        if (option.value === settings.candidate_keys_count) {
+          option.selected = "selected";
+          break;
+        }
+      }
+    }
+    {
+      if (settings.select_phrase === "before_cursor") {
+        controller.setSelectPhrase("before_cursor");
+        document.getElementById("before_cursor").checked = true;
+        document.getElementById("after_cursor").checked = false;
+      } else if (settings.select_phrase === "after_cursor") {
+        controller.setSelectPhrase("after_cursor");
+        document.getElementById("before_cursor").checked = false;
+        document.getElementById("after_cursor").checked = true;
+      }
+    }
+    {
+      controller.setEscClearEntireBuffer(settings.esc_key_clear_entire_buffer);
+      document.getElementById("esc_key").checked =
+        settings.esc_key_clear_entire_buffer;
+    }
+    {
+      controller.setRepeatedPunctuationChooseCandidate(
+        settings.repeated_punctuation_choose_candidate
+      );
+      document.getElementById("repeated_punctuation_choose_candidate").checked =
+        settings.repeated_punctuation_choose_candidate;
+    }
+    {
+      controller.setMovingCursorOption(settings.moving_cursor_option);
+      const select = document.getElementById("moving_cursor_option");
+      const options = select.getElementsByTagName("option");
+      for (const option of options) {
+        if (option.value === settings.moving_cursor_option) {
+          option.selected = "selected";
+          break;
+        }
+      }
+    }
+    {
+      document.getElementById("beep_on_error").checked = settings.beep_on_error;
+    }
+    {
+      document.getElementById("move_cursor").checked = settings.move_cursor;
+      controller.setMoveCursorAfterSelection(settings.move_cursor);
+    }
 
-function loadUserPhrases() {
-  const result = window.localStorage.getItem("user_phrases") || "";
-  document.getElementById("feature_user_phrases_text_area").value = result;
-  console.log("userPhrases:\n" + result);
-  controller.setUserPhrases(result);
-  service.setUserPhrases(result);
-}
+    {
+      if (settings.letter_mode === "upper") {
+        document.getElementById("uppercase_letters").checked = true;
+        document.getElementById("lowercase_letters").checked = false;
+        controller.setLetterMode("upper");
+      } else if (settings.letter_mode === "lower") {
+        document.getElementById("uppercase_letters").checked = false;
+        document.getElementById("lowercase_letters").checked = true;
+        controller.setLetterMode("lower");
+      }
+    }
+    {
+      controller.setCtrlEnterOption(settings.ctrl_enter_option);
+      const select = document.getElementById("ctrl_enter_option");
+      const options = select.getElementsByTagName("option");
+      for (const option of options) {
+        if (option.value === settings.ctrl_enter_option) {
+          option.selected = "selected";
+          break;
+        }
+      }
+    }
+  };
 
-function saveUserPhrases(result) {
-  window.localStorage.setItem("user_phrases", result);
-  controller.setUserPhrases(result);
-  service.setUserPhrases(result);
-  document.getElementById("feature_user_phrases_text_area").value = result;
-}
+  that.loadUserPhrases = function () {
+    const result = window.localStorage.getItem("user_phrases") || "";
+    document.getElementById("feature_user_phrases_text_area").value = result;
+    document.getElementById("feature_user_phrases_text_area").focus();
+    console.log("userPhrases:\n" + result);
+    controller.setUserPhrases(result);
+    service.service.setUserPhrases(result);
+  };
 
-function loadExcludedPhrases() {
-  const result = window.localStorage.getItem("excluded_phrases") || "";
-  document.getElementById("feature_excluded_phrases_text_area").value = result;
-  console.log("userPhrases:\n" + result);
-  controller.setExcludedPhrases(result);
-  service.setExcludedPhrases(result);
-}
+  that.saveUserPhrases = function saveUserPhrases(result) {
+    window.localStorage.setItem("user_phrases", result);
+    controller.setUserPhrases(result);
+    service.service.setUserPhrases(result);
+    document.servicegetElementById("feature_user_phrases_text_area").value =
+      result;
+    document.getElementById("feature_user_phrases_text_area").focus();
+  };
 
-function saveExcludedPhrases(result) {
-  window.localStorage.setItem("excluded_phrases", result);
-  controller.setExcludedPhrases(result);
-  service.setExcludedPhrases(result);
-  document.getElementById("feature_excluded_phrases_text_area").value = result;
-}
+  that.loadExcludedPhrases = function () {
+    const result = window.localStorage.getItem("excluded_phrases") || "";
+    document.getElementById("feature_excluded_phrases_text_area").value =
+      result;
+    document.getElementById("feature_excluded_phrases_text_area").focus();
+    console.log("excludedPhrases:\n" + result);
+    controller.setExcludedPhrases(result);
+    service.service.setExcludedPhrases(result);
+  };
 
-applySettings(settings);
-loadUserPhrases();
-loadExcludedPhrases();
+  that.saveExcludedPhrases = function saveExcludedPhrases(result) {
+    window.localStorage.setItem("excluded_phrases", result);
+    controller.setExcludedPhrases(result);
+    service.service.setExcludedPhrases(result);
+    document.getElementById("feature_excluded_phrases_text_area").value =
+      result;
+    document.getElementById("feature_excluded_phrases_text_area").focus();
+  };
+
+  return that;
+})();
+
+settingsManager.loadSettings();
+settingsManager.applySettings();
+settingsManager.loadUserPhrases();
+settingsManager.loadExcludedPhrases();
 
 (function () {
   let shiftKeyIsPressed = false;
@@ -537,29 +610,29 @@ loadExcludedPhrases();
 
   document.getElementById("use_mcbopomofo").onchange = function (event) {
     controller.setTraditionalMode(false);
-    settings.trad_mode = false;
-    saveSettings(settings);
+    settingsManager.settings.trad_mode = false;
+    settingsManager.saveSettings();
     document.getElementById("text_area").focus();
   };
 
   document.getElementById("use_plainbopomofo").onchange = function (event) {
     controller.setTraditionalMode(true);
-    settings.trad_mode = true;
-    saveSettings(settings);
+    settingsManager.settings.trad_mode = true;
+    settingsManager.saveSettings();
     document.getElementById("text_area").focus();
   };
 
   document.getElementById("chinese_convert_trad").onchange = function (event) {
     controller.setChineseConversionEnabled(false);
-    settings.chinese_conversion = false;
-    saveSettings(settings);
+    settingsManager.settings.chinese_conversion = false;
+    settingsManager.saveSettings();
     document.getElementById("text_area").focus();
   };
 
   document.getElementById("chinese_convert_simp").onchange = function (event) {
     controller.setChineseConversionEnabled(true);
-    settings.chinese_conversion = true;
-    saveSettings(settings);
+    settingsManager.settings.chinese_conversion = true;
+    settingsManager.saveSettings();
     document.getElementById("text_area").focus();
   };
 
@@ -567,8 +640,8 @@ loadExcludedPhrases();
     event
   ) {
     controller.setHalfWidthPunctuationEnabled(false);
-    settings.half_width_punctuation = false;
-    saveSettings(settings);
+    settingsManager.settings.half_width_punctuation = false;
+    settingsManager.saveSettings();
     document.getElementById("text_area").focus();
   };
 
@@ -576,16 +649,16 @@ loadExcludedPhrases();
     event
   ) {
     controller.setHalfWidthPunctuationEnabled(true);
-    settings.half_width_punctuation = true;
-    saveSettings(settings);
+    settingsManager.settings.half_width_punctuation = true;
+    settingsManager.saveSettings();
     document.getElementById("text_area").focus();
   };
 
   document.getElementById("layout").onchange = function (event) {
     const value = document.getElementById("layout").value;
     controller.setKeyboardLayout(value);
-    settings.layout = value;
-    saveSettings(settings);
+    settingsManager.settings.layout = value;
+    settingsManager.saveSettings();
     document.getElementById("text_area").focus();
   };
   document.getElementById("layout").onblur = function (event) {
@@ -595,8 +668,8 @@ loadExcludedPhrases();
   document.getElementById("keys").onchange = function (event) {
     const value = document.getElementById("keys").value;
     controller.setCandidateKeys(value);
-    settings.candidate_keys = value;
-    saveSettings(settings);
+    settingsManager.settings.candidate_keys = value;
+    settingsManager.saveSettings();
     document.getElementById("text_area").focus();
   };
   document.getElementById("keys").onblur = function (event) {
@@ -606,8 +679,8 @@ loadExcludedPhrases();
   document.getElementById("keys_count").onchange = function (event) {
     const value = +document.getElementById("keys_count").value;
     controller.setCandidateKeysCount(value);
-    settings.candidate_keys_count = value;
-    saveSettings(settings);
+    settingsManager.settings.candidate_keys_count = value;
+    settingsManager.saveSettings();
     document.getElementById("text_area").focus();
   };
 
@@ -618,15 +691,15 @@ loadExcludedPhrases();
   document.getElementById("moving_cursor_option").onchange = function (event) {
     const value = +document.getElementById("moving_cursor_option").value;
     controller.setMovingCursorOption(value);
-    settings.moving_cursor_option = value;
-    saveSettings(settings);
+    settingsManager.settings.moving_cursor_option = value;
+    settingsManager.saveSettings();
     document.getElementById("text_area").focus();
   };
 
   document.getElementById("before_cursor").onchange = function (event) {
     controller.setSelectPhrase("before_cursor");
-    settings.select_phrase = "before_cursor";
-    saveSettings(settings);
+    settingsManager.settings.select_phrase = "before_cursor";
+    settingsManager.saveSettings();
     document.getElementById("text_area").focus();
   };
 
@@ -640,8 +713,8 @@ loadExcludedPhrases();
   document.getElementById("esc_key").onchange = function (event) {
     const checked = document.getElementById("esc_key").checked;
     controller.setEscClearEntireBuffer(checked);
-    settings.esc_key_clear_entire_buffer = checked;
-    saveSettings(settings);
+    settingsManager.settings.esc_key_clear_entire_buffer = checked;
+    settingsManager.saveSettings();
     document.getElementById("text_area").focus();
   };
 
@@ -651,45 +724,45 @@ loadExcludedPhrases();
         "repeated_punctuation_choose_candidate"
       ).checked;
       controller.setRepeatedPunctuationChooseCandidate(checked);
-      settings.repeated_punctuation_choose_candidate = checked;
-      saveSettings(settings);
+      settingsManager.settings.repeated_punctuation_choose_candidate = checked;
+      settingsManager.saveSettings();
       document.getElementById("text_area").focus();
     };
 
   document.getElementById("uppercase_letters").onchange = function (event) {
     controller.setLetterMode("upper");
-    settings.letter_mode = "upper";
-    saveSettings(settings);
+    settingsManager.settings.letter_mode = "upper";
+    settingsManager.saveSettings();
     document.getElementById("text_area").focus();
   };
 
   document.getElementById("lowercase_letters").onchange = function (event) {
     controller.setLetterMode("lower");
-    settings.letter_mode = "lower";
-    saveSettings(settings);
+    settingsManager.settings.letter_mode = "lower";
+    settingsManager.saveSettings();
     document.getElementById("text_area").focus();
   };
 
   document.getElementById("move_cursor").onchange = function (event) {
     const checked = document.getElementById("move_cursor").checked;
     controller.setMoveCursorAfterSelection(checked);
-    settings.move_cursor = checked;
-    saveSettings(settings);
+    settingsManager.settings.move_cursor = checked;
+    settingsManager.saveSettings();
     document.getElementById("text_area").focus();
   };
 
   document.getElementById("ctrl_enter_option").onchange = function (event) {
     const value = +document.getElementById("ctrl_enter_option").value;
     controller.setCtrlEnterOption(value);
-    settings.ctrl_enter_option = value;
-    saveSettings(settings);
+    settingsManager.settings.ctrl_enter_option = value;
+    settingsManager.saveSettings();
     document.getElementById("text_area").focus();
   };
 
   document.getElementById("beep_on_error").onchange = function (event) {
     const value = document.getElementById("beep_on_error").checked;
-    settings.beep_on_error = value;
-    saveSettings(settings);
+    settingsManager.settings.beep_on_error = value;
+    settingsManager.saveSettings();
     document.getElementById("text_area").focus();
   };
 
@@ -719,93 +792,42 @@ loadExcludedPhrases();
   ui.reset();
   document.getElementById("text_area").focus();
 
-  function textToBraille() {
-    const text = document
-      .getElementById("text_to_braille_text_area")
-      .value.trim();
-    if (text.length === 0) {
-      document.getElementById("text_to_braille_output").innerHTML =
-        "<p>您沒有輸入任何內容！</p>";
+  function toggle_feature(id) {
+    const features = [
+      "feature_input",
+      "feature_user_phrases",
+      "feature_excluded_phrases",
+      "feature_text_to_braille",
+      "feature_braille_to_text",
+      "feature_add_bpmf",
+      "feature_convert_hanyupnyin",
+    ];
+    for (const feature of features) {
+      document.getElementById(feature).style.display = "none";
+    }
+    document.getElementById(id).style.display = "block";
+    if (id === "feature_input") {
+      document.getElementById("text_area").focus();
+      document.title = "小麥注音輸入法 - 輸入功能";
+    } else if (id === "feature_user_phrases") {
+      document.getElementById("feature_user_phrases_text_area").focus();
+      document.title = "小麥注音輸入法 - 自定詞管理";
+    } else if (id === "feature_excluded_phrases") {
+      document.getElementById("feature_excluded_phrases_text_area").focus();
+      document.title = "小麥注音輸入法 - 管理排除的詞彙";
+    } else if (id === "feature_text_to_braille") {
       document.getElementById("text_to_braille_text_area").focus();
-      return;
-    }
-    const output = service.convertTextToBraille(text);
-    const lines = output.split("\n");
-    let html = "<h2>轉換結果如下</h2>";
-    for (const line of lines) {
-      html += "<p>" + line + "</p>";
-    }
-
-    document.getElementById("text_to_braille_output").innerHTML = html;
-    document.getElementById("text_to_braille_text_area").focus();
-  }
-
-  function brailleToText() {
-    const text = document
-      .getElementById("braille_to_text_text_area")
-      .value.trim();
-    if (text.length === 0) {
-      document.getElementById("braille_to_text_output").innerHTML =
-        "<p>您沒有輸入任何內容！</p>";
+      document.title = "小麥注音輸入法 - 中文轉注音點字";
+    } else if (id === "feature_braille_to_text") {
       document.getElementById("braille_to_text_text_area").focus();
-      return;
-    }
-    const output = service.convertBrailleToText(text);
-    const lines = output.split("\n");
-    let html = "<h2>轉換結果如下</h2>";
-    for (const line of lines) {
-      html += "<p>" + line + "</p>";
-    }
-
-    document.getElementById("braille_to_text_output").innerHTML = html;
-    document.getElementById("braille_to_text_text_area").focus();
-  }
-
-  function addBpmf() {
-    const text = document.getElementById("add_bpmf_text_area").value.trim();
-    if (text.length === 0) {
-      document.getElementById("add_bpmf_output").innerHTML =
-        "<p>您沒有輸入任何內容！</p>";
+      document.title = "小麥注音輸入法 - 注音點字轉中文";
+    } else if (id === "feature_add_bpmf") {
       document.getElementById("add_bpmf_text_area").focus();
-      return;
-    }
-    let output = "";
-    if (document.getElementById("convert_to_reading").checked) {
-      output = service.convertTextToBpmfReadings(text);
-    } else if (document.getElementById("add_reading").checked) {
-      output = service.appendBpmfReadingsToText(text);
-    } else {
-      output = service.convertTextToHtmlRuby(text);
-    }
-    const lines = output.split("\n");
-    let html = "<h2>轉換結果如下</h2>";
-    for (const line of lines) {
-      html += "<p>" + line + "</p>";
-    }
-
-    document.getElementById("add_bpmf_output").innerHTML = html;
-    document.getElementById("add_bpmf_text_area").focus();
-  }
-
-  function convertHanyuPinyin() {
-    const text = document
-      .getElementById("convert_hanyupnyin_text_area")
-      .value.trim();
-    if (text.length === 0) {
-      document.getElementById("convert_hanyupnyin_output").innerHTML =
-        "<p>您沒有輸入任何內容！</p>";
+      document.title = "小麥注音輸入法 - 國字加注音";
+    } else if (id === "feature_convert_hanyupnyin") {
       document.getElementById("convert_hanyupnyin_text_area").focus();
-      return;
+      document.title = "小麥注音輸入法 - 國字轉拼音";
     }
-    const output = service.convertTextToPinyin(text);
-    const lines = output.split("\n");
-    let html = "<h2>轉換結果如下</h2>";
-    for (const line of lines) {
-      html += "<p>" + line + "</p>";
-    }
-
-    document.getElementById("convert_hanyupnyin_output").innerHTML = html;
-    document.getElementById("convert_hanyupnyin_text_area").focus();
   }
 
   function onHashChange() {

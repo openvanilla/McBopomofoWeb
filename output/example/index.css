@@ -4,7 +4,10 @@ body {
 }
 
 #edit_area {
+  display: flex;
+  flex-direction: column;
   border: 2px solid #000;
+  height: 80%;
 }
 
 .navi {
@@ -31,9 +34,17 @@ textarea {
   resize: none;
   width: 100%;
   font-size: 14pt;
+  border: 1px solid #ccc;
+  border-radius: 0;
+}
+
+textarea:focus {
+  border: 1px solid black;
+  outline: none; /* Removes the blue ring */
 }
 
 textarea#text_area {
+  flex-grow: 1;
   background-color: darkgray;
   font-size: 14pt;
   line-height: 16pt;
@@ -41,7 +52,6 @@ textarea#text_area {
   border: 0;
   margin: 0;
   width: 100%;
-  height: 80%;
   ime-mode: disabled;
   -webkit-ime-mode: disabled;
   -moz-ime-mode: disabled;

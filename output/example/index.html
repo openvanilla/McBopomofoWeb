@@ -42,10 +42,12 @@
       <a href="#feature_input" title="可以直接在網頁中使用的小麥注音輸入法">輸入功能</a>
       <a href="#feature_user_phrases" title="自行添加自訂詞">自訂詞管理</a>
       <a href="#feature_excluded_phrases" title="自行管理排除的詞彙">管理排除的詞彙</a>
+      <span>｜</span>
       <a href="#feature_text_to_braille" title="將國字轉換成點字">國字轉注音點字</a>
       <a href="#feature_braille_to_text" title="將點字轉換成國字">注音點字轉國字</a>
       <a href="#feature_add_bpmf" title="將國字加上注音">國字加注音</a>
       <a href="#feature_convert_hanyupnyin" title="將國字轉換成漢語拼音">國字轉拼音</a>
+      <span>｜</span>
       <a href="https://openvanilla.github.io/McBopomofoWeb/docs/" target="_top" title="API Reference">API Reference</a>
     </p>
 
@@ -256,9 +258,10 @@
       </div>
       <div class="right">
         <p>
-          <input type="button" value="重新載入" onclick="loadUserPhrases();alert('已重新載入之前儲存的詞庫');return false; ">
+          <input type="button" value="重新載入"
+            onclick="settingsManager.loadUserPhrases();alert('已重新載入之前儲存的詞庫');return false; ">
           <input type="button" value="更新詞庫"
-            onclick="saveUserPhrases(document.getElementById('feature_user_phrases_text_area').value); alert('已經儲存更新的詞庫，並更新到輸入法與轉換功能中'); return false;">
+            onclick="settingsManager.saveUserPhrases(document.getElementById('feature_user_phrases_text_area').value); alert('已經儲存更新的詞庫，並更新到輸入法與轉換功能中'); return false;">
         </p>
 
         <h2>自訂詞管理</h2>
@@ -279,9 +282,10 @@
       </div>
       <div class="right">
         <p>
-          <input type="button" value="重新載入" onclick="loadExcludedPhrases();alert('已重新載入之前儲存的詞庫');return false; ">
+          <input type="button" value="重新載入"
+            onclick="settingsManager. loadExcludedPhrases();alert('已重新載入之前儲存的詞庫');return false; ">
           <input type="button" value="更新詞庫"
-            onclick="saveExcludedPhrases(document.getElementById('feature_excluded_phrases_text_area').value); alert('已經儲存更新的詞庫，並更新到輸入法與轉換功能中'); return false;">
+            onclick="settingsManager.saveExcludedPhrases(document.getElementById('feature_excluded_phrases_text_area').value); alert('已經儲存更新的詞庫，並更新到輸入法與轉換功能中'); return false;">
         </p>
 
         <h2>管理已經排除的詞彙</h2>
@@ -298,7 +302,7 @@
     <div id="feature_text_to_braille">
       <div class="left">
         <textarea placeholder="請在此輸入國字" id="text_to_braille_text_area" rows="10" cols="50" title="輸入區"></textarea>
-        <p><input type="button" value="轉換" onclick="textToBraille();"></p>
+        <p><input type="button" value="轉換" onclick="service.textToBraille();"></p>
         <div id="text_to_braille_output"></div>
       </div>
       <div class="right">
@@ -311,7 +315,7 @@
     <div id="feature_braille_to_text">
       <div class="left">
         <textarea placeholder="請在此輸入六點注音" id="braille_to_text_text_area" rows="10" cols="50" title="輸入區"></textarea>
-        <p> <input type="button" value="轉換" onclick="brailleToText();"></p>
+        <p> <input type="button" value="轉換" onclick="service.brailleToText();"></p>
         <div id="braille_to_text_output"></div>
       </div>
       <div class="right">
@@ -324,7 +328,7 @@
     <div id="feature_add_bpmf">
       <div class="left">
         <textarea placeholder="請在此輸入國字" id="add_bpmf_text_area" rows="10" cols="50" title="輸入區"></textarea>
-        <p><input type="button" value="轉換" onclick="addBpmf();"></p>
+        <p><input type="button" value="轉換" onclick="service.addBpmf();"></p>
         <div id="add_bpmf_output"></div>
       </div>
       <div class="right">
@@ -353,7 +357,7 @@
     <div id="feature_convert_hanyupnyin">
       <div class="left">
         <textarea placeholder="請在此輸入國字" id="convert_hanyupnyin_text_area" rows="10" cols="50" title="輸入區"></textarea>
-        <p><input type="button" value="轉換" onclick="convertHanyuPinyin();"></p>
+        <p><input type="button" value="轉換" onclick="service.convertHanyuPinyin();"></p>
         <div id="convert_hanyupnyin_output"></div>
       </div>
       <div class="right">
