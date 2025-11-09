@@ -681,6 +681,11 @@ export class KeyHandler {
       }
     }
 
+    // Do not handle other keys in Marking state.
+    if (state instanceof Marking) {
+      return true;
+    }
+
     // No key is handled. Refresh and consume the key.
     if (maybeNotEmptyState instanceof NotEmpty) {
       var shouldPromptAlert = true;

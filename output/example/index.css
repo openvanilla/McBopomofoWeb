@@ -86,6 +86,16 @@ textarea#feature_user_phrases_text_area {
   border: 1px solid #ccc;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
+  float: left;
+}
+
+#tooltip {
+  background-color: lightyellow;
+  color: #000;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  float: left;
+  padding: 4px 8px;
 }
 
 .left {
@@ -140,6 +150,7 @@ textarea#feature_user_phrases_text_area {
 
 .marking {
   text-decoration: underline;
+  background-color: lightcyan;
 }
 
 .highlighted_candidate {
