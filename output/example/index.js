@@ -236,7 +236,7 @@ let example = (() => {
       saveExcludedPhrases(string);
     });
     controller.setOnOpenUrl((url) => {
-      window.open(url);
+      window.open(url, "_blank", "noopener,noreferrer");
     });
     controller.setOnError(() => {
       if (settingsManager.settings.beep_on_error) {
@@ -811,7 +811,7 @@ let example = (() => {
     };
 
     document.getElementById("text_area").onblur = () => {
-      // controller.reset();
+      controller.reset();
     };
 
     document.getElementById("loading").innerText = "載入完畢！";

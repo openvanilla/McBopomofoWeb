@@ -6,6 +6,13 @@
  */
 
 export class LocalizedStrings {
+  speak(selectedString: string): string {
+    if (this.languageCode === "zh-TW") {
+      return `朗讀「${selectedString}」`;
+    }
+    return `Speak "${selectedString}"`;
+  }
+
   characterInfo(): string {
     if (this.languageCode === "zh-TW") {
       return `字元資訊`;
