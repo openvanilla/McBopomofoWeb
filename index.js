@@ -409,6 +409,7 @@ let example = (() => {
     };
 
     that.settings = that.defaultSettings;
+
     that.loadSettings = () => {
       const result = window.localStorage.getItem("user_settings");
       try {
@@ -417,17 +418,22 @@ let example = (() => {
           that.settings = that.defaultSettings;
         }
 
-        for (const key in defaultSettings) {
+        for (const key in that.defaultSettings) {
           if (!(key in obj)) {
-            obj[key] = defaultSettings[key];
+            obj[key] = that.defaultSettings[key];
           }
         }
+        console.log("Settings loaded:", obj);
         that.settings = obj;
         return obj;
-      } catch (e) {}
+      } catch (e) {
+        console.log("Error loading settings, using default settings.");
+        console.log(e);
+      }
     };
 
     that.saveSettings = () => {
+      console.log("Saving settings:", that.settings);
       const s = JSON.stringify(that.settings);
       window.localStorage.setItem("user_settings", s);
     };
@@ -530,7 +536,7 @@ let example = (() => {
         const select = document.getElementById("moving_cursor_option");
         const options = select.getElementsByTagName("option");
         for (const option of options) {
-          if (option.value === settings.moving_cursor_option) {
+          if (option.value === settings.moving_cursor_option + "") {
             option.selected = "selected";
             break;
           }
@@ -561,7 +567,7 @@ let example = (() => {
         const select = document.getElementById("ctrl_enter_option");
         const options = select.getElementsByTagName("option");
         for (const option of options) {
-          if (option.value === settings.ctrl_enter_option) {
+          if (option.value === settings.ctrl_enter_option + "") {
             option.selected = "selected";
             break;
           }
