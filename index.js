@@ -29,17 +29,6 @@ let example = (() => {
       document.getElementById("text_area").setSelectionRange(start, start);
     };
 
-    that.updateMenu = () => {
-      document.getElementById("menu").style.display = globalUi.menuVisible
-        ? "block"
-        : "none";
-      document.getElementById("feature_input_area").style.width =
-        globalUi.menuVisible ? "70%" : "100%";
-      document.getElementById("menu_visible").innerHTML = globalUi.menuVisible
-        ? '<a href="" onclick="example.globalUi.hideMenu(); return false;">隱藏設定</a>'
-        : '<a href="" onclick="example.globalUi.showMenu(); return false;">顯示設定</a>';
-    };
-
     that.updateByAlphabetMode = () => {
       document.getElementById("status").innerHTML = globalUi.alphabetMode
         ? '<a href="" onclick="example.globalUi.enterChineseMode(); return false;">【英文】</a>'
@@ -201,7 +190,6 @@ let example = (() => {
   const globalUi = (() => {
     let that = {};
     that.alphabetMode = false;
-    that.menuVisible = true;
 
     that.enterAlphabetMode = () => {
       that.alphabetMode = true;
@@ -214,18 +202,6 @@ let example = (() => {
       that.alphabetMode = false;
       ui.updateByAlphabetMode();
       controller.reset();
-      document.getElementById("text_area").focus();
-    };
-
-    that.hideMenu = () => {
-      that.menuVisible = false;
-      ui.updateMenu();
-      document.getElementById("text_area").focus();
-    };
-
-    that.showMenu = () => {
-      that.menuVisible = true;
-      ui.updateMenu();
       document.getElementById("text_area").focus();
     };
 
@@ -616,7 +592,6 @@ let example = (() => {
 
   (function () {
     ui.updateByAlphabetMode();
-    ui.updateMenu();
 
     settingsManager.loadSettings();
     settingsManager.applySettings();

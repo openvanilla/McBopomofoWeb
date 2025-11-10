@@ -56,7 +56,9 @@
           <div id="edit_area">
             <div class="status_area">
               <div class="status" id="status">【中文】</div>
-              <div class="menu_visible" id="menu_visible">隱藏設定</div>
+              <div class="menu_visible" id="menu_visible">
+                <a href="#" id="fullscreen">全螢幕編輯</a>
+              </div>
             </div>
             <textarea placeholder="請在此直接使用英數鍵盤打字" id="text_area" rows="10" cols="50" title="輸入區"
               autocapitalize="off"></textarea>
@@ -70,8 +72,9 @@
 
         <div class="right" id="menu">
           <div id="note">
-            <p>這個網頁不支援手機在上使用，請使用電腦上的瀏覽器開啟。在電腦上，您可以直接透過鍵盤以及網頁上的注音輸入法來輸入中文。</p>
+            <p>這個網頁主要支援實體鍵盤輸入。如果您用的是手機或平板，也請接上實體鍵盤。</p>
           </div>
+          <hr />
           <details open>
             <summary> 設定 </summary>
             <table>
@@ -212,9 +215,7 @@
                 <td>
                   <input type="checkbox" name="beep_on_error" id="beep_on_error"><label for="beep_on_error">錯誤時發出<a
                       onclick="example.ui.beep(); return false;">
-                      嗶聲</a></label><br />
-                  <a href="#" id="fullscreen">全螢幕編輯</a><br />
-                  <!-- <a href="#" id="dump_user_phrases">印出使用者詞彙</a><br /> -->
+                      嗶聲</a></label> <!-- <a href="#" id="dump_user_phrases">印出使用者詞彙</a><br /> -->
                 </td>
               </tr>
             </table>
