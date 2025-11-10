@@ -2,8 +2,7 @@ html,
 body {
   font-family: Helvetica, Arial, sans-serif;
   font-size: 14pt;
-  height: 100%;
-  overflow: hidden;
+  overflow: auto;
 }
 
 #edit_area {
@@ -60,6 +59,7 @@ textarea#text_area {
   -webkit-ime-mode: disabled;
   -moz-ime-mode: disabled;
   -ms-ime-mode: disabled;
+  min-height: 600px;
 }
 
 textarea#text_area::placeholder {
@@ -130,22 +130,58 @@ textarea#feature_excluded_phrases_text_area {
 }
 
 .feature {
-  flex-direction: row;
+  display: flex;
+  flex-direction: column;
   justify-content: space-between;
-  min-height: 80%;
-  height: 100%;
 }
 
 .left {
-  width: 70%;
-  overflow: hidden !important;
+  width: 100%;
+  overflow: auto !important;
 }
 
 .right {
-  width: 30%;
+  width: 100%;
   overflow: auto !important;
-  padding-left: 20px;
-  margin: 0;
+}
+
+@media (min-width: 768px) {
+  html,
+  body {
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 14pt;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .feature {
+    display: flex;
+    flex-direction: row;
+    min-height: 80%;
+    height: 100%;
+  }
+
+  .left {
+    width: 70%;
+    overflow: hidden !important;
+  }
+
+  .right {
+    width: 30%;
+    overflow: auto !important;
+    padding-left: 20px;
+    margin: 0;
+  }
+
+  .main {
+    max-width: 1320px;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+  }
 }
 
 .right h2 {
@@ -183,7 +219,6 @@ textarea#feature_excluded_phrases_text_area {
   margin-right: auto;
   display: flex;
   flex-direction: column;
-  height: 100%;
   overflow: hidden;
 }
 
