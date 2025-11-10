@@ -29,6 +29,7 @@ import {
   SelectingDateMacro,
   SelectingDictionary,
   SelectingFeature,
+  ShowingCharInfo,
 } from "./InputState";
 
 import {
@@ -520,7 +521,8 @@ export class InputController {
       this.state_ instanceof SelectingFeature ||
       this.state_ instanceof SelectingDateMacro ||
       this.state_ instanceof SelectingDictionary ||
-      this.state_ instanceof CustomMenu
+      this.state_ instanceof CustomMenu ||
+      this.state_ instanceof ShowingCharInfo
     ) {
       this.handleCandidateKeyEvent(
         key,
@@ -655,8 +657,8 @@ export class InputController {
           this.state_,
           stateCallback
         );
-        const newState = this.state_.previousState;
-        stateCallback(newState);
+        // const newState = this.state_.previousState;
+        // stateCallback(newState);
       } else if (this.state_ instanceof ChoosingCandidate) {
         this.keyHandler_.candidateSelected(
           current,
@@ -668,7 +670,11 @@ export class InputController {
       } else if (this.state_ instanceof CustomMenu) {
         const entry = this.state_.entries[+current.value];
         entry.callback();
+      } else if (this.state_ instanceof ShowingCharInfo) {
+        const previous = this.state_.previousState;
+        stateCallback(previous);
       }
+
       return;
     }
 
@@ -732,6 +738,9 @@ export class InputController {
         const cursor = this.keyHandler_.cursor;
         const choosing = this.keyHandler_.buildChoosingCandidateState(cursor);
         stateCallback(choosing);
+      } else if (this.state_ instanceof ShowingCharInfo) {
+        const previous = this.state_.previousState;
+        stateCallback(previous);
       }
       return;
     }
@@ -900,14 +909,16 @@ export class InputController {
       this.handleChoosingCandidate(prev, state);
     } else if (state instanceof SelectingDictionary) {
       this.handleChoosingCandidate(prev, state);
+    } else if (state instanceof ShowingCharInfo) {
+      this.handleChoosingCandidate(prev, state);
     } else if (state instanceof ChineseNumber) {
-      this.handleChineseNumber(prev, state);
+      this.handleCustomInput(prev, state);
     } else if (state instanceof RomanNumber) {
-      this.handleRomanNumber(prev, state);
+      this.handleCustomInput(prev, state);
     } else if (state instanceof Big5) {
-      this.handleBig5(prev, state);
+      this.handleCustomInput(prev, state);
     } else if (state instanceof EnclosingNumber) {
-      this.handleEnclosingNumber(prev, state);
+      this.handleCustomInput(prev, state);
     } else if (state instanceof CustomMenu) {
       this.handleChoosingCandidate(prev, state);
     }
@@ -989,6 +1000,13 @@ export class InputController {
         candidates.push(candidate);
         index++;
       }
+    } else if (state instanceof ShowingCharInfo) {
+      let index = 0;
+      for (const item of state.menu) {
+        const candidate = new Candidate("", index + "", item);
+        candidates.push(candidate);
+        index++;
+      }
     }
 
     let keys: string[] = [];
@@ -1011,34 +1029,16 @@ export class InputController {
   private handleMarking(prev: InputState, state: Marking) {
     this.updatePreedit(state);
   }
-
-  private handleChineseNumber(prev: InputState, state: ChineseNumber) {
+  private handleCustomInput(prev: InputState, state: InputState) {
     this.ui_.reset();
-    const composingBuffer = state.composingBuffer;
-    this.ui_.append(new ComposingBufferText(composingBuffer));
-    this.ui_.setCursorIndex(composingBuffer.length);
-    this.ui_.update();
-  }
-
-  private handleRomanNumber(prev: InputState, state: RomanNumber) {
-    this.ui_.reset();
-    const composingBuffer = state.composingBuffer;
-    this.ui_.append(new ComposingBufferText(composingBuffer));
-    this.ui_.setCursorIndex(composingBuffer.length);
-    this.ui_.update();
-  }
-
-  private handleBig5(prev: InputState, state: Big5) {
-    this.ui_.reset();
-    const composingBuffer = state.composingBuffer;
-    this.ui_.append(new ComposingBufferText(composingBuffer));
-    this.ui_.setCursorIndex(composingBuffer.length);
-    this.ui_.update();
-  }
-
-  private handleEnclosingNumber(prev: InputState, state: EnclosingNumber) {
-    this.ui_.reset();
-    const composingBuffer = state.composingBuffer;
+    let composingBuffer = "";
+    if (state instanceof ChineseNumber) {
+      composingBuffer = state.composingBuffer;
+    } else if (state instanceof RomanNumber) {
+      composingBuffer = state.composingBuffer;
+    } else if (state instanceof Big5) {
+      composingBuffer = state.composingBuffer;
+    }
     this.ui_.append(new ComposingBufferText(composingBuffer));
     this.ui_.setCursorIndex(composingBuffer.length);
     this.ui_.update();

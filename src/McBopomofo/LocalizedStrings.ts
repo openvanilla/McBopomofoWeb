@@ -6,6 +6,12 @@
  */
 
 export class LocalizedStrings {
+  characterInfo(): string {
+    if (this.languageCode === "zh-TW") {
+      return `字元資訊`;
+    }
+    return `Character Information`;
+  }
   /* istanbul ignore next */
   lookUp(selectedString: string, name: string): string {
     if (this.languageCode === "zh-TW") {

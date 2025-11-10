@@ -1311,7 +1311,7 @@ export class KeyHandler {
             bytes.push(char - 97 + 10);
           }
         }
-        let textDecoder = new TextDecoder("big5");
+        let textDecoder = new TextDecoder("big5-hkscs");
         let uint8array = new Uint8Array([
           (bytes[0] << 4) | bytes[1],
           (bytes[2] << 4) | bytes[3],

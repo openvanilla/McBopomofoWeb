@@ -1,4 +1,9 @@
-import { Empty, InputState } from "./InputState";
+import {
+  Empty,
+  InputState,
+  SelectingDictionary,
+  ShowingCharInfo,
+} from "./InputState";
 import { LocalizedStrings } from "./LocalizedStrings";
 
 /**
@@ -38,6 +43,29 @@ abstract class DictionaryService {
     selectedString: string,
     localizedStrings: LocalizedStrings
   ): string;
+}
+
+class CharacterInfoService implements DictionaryService {
+  name: string = "Character Information Service";
+  lookUp(
+    phrase: string,
+    state: InputState,
+    serviceIndex: number,
+    stateCallback: (state: InputState) => void
+  ): boolean {
+    if (state instanceof SelectingDictionary) {
+      const newState = new ShowingCharInfo(state, phrase);
+      stateCallback(newState);
+      return true;
+    }
+    return false;
+  }
+  textForMenu(
+    selectedString: string,
+    localizedStrings: LocalizedStrings
+  ): string {
+    return localizedStrings.characterInfo();
+  }
 }
 
 /** The dictionary services that launch the web browser and open a URL.  */
@@ -168,6 +196,12 @@ export class DictionaryServices {
   /* istanbul ignore next */
   constructor(localizedStrings: LocalizedStrings) {
     this.localizedStrings = localizedStrings;
+
+    try {
+      const _ = new TextEncoder();
+      this.services.push(new CharacterInfoService());
+    } catch (e) {}
+
     for (let info of httpBasedDictionaryServices.services) {
       let service = new HttpBasedDictionary(
         info.name,

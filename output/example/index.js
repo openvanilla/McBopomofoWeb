@@ -212,6 +212,7 @@ let example = (() => {
   const controller = (() => {
     const controller = new InputController(ui);
     controller.setUserVerticalCandidates(true);
+    controller.setLanguageCode("zh-TW");
     controller.setOnPhraseChange((userPhrases) => {
       console.log("userPhrases changed");
       let string = "";
@@ -221,7 +222,7 @@ let example = (() => {
           string += phrase[i] + " " + key + "\n";
         }
       }
-      saveUserPhrases(string);
+      settingsManager.saveUserPhrases(string);
     });
     controller.setOnExcludedPhraseChange((userPhrases) => {
       console.log("excludedPhrases changed");
