@@ -587,6 +587,16 @@ let example = (() => {
       document.getElementById("feature_excluded_phrases_text_area").focus();
     };
 
+    that.loadLastText = () => {
+      const result = window.localStorage.getItem("last_text") || "";
+      document.getElementById("text_area").value = result;
+    };
+
+    that.saveLastText = (result) => {
+      const text = document.getElementById("text_area").value;
+      window.localStorage.setItem("last_text", text);
+    };
+
     return that;
   })();
 
@@ -597,6 +607,7 @@ let example = (() => {
     settingsManager.applySettings();
     settingsManager.loadUserPhrases();
     settingsManager.loadExcludedPhrases();
+    settingsManager.loadLastText();
 
     let shiftKeyIsPressed = false;
     document.getElementById("text_area").addEventListener("keyup", (event) => {
@@ -866,6 +877,13 @@ let example = (() => {
       }
       onHashChange();
     });
+
+    document.getElementById("text_area").addEventListener("input", (event) => {
+      console.log("Text changed:", event.target.value);
+      settingsManager.saveLastText();
+    });
+
+    document.getElementById("text_area");
   })();
 
   let example = {};
