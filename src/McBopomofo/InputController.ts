@@ -345,7 +345,7 @@ export class InputController {
    * @param keys The candidate keys, such "123456789".
    */
   public setCandidateKeys(keys: string): void {
-    if (keys == undefined) {
+    if (keys === undefined) {
       keys = "123456789";
     }
     let list: string[] = [];
@@ -614,7 +614,7 @@ export class InputController {
       key.ascii
     );
 
-    if (selected != undefined) {
+    if (selected !== undefined) {
       if (this.state_ instanceof SelectingFeature) {
         stateCallback(this.state_.features[+selected.value].nextState());
       } else if (this.state_ instanceof SelectingDateMacro) {

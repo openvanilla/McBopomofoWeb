@@ -509,13 +509,13 @@ export class BopomofoSyllable {
     tone: Tone
   ): string {
     let output = "";
-    if (consonant != undefined) {
+    if (consonant !== undefined) {
       output += Consonant.toBpmf(consonant);
     }
-    if (middleVowel != undefined) {
+    if (middleVowel !== undefined) {
       output += MiddleVowel.toBpmf(middleVowel);
     }
-    if (vowel != undefined) {
+    if (vowel !== undefined) {
       output += Vowel.toBpmf(vowel);
     }
     output += Tone.toBpmf(tone);
@@ -529,13 +529,13 @@ export class BopomofoSyllable {
     tone: Tone
   ): string {
     let output = "";
-    if (consonant != undefined) {
+    if (consonant !== undefined) {
       output += Consonant.toBraille(consonant);
     }
-    if (vowel != undefined) {
-      if (middleVowel != undefined) {
+    if (vowel !== undefined) {
+      if (middleVowel !== undefined) {
         let combination = MiddleVowel.buildCombination(middleVowel, vowel);
-        if (combination != null) {
+        if (combination !== undefined) {
           if (ㄧ_Combination.allBpmf.includes(combination)) {
             output += ㄧ_Combination.toBraille(combination as ㄧ_Combination);
           } else if (ㄨ_Combination.allBpmf.includes(combination)) {
@@ -547,9 +547,9 @@ export class BopomofoSyllable {
       } else {
         output += Vowel.toBraille(vowel);
       }
-    } else if (middleVowel != null) {
+    } else if (middleVowel !== undefined) {
       output += MiddleVowel.toBraille(middleVowel);
-    } else if (consonant != null) {
+    } else if (consonant !== undefined) {
       if (Consonant.isSingle(consonant)) {
         // ㄭ
         output += "⠱";
@@ -577,44 +577,44 @@ export class BopomofoSyllable {
     for (let i = 0; i < bpmf.length; i++) {
       let c = bpmf[i];
       if (Consonant.allBpmf.includes(c)) {
-        if (consonant != undefined) {
+        if (consonant !== undefined) {
           throw new Error("Invalid Bopomofo: multiple consonants");
         }
-        if (middleVowel != undefined || vowel != undefined) {
+        if (middleVowel !== undefined || vowel !== undefined) {
           throw new Error("Invalid Bopomofo: consonant after vowel");
         }
         consonant = Consonant.fromBpmf(c);
       } else if (MiddleVowel.allBpmf.includes(c)) {
-        if (middleVowel != undefined) {
+        if (middleVowel !== undefined) {
           throw new Error("Invalid Bopomofo: multiple middle vowels");
         }
-        if (vowel != undefined) {
+        if (vowel !== undefined) {
           throw new Error("Invalid Bopomofo: middle vowel after vowel");
         }
         middleVowel = MiddleVowel.fromBpmf(c);
       } else if (Vowel.allBpmf.includes(c)) {
-        if (vowel != undefined) {
+        if (vowel !== undefined) {
           throw new Error("Invalid Bopomofo: multiple vowels");
         }
-        if (middleVowel != undefined) {
+        if (middleVowel !== undefined) {
           let result = MiddleVowel.buildCombination(middleVowel, c);
-          if (result == undefined) {
+          if (result === undefined) {
             throw new Error("Invalid Bopomofo: invalid combination");
           }
         }
         vowel = Vowel.fromBpmf(c);
       } else if (Tone.allBpmf.includes(c)) {
         if (
-          consonant == undefined &&
-          middleVowel == undefined &&
-          vowel == undefined
+          consonant === undefined &&
+          middleVowel === undefined &&
+          vowel === undefined
         ) {
           throw new Error(
             "Invalid Bopomofo: tone without consonant, middle vowel, or vowel"
           );
         }
 
-        if (tone != Tone.tone1) {
+        if (tone !== Tone.tone1) {
           throw new Error("Invalid Bopomofo: multiple tones");
         }
         tone = Tone.fromBpmf(c)!;
@@ -624,9 +624,9 @@ export class BopomofoSyllable {
     }
 
     if (
-      consonant == undefined &&
-      middleVowel == undefined &&
-      vowel == undefined
+      consonant === undefined &&
+      middleVowel === undefined &&
+      vowel === undefined
     ) {
       throw new Error("Invalid Bopomofo: invalid character");
     }
@@ -653,8 +653,8 @@ export class BopomofoSyllable {
 
     function shouldConnectWithYiOrYv(next: string): boolean {
       return (
-        next == MiddleVowel.toBraille(MiddleVowel.ㄧ) ||
-        next == MiddleVowel.toBraille(MiddleVowel.ㄩ) ||
+        next === MiddleVowel.toBraille(MiddleVowel.ㄧ) ||
+        next === MiddleVowel.toBraille(MiddleVowel.ㄩ) ||
         ㄧ_Combination.allBraille.includes(next) ||
         ㄩ_Combination.allBraille.includes(next)
       );
@@ -670,8 +670,8 @@ export class BopomofoSyllable {
         if (i === 0) {
           vowel = Vowel.ㄦ;
         }
-        if (consonant != undefined) {
-          if (Consonant.isSingle(consonant) == false) {
+        if (consonant !== undefined) {
+          if (Consonant.isSingle(consonant) === false) {
             throw new Error("Invalid Braille: other");
           }
         }
@@ -689,7 +689,7 @@ export class BopomofoSyllable {
               "Invalid Braille: tone without consonant, middle vowel, or vowel"
             );
           }
-          if (tone != undefined) {
+          if (tone !== undefined) {
             throw new Error("Invalid Braille: multiple tones");
           }
           tone = Tone.tone5;
@@ -737,70 +737,70 @@ export class BopomofoSyllable {
           consonant = Consonant.ㄍ;
         }
       } else if (Consonant.allBraille.includes(c)) {
-        if (consonant != undefined) {
+        if (consonant !== undefined) {
           throw new Error("Invalid Braille: multiple consonants");
         }
-        if (middleVowel != undefined || vowel != undefined) {
+        if (middleVowel !== undefined || vowel !== undefined) {
           throw new Error("Invalid Braille: consonant after vowel");
         }
         consonant = Consonant.fromBraille(c);
       } else if (MiddleVowel.allBraille.includes(c)) {
-        if (middleVowel != undefined) {
+        if (middleVowel !== undefined) {
           throw new Error("Invalid Braille: multiple middle vowels");
         }
-        if (vowel != undefined) {
+        if (vowel !== undefined) {
           throw new Error("Invalid Braille:  vowel already set");
         }
         middleVowel = MiddleVowel.fromBraille(c);
       } else if (Vowel.allBraille.includes(c)) {
-        if (middleVowel != undefined) {
+        if (middleVowel !== undefined) {
           throw new Error("Invalid Braille: multiple middle vowels");
         }
-        if (vowel != undefined) {
+        if (vowel !== undefined) {
           throw new Error("Invalid Braille: multiple middle vowels");
         }
         vowel = Vowel.fromBraille(c);
       } else if (ㄧ_Combination.allBraille.includes(c)) {
-        if (middleVowel != undefined) {
+        if (middleVowel !== undefined) {
           throw new Error("Invalid Braille: multiple middle vowels");
         }
-        if (vowel != undefined) {
+        if (vowel !== undefined) {
           throw new Error("Invalid Braille: multiple middle vowels");
         }
         let combination = ㄧ_Combination.fromBraille(c);
-        if (combination == undefined) {
+        if (combination === undefined) {
           throw new Error("Invalid Braille: invalid combination");
         }
         middleVowel = MiddleVowel.ㄧ;
         vowel = Vowel.fromBpmf(combination[1]);
       } else if (ㄨ_Combination.allBraille.includes(c)) {
-        if (middleVowel != undefined) {
+        if (middleVowel !== undefined) {
           throw new Error("Invalid Braille: multiple middle vowels");
         }
-        if (vowel != undefined) {
+        if (vowel !== undefined) {
           throw new Error("Invalid Braille: multiple middle vowels");
         }
         let combination = ㄨ_Combination.fromBraille(c);
-        if (combination == undefined) {
+        if (combination === undefined) {
           throw new Error("Invalid Braille: invalid combination");
         }
         middleVowel = MiddleVowel.ㄨ;
         vowel = Vowel.fromBpmf(combination[1]);
       } else if (ㄩ_Combination.allBraille.includes(c)) {
-        if (middleVowel != undefined) {
+        if (middleVowel !== undefined) {
           throw new Error("Invalid Braille: multiple middle vowels");
         }
-        if (vowel != undefined) {
+        if (vowel !== undefined) {
           throw new Error("Invalid Braille: multiple middle vowels");
         }
         let combination = ㄩ_Combination.fromBraille(c);
-        if (combination == undefined) {
+        if (combination === undefined) {
           throw new Error("Invalid Braille: invalid combination");
         }
         middleVowel = MiddleVowel.ㄩ;
         vowel = Vowel.fromBpmf(combination[1]);
       } else if (Tone.allBraille.includes(c)) {
-        if (tone != undefined) {
+        if (tone !== undefined) {
           throw new Error("Invalid Braille: multiple tones");
         }
         tone = Tone.fromBraille(c);
@@ -809,14 +809,14 @@ export class BopomofoSyllable {
       }
     }
 
-    if (tone == undefined) {
+    if (tone === undefined) {
       throw new Error("Invalid Braille: no tone");
     }
 
     if (
-      middleVowel == undefined &&
-      vowel == undefined &&
-      (consonant == undefined || Consonant.isSingle(consonant!) == false)
+      middleVowel === undefined &&
+      vowel === undefined &&
+      (consonant === undefined || Consonant.isSingle(consonant!) === false)
     ) {
       throw new Error("Invalid Braille: invalid character");
     }

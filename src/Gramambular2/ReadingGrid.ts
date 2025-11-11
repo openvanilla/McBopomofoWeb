@@ -157,7 +157,7 @@ export class ReadingGrid {
       let span = this.spans_[i];
       for (let j = 1, maxSpanLen = span.maxLength; j <= maxSpanLen; ++j) {
         let p = span.nodeOf(j);
-        if (p != undefined) {
+        if (p !== undefined) {
           let v = new Vertex(p);
           vspans[i].push(v);
           ++vertices;
@@ -199,7 +199,7 @@ export class ReadingGrid {
     const walkedNodes: Node[] = [];
     let totalReadingLen = 0;
     let currentVertex = terminal;
-    while (currentVertex.prev != undefined) {
+    while (currentVertex.prev !== undefined) {
       walkedNodes.push(currentVertex.prev.node);
       currentVertex = currentVertex.prev;
       totalReadingLen += currentVertex.node.spanningLength;
@@ -304,7 +304,7 @@ export class ReadingGrid {
     let overridden: NodeInSpan | undefined = undefined;
 
     for (let nis of overlappingNodes) {
-      if (reading != undefined && nis.node.reading != reading) {
+      if (reading !== undefined && nis.node.reading !== reading) {
         continue;
       }
 
@@ -332,7 +332,7 @@ export class ReadingGrid {
       // will be reset as it's part of the overlapping node, but A is not.
       let nodes = this.overlappingNodesAt(i);
       for (let nis of nodes) {
-        if (nis.node != overridden.node) {
+        if (nis.node !== overridden.node) {
           nis.node.reset();
         }
       }
@@ -465,7 +465,7 @@ export class ReadingGrid {
     // First, get all nodes from the span at location.
     for (let i = 1, len = this.spans_[loc].maxLength; i <= len; ++i) {
       let ptr: Node | undefined = this.spans_[loc].nodeOf(i);
-      if (ptr != undefined) {
+      if (ptr !== undefined) {
         let element = new NodeInSpan(ptr, loc);
         results.push(element);
       }
@@ -477,7 +477,7 @@ export class ReadingGrid {
       let endLen = this.spans_[i].maxLength;
       for (let j = beginLen; j <= endLen; ++j) {
         let ptr = this.spans_[i].nodeOf(j);
-        if (ptr != undefined) {
+        if (ptr !== undefined) {
           let element = new NodeInSpan(ptr, i);
           results.push(element);
         }
@@ -566,7 +566,7 @@ export class Node {
    * Whether the node is overridden.
    */
   get isOverridden(): boolean {
-    return this.overrideType_ != OverrideType.kNone;
+    return this.overrideType_ !== OverrideType.kNone;
   }
 
   /**
@@ -584,7 +584,7 @@ export class Node {
    * @returns True if the unigram was found and selected, false otherwise.
    */
   selectOverrideUnigram(value: string, type: OverrideType): boolean {
-    // assert(type != OverrideType.kNone);
+    // assert(type !==  OverrideType.kNone);
     for (let i = 0; i < this.unigrams.length; i++) {
       if (this.unigrams[i].value === value) {
         this.selectedIndex_ = i;
@@ -783,7 +783,7 @@ export class Span {
 
     let i = length - 2;
     while (true) {
-      if (this.nodes_[i] != undefined) {
+      if (this.nodes_[i] !== undefined) {
         this.maxLength_ = i + 1;
         return;
       }

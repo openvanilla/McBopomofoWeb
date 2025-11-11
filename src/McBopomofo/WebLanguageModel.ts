@@ -28,7 +28,7 @@ export class UserPhrases implements LanguageModel {
 
   removeUserPhrase(key: string, phrase: string): void {
     let list = this.userPhrases_.get(key);
-    if (list == undefined) {
+    if (list === undefined) {
       return;
     }
     if (list.includes(phrase)) {
@@ -40,7 +40,7 @@ export class UserPhrases implements LanguageModel {
 
   addUserPhrase(key: string, phrase: string): void {
     let list = this.userPhrases_.get(key);
-    if (list != undefined) {
+    if (list !== undefined) {
       if (list.includes(phrase)) {
         return;
       }
@@ -61,7 +61,7 @@ export class UserPhrases implements LanguageModel {
 
     let result: Unigram[] = [];
     let list = this.userPhrases_.get(key);
-    if (list != undefined) {
+    if (list !== undefined) {
       for (let item of list) {
         let g = new Unigram(item, 0);
         result.push(g);
@@ -162,7 +162,7 @@ export class WebLanguageModel implements LanguageModel {
       let key = parts[1];
       let value = parts[0];
       let list = map.get(key);
-      if (list != undefined) {
+      if (list !== undefined) {
         list.push(value);
         map.set(key, list);
       } else {
@@ -237,7 +237,7 @@ export class WebLanguageModel implements LanguageModel {
    * @param phrase The phrase.
    */
   addUserPhrase(key: string, phrase: string): void {
-    if (this.addUserPhraseConverter != undefined) {
+    if (this.addUserPhraseConverter !== undefined) {
       phrase = this.addUserPhraseConverter(phrase) ?? phrase;
     }
     this.excludedPhrases_.removeUserPhrase(key, phrase);
@@ -245,7 +245,7 @@ export class WebLanguageModel implements LanguageModel {
   }
 
   addExcludedPhrase(key: string, phrase: string): void {
-    if (this.excludedPhraseConverter != undefined) {
+    if (this.excludedPhraseConverter !== undefined) {
       phrase = this.excludedPhraseConverter(phrase) ?? phrase;
     }
     this.userPhrases_.removeUserPhrase(key, phrase);

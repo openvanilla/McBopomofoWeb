@@ -51,7 +51,7 @@ function FormObservationKey(nodes: Node[], head: number, end: number): string {
   // a suggestion, this head node is never overridden yet.
 
   let headStr = "";
-  if (nodes[head] != undefined) {
+  if (nodes[head] !== undefined) {
     headStr = CombineReadingValue(
       nodes[head].reading,
       nodes[head].unigrams[0].value
@@ -64,12 +64,12 @@ function FormObservationKey(nodes: Node[], head: number, end: number): string {
   let prevStr = "";
   let prevIsPunctuation = false;
 
-  if (head != end) {
+  if (head !== end) {
     --head;
     prevIsPunctuation = IsPunctuation(nodes[head]);
     if (prevIsPunctuation) {
       prevStr = kEmptyNodeString;
-    } else if (nodes[head] != undefined) {
+    } else if (nodes[head] !== undefined) {
       prevStr = CombineReadingValue(
         nodes[head].reading,
         nodes[head].currentUnigram.value
@@ -80,11 +80,11 @@ function FormObservationKey(nodes: Node[], head: number, end: number): string {
   }
 
   let anteriorStr = "";
-  if (head != end && !prevIsPunctuation) {
+  if (head !== end && !prevIsPunctuation) {
     --head;
     if (IsPunctuation(nodes[head])) {
       anteriorStr = kEmptyNodeString;
-    } else if (nodes[head] != undefined) {
+    } else if (nodes[head] !== undefined) {
       anteriorStr = CombineReadingValue(
         nodes[head].reading,
         nodes[head].currentUnigram.value
@@ -167,7 +167,7 @@ export class UserOverrideModel {
     }
 
     if (
-      walkBeforeUserOverride.totalReadings !=
+      walkBeforeUserOverride.totalReadings !==
       walkAfterUserOverride.totalReadings
     ) {
       return;

@@ -587,7 +587,7 @@ class PimeMcBopomofo {
    */
   public customUiResponse(): any {
     let fontSize = this.settings.candidate_font_size;
-    if (fontSize == undefined) {
+    if (fontSize === undefined) {
       fontSize = 16;
     } else if (fontSize < 10) {
       fontSize = 10;
@@ -988,7 +988,7 @@ module.exports = {
 
       pimeMcBopomofo.resetBeforeHandlingKey();
 
-      if ((keyStates[VK_Keys.VK_CAPITAL] & 1) != 0) {
+      if ((keyStates[VK_Keys.VK_CAPITAL] & 1) !== 0) {
         // Ignores caps lock.
         pimeMcBopomofo.resetController();
         pimeMcBopomofo.isCapsLockHold = true;

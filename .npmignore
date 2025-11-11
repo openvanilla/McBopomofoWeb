@@ -1,0 +1,45 @@
+# Development and build artifacts
+node_modules
+coverage
+output
+dist/*.test.*
+junit.xml
+
+# Build configurations
+webpack.config.*.js
+tsconfig.json
+jest.config.js
+.eslintrc.js
+
+# Development tools
+.vscode
+.github
+tools
+
+# Build scripts
+build_pime.bat
+build_pime_installer.bat
+
+# Platform-specific implementations
+src/chromeos_ime.ts
+src/pime.ts
+src/pime_keys.ts
+dist/chromeos_ime.*
+dist/pime.*
+dist/pime_keys.*
+others
+
+# Documentation not needed in package
+AGENTS.md
+GEMINI.md
+CODE_OF_CONDUCT.md
+README.en.md
+
+# Test files
+**/*.test.ts
+**/*.spec.ts
+
+# Misc
+.git
+.gitignore
+installer

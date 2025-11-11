@@ -25,7 +25,7 @@ export function TrimZerosAtStart(string: string): string {
     let c = string.charAt(i);
     if (nonZeroFound) {
       output += c;
-    } else if (c != "0") {
+    } else if (c !== "0") {
       nonZeroFound = true;
       output += c;
     }

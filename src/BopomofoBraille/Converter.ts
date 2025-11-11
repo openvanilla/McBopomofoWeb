@@ -50,7 +50,7 @@ export class BopomofoBrailleConverter {
 
     while (readHead < length) {
       if (bopomofo.charAt(readHead) === " ") {
-        if (output.charAt(output.length - 1) != " ") {
+        if (output.charAt(output.length - 1) !== " ") {
           output += " ";
         }
         readHead += 1;
@@ -73,7 +73,7 @@ export class BopomofoBrailleConverter {
             let end = readHead + i;
             let substring = bopomofo.substring(start, end);
             let punctuation = DigitRelated.fromPunctuation(substring);
-            if (punctuation != undefined) {
+            if (punctuation !== undefined) {
               output += DigitRelated.toBraille(punctuation);
               readHead = end;
               found = true;
@@ -135,7 +135,7 @@ export class BopomofoBrailleConverter {
       {
         let substring = bopomofo.charAt(readHead);
         let punctuation = FullWidthPunctuation.fromBpmf(substring);
-        if (punctuation != undefined) {
+        if (punctuation !== undefined) {
           output += FullWidthPunctuation.toBraille(punctuation);
           readHead += 1;
           state = ConverterState.bpmf;
@@ -248,7 +248,7 @@ export class BopomofoBrailleConverter {
       if (braille.charAt(readHead) === " ") {
         if (nonBpmfText.length === 0) {
           nonBpmfText += " ";
-        } else if (nonBpmfText.charAt(nonBpmfText.length - 1) != " ") {
+        } else if (nonBpmfText.charAt(nonBpmfText.length - 1) !== " ") {
           nonBpmfText += " ";
         }
         readHead += 1;
@@ -259,7 +259,7 @@ export class BopomofoBrailleConverter {
       if (state === ConverterState.digits) {
         let substring = braille.charAt(readHead);
         let digit = Digit.fromBraille(substring);
-        if (digit != undefined) {
+        if (digit !== undefined) {
           nonBpmfText += digit;
           readHead += 1;
           continue;
@@ -273,7 +273,7 @@ export class BopomofoBrailleConverter {
             let end = readHead + i;
             let substring = braille.substring(start, end);
             let punctuation = DigitRelated.fromBraille(substring);
-            if (punctuation != undefined) {
+            if (punctuation !== undefined) {
               nonBpmfText += DigitRelated.toPunctuation(punctuation);
               readHead = end;
               found = true;
@@ -296,7 +296,7 @@ export class BopomofoBrailleConverter {
           substring = braille.charAt(readHead + 1);
         }
         let letter = Letter.fromBraille(substring);
-        if (letter != undefined) {
+        if (letter !== undefined) {
           if (isUppercase) {
             nonBpmfText += letter.toUpperCase();
             readHead += 2;
@@ -314,7 +314,7 @@ export class BopomofoBrailleConverter {
           let end = readHead + i;
           let substring = braille.substring(start, end);
           let punctuation = HalfWidthPunctuation.fromBraille(substring);
-          if (punctuation != undefined) {
+          if (punctuation !== undefined) {
             nonBpmfText += HalfWidthPunctuation.toBpmf(punctuation);
             readHead = end;
             found = true;
@@ -344,7 +344,7 @@ export class BopomofoBrailleConverter {
 
             try {
               let b = BopomofoSyllable.fromBraille(substring);
-              if (b != undefined) {
+              if (b !== undefined) {
                 if (nonBpmfText.length > 0) {
                   output.push(nonBpmfText);
                   nonBpmfText = "";
@@ -378,7 +378,7 @@ export class BopomofoBrailleConverter {
           }
 
           let punctuation = FullWidthPunctuation.fromBraille(substring);
-          if (punctuation != undefined) {
+          if (punctuation !== undefined) {
             if (state === ConverterState.initial) {
               if (!FullWidthPunctuation.supposedToBeAtStart(punctuation)) {
                 continue;
@@ -400,7 +400,7 @@ export class BopomofoBrailleConverter {
       let substring = braille.charAt(readHead);
       if (substring === "⠼") {
         let digit = Digit.fromBraille(braille.charAt(readHead + 1));
-        if (digit != undefined) {
+        if (digit !== undefined) {
           nonBpmfText += digit;
           readHead += 2;
           state = ConverterState.digits;
@@ -410,7 +410,7 @@ export class BopomofoBrailleConverter {
 
       if (substring === "⠠" && readHead + 1 < length) {
         let letter = Letter.fromBraille(braille.charAt(readHead + 1));
-        if (letter != undefined) {
+        if (letter !== undefined) {
           nonBpmfText += letter.toUpperCase();
           readHead += 2;
           state = ConverterState.letters;
@@ -419,7 +419,7 @@ export class BopomofoBrailleConverter {
       }
 
       let letter = Letter.fromBraille(braille.charAt(readHead));
-      if (letter != undefined) {
+      if (letter !== undefined) {
         nonBpmfText += letter;
         readHead += 1;
         state = ConverterState.letters;
@@ -434,7 +434,7 @@ export class BopomofoBrailleConverter {
           let end = readHead + i;
           let substring = braille.substring(start, end);
           let punctuation = HalfWidthPunctuation.fromBraille(substring);
-          if (punctuation != undefined) {
+          if (punctuation !== undefined) {
             nonBpmfText += HalfWidthPunctuation.toBpmf(punctuation);
             readHead = end;
             state = ConverterState.letters;

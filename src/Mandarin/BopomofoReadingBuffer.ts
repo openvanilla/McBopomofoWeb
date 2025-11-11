@@ -40,7 +40,7 @@ export class BopomofoReadingBuffer {
     if (!this.pinyinMode_) {
       return this.layout_.keyToComponents(k).length > 0;
     }
-    if (k.length != 1) return false;
+    if (k.length !== 1) return false;
 
     let lk = k.toLowerCase();
     if (lk >= "a" && lk <= "z") {

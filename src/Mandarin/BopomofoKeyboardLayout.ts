@@ -181,14 +181,14 @@ export class BopomofoKeyboardLayout {
       // apply the I/UE + E rule
       if (
         head.vowelComponent === BopomofoSyllable.E &&
-        follow.vowelComponent != BopomofoSyllable.E
+        follow.vowelComponent !== BopomofoSyllable.E
       ) {
         syllable.addEqual(beforeSeqHasIorUE ? head : follow);
         continue;
       }
 
       if (
-        head.vowelComponent != BopomofoSyllable.E &&
+        head.vowelComponent !== BopomofoSyllable.E &&
         follow.vowelComponent === BopomofoSyllable.E
       ) {
         syllable.addEqual(beforeSeqHasIorUE ? follow : head);
@@ -199,7 +199,7 @@ export class BopomofoKeyboardLayout {
       // components vector here
       if (head.belongsToJQXClass && !follow.belongsToJQXClass) {
         if (!syllable.isEmpty) {
-          if (ending != follow) syllable.addEqual(ending);
+          if (ending !== follow) syllable.addEqual(ending);
         } else {
           syllable.addEqual(aheadSeqHasIorUE ? head : follow);
         }
@@ -208,7 +208,7 @@ export class BopomofoKeyboardLayout {
 
       if (!head.belongsToJQXClass && follow.belongsToJQXClass) {
         if (!syllable.isEmpty) {
-          if (ending != follow) syllable.addEqual(ending);
+          if (ending !== follow) syllable.addEqual(ending);
         } else {
           syllable.addEqual(aheadSeqHasIorUE ? follow : head);
         }
@@ -288,7 +288,7 @@ export class BopomofoKeyboardLayout {
     const tone4 = this.componentToKey(BopomofoSyllable.Tone4);
     const tone5 = this.componentToKey(BopomofoSyllable.Tone5);
 
-    if (tone1 != undefined) {
+    if (tone1 !== undefined) {
       if (seq[ahead] === tone1) return true;
     }
 

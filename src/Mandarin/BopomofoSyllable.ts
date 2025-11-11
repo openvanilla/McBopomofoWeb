@@ -431,7 +431,7 @@ export class BopomofoSyllable {
 
         if (
           (cc === BopomofoSyllable.N || cc === BopomofoSyllable.L) &&
-          vc != BopomofoSyllable.E
+          vc !== BopomofoSyllable.E
         ) {
           middle = useVForUUmlaut ? "v" : "ü";
         } else {
@@ -560,7 +560,7 @@ export class BopomofoSyllable {
       let char = str.charAt(i);
       let component =
         BopomofoCharacterMap.sharedInstance.characterToComponent.get(char);
-      if (component != undefined) {
+      if (component !== undefined) {
         syllable.addEqual(new BopomofoSyllable(component));
       }
     }
@@ -570,11 +570,11 @@ export class BopomofoSyllable {
   get composedString(): string {
     let str = "";
     function append(mask: Component, syllable: BopomofoSyllable) {
-      if ((syllable.syllable_ & mask) != 0) {
+      if ((syllable.syllable_ & mask) !== 0) {
         let char = BopomofoCharacterMap.sharedInstance.componentToCharacter.get(
           syllable.syllable_ & mask
         );
-        if (char != undefined) {
+        if (char !== undefined) {
           str += char;
         }
       }
@@ -673,7 +673,7 @@ export class BopomofoSyllable {
   isOverlappingWith(another: BopomofoSyllable): boolean {
     function IOW_SAND(mask: Component, syllable: BopomofoSyllable) {
       return (
-        (syllable.syllable_ & mask) != 0 && (another.syllable_ & mask) != 0
+        (syllable.syllable_ & mask) !== 0 && (another.syllable_ & mask) !== 0
       );
     }
     return (

@@ -254,7 +254,7 @@ export class DictionaryServices {
         info.name,
         info.url_template,
         (input: string) => {
-          if (this.onOpenUrl != undefined) {
+          if (this.onOpenUrl !== undefined) {
             this.onOpenUrl(input);
           }
         }

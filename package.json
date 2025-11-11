@@ -3,9 +3,8 @@
     "@types/chrome": "^0.1.27",
     "@types/jest": "^30.0.0",
     "@types/lodash": "^4.17.20",
-    "@types/node": "^24.2.1",
-    "@typescript-eslint/eslint-plugin": "^8.46.4",
     "@types/node": "^24.10.0",
+    "@typescript-eslint/eslint-plugin": "^8.46.4",
     "@typescript-eslint/parser": "^8.46.4",
     "eslint": "^9.39.1",
     "jest": "^30.2.0",
@@ -20,9 +19,23 @@
     "webpack": "^5.102.1",
     "webpack-cli": "^6.0.1"
   },
-  "name": "mcbopomofoweb",
+  "name": "@openvanilla/mcbopomofoweb",
   "version": "1.8.6",
   "description": "McBopomofo input method built with TypeScript and other Web technologies",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "files": [
+    "dist",
+    "src",
+    "!src/chromeos_ime.ts",
+    "!src/pime.ts",
+    "!src/pime_keys.ts",
+    "README.md",
+    "LICENSE.txt"
+  ],
   "scripts": {
     "ts-build": "tsc",
     "ts-build:watch": "tsc -w",
@@ -31,9 +44,11 @@
     "build:pime": "webpack --mode production --config webpack.config.pime.js",
     "build:dev": "webpack --mode development",
     "build:watch": "webpack --mode development --watch",
+    "prepare": "tsc",
+    "prepublishOnly": "npm run test && npm run eslint",
     "test": "./node_modules/jest/bin/jest.js",
     "test:coverage": "./node_modules/jest/bin/jest.js --coverage",
-    "eslint": "eslint src --ext .ts"
+    "eslint": "eslint"
   },
   "repository": {
     "type": "git",

@@ -465,7 +465,7 @@ export class KeyHandler {
         return true;
       }
 
-      if (this.traditionalMode_ == false && key.ctrlPressed) {
+      if (this.traditionalMode_ === false && key.ctrlPressed) {
         if (this.ctrlEnterOption_ === CtrlEnterOption.bpmfReadings) {
           let readings = this.grid_.readings;
           let readingValue = readings.join(kJoinSeparator);
@@ -601,7 +601,7 @@ export class KeyHandler {
       return true;
     }
 
-    if (simpleAscii != "") {
+    if (simpleAscii !== "") {
       // let chrStr = key.ascii;
       let unigram = "";
 
@@ -973,20 +973,20 @@ export class KeyHandler {
     }
 
     let isValidMove = false;
-    if (key.name == KeyName.LEFT || key.ascii == "b") {
+    if (key.name === KeyName.LEFT || key.ascii === "b") {
       if (this.grid_.cursor > 0) {
         this.grid_.cursor -= 1;
         isValidMove = true;
       }
-    } else if (key.name == KeyName.RIGHT || key.ascii == "f") {
+    } else if (key.name === KeyName.RIGHT || key.ascii === "f") {
       if (this.grid_.cursor < this.grid_.length) {
         this.grid_.cursor += 1;
         isValidMove = true;
       }
-    } else if (key.name == KeyName.HOME || key.ascii == "a") {
+    } else if (key.name === KeyName.HOME || key.ascii === "a") {
       this.grid_.cursor = 0;
       isValidMove = true;
-    } else if (key.name == KeyName.END || key.ascii == "e") {
+    } else if (key.name === KeyName.END || key.ascii === "e") {
       this.grid_.cursor = this.grid_.length;
       isValidMove = true;
     }
@@ -994,7 +994,7 @@ export class KeyHandler {
       errorCallback();
     }
 
-    if (key.shiftPressed && this.grid_.cursor != markBeginCursorIndex) {
+    if (key.shiftPressed && this.grid_.cursor !== markBeginCursorIndex) {
       stateCallback(this.buildMarkingState(markBeginCursorIndex));
     } else {
       stateCallback(this.buildInputtingState());
