@@ -33,6 +33,7 @@
     "!src/chromeos_ime.ts",
     "!src/pime.ts",
     "!src/pime_keys.ts",
+    "other",
     "README.md",
     "LICENSE.txt"
   ],
