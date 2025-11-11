@@ -211,6 +211,51 @@ export class SelectingDictionary extends NotEmpty {
   }
 }
 
+export class ShowingCharInfo extends NotEmpty {
+  readonly previousState: SelectingDictionary;
+  readonly selectedPhrase: string = "";
+  readonly menu: string[] = [];
+
+  constructor(previousState: SelectingDictionary, selectedString: string) {
+    super(
+      previousState.composingBuffer,
+      previousState.cursorIndex,
+      previousState.tooltip
+    );
+    this.previousState = previousState;
+    this.selectedPhrase = selectedString;
+    this.buildMenu();
+  }
+
+  private buildMenu() {
+    this.menu.push(
+      "JavaScript String length: " + this.selectedPhrase.replace.length
+    );
+
+    try {
+      const encoder = new TextEncoder();
+      const utf8Bytes = encoder.encode(this.selectedPhrase);
+      const utf8Hex = Array.from(utf8Bytes)
+        .map((byte) => byte.toString(16).toUpperCase().padStart(2, "0"))
+        .join("");
+      this.menu.push("UTF-8 HEX: " + utf8Hex);
+    } catch (e) {}
+    try {
+      const charInfo = Array.from(this.selectedPhrase)
+        .map((char) => {
+          const codePoint = char.codePointAt(0);
+          return `U+${codePoint?.toString(16).toUpperCase().padStart(4, "0")}`;
+        })
+        .join("");
+      this.menu.push("UTF-16 HEX:" + charInfo);
+    } catch (e) {}
+    try {
+      const urlEncoded = encodeURIComponent(this.selectedPhrase);
+      this.menu.push("URL Encoded: " + urlEncoded);
+    } catch (e) {}
+  }
+}
+
 /**
  * Enumeration representing different styles for Chinese numbers.
  * @enum {number}
@@ -392,7 +437,7 @@ export class SelectingFeature implements InputState {
 
     try {
       // Note: old JS engines may not support big5 encoding.
-      let _ = new TextDecoder("big5");
+      let _ = new TextDecoder("big5-hkscs");
       features.push(new Feature("Big5 內碼輸入", () => new Big5()));
     } catch (e) {
       // bypass

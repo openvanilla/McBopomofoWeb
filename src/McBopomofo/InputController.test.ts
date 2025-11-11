@@ -1048,6 +1048,11 @@ describe("InputController", () => {
       controller.setOnOpenUrl((url: string) => {
         getUrl = url;
       });
+
+      key = new Key("", KeyName.DOWN);
+      controller.mcbopomofoKeyEvent(key);
+      key = new Key("", KeyName.DOWN);
+      controller.mcbopomofoKeyEvent(key);
       key = new Key("", KeyName.RETURN);
       controller.mcbopomofoKeyEvent(key);
       expect(getUrl).toBeDefined();

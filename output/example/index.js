@@ -212,6 +212,7 @@ let example = (() => {
   const controller = (() => {
     const controller = new InputController(ui);
     controller.setUserVerticalCandidates(true);
+    controller.setLanguageCode("zh-TW");
     controller.setOnPhraseChange((userPhrases) => {
       console.log("userPhrases changed");
       let string = "";
@@ -221,7 +222,7 @@ let example = (() => {
           string += phrase[i] + " " + key + "\n";
         }
       }
-      saveUserPhrases(string);
+      settingsManager.saveUserPhrases(string);
     });
     controller.setOnExcludedPhraseChange((userPhrases) => {
       console.log("excludedPhrases changed");
@@ -235,7 +236,7 @@ let example = (() => {
       saveExcludedPhrases(string);
     });
     controller.setOnOpenUrl((url) => {
-      window.open(url);
+      window.open(url, "_blank", "noopener,noreferrer");
     });
     controller.setOnError(() => {
       if (settingsManager.settings.beep_on_error) {
@@ -810,7 +811,7 @@ let example = (() => {
     };
 
     document.getElementById("text_area").onblur = () => {
-      // controller.reset();
+      controller.reset();
     };
 
     document.getElementById("loading").innerText = "載入完畢！";

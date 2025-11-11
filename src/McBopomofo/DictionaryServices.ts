@@ -1,4 +1,9 @@
-import { Empty, InputState } from "./InputState";
+import {
+  Empty,
+  InputState,
+  SelectingDictionary,
+  ShowingCharInfo,
+} from "./InputState";
 import { LocalizedStrings } from "./LocalizedStrings";
 
 /**
@@ -38,6 +43,69 @@ abstract class DictionaryService {
     selectedString: string,
     localizedStrings: LocalizedStrings
   ): string;
+}
+
+class SpeakService implements DictionaryService {
+  name: string = "Speak Service";
+
+  lookUp(
+    phrase: string,
+    state: InputState,
+    serviceIndex: number,
+    stateCallback: (state: InputState) => void
+  ): boolean {
+    try {
+      if (!window.speechSynthesis || !window.SpeechSynthesisUtterance) {
+        throw new Error("Speech synthesis not supported");
+      }
+
+      const u = new SpeechSynthesisUtterance(phrase);
+      u.lang = "zh-TW";
+      speechSynthesis.speak(u);
+      return true;
+    } catch (e) {}
+    return false;
+  }
+  textForMenu(
+    selectedString: string,
+    localizedStrings: LocalizedStrings
+  ): string {
+    return localizedStrings.speak(selectedString);
+  }
+}
+
+/**
+ * Service for looking up and displaying character information.
+ *
+ * This service provides detailed information about Chinese characters when
+ * selected. It handles the transition from dictionary selection state to
+ * character information display state.
+ *
+ * @implements {DictionaryService}
+ */
+class CharacterInfoService implements DictionaryService {
+  name: string = "Character Information Service";
+
+  lookUp(
+    phrase: string,
+    state: InputState,
+    serviceIndex: number,
+    stateCallback: (state: InputState) => void
+  ): boolean {
+    if (state instanceof SelectingDictionary) {
+      const newState = new ShowingCharInfo(state, phrase);
+      stateCallback(newState);
+      return true;
+    }
+    return false;
+  }
+
+  textForMenu(
+    selectedString: string,
+    localizedStrings: LocalizedStrings
+  ): string {
+    return localizedStrings.characterInfo();
+  }
 }
 
 /** The dictionary services that launch the web browser and open a URL.  */
@@ -168,6 +236,19 @@ export class DictionaryServices {
   /* istanbul ignore next */
   constructor(localizedStrings: LocalizedStrings) {
     this.localizedStrings = localizedStrings;
+
+    try {
+      if (!window.speechSynthesis || !window.SpeechSynthesisUtterance) {
+        throw new Error("Speech synthesis not supported");
+      }
+      this.services.push(new SpeakService());
+    } catch (e) {}
+
+    try {
+      const _ = new TextEncoder();
+      this.services.push(new CharacterInfoService());
+    } catch (e) {}
+
     for (let info of httpBasedDictionaryServices.services) {
       let service = new HttpBasedDictionary(
         info.name,
