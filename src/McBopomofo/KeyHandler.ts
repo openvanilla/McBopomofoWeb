@@ -212,7 +212,7 @@ export class KeyHandler {
   ): boolean {
     // From Key's definition, if shiftPressed is true, it can't be a simple key
     // that can be represented by ASCII.
-    let simpleAscii = key.ascii;
+    const simpleAscii = key.ascii;
 
     // Jump into the menu to select features
     if (simpleAscii === "\\" && key.ctrlPressed) {
@@ -220,7 +220,7 @@ export class KeyHandler {
       this.reset();
       stateCallback(
         new SelectingFeature((input) => {
-          let lm = this.languageModel_;
+          const lm = this.languageModel_;
           if (lm instanceof WebLanguageModel) {
             return lm.convertMacro(input);
           }
@@ -254,7 +254,7 @@ export class KeyHandler {
     // Numpad
     if (key.isNumpadKey) {
       // Space hit: see if we should enter the candidate choosing state.
-      let maybeNotEmptyState = state as NotEmpty;
+      const maybeNotEmptyState = state as NotEmpty;
 
       // If current state is *not* NonEmpty, it must be Empty.
       if (maybeNotEmptyState instanceof NotEmpty === false) {
@@ -263,9 +263,9 @@ export class KeyHandler {
       }
 
       // First, commit what's already in the composing buffer.
-      let inputtingState = this.buildInputtingState();
+      const inputtingState = this.buildInputtingState();
       // Steal the composingBuffer built by the inputting state.
-      let committingState = new Committing(
+      const committingState = new Committing(
         inputtingState.composingBuffer + simpleAscii
       );
       stateCallback(committingState);
@@ -275,7 +275,7 @@ export class KeyHandler {
 
     // See if it's valid BPMF reading.
     let keyConsumedByReading = false;
-    let skipBpmfHandling = key.ctrlPressed;
+    const skipBpmfHandling = key.ctrlPressed;
     if (!skipBpmfHandling && this.reading_.isValidKey(simpleAscii)) {
       this.reading_.combineKey(simpleAscii);
       keyConsumedByReading = true;
@@ -289,12 +289,12 @@ export class KeyHandler {
 
     // Compose the reading if either there's a tone marker, or if the reading is
     // not empty, and space is pressed.
-    let shouldComposeReading =
+    const shouldComposeReading =
       (this.reading_.hasToneMarker && !this.reading_.hasToneMarkerOnly) ||
       (!this.reading_.isEmpty && key.name === KeyName.SPACE);
 
     if (shouldComposeReading) {
-      let syllable = this.reading_.syllable.composedString;
+      const syllable = this.reading_.syllable.composedString;
       this.reading_.clear();
 
       if (!this.languageModel_.hasUnigrams(syllable)) {
@@ -312,14 +312,14 @@ export class KeyHandler {
 
       if (!this.traditionalMode_) {
         if (this.latestWalk_) {
-          let suggestion = this.userOverrideModel_?.suggest(
+          const suggestion = this.userOverrideModel_?.suggest(
             this.latestWalk_,
             this.actualCandidateCursorIndex,
             getTimestamp()
           );
 
           if (suggestion) {
-            let type = suggestion.forceHighScoreOverride
+            const type = suggestion.forceHighScoreOverride
               ? OverrideType.kOverrideValueWithHighScore
               : OverrideType.kOverrideValueWithScoreFromTopUnigram;
             this.grid_.overrideCandidateWithString(
@@ -333,17 +333,17 @@ export class KeyHandler {
       }
 
       if (this.traditionalMode_) {
-        let choosingCandidates = this.buildChoosingCandidateState(0);
+        const choosingCandidates = this.buildChoosingCandidateState(0);
         this.reset();
         if (choosingCandidates.candidates.length === 1) {
-          let text = choosingCandidates.candidates[0].value;
-          let committing = new Committing(text);
+          const text = choosingCandidates.candidates[0].value;
+          const committing = new Committing(text);
           stateCallback(committing);
         } else {
           stateCallback(choosingCandidates);
         }
       } else {
-        let inputting = this.buildInputtingState();
+        const inputting = this.buildInputtingState();
         stateCallback(inputting);
       }
 
@@ -373,10 +373,10 @@ export class KeyHandler {
       if (this.putLowercaseLettersToComposingBuffer_) {
         this.grid_.insertReading(" ");
         this.walk();
-        let inputtingState = this.buildInputtingState();
+        const inputtingState = this.buildInputtingState();
         stateCallback(inputtingState);
       } else {
-        let inputtingState = this.buildInputtingState();
+        const inputtingState = this.buildInputtingState();
         // Steal the composingBuffer built by the inputting state.
         let committingState = new Committing(inputtingState.composingBuffer);
         stateCallback(committingState);
@@ -388,14 +388,14 @@ export class KeyHandler {
     }
 
     // Space hit: see if we should enter the candidate choosing state.
-    let maybeNotEmptyState = state as NotEmpty;
+    const maybeNotEmptyState = state as NotEmpty;
 
     if (
       (key.name === KeyName.SPACE || key.name === KeyName.DOWN) &&
       maybeNotEmptyState instanceof NotEmpty &&
       this.reading_.isEmpty
     ) {
-      let originalCursorIndex = this.grid_.cursor;
+      const originalCursorIndex = this.grid_.cursor;
       if (
         originalCursorIndex === this.grid_.length &&
         this.selectPhraseAfterCursorAsCandidate_ &&
@@ -467,19 +467,19 @@ export class KeyHandler {
 
       if (this.traditionalMode_ === false && key.ctrlPressed) {
         if (this.ctrlEnterOption_ === CtrlEnterOption.bpmfReadings) {
-          let readings = this.grid_.readings;
-          let readingValue = readings.join(kJoinSeparator);
+          const readings = this.grid_.readings;
+          const readingValue = readings.join(kJoinSeparator);
 
-          let committing = new Committing(readingValue);
+          const committing = new Committing(readingValue);
           stateCallback(committing);
           this.reset();
           return true;
         } else if (this.ctrlEnterOption_ === CtrlEnterOption.htmlRuby) {
           let composed = "";
-          for (let node of this.latestWalk_?.nodes ?? []) {
+          for (const node of this.latestWalk_?.nodes ?? []) {
             let reading = node.reading;
             reading = reading.replace(kJoinSeparator, " ");
-            let value = node.value;
+            const value = node.value;
             if (reading[0] === "_") {
               composed += value;
             } else {
@@ -489,39 +489,39 @@ export class KeyHandler {
               composed += "</ruby>";
             }
           }
-          let committing = new Committing(composed);
+          const committing = new Committing(composed);
           stateCallback(committing);
           this.reset();
           return true;
         } else if (this.ctrlEnterOption_ === CtrlEnterOption.bopomofoBraille) {
           let composed = "";
 
-          for (let node of this.latestWalk_?.nodes ?? []) {
+          for (const node of this.latestWalk_?.nodes ?? []) {
             let reading = node.reading;
             reading = reading.replace(kJoinSeparator, " ");
-            let value = node.value;
+            const value = node.value;
             if (reading[0] === "_") {
               composed += BopomofoBrailleConverter.convertBpmfToBraille(value);
             } else {
-              let components = reading.split(kJoinSeparator);
-              for (let component of components) {
+              const components = reading.split(kJoinSeparator);
+              for (const component of components) {
                 composed +=
                   BopomofoBrailleConverter.convertBpmfToBraille(component);
               }
             }
           }
 
-          let committing = new Committing(composed);
+          const committing = new Committing(composed);
           stateCallback(committing);
           this.reset();
           return true;
         } else if (this.ctrlEnterOption_ === CtrlEnterOption.hanyuPinyin) {
-          let pinyinComponents = [];
-          for (let node of this.latestWalk_?.nodes ?? []) {
-            let reading = node.reading;
-            for (let component of reading.split(kJoinSeparator)) {
-              let syllable = BopomofoSyllable.FromComposedString(component);
-              let pinyin = syllable.HanyuPinyinString(false, false);
+          const pinyinComponents = [];
+          for (const node of this.latestWalk_?.nodes ?? []) {
+            const reading = node.reading;
+            for (const component of reading.split(kJoinSeparator)) {
+              const syllable = BopomofoSyllable.FromComposedString(component);
+              const pinyin = syllable.HanyuPinyinString(false, false);
               if (pinyin.length > 0) {
                 pinyinComponents.push(pinyin);
               } else {
@@ -529,8 +529,8 @@ export class KeyHandler {
               }
             }
           }
-          let composed = pinyinComponents.join(" ");
-          let committing = new Committing(composed);
+          const composed = pinyinComponents.join(" ");
+          const committing = new Committing(composed);
           stateCallback(committing);
           this.reset();
           return true;
@@ -541,7 +541,7 @@ export class KeyHandler {
 
       // See if we are in Marking state, and, if a valid mark, accept it.
       if (state instanceof Marking) {
-        let marking = state as Marking;
+        const marking = state as Marking;
         if (marking.acceptable) {
           if (this.languageModel_ instanceof WebLanguageModel) {
             (this.languageModel_ as WebLanguageModel).addUserPhrase(
@@ -559,17 +559,17 @@ export class KeyHandler {
         return true;
       }
 
-      let inputtingState = this.buildInputtingState();
+      const inputtingState = this.buildInputtingState();
       // Steal the composingBuffer built by the inputting state.
-      let committingState = new Committing(inputtingState.composingBuffer);
+      const committingState = new Committing(inputtingState.composingBuffer);
       stateCallback(committingState);
       this.reset();
       return true;
     }
 
     if (key.ascii === "?" && state instanceof Marking) {
-      let phrase = state.markedText;
-      let newState = new SelectingDictionary(
+      const phrase = state.markedText;
+      const newState = new SelectingDictionary(
         state,
         phrase,
         0,
@@ -587,11 +587,11 @@ export class KeyHandler {
       if (this.reading_.isEmpty) {
         this.grid_.insertReading(kPunctuationListUnigramKey);
         this.walk();
-        let originalCursorIndex = this.grid_.cursor;
+        const originalCursorIndex = this.grid_.cursor;
         if (this.selectPhraseAfterCursorAsCandidate_) {
           this.grid_.cursor = originalCursorIndex - 1;
         }
-        let choosingCandidateState =
+        const choosingCandidateState =
           this.buildChoosingCandidateState(originalCursorIndex);
         stateCallback(choosingCandidateState);
       } else {
@@ -669,9 +669,9 @@ export class KeyHandler {
           }
 
           // First, commit what's already in the composing buffer.
-          let inputtingState = this.buildInputtingState();
+          const inputtingState = this.buildInputtingState();
           // Steal the composingBuffer built by the inputting state.
-          let committingState = new Committing(
+          const committingState = new Committing(
             inputtingState.composingBuffer + simpleAscii
           );
           stateCallback(committingState);
@@ -740,20 +740,20 @@ export class KeyHandler {
     stateCallback: (state: InputState) => void,
     errorCallback: () => void
   ): boolean {
-    let chrStr: string = key.ascii;
-    let customPunctuation =
+    const chrStr: string = key.ascii;
+    const customPunctuation =
       kPunctuationKeyPrefix +
       GetKeyboardLayoutName(this.reading_.keyboardLayout) +
       "_" +
       chrStr;
-    let punctuation = kPunctuationKeyPrefix + chrStr;
+    const punctuation = kPunctuationKeyPrefix + chrStr;
     let shouldAutoSelectCandidate =
       this.reading_.isValidKey(chrStr) ||
       this.languageModel_.hasUnigrams(customPunctuation) ||
       this.languageModel_.hasUnigrams(punctuation);
     if (!shouldAutoSelectCandidate) {
       if (chrStr.length === 1 && chrStr >= "A" && chrStr <= "Z") {
-        let letter = kLetterPrefix + chrStr;
+        const letter = kLetterPrefix + chrStr;
         if (this.languageModel_.hasUnigrams(letter)) {
           shouldAutoSelectCandidate = true;
         }
@@ -807,15 +807,15 @@ export class KeyHandler {
 
     let tooltip = "";
 
-    for (let node of this.latestWalk_?.nodes ?? []) {
-      let value = node.value;
+    for (const node of this.latestWalk_?.nodes ?? []) {
+      const value = node.value;
       composed += value;
 
       // No work if runningCursor has already caught up with builderCursor.
       if (runningCursor === builderCursor) {
         continue;
       }
-      let spanningLength = node.spanningLength;
+      const spanningLength = node.spanningLength;
       // Simple case: if the running cursor is behind, add the spanning length.
       if (runningCursor + spanningLength <= builderCursor) {
         composedCursor += value.length;
@@ -823,10 +823,10 @@ export class KeyHandler {
         continue;
       }
 
-      let distance = builderCursor - runningCursor;
-      let u32Value = _.toArray(value);
-      let cpLen = Math.min(distance, u32Value.length);
-      let actualString = _.join(u32Value.slice(0, cpLen), "");
+      const distance = builderCursor - runningCursor;
+      const u32Value = _.toArray(value);
+      const cpLen = Math.min(distance, u32Value.length);
+      const actualString = _.join(u32Value.slice(0, cpLen), "");
       composedCursor += actualString.length;
       runningCursor += distance;
 
@@ -839,8 +839,8 @@ export class KeyHandler {
         // builderCursor. It is also guaranteed to be less than the size of the
         // builder's readings for the same reason: runningCursor would have
         // already caught up.
-        let prevReading = this.grid_.readings[builderCursor - 1];
-        let nextReading = this.grid_.readings[builderCursor];
+        const prevReading = this.grid_.readings[builderCursor - 1];
+        const nextReading = this.grid_.readings[builderCursor];
         tooltip = this.localizedStrings_.cursorIsBetweenSyllables(
           prevReading,
           nextReading
@@ -848,8 +848,8 @@ export class KeyHandler {
       }
     }
 
-    let head = composed.substring(0, composedCursor);
-    let tail = composed.substring(composedCursor, composed.length);
+    const head = composed.substring(0, composedCursor);
+    const tail = composed.substring(composedCursor, composed.length);
     return new ComposedString(head, tail, tooltip);
   }
 
@@ -874,20 +874,20 @@ export class KeyHandler {
       return true;
     }
 
-    let candidates = this.buildChoosingCandidateState(0).candidates;
+    const candidates = this.buildChoosingCandidateState(0).candidates;
     if (!candidates.length) {
       errorCallback();
       return true;
     }
 
-    let cursorIndex = this.actualCandidateCursorIndex;
-    let result = this.latestWalk_?.findNodeAt(cursorIndex);
+    const cursorIndex = this.actualCandidateCursorIndex;
+    const result = this.latestWalk_?.findNodeAt(cursorIndex);
     if (result === undefined) {
       errorCallback();
       return true;
     }
 
-    let currentNode = result[0];
+    const currentNode = result[0];
     if (currentNode === undefined) {
       errorCallback();
       return true;
@@ -917,7 +917,7 @@ export class KeyHandler {
         }
       }
     } else {
-      for (let candidate of candidates) {
+      for (const candidate of candidates) {
         if (
           candidate.reading === currentNode.reading &&
           candidate.value === currentNode.value
@@ -1066,14 +1066,14 @@ export class KeyHandler {
     }
 
     if (this.repeatedPunctuationToSelectCandidateEnabled) {
-      let prefixCursorIndex = this.grid_.cursor;
-      let actualPrefixCursorIndex =
+      const prefixCursorIndex = this.grid_.cursor;
+      const actualPrefixCursorIndex =
         prefixCursorIndex > 0 ? prefixCursorIndex - 1 : 0;
-      let result = this.latestWalk_?.findNodeAt(actualPrefixCursorIndex);
-      let currentNode = result ? result[0] : undefined;
+      const result = this.latestWalk_?.findNodeAt(actualPrefixCursorIndex);
+      const currentNode = result ? result[0] : undefined;
 
       if (currentNode && currentNode.reading === punctuationUnigramKey) {
-        let candidates = this.grid_.candidatesAt(actualPrefixCursorIndex);
+        const candidates = this.grid_.candidatesAt(actualPrefixCursorIndex);
         if (candidates.length > 1) {
           if (this.selectPhraseAfterCursorAsCandidate) {
             this.grid_.cursor = actualPrefixCursorIndex;
@@ -1096,10 +1096,10 @@ export class KeyHandler {
     this.walk();
 
     if (this.traditionalMode_ && this.reading_.isEmpty) {
-      let candidateState = this.buildChoosingCandidateState(0);
+      const candidateState = this.buildChoosingCandidateState(0);
       this.reset();
       if (candidateState.candidates.length === 1) {
-        let text = candidateState.candidates[0].value;
+        const text = candidateState.candidates[0].value;
         stateCallback(new Committing(text));
       } else {
         stateCallback(candidateState);
@@ -1114,8 +1114,8 @@ export class KeyHandler {
   public buildChoosingCandidateState(
     originalCursorIndex: number
   ): ChoosingCandidate {
-    let candidates = this.grid_.candidatesAt(this.actualCandidateCursorIndex);
-    let inputting = this.buildInputtingState();
+    const candidates = this.grid_.candidatesAt(this.actualCandidateCursorIndex);
+    const inputting = this.buildInputtingState();
 
     return new ChoosingCandidate(
       inputting.composingBuffer,
@@ -1143,7 +1143,7 @@ export class KeyHandler {
         errorCallback();
         return true;
       }
-      let newState = new ChineseNumber(number, state.style);
+      const newState = new ChineseNumber(number, state.style);
       stateCallback(newState);
       return true;
     }
@@ -1152,7 +1152,7 @@ export class KeyHandler {
         stateCallback(new Empty());
         return true;
       }
-      let components = state.number.split(".");
+      const components = state.number.split(".");
       let intPart = "";
       let decPart = "";
       if (components.length === 2) {
@@ -1181,7 +1181,7 @@ export class KeyHandler {
           commitString = SuzhouNumbers.generate(intPart, decPart, "單位", true);
           break;
       }
-      let newState = new Committing(commitString);
+      const newState = new Committing(commitString);
       stateCallback(newState);
       return true;
     }
@@ -1190,8 +1190,8 @@ export class KeyHandler {
         errorCallback();
         return true;
       }
-      let number = state.number + key.ascii;
-      let newState = new ChineseNumber(number, state.style);
+      const number = state.number + key.ascii;
+      const newState = new ChineseNumber(number, state.style);
       stateCallback(newState);
     } else if (key.ascii === ".") {
       if (state.number.indexOf(".") !== -1) {
@@ -1202,8 +1202,8 @@ export class KeyHandler {
         errorCallback();
         return true;
       }
-      let number = state.number + key.ascii;
-      let newState = new ChineseNumber(number, state.style);
+      const number = state.number + key.ascii;
+      const newState = new ChineseNumber(number, state.style);
       stateCallback(newState);
     } else {
       errorCallback();
@@ -1230,7 +1230,7 @@ export class KeyHandler {
         errorCallback();
         return true;
       }
-      let newState = new RomanNumber(number, state.style);
+      const newState = new RomanNumber(number, state.style);
       stateCallback(newState);
       return true;
     }
@@ -1239,7 +1239,7 @@ export class KeyHandler {
         stateCallback(new Empty());
         return true;
       }
-      let number = state.number;
+      const number = state.number;
       let style = RomanNumbersStyle.Alphabets;
       switch (state.style) {
         case RomanNumbersStateStyle.Alphabets:
@@ -1254,8 +1254,8 @@ export class KeyHandler {
         default:
           break;
       }
-      let commitString = RomanNumbers.convertString(number, style);
-      let newState = new Committing(commitString);
+      const commitString = RomanNumbers.convertString(number, style);
+      const newState = new Committing(commitString);
       stateCallback(newState);
       return true;
     }
@@ -1264,8 +1264,8 @@ export class KeyHandler {
         errorCallback();
         return true;
       }
-      let number = state.number + key.ascii;
-      let newState = new RomanNumber(number, state.style);
+      const number = state.number + key.ascii;
+      const newState = new RomanNumber(number, state.style);
       stateCallback(newState);
     } else {
       errorCallback();
@@ -1292,7 +1292,7 @@ export class KeyHandler {
         errorCallback();
         return true;
       }
-      let newState = new Big5(code);
+      const newState = new Big5(code);
       stateCallback(newState);
       return true;
     }
@@ -1300,23 +1300,23 @@ export class KeyHandler {
       (key.ascii >= "0" && key.ascii <= "9") ||
       (key.ascii >= "a" && key.ascii <= "f")
     ) {
-      let appended = state.code + key.ascii;
+      const appended = state.code + key.ascii;
       if (appended.length === 4) {
-        let bytes = [];
+        const bytes = [];
         for (let i = 0; i < 4; i++) {
-          let char = appended.charCodeAt(i);
+          const char = appended.charCodeAt(i);
           if (char >= 48 && char <= 57) {
             bytes.push(char - 48);
           } else if (char >= 97 && char <= 122) {
             bytes.push(char - 97 + 10);
           }
         }
-        let textDecoder = new TextDecoder("big5-hkscs");
-        let uint8array = new Uint8Array([
+        const textDecoder = new TextDecoder("big5-hkscs");
+        const uint8array = new Uint8Array([
           (bytes[0] << 4) | bytes[1],
           (bytes[2] << 4) | bytes[3],
         ]);
-        let result = textDecoder.decode(uint8array);
+        const result = textDecoder.decode(uint8array);
         if (!result || result.length !== 1 || result.charCodeAt(0) < 32) {
           errorCallback();
           stateCallback(new Empty());
@@ -1325,7 +1325,7 @@ export class KeyHandler {
           stateCallback(new Empty());
         }
       } else {
-        let newState = new Big5(appended);
+        const newState = new Big5(appended);
         stateCallback(newState);
       }
     } else {
@@ -1353,33 +1353,33 @@ export class KeyHandler {
         errorCallback();
         return true;
       }
-      let newState = new EnclosingNumber(number);
+      const newState = new EnclosingNumber(number);
       stateCallback(newState);
       return true;
     }
     if (key.name === KeyName.RETURN) {
-      let key = "_number_" + state.number;
+      const key = "_number_" + state.number;
 
       if (this.languageModel_.hasUnigrams(key)) {
         if (this.reading_.isEmpty) {
-          let unigrams = this.languageModel_.getUnigrams(key);
+          const unigrams = this.languageModel_.getUnigrams(key);
           if (unigrams.length === 1) {
-            let unigram = unigrams[0];
-            let string = unigram.value;
-            let committing = new Committing(string);
+            const unigram = unigrams[0];
+            const string = unigram.value;
+            const committing = new Committing(string);
             stateCallback(committing);
-            let empty = new Empty();
+            const empty = new Empty();
             stateCallback(empty);
             return true;
           }
 
           this.grid_.insertReading(key);
           this.walk();
-          let originalCursorIndex = this.grid_.cursor;
+          const originalCursorIndex = this.grid_.cursor;
           if (this.selectPhraseAfterCursorAsCandidate_) {
             this.grid_.cursor = originalCursorIndex - 1;
           }
-          let choosingCandidateState =
+          const choosingCandidateState =
             this.buildChoosingCandidateState(originalCursorIndex);
           stateCallback(choosingCandidateState);
         } else {
@@ -1396,8 +1396,8 @@ export class KeyHandler {
         errorCallback();
         return true;
       }
-      let number = state.number + key.ascii;
-      let newState = new EnclosingNumber(number);
+      const number = state.number + key.ascii;
+      const newState = new EnclosingNumber(number);
       stateCallback(newState);
     } else {
       errorCallback();
@@ -1407,14 +1407,14 @@ export class KeyHandler {
   }
 
   public buildInputtingState(): Inputting {
-    let composedString = this.getComposedString(this.grid_.cursor);
+    const composedString = this.getComposedString(this.grid_.cursor);
 
-    let head = composedString.head;
-    let reading = this.reading_.composedString;
-    let tail = composedString.tail;
+    const head = composedString.head;
+    const reading = this.reading_.composedString;
+    const tail = composedString.tail;
 
-    let composingBuffer = head + reading + tail;
-    let cursorIndex = head.length + reading.length;
+    const composingBuffer = head + reading + tail;
+    const cursorIndex = head.length + reading.length;
     return new Inputting(composingBuffer, cursorIndex, composedString.tooltip);
   }
 
@@ -1423,8 +1423,8 @@ export class KeyHandler {
     // and the longer one as the marked text.
     let from = this.getComposedString(beginCursorIndex);
     let to = this.getComposedString(this.grid_.cursor);
-    let composedStringCursorIndex = to.head.length;
-    let composed = to.head + to.tail;
+    const composedStringCursorIndex = to.head.length;
+    const composed = to.head + to.tail;
     let fromIndex = beginCursorIndex;
     let toIndex = this.grid_.cursor;
 
@@ -1434,15 +1434,15 @@ export class KeyHandler {
     }
 
     // Now from is shorter and to is longer. The marked text is just the delta.
-    let head = from.head;
-    let marked = to.head.substring(from.head.length);
-    let tail = to.tail;
+    const head = from.head;
+    const marked = to.head.substring(from.head.length);
+    const tail = to.tail;
 
     // Collect the readings.
-    let readings = this.grid_.readings.slice(fromIndex, toIndex);
+    const readings = this.grid_.readings.slice(fromIndex, toIndex);
 
-    let readingUiText = _.join(readings, " "); // What the user sees.
-    let readingValue = _.join(readings, "-"); // What is used for adding a user phrase.
+    const readingUiText = _.join(readings, " "); // What the user sees.
+    const readingValue = _.join(readings, "-"); // What is used for adding a user phrase.
 
     let isValid = false;
     let status = "";
@@ -1462,7 +1462,7 @@ export class KeyHandler {
       isValid = true;
     }
 
-    let tooltip = this.localizedStrings_.markedWithSyllablesAndStatus(
+    const tooltip = this.localizedStrings_.markedWithSyllablesAndStatus(
       marked,
       readingUiText,
       status
@@ -1482,7 +1482,7 @@ export class KeyHandler {
   }
 
   private get actualCandidateCursorIndex(): number {
-    let cursor = this.grid_.cursor;
+    const cursor = this.grid_.cursor;
 
     // If the cursor is at the end, always return cursor - 1. Even though
     // ReadingGrid already handles this edge case, we want to use this value
@@ -1507,8 +1507,8 @@ export class KeyHandler {
     originalCursorIndex: number,
     useMoveCursorAfterSelectionSetting: boolean = true
   ): void {
-    let actualCursor = this.actualCandidateCursorIndex;
-    let gridCandidate = new Candidate(
+    const actualCursor = this.actualCandidateCursorIndex;
+    const gridCandidate = new Candidate(
       candidate.reading,
       candidate.value,
       candidate.displayedText
@@ -1517,18 +1517,18 @@ export class KeyHandler {
       return;
     }
 
-    let prevWalk = this.latestWalk_;
+    const prevWalk = this.latestWalk_;
     this.walk();
 
     // Update the user override model if warranted.
-    let latestWalk_ = this.latestWalk_;
+    const latestWalk_ = this.latestWalk_;
     if (latestWalk_ === undefined) {
       return;
     }
 
-    let result = latestWalk_.findNodeAt(actualCursor);
-    let currentNode = result[0];
-    let accumulatedCursor = result[1];
+    const result = latestWalk_.findNodeAt(actualCursor);
+    const currentNode = result[0];
+    const accumulatedCursor = result[1];
     if (currentNode === undefined) {
       return;
     }
@@ -1574,8 +1574,8 @@ function MarkedPhraseExists(
   readingValue: string,
   marked: string
 ) {
-  let phrases = languageModel_.getUnigrams(readingValue);
-  for (let unigram of phrases) {
+  const phrases = languageModel_.getUnigrams(readingValue);
+  for (const unigram of phrases) {
     if (unigram.value === marked) {
       return true;
     }

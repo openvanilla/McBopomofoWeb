@@ -227,7 +227,7 @@ export function KeyFromKeyboardEvent(event: KeyboardEvent) {
       keyName = keyName;
       break;
   }
-  let key = new Key(
+  const key = new Key(
     event.key,
     keyName,
     event.shiftKey,

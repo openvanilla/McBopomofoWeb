@@ -486,7 +486,7 @@ export class BopomofoKeyboardLayout {
   }
 
   private static CreateETen26Layout_(): BopomofoKeyboardLayout {
-    let ktcm: BopomofoKeyToComponentMap = new Map([
+    const ktcm: BopomofoKeyToComponentMap = new Map([
       ["b", [BopomofoSyllable.B]],
       ["p", [BopomofoSyllable.P, BopomofoSyllable.OU]],
       ["m", [BopomofoSyllable.M, BopomofoSyllable.AN]],

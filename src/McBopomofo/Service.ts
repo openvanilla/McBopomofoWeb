@@ -53,22 +53,22 @@ export class Service {
     addingSpaceBetweenChinese = false
   ): string {
     let output: string = "";
-    let converted = ChineseConvert.cn2tw(input);
-    let length = converted.length;
+    const converted = ChineseConvert.cn2tw(input);
+    const length = converted.length;
     let readHead = 0;
     let pendingText = "";
 
-    let isASCII = (input: string): boolean => {
+    const isASCII = (input: string): boolean => {
       return /^[\x00-\x7F]*$/.test(input);
     };
 
     while (readHead < length) {
-      let targetLength = Math.min(6, length - readHead);
+      const targetLength = Math.min(6, length - readHead);
       let found = false;
       for (let i = targetLength; i > 0; i--) {
-        let end = readHead + i;
-        let subString = converted.substring(readHead, end);
-        let reading = this.lm_.getReading(subString);
+        const end = readHead + i;
+        const subString = converted.substring(readHead, end);
+        const reading = this.lm_.getReading(subString);
         if (reading !== undefined) {
           if (reading.startsWith("_")) {
             // Punctuation
@@ -93,17 +93,17 @@ export class Service {
               pendingText = "";
             }
 
-            let components = reading.split("-");
+            const components = reading.split("-");
 
             if (addingSpaceBetweenChinese && readHead > 0) {
               output += " ";
             }
 
             if (components.length === subString.length) {
-              let converted = [];
+              const converted = [];
               for (let i = 0; i < components.length; i++) {
-                let component = components[i];
-                let char = subString.charAt(i);
+                const component = components[i];
+                const char = subString.charAt(i);
                 converted.push(readingCallback(component, char));
               }
               output += converted.join(addingSpaceBetweenChinese ? " " : "");
@@ -118,7 +118,7 @@ export class Service {
       }
 
       if (!found) {
-        let subString = converted.charAt(readHead);
+        const subString = converted.charAt(readHead);
         if (
           addingSpaceBetweenChineseAndOtherTypes &&
           output.length > 0 &&
@@ -162,14 +162,14 @@ export class Service {
    */
   public convertBrailleToText(input: string): string {
     let output: string = "";
-    let tokens = BopomofoBrailleConverter.convertBrailleToTokens(input);
+    const tokens = BopomofoBrailleConverter.convertBrailleToTokens(input);
     // console.log(tokens);
-    for (let token of tokens) {
+    for (const token of tokens) {
       if (token instanceof BrailleBopomofoSyllable) {
         this.grid_.insertReading(token.bpmf);
       } else {
-        let result = this.grid_.walk();
-        for (let node of result.nodes) {
+        const result = this.grid_.walk();
+        for (const node of result.nodes) {
           output += node.value;
         }
         this.grid_.clear();
@@ -177,8 +177,8 @@ export class Service {
       }
     }
 
-    let result = this.grid_.walk();
-    for (let node of result.nodes) {
+    const result = this.grid_.walk();
+    for (const node of result.nodes) {
       output += node.value;
     }
     this.grid_.clear();
@@ -319,12 +319,12 @@ export class Service {
     return this.convertText(
       input,
       (reading: string, _: string) => {
-        let pinyinComponents = [];
-        let components = reading.split("-");
+        const pinyinComponents = [];
+        const components = reading.split("-");
         for (let i = 0; i < components.length; i++) {
-          let component = components[i];
-          let syllable = MandarinBopomofoSyllable.FromComposedString(component);
-          let pinyin = syllable.HanyuPinyinString(false, false);
+          const component = components[i];
+          const syllable = MandarinBopomofoSyllable.FromComposedString(component);
+          const pinyin = syllable.HanyuPinyinString(false, false);
           pinyinComponents.push(pinyin);
         }
         return pinyinComponents.join(" ");

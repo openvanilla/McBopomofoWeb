@@ -4,8 +4,8 @@ import { Unigram } from "../Gramambular2";
 
 describe("getReading", () => {
   test("returns reading for supplied character", () => {
-    let model = new WebLanguageModel(webData);
-    let reading = model.getReading("楊");
+    const model = new WebLanguageModel(webData);
+    const reading = model.getReading("楊");
     expect(reading).toBe("ㄧㄤˊ");
   });
 });

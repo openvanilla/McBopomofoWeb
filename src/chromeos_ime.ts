@@ -455,19 +455,19 @@ class ChromeMcBopomofo {
         let selectionStart: number | undefined = undefined;
         let selectionEnd: number | undefined = undefined;
         let index = 0;
-        for (let item of buffer) {
+        for (const item of buffer) {
           text += item.text;
           if (item.style === "highlighted") {
             selectionStart = index;
             selectionEnd = index + item.text.length;
-            let segment = {
+            const segment = {
               start: index,
               end: index + item.text.length,
               style: "doubleUnderline" as const,
             };
             segments.push(segment);
           } else {
-            let segment = {
+            const segment = {
               start: index,
               end: index + item.text.length,
               style: "underline" as const,
@@ -494,14 +494,14 @@ class ChromeMcBopomofo {
         });
 
         if (candidates.length) {
-          let chromeCandidates = [];
+          const chromeCandidates = [];
           let index = 0;
           let selectedIndex = 0;
-          for (let candidate of state.candidates) {
+          for (const candidate of state.candidates) {
             if (candidate.selected) {
               selectedIndex = index;
             }
-            let item = {
+            const item = {
               candidate: candidate.candidate.displayedText,
               annotation: "",
               id: index++,
@@ -575,7 +575,7 @@ class ChromeMcBopomofo {
   }
 }
 
-let chromeMcBopomofo = new ChromeMcBopomofo();
+const chromeMcBopomofo = new ChromeMcBopomofo();
 
 chrome.input?.ime.onActivate.addListener((engineID) => {
   chromeMcBopomofo.engineID = engineID;
@@ -584,12 +584,12 @@ chrome.input?.ime.onActivate.addListener((engineID) => {
   chromeMcBopomofo.loadUserPhrases();
   chromeMcBopomofo.inputController.setOnPhraseChange((userPhrases) => {
     const obj = Object.fromEntries(userPhrases);
-    let jsonString = JSON.stringify(obj);
+    const jsonString = JSON.stringify(obj);
     largeSync.set({ user_phrase: jsonString }, () => {});
   });
   chromeMcBopomofo.inputController.setOnExcludedPhraseChange((userPhrases) => {
     const obj = Object.fromEntries(userPhrases);
-    let jsonString = JSON.stringify(obj);
+    const jsonString = JSON.stringify(obj);
     largeSync.set({ excluded_phrase: jsonString }, () => {});
   });
 });
@@ -769,8 +769,8 @@ chrome.contextMenus.onClicked.addListener((event, tab) => {
 
     if (menuItemId === "convert_text_to_bpmf_syllables") {
       const lines = selectionText.split("\n");
-      let convertedLines = [];
-      for (let line of lines) {
+      const convertedLines = [];
+      for (const line of lines) {
         let convertedLine = ChineseConvert.cn2tw(line);
         convertedLine =
           chromeMcBopomofo.service.convertTextToBpmfReadings(convertedLine);
@@ -779,8 +779,8 @@ chrome.contextMenus.onClicked.addListener((event, tab) => {
       converted = convertedLines.join("\n");
     } else if (menuItemId === "append_bpmf_syllables_to_text") {
       const lines = selectionText.split("\n");
-      let convertedLines = [];
-      for (let line of lines) {
+      const convertedLines = [];
+      for (const line of lines) {
         let convertedLine = ChineseConvert.cn2tw(line);
         convertedLine =
           chromeMcBopomofo.service.appendBpmfReadingsToText(convertedLine);
@@ -789,8 +789,8 @@ chrome.contextMenus.onClicked.addListener((event, tab) => {
       converted = convertedLines.join("\n");
     } else if (menuItemId === "convert_text_to_html_ruby") {
       const lines = selectionText.split("\n");
-      let convertedLines = [];
-      for (let line of lines) {
+      const convertedLines = [];
+      for (const line of lines) {
         let convertedLine = ChineseConvert.cn2tw(line);
         convertedLine =
           "<p>" +
@@ -803,8 +803,8 @@ chrome.contextMenus.onClicked.addListener((event, tab) => {
       isHtml = true;
     } else if (menuItemId === "append_taiwanese_braille") {
       const lines = selectionText.split("\n");
-      let convertedLines = [];
-      for (let line of lines) {
+      const convertedLines = [];
+      for (const line of lines) {
         let convertedLine = ChineseConvert.cn2tw(line);
         convertedLine =
           line +
@@ -815,8 +815,8 @@ chrome.contextMenus.onClicked.addListener((event, tab) => {
       converted = convertedLines.join("\n");
     } else if (menuItemId === "convert_text_to_taiwanese_braille") {
       const lines = selectionText.split("\n");
-      let convertedLines = [];
-      for (let line of lines) {
+      const convertedLines = [];
+      for (const line of lines) {
         let convertedLine = ChineseConvert.cn2tw(line);
         convertedLine = chromeMcBopomofo.service.convertTextToBraille(line);
         convertedLines.push(convertedLine);
@@ -824,8 +824,8 @@ chrome.contextMenus.onClicked.addListener((event, tab) => {
       converted = convertedLines.join("\n");
     } else if (menuItemId === "convert_taiwanese_braille_to_text") {
       const lines = selectionText.split("\n");
-      let convertedLines = [];
-      for (let line of lines) {
+      const convertedLines = [];
+      for (const line of lines) {
         const convertedLine =
           chromeMcBopomofo.service.convertBrailleToText(line);
         convertedLines.push(convertedLine);
@@ -833,8 +833,8 @@ chrome.contextMenus.onClicked.addListener((event, tab) => {
       converted = convertedLines.join("\n");
     } else if (menuItemId === "convert_text_to_hanyu_pinyin") {
       const lines = selectionText.split("\n");
-      let convertedLines = [];
-      for (let line of lines) {
+      const convertedLines = [];
+      for (const line of lines) {
         let convertedLine = ChineseConvert.cn2tw(line);
         convertedLine =
           chromeMcBopomofo.service.convertTextToPinyin(convertedLine);

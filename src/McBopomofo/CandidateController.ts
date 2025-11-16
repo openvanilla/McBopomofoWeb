@@ -60,8 +60,8 @@ export class CandidateController {
     if (selectedIndex < 0) {
       return undefined;
     }
-    let current = Math.floor(this.currentSelectedIndex_ / this.keyCaps_.length);
-    let offset = current * this.keyCaps_.length;
+    const current = Math.floor(this.currentSelectedIndex_ / this.keyCaps_.length);
+    const offset = current * this.keyCaps_.length;
     return this.candidates_[offset + selectedIndex];
   }
 
@@ -109,7 +109,7 @@ export class CandidateController {
 
   /** Returns in candidate in the current page. */
   get currentPage(): CandidateWrapper[] {
-    let startPage = Math.floor(
+    const startPage = Math.floor(
       this.currentSelectedIndex_ / this.keyCaps_.length
     );
     var start = startPage * this.keyCaps_.length;
@@ -119,7 +119,7 @@ export class CandidateController {
 
     var list: CandidateWrapper[] = [];
     for (let i = start; i < end; i++) {
-      let candidate = new CandidateWrapper(
+      const candidate = new CandidateWrapper(
         this.keyCaps_[keyCapIndex],
         this.candidates_[i],
         i === this.currentSelectedIndex_
@@ -170,7 +170,7 @@ export class CandidateController {
   /** Moves to the next page. */
   goToNextPage(): void {
     let current = Math.floor(this.currentSelectedIndex_ / this.keyCaps_.length);
-    let last = Math.floor((this.candidates_.length - 1) / this.keyCaps_.length);
+    const last = Math.floor((this.candidates_.length - 1) / this.keyCaps_.length);
     if (current === last) {
       return;
     }
@@ -182,7 +182,7 @@ export class CandidateController {
    * first page. */
   goToNextPageButFirstWhenAtEnd(): void {
     let current = Math.floor(this.currentSelectedIndex_ / this.keyCaps_.length);
-    let last = Math.floor((this.candidates_.length - 1) / this.keyCaps_.length);
+    const last = Math.floor((this.candidates_.length - 1) / this.keyCaps_.length);
     if (current === last) {
       this.currentSelectedIndex_ = 0;
       return;

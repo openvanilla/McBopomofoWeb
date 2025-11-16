@@ -1,4 +1,4 @@
-export let webDataPlain : any = {
+export const webDataPlain : any = {
   "_ctrl_punctuation_!":"！ 0",
   "_ctrl_punctuation_'":"、 0",
   "_ctrl_punctuation_,":"， 0",

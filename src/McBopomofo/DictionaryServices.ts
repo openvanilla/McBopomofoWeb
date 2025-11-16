@@ -156,7 +156,7 @@ class HttpBasedDictionary implements DictionaryService {
  * compiled with Webpack, we want to put as much stuff into the compiled file as
  * possible.
  */
-let httpBasedDictionaryServices = {
+const httpBasedDictionaryServices = {
   services: [
     {
       name: "萌典",
@@ -249,8 +249,8 @@ export class DictionaryServices {
       this.services.push(new CharacterInfoService());
     } catch (e) {}
 
-    for (let info of httpBasedDictionaryServices.services) {
-      let service = new HttpBasedDictionary(
+    for (const info of httpBasedDictionaryServices.services) {
+      const service = new HttpBasedDictionary(
         info.name,
         info.url_template,
         (input: string) => {
@@ -273,8 +273,8 @@ export class DictionaryServices {
    */
   /* istanbul ignore next */
   buildMenu(phrase: string): string[] {
-    let output: string[] = [];
-    for (let service of this.services) {
+    const output: string[] = [];
+    for (const service of this.services) {
       output.push(service.textForMenu(phrase, this.localizedStrings));
     }
     return output;
@@ -297,7 +297,7 @@ export class DictionaryServices {
     state: InputState,
     stateCallback: (state: InputState) => void
   ): boolean {
-    let service = this.services[index];
+    const service = this.services[index];
     if (index >= this.services.length) {
       return false;
     }

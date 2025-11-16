@@ -71,7 +71,7 @@ namespace Consonant {
     return undefined;
   }
   export function fromBraille(b: string): Consonant | undefined {
-    for (let [key, value] of map) {
+    for (const [key, value] of map) {
       if (value[0] === b) {
         return key;
       }
@@ -79,7 +79,7 @@ namespace Consonant {
     return undefined;
   }
   export function fromBrailleCode(b: string): Consonant | undefined {
-    for (let [key, value] of map) {
+    for (const [key, value] of map) {
       if (value[1] === b) {
         return key;
       }
@@ -138,7 +138,7 @@ namespace MiddleVowel {
     return undefined;
   }
   export function fromBraille(b: string): MiddleVowel | undefined {
-    for (let [key, value] of map) {
+    for (const [key, value] of map) {
       if (value[0] === b) {
         return key;
       }
@@ -146,7 +146,7 @@ namespace MiddleVowel {
     return undefined;
   }
   export function fromBrailleCode(b: string): MiddleVowel | undefined {
-    for (let [key, value] of map) {
+    for (const [key, value] of map) {
       if (value[1] === b) {
         return key;
       }
@@ -223,7 +223,7 @@ namespace Vowel {
     return undefined;
   }
   export function fromBraille(b: string): Vowel | undefined {
-    for (let [key, value] of map) {
+    for (const [key, value] of map) {
       if (value[0] === b) {
         return key;
       }
@@ -231,7 +231,7 @@ namespace Vowel {
     return undefined;
   }
   export function fromBrailleCode(b: string): Vowel | undefined {
-    for (let [key, value] of map) {
+    for (const [key, value] of map) {
       if (value[1] === b) {
         return key;
       }
@@ -290,7 +290,7 @@ namespace ㄧ_Combination {
     return undefined;
   }
   export function fromBraille(b: string): ㄧ_Combination | undefined {
-    for (let [key, value] of map) {
+    for (const [key, value] of map) {
       if (value[0] === b) {
         return key;
       }
@@ -298,7 +298,7 @@ namespace ㄧ_Combination {
     return undefined;
   }
   export function fromBrailleCode(b: string): ㄧ_Combination | undefined {
-    for (let [key, value] of map) {
+    for (const [key, value] of map) {
       if (value[1] === b) {
         return key;
       }
@@ -353,7 +353,7 @@ namespace ㄨ_Combination {
     return undefined;
   }
   export function fromBraille(b: string): ㄨ_Combination | undefined {
-    for (let [key, value] of map) {
+    for (const [key, value] of map) {
       if (value[0] === b) {
         return key;
       }
@@ -361,7 +361,7 @@ namespace ㄨ_Combination {
     return undefined;
   }
   export function fromBrailleCode(b: string): ㄨ_Combination | undefined {
-    for (let [key, value] of map) {
+    for (const [key, value] of map) {
       if (value[1] === b) {
         return key;
       }
@@ -407,7 +407,7 @@ namespace ㄩ_Combination {
     return undefined;
   }
   export function fromBraille(b: string): ㄩ_Combination | undefined {
-    for (let [key, value] of map) {
+    for (const [key, value] of map) {
       if (value[0] === b) {
         return key;
       }
@@ -415,7 +415,7 @@ namespace ㄩ_Combination {
     return undefined;
   }
   export function fromBrailleCode(b: string): ㄩ_Combination | undefined {
-    for (let [key, value] of map) {
+    for (const [key, value] of map) {
       if (value[1] === b) {
         return key;
       }
@@ -464,7 +464,7 @@ namespace Tone {
     return undefined;
   }
   export function fromBraille(b: string): Tone | undefined {
-    for (let [key, value] of map) {
+    for (const [key, value] of map) {
       if (value[0] === b) {
         return key;
       }
@@ -472,7 +472,7 @@ namespace Tone {
     return undefined;
   }
   export function fromBrailleCode(b: string): Tone | undefined {
-    for (let [key, value] of map) {
+    for (const [key, value] of map) {
       if (value[1] === b) {
         return key;
       }
@@ -534,7 +534,7 @@ export class BopomofoSyllable {
     }
     if (vowel !== undefined) {
       if (middleVowel !== undefined) {
-        let combination = MiddleVowel.buildCombination(middleVowel, vowel);
+        const combination = MiddleVowel.buildCombination(middleVowel, vowel);
         if (combination !== undefined) {
           if (ㄧ_Combination.allBpmf.includes(combination)) {
             output += ㄧ_Combination.toBraille(combination as ㄧ_Combination);
@@ -575,7 +575,7 @@ export class BopomofoSyllable {
     let vowel: Vowel | undefined = undefined;
     let tone: Tone = Tone.tone1;
     for (let i = 0; i < bpmf.length; i++) {
-      let c = bpmf[i];
+      const c = bpmf[i];
       if (Consonant.allBpmf.includes(c)) {
         if (consonant !== undefined) {
           throw new Error("Invalid Bopomofo: multiple consonants");
@@ -597,7 +597,7 @@ export class BopomofoSyllable {
           throw new Error("Invalid Bopomofo: multiple vowels");
         }
         if (middleVowel !== undefined) {
-          let result = MiddleVowel.buildCombination(middleVowel, c);
+          const result = MiddleVowel.buildCombination(middleVowel, c);
           if (result === undefined) {
             throw new Error("Invalid Bopomofo: invalid combination");
           }
@@ -631,7 +631,7 @@ export class BopomofoSyllable {
       throw new Error("Invalid Bopomofo: invalid character");
     }
 
-    let braille = BopomofoSyllable.makeBraille(
+    const braille = BopomofoSyllable.makeBraille(
       consonant,
       middleVowel,
       vowel,
@@ -665,7 +665,7 @@ export class BopomofoSyllable {
     let vowel: Vowel | undefined = undefined;
     let tone: Tone | undefined = undefined;
     for (let i = 0; i < braille.length; i++) {
-      let c = braille[i];
+      const c = braille[i];
       if (c === "⠱") {
         if (i === 0) {
           vowel = Vowel.ㄦ;
@@ -702,7 +702,7 @@ export class BopomofoSyllable {
         if (i + 1 >= braille.length) {
           throw new Error("Invalid Braille: other");
         }
-        let next = braille[i + 1];
+        const next = braille[i + 1];
         if (shouldConnectWithYiOrYv(next)) {
           consonant = Consonant.ㄒ;
         } else {
@@ -716,7 +716,7 @@ export class BopomofoSyllable {
         if (i + 1 >= braille.length) {
           throw new Error("Invalid Braille: other");
         }
-        let next = braille[i + 1];
+        const next = braille[i + 1];
         if (shouldConnectWithYiOrYv(next)) {
           consonant = Consonant.ㄑ;
         } else {
@@ -730,7 +730,7 @@ export class BopomofoSyllable {
         if (i + 1 >= braille.length) {
           throw new Error("Invalid Braille: other");
         }
-        let next = braille[i + 1];
+        const next = braille[i + 1];
         if (shouldConnectWithYiOrYv(next)) {
           consonant = Consonant.ㄐ;
         } else {
@@ -767,7 +767,7 @@ export class BopomofoSyllable {
         if (vowel !== undefined) {
           throw new Error("Invalid Braille: multiple middle vowels");
         }
-        let combination = ㄧ_Combination.fromBraille(c);
+        const combination = ㄧ_Combination.fromBraille(c);
         if (combination === undefined) {
           throw new Error("Invalid Braille: invalid combination");
         }
@@ -780,7 +780,7 @@ export class BopomofoSyllable {
         if (vowel !== undefined) {
           throw new Error("Invalid Braille: multiple middle vowels");
         }
-        let combination = ㄨ_Combination.fromBraille(c);
+        const combination = ㄨ_Combination.fromBraille(c);
         if (combination === undefined) {
           throw new Error("Invalid Braille: invalid combination");
         }
@@ -793,7 +793,7 @@ export class BopomofoSyllable {
         if (vowel !== undefined) {
           throw new Error("Invalid Braille: multiple middle vowels");
         }
-        let combination = ㄩ_Combination.fromBraille(c);
+        const combination = ㄩ_Combination.fromBraille(c);
         if (combination === undefined) {
           throw new Error("Invalid Braille: invalid combination");
         }
@@ -821,7 +821,7 @@ export class BopomofoSyllable {
       throw new Error("Invalid Braille: invalid character");
     }
 
-    let bpmf = BopomofoSyllable.makeBpmf(consonant, middleVowel, vowel, tone);
+    const bpmf = BopomofoSyllable.makeBpmf(consonant, middleVowel, vowel, tone);
     return new BopomofoSyllable(bpmf, braille);
   }
 }

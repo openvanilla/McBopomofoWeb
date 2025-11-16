@@ -304,12 +304,12 @@ class PimeMcBopomofo {
     }
 
     let string = "";
-    for (let key of map.keys()) {
-      let phrases = map.get(key);
+    for (const key of map.keys()) {
+      const phrases = map.get(key);
       if (phrases === undefined) {
         continue;
       }
-      for (let phrase of phrases) {
+      for (const phrase of phrases) {
         string += key + " " + phrase + "\n";
       }
     }
@@ -333,12 +333,12 @@ class PimeMcBopomofo {
     }
 
     let string = "";
-    for (let key of map.keys()) {
-      let phrases = map.get(key);
+    for (const key of map.keys()) {
+      const phrases = map.get(key);
       if (phrases === undefined) {
         continue;
       }
-      for (let phrase of phrases) {
+      for (const phrase of phrases) {
         string += key + " " + phrase + "\n";
       }
     }
@@ -361,7 +361,7 @@ class PimeMcBopomofo {
 
   /** Applies the settings to the input controller. */
   public applySettings(): void {
-    let useTraditionalMode = this.settings.input_mode === "use_plainbopomofo";
+    const useTraditionalMode = this.settings.input_mode === "use_plainbopomofo";
     this.inputController.setTraditionalMode(useTraditionalMode);
 
     this.inputController.setKeyboardLayout(this.settings.layout);
@@ -407,7 +407,7 @@ class PimeMcBopomofo {
       console.log(data);
       try {
         console.log("Try to load settings");
-        let newSettings = JSON.parse(data.toString());
+        const newSettings = JSON.parse(data.toString());
         this.settings = Object.assign({}, defaultSettings, newSettings);
         console.log(
           "Loaded settings: " + JSON.stringify(this.settings, null, 2)
@@ -431,7 +431,7 @@ class PimeMcBopomofo {
     }
 
     console.log("Writing user settings to " + this.userSettingsPath);
-    let string = JSON.stringify(this.settings, null, 2);
+    const string = JSON.stringify(this.settings, null, 2);
     fs.writeFile(this.userSettingsPath, string, (err) => {
       if (err) {
         console.error("Failed to write settings");
@@ -446,7 +446,7 @@ class PimeMcBopomofo {
    * @returns The InputUI object.
    */
   public makeUI(instance: PimeMcBopomofo): InputUI {
-    let that: InputUI = {
+    const that: InputUI = {
       reset: () => {
         instance.uiState = {
           commitString: "",
@@ -461,7 +461,7 @@ class PimeMcBopomofo {
       },
       commitString(text: string) {
         console.log("commitString: " + text);
-        let joinedCommitString = instance.uiState.compositionString + text;
+        const joinedCommitString = instance.uiState.compositionString + text;
         console.log("joinedCommitString: " + joinedCommitString);
         instance.uiState = {
           commitString: joinedCommitString,
@@ -475,13 +475,13 @@ class PimeMcBopomofo {
         };
       },
       update(stateString: string) {
-        let state = JSON.parse(stateString);
-        let composingBuffer = state.composingBuffer;
-        let candidates = state.candidates;
+        const state = JSON.parse(stateString);
+        const composingBuffer = state.composingBuffer;
+        const candidates = state.candidates;
         let selectedIndex = 0;
         let index = 0;
-        let candidateList = [];
-        for (let candidate of state.candidates) {
+        const candidateList = [];
+        for (const candidate of state.candidates) {
           if (candidate.selected) {
             selectedIndex = index;
           }
@@ -492,18 +492,18 @@ class PimeMcBopomofo {
         // Note: McBopomofo's composing buffer are composed by segments so
         // it allows an input method framework to draw underlines
         let compositionString = "";
-        for (let item of composingBuffer) {
+        for (const item of composingBuffer) {
           compositionString += item.text;
         }
 
-        let tooltip = state.tooltip;
+        const tooltip = state.tooltip;
         let showMessage = {};
         let hideMessage = true;
         if (tooltip) {
           showMessage = { message: tooltip, duration: 3 };
           hideMessage = false;
         }
-        let commitString = instance.uiState.commitString;
+        const commitString = instance.uiState.commitString;
         instance.uiState = {
           commitString: commitString,
           compositionString: compositionString,
@@ -542,10 +542,10 @@ class PimeMcBopomofo {
       }
     }
 
-    let windowsModeIconPath = path.join(__dirname, "icons", windowsModeIcon);
-    let settingsIconPath = path.join(__dirname, "icons", "config.ico");
-    let object: any = {};
-    let changeButton: any[] = [];
+    const windowsModeIconPath = path.join(__dirname, "icons", windowsModeIcon);
+    const settingsIconPath = path.join(__dirname, "icons", "config.ico");
+    const object: any = {};
+    const changeButton: any[] = [];
     if (this.isWindows8Above) {
       changeButton.push({ icon: windowsModeIconPath, id: "windows-mode-icon" });
     }
@@ -553,7 +553,7 @@ class PimeMcBopomofo {
     object.changeButton = changeButton;
 
     if (!this.alreadyAddButton) {
-      let addButton: any[] = [];
+      const addButton: any[] = [];
       if (this.isWindows8Above) {
         addButton.push({
           id: "windows-mode-icon",
@@ -654,16 +654,16 @@ class PimeMcBopomofo {
         break;
       case PimeMcBopomofoCommand.OpenHomepage:
         {
-          let url = "https://mcbopomofo.openvanilla.org/";
-          let command = `start ${url}`;
+          const url = "https://mcbopomofo.openvanilla.org/";
+          const command = `start ${url}`;
           console.log("Run " + command);
           child_process.exec(command);
         }
         break;
       case PimeMcBopomofoCommand.OpenBugReport:
         {
-          let url = "https://github.com/openvanilla/McBopomofoWeb/issues";
-          let command = `start ${url}`;
+          const url = "https://github.com/openvanilla/McBopomofoWeb/issues";
+          const command = `start ${url}`;
           console.log("Run " + command);
           child_process.exec(command);
         }
@@ -671,7 +671,7 @@ class PimeMcBopomofo {
       case PimeMcBopomofoCommand.OpenOptions:
         {
           this.createUserPhrasesIfNotExists();
-          let python3 = path.join(
+          const python3 = path.join(
             __dirname,
             "..",
             "..",
@@ -680,8 +680,8 @@ class PimeMcBopomofo {
             "python3",
             "python.exe"
           );
-          let script = path.join(__dirname, "config_tool.py");
-          let command = `"${python3}" "${script}"`;
+          const script = path.join(__dirname, "config_tool.py");
+          const command = `"${python3}" "${script}"`;
           console.log("Run " + command);
           child_process.exec(command);
         }
@@ -689,7 +689,7 @@ class PimeMcBopomofo {
       case PimeMcBopomofoCommand.EditUserPhrase:
         {
           this.createUserPhrasesIfNotExists();
-          let python3 = path.join(
+          const python3 = path.join(
             __dirname,
             "..",
             "..",
@@ -698,8 +698,8 @@ class PimeMcBopomofo {
             "python3",
             "python.exe"
           );
-          let script = path.join(__dirname, "config_tool.py");
-          let command = `"${python3}" "${script}" user_phrases`;
+          const script = path.join(__dirname, "config_tool.py");
+          const command = `"${python3}" "${script}" user_phrases`;
           console.log("Run " + command);
           child_process.exec(command);
         }
@@ -708,7 +708,7 @@ class PimeMcBopomofo {
         {
           this.createUserPhrasesIfNotExists();
           const url = pimeMcBopomofo.userPhrasesPath;
-          let command = `start ${url}`;
+          const command = `start ${url}`;
           console.log("Run " + command);
           child_process.exec(command);
         }
@@ -717,7 +717,7 @@ class PimeMcBopomofo {
         {
           this.createUserPhrasesIfNotExists();
           const url = pimeMcBopomofo.excludedPhrasesPath;
-          let command = `start ${url}`;
+          const command = `start ${url}`;
           console.log("Run " + command);
           child_process.exec(command);
         }
@@ -736,7 +736,7 @@ class PimeMcBopomofo {
         break;
       case PimeMcBopomofoCommand.Help:
         {
-          let python3 = path.join(
+          const python3 = path.join(
             __dirname,
             "..",
             "..",
@@ -889,7 +889,7 @@ module.exports = {
       if (pimeMcBopomofo.isScheduledToUpdateUi) {
         pimeMcBopomofo.isScheduledToUpdateUi = false;
         const state = pimeMcBopomofo.inputController.state;
-        let handled = state instanceof Empty === false;
+        const handled = state instanceof Empty === false;
 
         const uiState = pimeMcBopomofo.uiState;
         const customUi = pimeMcBopomofo.customUiResponse();
@@ -913,7 +913,7 @@ module.exports = {
       ) {
         // NOTE: Some app, like MS Word, may send repeated key down event.
         // We should ignore such events.
-        let response = Object.assign({}, responseTemplate, {
+        const response = Object.assign({}, responseTemplate, {
           return: true,
         });
         return response;

@@ -9,7 +9,7 @@ import { BopomofoSyllable } from "./index";
 
 describe("Test Pinyin", () => {
   test("Test basic pinyin conversion", () => {
-    let testCases = [
+    const testCases = [
       ["ba1", "ㄅㄚ"],
       ["po2", "ㄆㄛˊ"],
       ["me3", "ㄇㄜˇ"],
@@ -34,13 +34,13 @@ describe("Test Pinyin", () => {
     ];
 
     testCases.forEach(([pinyin, expected]) => {
-      let result = BopomofoSyllable.FromHanyuPinyin(pinyin);
+      const result = BopomofoSyllable.FromHanyuPinyin(pinyin);
       expect(result.composedString).toBe(expected);
     });
   });
 
   test("Test compound vowels", () => {
-    let testCases = [
+    const testCases = [
       ["lian2", "ㄌㄧㄢˊ"],
       ["yuan4", "ㄩㄢˋ"],
       ["huang1", "ㄏㄨㄤ"],
@@ -86,29 +86,29 @@ describe("Test Pinyin", () => {
     ];
 
     testCases.forEach(([pinyin, expected]) => {
-      let result = BopomofoSyllable.FromHanyuPinyin(pinyin);
+      const result = BopomofoSyllable.FromHanyuPinyin(pinyin);
       expect(result.composedString).toBe(expected);
     });
   });
 
   test("Test 1", () => {
-    let s = "yang4";
-    let result = BopomofoSyllable.FromHanyuPinyin(s);
-    let string = result.composedString;
+    const s = "yang4";
+    const result = BopomofoSyllable.FromHanyuPinyin(s);
+    const string = result.composedString;
     expect(string).toBe("ㄧㄤˋ");
   });
 
   test("Test absoluteOrder", () => {
-    let s = "yang4";
-    let result = BopomofoSyllable.FromHanyuPinyin(s);
+    const s = "yang4";
+    const result = BopomofoSyllable.FromHanyuPinyin(s);
     expect(result.absoluteOrder).toBe(4686);
     expect(result.absoluteOrderString).toBe("Ik");
   });
 
   test("Test from absoluteOrder", () => {
-    let result = BopomofoSyllable.FromAbsoluteOrderString("Ik");
+    const result = BopomofoSyllable.FromAbsoluteOrderString("Ik");
     expect(result.absoluteOrder).toBe(4686);
-    let string = result.composedString;
+    const string = result.composedString;
     expect(string).toBe("ㄧㄤˋ");
   });
 
@@ -136,7 +136,7 @@ describe("Test Pinyin", () => {
   });
 
   test("Test HanyuPinyinString with includeTone=true", () => {
-    let testCases = [
+    const testCases = [
       ["ㄅㄚ", "ba"],
       ["ㄆㄛˊ", "po2"],
       ["ㄇㄜˇ", "me3"],
@@ -159,14 +159,14 @@ describe("Test Pinyin", () => {
     ];
 
     testCases.forEach(([bopomofo, expected]) => {
-      let syllable = BopomofoSyllable.FromComposedString(bopomofo);
-      let result = syllable.HanyuPinyinString(true, false);
+      const syllable = BopomofoSyllable.FromComposedString(bopomofo);
+      const result = syllable.HanyuPinyinString(true, false);
       expect(result).toBe(expected);
     });
   });
 
   test("Test HanyuPinyinString with includeTone=false", () => {
-    let testCases = [
+    const testCases = [
       ["ㄅㄚ", "ba"],
       ["ㄆㄛˊ", "po"],
       ["ㄇㄜˇ", "me"],
@@ -178,14 +178,14 @@ describe("Test Pinyin", () => {
     ];
 
     testCases.forEach(([bopomofo, expected]) => {
-      let syllable = BopomofoSyllable.FromComposedString(bopomofo);
-      let result = syllable.HanyuPinyinString(false, false);
+      const syllable = BopomofoSyllable.FromComposedString(bopomofo);
+      const result = syllable.HanyuPinyinString(false, false);
       expect(result).toBe(expected);
     });
   });
 
   test("Test HanyuPinyinString with useVForUUmlaut=true", () => {
-    let testCases = [
+    const testCases = [
       ["ㄌㄩ", "lv"],
       ["ㄋㄩˊ", "nv2"],
       ["ㄩㄢˇ", "yuan3"],
@@ -194,19 +194,19 @@ describe("Test Pinyin", () => {
     ];
 
     testCases.forEach(([bopomofo, expected]) => {
-      let syllable = BopomofoSyllable.FromComposedString(bopomofo);
-      let result = syllable.HanyuPinyinString(true, true);
+      const syllable = BopomofoSyllable.FromComposedString(bopomofo);
+      const result = syllable.HanyuPinyinString(true, true);
       expect(result).toBe(expected);
     });
   });
 
   test("Test HanyuPinyinString special cases", () => {
     // Test empty syllable
-    let emptySyllable = new BopomofoSyllable();
+    const emptySyllable = new BopomofoSyllable();
     expect(emptySyllable.HanyuPinyinString(true, false)).toBe("");
 
     // Test special combinations
-    let testCases = [
+    const testCases = [
       ["ㄧㄥ", "ying"],
       ["ㄨㄥ", "weng"],
       ["ㄧㄡ", "you"],
@@ -217,8 +217,8 @@ describe("Test Pinyin", () => {
     ];
 
     testCases.forEach(([bopomofo, expected]) => {
-      let syllable = BopomofoSyllable.FromComposedString(bopomofo);
-      let result = syllable.HanyuPinyinString(true, false);
+      const syllable = BopomofoSyllable.FromComposedString(bopomofo);
+      const result = syllable.HanyuPinyinString(true, false);
       expect(result).toBe(expected);
     });
   });
@@ -248,8 +248,8 @@ describe("Test Pinyin", () => {
     ];
 
     testCases.forEach(([bopomofo, expected]) => {
-      let syllable = BopomofoSyllable.FromComposedString(bopomofo);
-      let result = syllable.HanyuPinyinString(true, false);
+      const syllable = BopomofoSyllable.FromComposedString(bopomofo);
+      const result = syllable.HanyuPinyinString(true, false);
       expect(result).toBe(expected);
     });
   });
@@ -267,7 +267,7 @@ describe("Test Pinyin", () => {
   });
 
   test("Test BopomofoSyllable properties", () => {
-    let syllable = BopomofoSyllable.FromHanyuPinyin("zhuang1");
+    const syllable = BopomofoSyllable.FromHanyuPinyin("zhuang1");
     
     // Test component getters
     expect(syllable.consonantComponent).toBe(BopomofoSyllable.ZH);
@@ -286,7 +286,7 @@ describe("Test Pinyin", () => {
     expect(syllable.hasToneMarker).toBe(false); // Tone1 is 0
     
     // Test with tone marker
-    let syllable2 = BopomofoSyllable.FromHanyuPinyin("zhuang2");
+    const syllable2 = BopomofoSyllable.FromHanyuPinyin("zhuang2");
     expect(syllable2.hasToneMarker).toBe(true);
   });
 
@@ -303,8 +303,8 @@ describe("Test Pinyin", () => {
     ];
 
     testCases.forEach(([bopomofo, expected]) => {
-      let syllable = BopomofoSyllable.FromComposedString(bopomofo);
-      let result = syllable.HanyuPinyinString(true, false);
+      const syllable = BopomofoSyllable.FromComposedString(bopomofo);
+      const result = syllable.HanyuPinyinString(true, false);
       expect(result).toBe(expected);
     });
   });
@@ -328,8 +328,8 @@ describe("Test Pinyin", () => {
   });
 
   test("Test addEqual method", () => {
-    let syllable1 = new BopomofoSyllable(BopomofoSyllable.B);
-    let syllable2 = new BopomofoSyllable(BopomofoSyllable.A);
+    const syllable1 = new BopomofoSyllable(BopomofoSyllable.B);
+    const syllable2 = new BopomofoSyllable(BopomofoSyllable.A);
     
     syllable1.addEqual(syllable2);
     

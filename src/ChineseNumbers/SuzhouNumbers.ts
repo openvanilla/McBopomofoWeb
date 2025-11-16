@@ -99,13 +99,13 @@ export class SuzhouNumbers {
     preferInitialVertical: boolean = true
   ) {
     let intTrimmed = TrimZerosAtStart(intPart);
-    let decTrimmed = TrimZerosAtEnd(decPart);
+    const decTrimmed = TrimZerosAtEnd(decPart);
 
     let output = "";
     let trimmedZeroCounts = 0;
 
     if (decTrimmed.length === 0) {
-      let trimmed = TrimZerosAtEnd(intTrimmed);
+      const trimmed = TrimZerosAtEnd(intTrimmed);
       trimmedZeroCounts = intTrimmed.length - trimmed.length;
       intTrimmed = trimmed;
     }
@@ -113,7 +113,7 @@ export class SuzhouNumbers {
       intTrimmed = "0";
     }
 
-    let joined = intTrimmed + decTrimmed;
+    const joined = intTrimmed + decTrimmed;
     var isVertical = preferInitialVertical;
     for (const c of joined) {
       if (c === "1" || c === "2" || c === "3") {

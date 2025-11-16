@@ -84,7 +84,7 @@ describe("ReadingGrid", () => {
     expect(grid.cursor).toBe(1);
 
     grid.cursor = 0;
-    let result = grid.deleteReadingBeforeCursor();
+    const result = grid.deleteReadingBeforeCursor();
     expect(result).toBe(false);
   });
 
@@ -102,7 +102,7 @@ describe("ReadingGrid", () => {
     expect(grid.cursor).toBe(0);
 
     grid.cursor = 1;
-    let result = grid.deleteReadingAfterCursor();
+    const result = grid.deleteReadingAfterCursor();
     expect(result).toBe(false);
   });
 
@@ -135,7 +135,7 @@ describe("ReadingGrid", () => {
     grid.insertReading("testReading2");
     expect(grid.overrideCandidateWithString(1, "testValue2")).toBe(true);
 
-    let result = grid.walk();
+    const result = grid.walk();
     expect(result.valuesAsStrings()).toContain("testValue2");
 
     expect(result.nodes[0].value).toBe("testValue");

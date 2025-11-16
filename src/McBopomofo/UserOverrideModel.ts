@@ -20,12 +20,12 @@ function Score(
   timestamp: number,
   lambda: number
 ): number {
-  let decay = Math.exp((timestamp - eventTimestamp) * lambda);
+  const decay = Math.exp((timestamp - eventTimestamp) * lambda);
   if (decay < kDecayThreshold) {
     return 0.0;
   }
 
-  let prob = eventCount / totalCount;
+  const prob = eventCount / totalCount;
   return prob * decay;
 }
 
@@ -34,7 +34,7 @@ function CombineReadingValue(reading: string, value: string) {
 }
 
 function IsPunctuation(node: Node) {
-  let reading = node.reading;
+  const reading = node.reading;
   return reading.length > 0 && reading[0] === "_";
 }
 
@@ -174,10 +174,10 @@ export class UserOverrideModel {
     }
 
     // We first infer what the user override is.
-    let result = walkAfterUserOverride.findNodeAt(cursor);
-    let currentNode = result[0];
+    const result = walkAfterUserOverride.findNodeAt(cursor);
+    const currentNode = result[0];
     let actualCursor = result[1];
-    let currentNodeIndex = result[2];
+    const currentNodeIndex = result[2];
     if (currentNode === undefined || currentNodeIndex === undefined) {
       return;
     }
@@ -196,9 +196,9 @@ export class UserOverrideModel {
       return;
     }
     --actualCursor;
-    let previousResult = walkBeforeUserOverride.findNodeAt(actualCursor);
-    let prevHeadNode = previousResult[0];
-    let prevIndex = previousResult[2];
+    const previousResult = walkBeforeUserOverride.findNodeAt(actualCursor);
+    const prevHeadNode = previousResult[0];
+    const prevIndex = previousResult[2];
     if (prevHeadNode === undefined || prevIndex === undefined) {
       return;
     }
@@ -231,16 +231,16 @@ export class UserOverrideModel {
     // force-high-score overrides, which would cause the multi-char phrase
     // to lose over the user override all the time. For example (a somewhat
     // forced one): overriding "[三百元]" with "[參]百元".
-    let forceHighScoreOverride =
+    const forceHighScoreOverride =
       currentNode.spanningLength > prevHeadNode.spanningLength;
-    let breakingUp =
+    const breakingUp =
       currentNode.spanningLength === 1 && prevHeadNode.spanningLength > 1;
-    let nodeIndex = breakingUp ? currentNodeIndex : prevIndex;
-    let nodes = breakingUp
+    const nodeIndex = breakingUp ? currentNodeIndex : prevIndex;
+    const nodes = breakingUp
       ? walkAfterUserOverride.nodes
       : walkBeforeUserOverride.nodes;
 
-    let key = FormObservationKey(nodes, nodeIndex, 0);
+    const key = FormObservationKey(nodes, nodeIndex, 0);
     this.observeInner(
       key,
       currentNode.currentUnigram.value,
@@ -255,11 +255,11 @@ export class UserOverrideModel {
     timestamp: number,
     forceHighScoreOverride: boolean
   ) {
-    let keyObservationPair = this.m_lruMap[key];
+    const keyObservationPair = this.m_lruMap[key];
     if (keyObservationPair === undefined) {
-      let observation = new Observation();
+      const observation = new Observation();
       observation.update(candidate, timestamp, forceHighScoreOverride);
-      let keyValuePair = new KeyObservationPair();
+      const keyValuePair = new KeyObservationPair();
       keyValuePair.key = key;
       keyValuePair.observation = observation;
 
@@ -267,13 +267,13 @@ export class UserOverrideModel {
       this.m_lruMap[key] = keyValuePair;
 
       if (this.m_lruList.length > this.m_capacity) {
-        let lastKeyValuePair = this.m_lruList.pop();
+        const lastKeyValuePair = this.m_lruList.pop();
         if (lastKeyValuePair !== undefined) {
           delete this.m_lruMap[lastKeyValuePair.key];
         }
       }
     } else {
-      let index = this.m_lruList.indexOf(keyObservationPair);
+      const index = this.m_lruList.indexOf(keyObservationPair);
       if (index > -1) {
         this.m_lruList.splice(index, 1);
       }
@@ -293,30 +293,30 @@ export class UserOverrideModel {
     cursor: number,
     timestamp: number
   ): Suggestion | undefined {
-    let result = currentWalk.findNodeAt(cursor);
-    let index = result[2];
+    const result = currentWalk.findNodeAt(cursor);
+    const index = result[2];
     if (index !== undefined) {
-      let key = FormObservationKey(currentWalk.nodes, index, 0);
+      const key = FormObservationKey(currentWalk.nodes, index, 0);
       return this.suggestInner(key, timestamp);
     }
     return undefined;
   }
 
   suggestInner(key: string, timestamp: number): Suggestion {
-    let mapIter = this.m_lruMap[key];
+    const mapIter = this.m_lruMap[key];
     if (!mapIter) {
       return new Suggestion("", false);
     }
-    let observation = mapIter.observation;
+    const observation = mapIter.observation;
     let candidate = "";
     let forceHighScoreOverride = false;
     let score = 0;
-    for (let k in observation.overrides) {
-      let o = observation.overrides[k];
+    for (const k in observation.overrides) {
+      const o = observation.overrides[k];
       if (o === undefined) {
         continue;
       }
-      let overrideScore = Score(
+      const overrideScore = Score(
         o.count,
         observation.count,
         o.timestamp,

@@ -46,7 +46,7 @@ export namespace Digit {
     return undefined;
   }
   export function fromBraille(b: string): Digit | undefined {
-    for (let [key, value] of map) {
+    for (const [key, value] of map) {
       if (value === b) {
         return key;
       }
@@ -88,7 +88,7 @@ export namespace DigitRelated {
     return undefined;
   }
   export function fromBraille(b: string): DigitRelated | undefined {
-    for (let [key, value] of map) {
+    for (const [key, value] of map) {
       if (value === b) {
         return key;
       }

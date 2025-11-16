@@ -62,7 +62,7 @@ export namespace HalfWidthPunctuation {
     return undefined;
   }
   export function fromBraille(b: string): HalfWidthPunctuation | undefined {
-    for (let [key, value] of map) {
+    for (const [key, value] of map) {
       if (value === b) {
         return key;
       }

@@ -282,7 +282,7 @@ describe("InputController", () => {
       inputCStr(controller, "5j/ jp6");
       let state = controller.state;
       expect(state).toBeInstanceOf(Inputting);
-      let key = new Key("", KeyName.ESC);
+      const key = new Key("", KeyName.ESC);
       controller.mcbopomofoKeyEvent(key);
       state = controller.state;
       expect(state).toBeInstanceOf(EmptyIgnoringPrevious);
@@ -292,7 +292,7 @@ describe("InputController", () => {
     it("sets repeated punctuation choose candidate", () => {
       controller.setRepeatedPunctuationChooseCandidate(true);
       inputCStr(controller, "++");
-      let state = controller.state;
+      const state = controller.state;
       expect(state).toBeInstanceOf(Inputting);
 
       if (state instanceof Inputting) {
@@ -309,9 +309,9 @@ describe("InputController", () => {
 
     it("sets half width punctuation", () => {
       controller.setHalfWidthPunctuationEnabled(true);
-      let key = new Key(">", KeyName.ASCII, true);
+      const key = new Key(">", KeyName.ASCII, true);
       controller.mcbopomofoKeyEvent(key);
-      let state = controller.state;
+      const state = controller.state;
       expect(state).toBeInstanceOf(Inputting);
 
       if (state instanceof Inputting) {
@@ -323,7 +323,7 @@ describe("InputController", () => {
     it("sets Chinese conversion", () => {
       controller.setChineseConversionEnabled(true);
       inputCStr(controller, "z;6fm 5j;4dj;4n0 g/ vul4");
-      let state = controller.state;
+      const state = controller.state;
       expect(state).toBeInstanceOf(Inputting);
 
       if (state instanceof Inputting) {
@@ -400,8 +400,8 @@ describe("InputController", () => {
       controller.mcbopomofoKeyEvent(space);
 
       state = controller.state;
-      let parsed = JSON.parse(lastState);
-      let candidates = parsed.candidates;
+      const parsed = JSON.parse(lastState);
+      const candidates = parsed.candidates;
       expect(candidates.length).toBe(9);
     });
 
@@ -808,7 +808,7 @@ describe("InputController", () => {
       expect(result).toBe(true);
 
       inputCStr(controller, "42");
-      let state = controller.state;
+      const state = controller.state;
       expect(state).toBeInstanceOf(RomanNumber);
       if (state instanceof RomanNumber) {
         expect(state.composingBuffer).toBe("[羅馬數字 (字母)] 42");
@@ -822,7 +822,7 @@ describe("InputController", () => {
       controller.mcbopomofoKeyEvent(key);
 
       inputCStr(controller, "99");
-      let state = controller.state;
+      const state = controller.state;
       expect(state).toBeInstanceOf(RomanNumber);
       if (state instanceof RomanNumber) {
         expect(state.composingBuffer).toBe("[羅馬數字 (字母)] 99");
@@ -840,7 +840,7 @@ describe("InputController", () => {
       expect(state).toBeInstanceOf(RomanNumber);
 
       key = new Key("", KeyName.RETURN);
-      let result = controller.mcbopomofoKeyEvent(key);
+      const result = controller.mcbopomofoKeyEvent(key);
       expect(result).toBe(true);
       state = controller.state;
       expect(state).toBeInstanceOf(Committing);
@@ -894,7 +894,7 @@ describe("InputController", () => {
       controller.mcbopomofoKeyEvent(key);
 
       inputCStr(controller, "444");
-      let state = controller.state;
+      const state = controller.state;
       expect(state).toBeInstanceOf(RomanNumber);
       if (state instanceof RomanNumber) {
         expect(state.composingBuffer).toBe("[羅馬數字 (字母)] 444");
@@ -908,7 +908,7 @@ describe("InputController", () => {
       controller.mcbopomofoKeyEvent(key);
 
       inputCStr(controller, "10");
-      let state = controller.state;
+      const state = controller.state;
       expect(state).toBeInstanceOf(RomanNumber);
       if (state instanceof RomanNumber) {
         expect(state.number.length).toBe(2);
@@ -1006,7 +1006,7 @@ describe("InputController", () => {
     it("enters Marking mode", () => {
       inputCStr(controller, "jo65j/ ");
       let key = new Key("", KeyName.LEFT, true);
-      let result = controller.mcbopomofoKeyEvent(key);
+      const result = controller.mcbopomofoKeyEvent(key);
       expect(result).toBe(true);
       let state = controller.state;
       expect(state).toBeInstanceOf(Marking);
@@ -1029,7 +1029,7 @@ describe("InputController", () => {
     it("enters Marking mode", () => {
       inputCStr(controller, "5j/ jp6");
       let key = new Key("", KeyName.LEFT, true);
-      let result = controller.mcbopomofoKeyEvent(key);
+      const result = controller.mcbopomofoKeyEvent(key);
       expect(result).toBe(true);
       let state = controller.state;
       expect(state).toBeInstanceOf(Marking);
@@ -1183,7 +1183,7 @@ describe("InputController", () => {
 
   describe("Arrow Keys", () => {
     let uiState = { candidates: [] };
-    let ui = {
+    const ui = {
       reset: () => {},
       commitString: (text: string) => {},
       update: (state: string) => {
@@ -1193,14 +1193,14 @@ describe("InputController", () => {
     controller = new InputController(ui);
     inputCStr(controller, "5j/ jp6");
     let key = new Key(" ", KeyName.SPACE);
-    let result = controller.mcbopomofoKeyEvent(key);
+    const result = controller.mcbopomofoKeyEvent(key);
     expect(result).toBe(true);
-    let state = controller.state;
+    const state = controller.state;
     expect(state).toBeInstanceOf(ChoosingCandidate);
     {
       key = new Key("", KeyName.END, true);
       controller.mcbopomofoKeyEvent(key);
-      let { candidates } = uiState;
+      const { candidates } = uiState;
       expect(candidates[0]["candidate"]["value"]).toBe("彣");
       key = new Key("", KeyName.END, true);
     }
@@ -1208,7 +1208,7 @@ describe("InputController", () => {
       key = new Key("", KeyName.HOME, true);
       controller.mcbopomofoKeyEvent(key);
       controller.mcbopomofoKeyEvent(key);
-      let { candidates } = uiState;
+      const { candidates } = uiState;
       expect(candidates[0]["candidate"]["value"]).toBe("中文");
     }
   });

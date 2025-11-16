@@ -77,10 +77,10 @@ describe("CandidateController", () => {
   test("returns selection to previous candidate", () => {
     controller.goToNextItem();
     controller.goToPreviousItem();
-    let result = controller.currentPage;
+    const result = controller.currentPage;
     expect(result.length).toBe(9);
-    let candidate1 = result[0];
-    let candidate2 = result[1];
+    const candidate1 = result[0];
+    const candidate2 = result[1];
     expect(candidate1.keyCap).toBe("1");
     expect(candidate1.candidate.value).toBe("一");
     expect(candidate1.selected).toBe(true);

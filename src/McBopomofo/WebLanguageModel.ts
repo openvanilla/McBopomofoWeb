@@ -27,7 +27,7 @@ export class UserPhrases implements LanguageModel {
   }
 
   removeUserPhrase(key: string, phrase: string): void {
-    let list = this.userPhrases_.get(key);
+    const list = this.userPhrases_.get(key);
     if (list === undefined) {
       return;
     }
@@ -59,11 +59,11 @@ export class UserPhrases implements LanguageModel {
       return [];
     }
 
-    let result: Unigram[] = [];
-    let list = this.userPhrases_.get(key);
+    const result: Unigram[] = [];
+    const list = this.userPhrases_.get(key);
     if (list !== undefined) {
-      for (let item of list) {
-        let g = new Unigram(item, 0);
+      for (const item of list) {
+        const g = new Unigram(item, 0);
         result.push(g);
       }
     }
@@ -74,7 +74,7 @@ export class UserPhrases implements LanguageModel {
     if (key === " ") {
       return true;
     }
-    let list = this.userPhrases_.get(key);
+    const list = this.userPhrases_.get(key);
     if (list === undefined) return false;
     return list.length > 0;
   }
@@ -114,7 +114,7 @@ export class WebLanguageModel implements LanguageModel {
 
   /** Converts a macro. */
   public convertMacro(input: string): string {
-    let result = this.macroConverter_?.(input);
+    const result = this.macroConverter_?.(input);
     return result ?? input;
   }
 
@@ -148,19 +148,19 @@ export class WebLanguageModel implements LanguageModel {
   }
 
   private convertTextToMap(input: String): Map<string, string[]> {
-    let map: Map<string, string[]> = new Map();
-    let lines = input.split("\n");
+    const map: Map<string, string[]> = new Map();
+    const lines = input.split("\n");
     for (let line of lines) {
       line = line.trim();
       if (line.startsWith("#") || line.length === 0) {
         continue; // skip comments and empty lines
       }
-      let parts = line.split(" ");
+      const parts = line.split(" ");
       if (parts.length < 2) {
         continue;
       }
-      let key = parts[1];
-      let value = parts[0];
+      const key = parts[1];
+      const value = parts[0];
       let list = map.get(key);
       if (list !== undefined) {
         list.push(value);
@@ -258,24 +258,24 @@ export class WebLanguageModel implements LanguageModel {
 
   getUnigrams(key: string): Unigram[] {
     if (key === " ") {
-      let space = new Unigram(" ");
+      const space = new Unigram(" ");
       return [space];
     }
 
     let allUnigrams: Unigram[] = [];
     let userUnigrams: Unigram[] = [];
-    let excludedValues: Set<string> = new Set();
-    let insertedValues: Set<string> = new Set();
+    const excludedValues: Set<string> = new Set();
+    const insertedValues: Set<string> = new Set();
 
     if (this.excludedPhrases_.hasUnigrams(key)) {
-      let excludedUnigrams = this.excludedPhrases_.getUnigrams(key);
-      for (let u of excludedUnigrams) {
+      const excludedUnigrams = this.excludedPhrases_.getUnigrams(key);
+      for (const u of excludedUnigrams) {
         excludedValues.add(u.value);
       }
     }
 
     if (this.userPhrases_.hasUnigrams(key)) {
-      let rawUserUnigrams = this.userPhrases_.getUnigrams(key);
+      const rawUserUnigrams = this.userPhrases_.getUnigrams(key);
       userUnigrams = this.filterAndTransformUnigrams(
         rawUserUnigrams,
         excludedValues,
@@ -283,14 +283,14 @@ export class WebLanguageModel implements LanguageModel {
       );
     }
 
-    let actualKey = WebLanguageModel.maybeAbsoluteOrderKey(key);
+    const actualKey = WebLanguageModel.maybeAbsoluteOrderKey(key);
     if (actualKey in this.map_) {
-      let values = this.map_[actualKey].split(" ");
-      let rawGlobalUnigrams: Unigram[] = [];
+      const values = this.map_[actualKey].split(" ");
+      const rawGlobalUnigrams: Unigram[] = [];
       for (let i = 0; i < values.length; i += 2) {
-        let value = values[i];
-        let score = parseFloat(values[i + 1]);
-        let unigram = new Unigram(value, score);
+        const value = values[i];
+        const score = parseFloat(values[i + 1]);
+        const unigram = new Unigram(value, score);
         rawGlobalUnigrams.push(unigram);
       }
       allUnigrams = this.filterAndTransformUnigrams(
@@ -301,7 +301,7 @@ export class WebLanguageModel implements LanguageModel {
     }
 
     // This relies on the fact that we always use the default separator.
-    let isKeyMultiSyllable = key.includes("-");
+    const isKeyMultiSyllable = key.includes("-");
 
     // If key is multi-syllabic (for example, ㄉㄨㄥˋ-ㄈㄢˋ), we just
     // insert all collected userUnigrams on top of the unigrams fetched from
@@ -322,7 +322,7 @@ export class WebLanguageModel implements LanguageModel {
     } else if (userUnigrams.length !== 0) {
       // Find the highest score from the existing allUnigrams.
       let topScore = Number.MIN_SAFE_INTEGER;
-      for (let unigram of allUnigrams) {
+      for (const unigram of allUnigrams) {
         if (unigram.score > topScore) {
           topScore = unigram.score;
         }
@@ -330,9 +330,9 @@ export class WebLanguageModel implements LanguageModel {
 
       // Boost by a very small number. This is the score for user phrases.
       const epsilon = 0.000000001;
-      let boostedScore = topScore + epsilon;
-      let rewrittenUserUnigrams: Unigram[] = [];
-      for (let unigram of userUnigrams) {
+      const boostedScore = topScore + epsilon;
+      const rewrittenUserUnigrams: Unigram[] = [];
+      for (const unigram of userUnigrams) {
         rewrittenUserUnigrams.push(new Unigram(unigram.value, boostedScore));
       }
       allUnigrams = rewrittenUserUnigrams.concat(allUnigrams);
@@ -345,7 +345,7 @@ export class WebLanguageModel implements LanguageModel {
       return true;
     }
 
-    let result = this.userPhrases_.hasUnigrams(key);
+    const result = this.userPhrases_.hasUnigrams(key);
     if (result) {
       return true;
     }
@@ -357,23 +357,23 @@ export class WebLanguageModel implements LanguageModel {
     excludedValues: Set<string>,
     insertedValues: Set<string>
   ) {
-    let results: Unigram[] = [];
+    const results: Unigram[] = [];
 
-    for (let unigram of unigrams) {
-      let originalValue = unigram.value;
+    for (const unigram of unigrams) {
+      const originalValue = unigram.value;
       if (excludedValues.has(originalValue)) {
         continue;
       }
 
       let value = originalValue;
       if (this.macroConverter_) {
-        let replacement = this.macroConverter_(value);
+        const replacement = this.macroConverter_(value);
         if (replacement !== undefined) {
           value = replacement;
         }
       }
       if (this.converter_) {
-        let replacement = this.converter_(value);
+        const replacement = this.converter_(value);
         if (replacement !== undefined) {
           value = replacement;
         }
@@ -398,9 +398,9 @@ export class WebLanguageModel implements LanguageModel {
   static maybeAbsoluteOrderKey(key: string): string {
     // We have some keys like "_punctuation_Hsu_-" so we can't simply split by
     // the hyphen. Replace this an implausible string before we split.
-    let r = key.replace(/_-/g, "_______");
+    const r = key.replace(/_-/g, "_______");
 
-    let elements = r
+    const elements = r
       .split("-")
       .map((s) =>
         s.startsWith("_")
@@ -408,7 +408,7 @@ export class WebLanguageModel implements LanguageModel {
           : BopomofoSyllable.FromComposedString(s).absoluteOrderString
       );
 
-    let actualKey = elements.join("").replace(/_______/g, "_-");
+    const actualKey = elements.join("").replace(/_______/g, "_-");
     return actualKey;
   }
 
@@ -420,11 +420,11 @@ export class WebLanguageModel implements LanguageModel {
 
     if (this.reverseMap_ === undefined) {
       this.reverseMap_ = new Map();
-      for (let key in this.map_) {
-        let values = this.map_[key].split(" ");
+      for (const key in this.map_) {
+        const values = this.map_[key].split(" ");
         for (let i = 0; i < values.length; i += 2) {
-          let value = values[i];
-          let score = parseFloat(values[i + 1]);
+          const value = values[i];
+          const score = parseFloat(values[i + 1]);
           // Also add to reverse map.
           let list = this.reverseMap_.get(value);
           if (list === undefined) {
@@ -442,11 +442,11 @@ export class WebLanguageModel implements LanguageModel {
         }
       }
     } else {
-      let list = this.reverseMap_.get(input);
+      const list = this.reverseMap_.get(input);
       if (list === undefined) {
         return undefined;
       }
-      for (let item of list) {
+      for (const item of list) {
         if (item[1] > topScore) {
           result = item[0];
           topScore = item[1];
@@ -473,10 +473,10 @@ export class WebLanguageModel implements LanguageModel {
       return result;
     }
 
-    let readings: string[] = [];
+    const readings: string[] = [];
     for (let i = 0; i < result.length; i += 2) {
-      let substring = result.substring(i, i + 2);
-      let bopomofoSyllable =
+      const substring = result.substring(i, i + 2);
+      const bopomofoSyllable =
         BopomofoSyllable.FromAbsoluteOrderString(substring);
       readings.push(bopomofoSyllable.composedString);
     }

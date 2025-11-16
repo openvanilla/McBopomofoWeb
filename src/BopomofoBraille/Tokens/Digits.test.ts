@@ -2,31 +2,31 @@ import { Digit, DigitRelated } from "./Digits";
 
 describe("Test Digits", () => {
   test("Test fromDigits()", () => {
-    let result = Digit.fromDigit("1");
+    const result = Digit.fromDigit("1");
     expect(result).toBe(Digit.one);
   });
   test("Test fromDigits()", () => {
-    let result = Digit.fromDigit("a");
+    const result = Digit.fromDigit("a");
     expect(result).toBe(undefined);
   });
 
   test("Test fromBraille()", () => {
-    let result = Digit.fromBraille("⠂");
+    const result = Digit.fromBraille("⠂");
     expect(result).toBe(Digit.one);
   });
 
   test("Test fromBraille()", () => {
-    let result = Digit.fromBraille("a");
+    const result = Digit.fromBraille("a");
     expect(result).toBe(undefined);
   });
 
   test("Tets toDigit()", () => {
-    let result = Digit.toDigit(Digit.one);
+    const result = Digit.toDigit(Digit.one);
     expect(result).toBe(Digit.one);
   });
 
   test("Test toBraille()", () => {
-    let result = Digit.toBraille(Digit.one);
+    const result = Digit.toBraille(Digit.one);
     expect(result).toBe("⠂");
   });
 
@@ -45,42 +45,42 @@ describe("Test Digits", () => {
 
 describe("Test DigitRelated", () => {
   test("Test fromPunctuation() with valid punctuation", () => {
-    let result = DigitRelated.fromPunctuation(".");
+    const result = DigitRelated.fromPunctuation(".");
     expect(result).toBe(DigitRelated.point);
   });
 
   test("Test fromPunctuation() with invalid input", () => {
-    let result = DigitRelated.fromPunctuation("@");
+    const result = DigitRelated.fromPunctuation("@");
     expect(result).toBe(undefined);
   });
 
   test("Test fromBraille() with valid braille", () => {
-    let result = DigitRelated.fromBraille("⠨");
+    const result = DigitRelated.fromBraille("⠨");
     expect(result).toBe(DigitRelated.point);
   });
 
   test("Test fromBraille() with invalid braille", () => {
-    let result = DigitRelated.fromBraille("invalid");
+    const result = DigitRelated.fromBraille("invalid");
     expect(result).toBe(undefined);
   });
 
   test("Test toPunctuation()", () => {
-    let result = DigitRelated.toPunctuation(DigitRelated.point);
+    const result = DigitRelated.toPunctuation(DigitRelated.point);
     expect(result).toBe(".");
   });
 
   test("Test toBraille() for point", () => {
-    let result = DigitRelated.toBraille(DigitRelated.point);
+    const result = DigitRelated.toBraille(DigitRelated.point);
     expect(result).toBe("⠨");
   });
 
   test("Test toBraille() for percent", () => {
-    let result = DigitRelated.toBraille(DigitRelated.percent);
+    const result = DigitRelated.toBraille(DigitRelated.percent);
     expect(result).toBe("⠈⠴");
   });
 
   test("Test toBraille() for celsius", () => {
-    let result = DigitRelated.toBraille(DigitRelated.celsius);
+    const result = DigitRelated.toBraille(DigitRelated.celsius);
     expect(result).toBe("⠘⠨⠡ ⠰⠠⠉");
   });
 

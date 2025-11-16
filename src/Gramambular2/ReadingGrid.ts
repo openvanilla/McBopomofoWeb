@@ -154,18 +154,18 @@ export class ReadingGrid {
     let edges = 0;
 
     for (let i = 0, len = this.spans_.length; i < len; ++i) {
-      let span = this.spans_[i];
+      const span = this.spans_[i];
       for (let j = 1, maxSpanLen = span.maxLength; j <= maxSpanLen; ++j) {
-        let p = span.nodeOf(j);
+        const p = span.nodeOf(j);
         if (p !== undefined) {
-          let v = new Vertex(p);
+          const v = new Vertex(p);
           vspans[i].push(v);
           ++vertices;
         }
       }
     }
 
-    let terminal = new Vertex(new Node("_TERMINAL_", -99, []));
+    const terminal = new Vertex(new Node("_TERMINAL_", -99, []));
 
     for (let i = 0, vspansLen = vspans.length; i < vspansLen; ++i) {
       for (const v of vspans[i]) {
@@ -225,7 +225,7 @@ export class ReadingGrid {
    * @returns A list of candidates.
    */
   candidatesAt(loc: number): Candidate[] {
-    let result: Candidate[] = [];
+    const result: Candidate[] = [];
     if (this.readings_.length === 0) {
       return result;
     }
@@ -234,15 +234,15 @@ export class ReadingGrid {
       return result;
     }
 
-    let nodes = this.overlappingNodesAt(
+    const nodes = this.overlappingNodesAt(
       loc === this.readings_.length ? loc - 1 : loc
     );
 
     // Sort nodes by reading length.
     nodes.sort((n1, n2) => n2.node.spanningLength - n1.node.spanningLength);
 
-    for (let nodeInSpan of nodes) {
-      for (let unigram of nodeInSpan.node.unigrams) {
+    for (const nodeInSpan of nodes) {
+      for (const unigram of nodeInSpan.node.unigrams) {
         result.push(
           new Candidate(nodeInSpan.node.reading, unigram.value, unigram.value)
         );
@@ -298,12 +298,12 @@ export class ReadingGrid {
       return false;
     }
 
-    let overlappingNodes = this.overlappingNodesAt(
+    const overlappingNodes = this.overlappingNodesAt(
       loc === this.readings_.length ? loc - 1 : loc
     );
     let overridden: NodeInSpan | undefined = undefined;
 
-    for (let nis of overlappingNodes) {
+    for (const nis of overlappingNodes) {
       if (reading !== undefined && nis.node.reading !== reading) {
         continue;
       }
@@ -330,8 +330,8 @@ export class ReadingGrid {
       // A and BC are two nodes with overrides. The user now chooses "DEF" which
       // is a node that shares the same span location with "A". The node with BC
       // will be reset as it's part of the overlapping node, but A is not.
-      let nodes = this.overlappingNodesAt(i);
-      for (let nis of nodes) {
+      const nodes = this.overlappingNodesAt(i);
+      for (const nis of nodes) {
         if (nis.node !== overridden.node) {
           nis.node.reset();
         }
@@ -390,9 +390,9 @@ export class ReadingGrid {
     if (this.spans_.length === 0) {
       return;
     }
-    let affectedLength = ReadingGrid.kMaximumSpanLength - 1;
-    let begin = loc <= affectedLength ? 0 : loc - affectedLength;
-    let end = loc >= 1 ? loc - 1 : 0;
+    const affectedLength = ReadingGrid.kMaximumSpanLength - 1;
+    const begin = loc <= affectedLength ? 0 : loc - affectedLength;
+    const end = loc >= 1 ? loc - 1 : 0;
     for (let i = begin; i <= end; ++i) {
       this.spans_[i].removeNodesOfOrLongerThan(loc - i + 1);
     }
@@ -411,7 +411,7 @@ export class ReadingGrid {
     if (loc > this.spans_.length) {
       return false;
     }
-    let n = this.spans_[loc].nodeOf(readingLen);
+    const n = this.spans_[loc].nodeOf(readingLen);
     if (n === undefined) {
       return false;
     }
@@ -419,7 +419,7 @@ export class ReadingGrid {
   }
 
   private update() {
-    let begin =
+    const begin =
       this.cursor_ <= ReadingGrid.kMaximumSpanLength
         ? 0
         : this.cursor_ - ReadingGrid.kMaximumSpanLength;
@@ -433,12 +433,12 @@ export class ReadingGrid {
         len <= ReadingGrid.kMaximumSpanLength && pos + len <= end;
         len++
       ) {
-        let combinedReading = this.combineReading(
+        const combinedReading = this.combineReading(
           this.readings_.slice(pos, pos + len)
         );
 
         if (!this.hasNodeAt(pos, len, combinedReading)) {
-          let unigrams = this.lm_.getUnigrams(combinedReading);
+          const unigrams = this.lm_.getUnigrams(combinedReading);
           if (unigrams.length === 0) {
             continue;
           }
@@ -456,7 +456,7 @@ export class ReadingGrid {
    * @returns A list of nodes that overlap with the location.
    */
   overlappingNodesAt(loc: number): NodeInSpan[] {
-    let results: NodeInSpan[] = [];
+    const results: NodeInSpan[] = [];
 
     if (this.spans_.length === 0 || loc >= this.spans_.length) {
       return results;
@@ -464,21 +464,21 @@ export class ReadingGrid {
 
     // First, get all nodes from the span at location.
     for (let i = 1, len = this.spans_[loc].maxLength; i <= len; ++i) {
-      let ptr: Node | undefined = this.spans_[loc].nodeOf(i);
+      const ptr: Node | undefined = this.spans_[loc].nodeOf(i);
       if (ptr !== undefined) {
-        let element = new NodeInSpan(ptr, loc);
+        const element = new NodeInSpan(ptr, loc);
         results.push(element);
       }
     }
 
-    let begin = loc - Math.min(loc, ReadingGrid.kMaximumSpanLength - 1);
+    const begin = loc - Math.min(loc, ReadingGrid.kMaximumSpanLength - 1);
     for (let i = begin; i < loc; ++i) {
-      let beginLen = loc - i + 1;
-      let endLen = this.spans_[i].maxLength;
+      const beginLen = loc - i + 1;
+      const endLen = this.spans_[i].maxLength;
       for (let j = beginLen; j <= endLen; ++j) {
-        let ptr = this.spans_[i].nodeOf(j);
+        const ptr = this.spans_[i].nodeOf(j);
         if (ptr !== undefined) {
-          let element = new NodeInSpan(ptr, i);
+          const element = new NodeInSpan(ptr, i);
           results.push(element);
         }
       }
@@ -641,9 +641,9 @@ export class WalkResult {
    * @returns A list of strings.
    */
   valuesAsStrings(): string[] {
-    let result: string[] = [];
+    const result: string[] = [];
 
-    for (let node of this.nodes) {
+    for (const node of this.nodes) {
       result.push(node.value);
     }
     return result;
@@ -654,9 +654,9 @@ export class WalkResult {
    * @returns A list of strings.
    */
   readingsAsStrings(): string[] {
-    let result: string[] = [];
+    const result: string[] = [];
 
-    for (let node of this.nodes) {
+    for (const node of this.nodes) {
       result.push(node.reading);
     }
     return result;
@@ -694,7 +694,7 @@ export class WalkResult {
     }
     let accumulated = 0;
     let nodeIndex = 0;
-    for (let node of this.nodes) {
+    for (const node of this.nodes) {
       accumulated += node.spanningLength;
       nodeIndex++;
       if (accumulated > cursor) {
@@ -867,7 +867,7 @@ class Vertex {
  */
 function Relax(u: Vertex, v: Vertex) {
   // The distance from u to w is simply v's score.
-  let w = v.node.score;
+  const w = v.node.score;
 
   // Since we are computing the largest weight, we update v's distance and prev
   // if the current distance to v is *less* than that of u's plus the distance
@@ -908,15 +908,15 @@ function TopologicalSort(root: Vertex): Vertex[] {
     }
   }
 
-  let result: Vertex[] = [];
-  let stack: State[] = [];
+  const result: Vertex[] = [];
+  const stack: State[] = [];
   stack.push(new State(root));
 
   while (stack.length > 0) {
-    let state = stack[stack.length - 1];
-    let v = state.v;
+    const state = stack[stack.length - 1];
+    const v = state.v;
     if (state.iterIndex < state.v.edges.length) {
-      let nv = state.v.edges[state.iterIndex];
+      const nv = state.v.edges[state.iterIndex];
       state.iterIndex++;
       if (!nv.topologicallySorted) {
         stack.push(new State(nv));

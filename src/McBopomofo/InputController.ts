@@ -215,28 +215,28 @@ export class InputController {
 
   /** Sets if the input controller should use traditional mode or not. */
   public setTraditionalMode(flag: boolean): void {
-    let languageCode = this.keyHandler_.languageCode;
-    let selectPhraseAfterCursorAsCandidate =
+    const languageCode = this.keyHandler_.languageCode;
+    const selectPhraseAfterCursorAsCandidate =
       this.keyHandler_.selectPhraseAfterCursorAsCandidate;
-    let moveCursorAfterSelection = this.keyHandler_.moveCursorAfterSelection;
-    let putLowercaseLettersToComposingBuffer =
+    const moveCursorAfterSelection = this.keyHandler_.moveCursorAfterSelection;
+    const putLowercaseLettersToComposingBuffer =
       this.keyHandler_.putLowercaseLettersToComposingBuffer;
-    let escKeyClearsEntireComposingBuffer_ =
+    const escKeyClearsEntireComposingBuffer_ =
       this.keyHandler_.escKeyClearsEntireComposingBuffer;
-    let keyboardLayout = this.keyHandler_.keyboardLayout;
-    let halfWidthPunctuation = this.keyHandler_.halfWidthPunctuation;
-    let repeatedPunctuationToSelectCandidateEnabled =
+    const keyboardLayout = this.keyHandler_.keyboardLayout;
+    const halfWidthPunctuation = this.keyHandler_.halfWidthPunctuation;
+    const repeatedPunctuationToSelectCandidateEnabled =
       this.keyHandler_.repeatedPunctuationToSelectCandidateEnabled;
-    let onError = this.onError_;
-    let onOpenUrl = this.keyHandler_.onOpenUrl;
-    let ctrlEnterOption = this.keyHandler_.ctrlEnterOption;
+    const onError = this.onError_;
+    const onOpenUrl = this.keyHandler_.onOpenUrl;
+    const ctrlEnterOption = this.keyHandler_.ctrlEnterOption;
 
-    let macroConverter = this.lm_.getMacroConverter();
-    let converter = this.lm_.getConverter();
-    let addUserPhraseConverter = this.lm_.getAddUserPhraseConverter();
-    let excludedPhraseConverter = this.lm_.getExcludedPhraseConverter();
-    let userPhrases = this.lm_.getUserPhrases();
-    let excludedPhrases = this.lm_.getExcludedPhrases();
+    const macroConverter = this.lm_.getMacroConverter();
+    const converter = this.lm_.getConverter();
+    const addUserPhraseConverter = this.lm_.getAddUserPhraseConverter();
+    const excludedPhraseConverter = this.lm_.getExcludedPhraseConverter();
+    const userPhrases = this.lm_.getUserPhrases();
+    const excludedPhrases = this.lm_.getExcludedPhrases();
 
     if (flag) {
       this.lm_ = this.plainBopomofoLm_;
@@ -348,7 +348,7 @@ export class InputController {
     if (keys === undefined) {
       keys = "123456789";
     }
-    let list: string[] = [];
+    const list: string[] = [];
     for (let i = 0; i < keys.length; i++) {
       let c = keys.charAt(i);
       c = c.toLowerCase();
@@ -605,7 +605,7 @@ export class InputController {
       }
       const newIndex = cursor + 1;
       this.keyHandler_.cursor = newIndex;
-      let state = this.keyHandler_.buildChoosingCandidateState(newIndex);
+      const state = this.keyHandler_.buildChoosingCandidateState(newIndex);
       stateCallback(state);
       return;
     }
@@ -763,7 +763,7 @@ export class InputController {
             return true;
           }
         }
-        let entries: CustomMenuEntry[] = [];
+        const entries: CustomMenuEntry[] = [];
         let title = "";
         if (isPlusKey) {
           title = this.localizedStrings_.boostTitle(current.value);
@@ -977,7 +977,7 @@ export class InputController {
     } else if (state instanceof SelectingFeature) {
       let index = 0;
       for (const item of state.features) {
-        let candidate = new Candidate("", index + "", item.name);
+        const candidate = new Candidate("", index + "", item.name);
         candidates.push(candidate);
         index++;
       }
@@ -1009,7 +1009,7 @@ export class InputController {
       }
     }
 
-    let keys: string[] = [];
+    const keys: string[] = [];
     const min = Math.min(this.candidateKeysCount_, this.candidateKeys_.length);
     for (let i = 0; i < min; i++) {
       keys.push(this.candidateKeys_[i]);

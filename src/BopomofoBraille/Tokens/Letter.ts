@@ -76,7 +76,7 @@ export namespace Letter {
     return undefined;
   }
   export function fromBraille(b: string): Letter | undefined {
-    for (let [key, value] of map) {
+    for (const [key, value] of map) {
       if (value[0] === b) {
         return key;
       }
@@ -84,7 +84,7 @@ export namespace Letter {
     return undefined;
   }
   export function fromBrailleCode(b: string): Letter | undefined {
-    for (let [key, value] of map) {
+    for (const [key, value] of map) {
       if (value[1] === b) {
         return key;
       }
