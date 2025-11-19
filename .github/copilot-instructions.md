@@ -151,6 +151,23 @@ npm run eslint             # Code linting
 - **Word Add-in**: See `/others/WordAddin/` for Microsoft Word integration
 - **Community**: Follow Code of Conduct in `CODE_OF_CONDUCT.md`
 
+## AI Coding and Test-Driven Development (TDD)
+
+When AI is working on this project, always follow Kent Beck's Test-Driven Development (TDD) flow:
+
+1. **Write a failing unit test first** for any new feature or bug fix.
+2. **Write the minimum code** needed to make the test pass.
+3. **Refactor** the code while keeping all tests green.
+4. **Repeat** for each new feature or change.
+
+**Unit tests are required for all code changes.**
+
+When the code is modified, also update this AGENTS.md file to reflect any new rules, conventions, or requirements.
+
+AI agents may call a subagent to run `npm run test:coverage` to find code that is not covered by tests, and should add or improve tests to increase coverage as needed.
+
+---
+
 ## Additional Agent Notes
 
 - Before merging, run `npm run test` and ensure Chrome OS build still compiles via `npm run build:chromeos`.
