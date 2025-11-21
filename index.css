@@ -4,40 +4,6 @@ body {
   font-size: 14pt;
   overflow: auto;
 }
-textarea {
-  padding: 10px;
-  resize: none;
-  width: 100%;
-  font-size: 14pt;
-  border: 1px solid #ccc;
-  border-radius: 0;
-}
-
-textarea:focus {
-  border: 1px solid black;
-  outline: none; /* Removes the blue ring */
-}
-
-blockquote {
-  background-color: #eee;
-  margin: 10px 0 10px 0;
-  padding: 20px;
-}
-
-.main {
-  max-width: 1320px;
-  margin-left: auto;
-  margin-right: auto;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.content {
-  height: 100%;
-  max-height: 100%;
-  overflow: hidden;
-}
 
 #edit_area {
   display: flex;
@@ -45,72 +11,6 @@ blockquote {
   border: 2px solid #000;
   height: 100%;
   overflow: auto !important;
-}
-
-.left {
-  width: 100%;
-  overflow: auto !important;
-}
-
-@media (min-width: 768px) {
-  html,
-  body {
-    height: 100%;
-    overflow: hidden;
-  }
-
-  .main {
-    height: 100%;
-    min-height: 80%;
-  }
-
-  .feature {
-    display: flex;
-    flex-direction: row;
-    min-height: 80%;
-    height: 100%;
-  }
-
-  .left {
-    width: 70%;
-    overflow: hidden !important;
-  }
-
-  .right {
-    width: 30%;
-    overflow: auto !important;
-    padding-left: 20px;
-    margin: 0;
-  }
-
-  .right h2 {
-    margin-top: 0;
-  }
-
-  .right table {
-    font-size: 12pt;
-  }
-
-  .right table td {
-    padding: 2px 0;
-  }
-
-  .right p,
-  .right li {
-    margin: 5px 0;
-    font-size: 10pt;
-  }
-
-  .right select {
-    font-size: 12pt;
-    min-width: 60%;
-  }
-
-  .option_title {
-    text-align: right;
-    vertical-align: top;
-    white-space: nowrap;
-  }
 }
 
 .navi {
@@ -130,6 +30,20 @@ blockquote {
 .navi a:hover {
   color: #900;
   text-decoration: none;
+}
+
+textarea {
+  padding: 10px;
+  resize: none;
+  width: 100%;
+  font-size: 14pt;
+  border: 1px solid #ccc;
+  border-radius: 0;
+}
+
+textarea:focus {
+  border: 1px solid black;
+  outline: none; /* Removes the blue ring */
 }
 
 textarea#text_area {
@@ -157,6 +71,14 @@ textarea#text_area:focus {
   border: 0;
   outline: none;
   color: white;
+}
+
+textarea#feature_user_phrases_text_area {
+  height: 70%;
+}
+
+textarea#feature_excluded_phrases_text_area {
+  height: 70%;
 }
 
 #function {
@@ -205,6 +127,105 @@ textarea#text_area:focus {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   float: left;
   padding: 4px 8px;
+}
+
+.feature {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.left {
+  width: 100%;
+  overflow: auto !important;
+}
+
+.right {
+  width: 100%;
+  overflow: auto !important;
+}
+
+@media (min-width: 768px) {
+  html,
+  body {
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 14pt;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .feature {
+    display: flex;
+    flex-direction: row;
+    min-height: 80%;
+    height: 100%;
+  }
+
+  .left {
+    width: 70%;
+    overflow: hidden !important;
+  }
+
+  .right {
+    width: 30%;
+    overflow: auto !important;
+    padding-left: 20px;
+    margin: 0;
+  }
+
+  .main {
+    max-width: 1320px;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+  }
+}
+
+.right h2 {
+  margin-top: 0;
+}
+
+.right table {
+  font-size: 12pt;
+}
+
+.right table td {
+  padding: 2px 0;
+}
+
+.right p,
+.right li {
+  margin: 5px 0;
+  font-size: 10pt;
+}
+
+.right select {
+  font-size: 12pt;
+  min-width: 60%;
+}
+
+.option_title {
+  text-align: right;
+  vertical-align: top;
+  white-space: nowrap;
+}
+
+.main {
+  max-width: 1320px;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.content {
+  height: 100%;
+  max-height: 100%;
+  overflow: hidden;
 }
 
 .cursor {
@@ -259,51 +280,6 @@ textarea#text_area:focus {
   display: block;
 }
 
-.credit {
-  font-size: 10pt;
-  height: 20px;
-}
-
-.status_area {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 5px;
-}
-
-#status {
-  width: 100px;
-  font-size: 12pt;
-}
-
-#status a {
-  text-decoration: none;
-  cursor: pointer;
-}
-
-#menu_visible {
-  flex-grow: 1;
-  font-size: 10pt;
-  cursor: pointer;
-  color: #666;
-  text-align: right;
-  white-space: nowrap;
-  padding-right: 10px;
-}
-
-#menu_visible a {
-  text-decoration: none;
-  color: #666;
-}
-
-textarea#feature_user_phrases_text_area {
-  height: 70%;
-}
-
-textarea#feature_excluded_phrases_text_area {
-  height: 70%;
-}
-
 div#feature_input {
   -moz-user-select: -moz-none;
   -khtml-user-select: none;
@@ -342,6 +318,49 @@ div.braille_to_text_output {
   max-width: 100%;
 }
 
+.credit {
+  font-size: 10pt;
+  height: 20px;
+}
+
+blockquote {
+  background-color: #eee;
+  margin: 10px 0 10px 0;
+  padding: 20px;
+}
+
+.status_area {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+#status {
+  width: 100px;
+  font-size: 12pt;
+}
+
+#status a {
+  text-decoration: none;
+  cursor: pointer;
+}
+
+#menu_visible {
+  flex-grow: 1;
+  font-size: 10pt;
+  cursor: pointer;
+  color: #666;
+  text-align: right;
+  white-space: nowrap;
+  padding-right: 10px;
+}
+
+#menu_visible a {
+  text-decoration: none;
+  color: #666;
+}
+
 .phrase_generate {
   display: flex;
   flex-direction: row;
@@ -359,4 +378,20 @@ div.braille_to_text_output {
 .phrase_generate_input_output_container textarea {
   height: 100%;
   box-sizing: border-box;
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #333;
+    color: #eee;
+  }
+
+  a {
+    color: #9999ff;
+    text-decoration: none;
+  }
+
+  blockquote {
+    background-color: #666;
+  }
 }
