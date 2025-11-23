@@ -15,6 +15,13 @@
 
 /**
  * @license
+ * Copyright (c) 2025 and onwards The McTabIM Authors.
+ * This code is released under the MIT license.
+ * SPDX-License-Identifier: MIT
+ */
+
+/**
+ * @license
  * Lodash <https://lodash.com/>
  * Copyright OpenJS Foundation and other contributors <https://openjsf.org/>
  * Released under MIT license <https://lodash.com/license>
