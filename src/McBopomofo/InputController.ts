@@ -52,33 +52,30 @@ const ChineseConvert = require("chinese_convert");
  * The main input UI controller.
  */
 class InputUIController {
-  private ui: InputUI;
-  private cursorIndex: number = 0;
-  private tooltip: string = "";
-  private candidates: CandidateWrapper[] = [];
-  private composingBuffer: ComposingBufferText[] = [];
-  private candidateTotalPageCount = 0;
-  private candidateCurrentPageIndex = 0;
+  private cursorIndex_: number = 0;
+  private tooltip_: string = "";
+  private candidates_: CandidateWrapper[] = [];
+  private composingBuffer_: ComposingBufferText[] = [];
+  private candidateTotalPageCount_: number = 0;
+  private candidateCurrentPageIndex_: number = 0;
 
-  constructor(ui: InputUI) {
-    this.ui = ui;
-  }
+  constructor(private ui: InputUI) {}
 
   /**
    * Resets everything, including the cursor index, tooltips. candidates and so
    * on.
    */
   reset(): void {
-    this.cursorIndex = 0;
-    this.tooltip = "";
-    this.candidates = [];
-    this.composingBuffer = [];
+    this.cursorIndex_ = 0;
+    this.tooltip_ = "";
+    this.candidates_ = [];
+    this.composingBuffer_ = [];
     this.ui.reset();
   }
 
   /** Resets the composing buffer. */
   resetComposingBuffer(): void {
-    this.composingBuffer = [];
+    this.composingBuffer_ = [];
   }
 
   /** Commits the composing buffer to the current app. */
@@ -88,17 +85,17 @@ class InputUIController {
 
   /** Appends to existing composing buffer. */
   append(text: ComposingBufferText): void {
-    this.composingBuffer.push(text);
+    this.composingBuffer_.push(text);
   }
 
   /** Sets the cursor index. */
   setCursorIndex(index: number): void {
-    this.cursorIndex = index;
+    this.cursorIndex_ = index;
   }
 
   /** Sets the candidates.  */
   setCandidates(candidates: CandidateWrapper[]): void {
-    this.candidates = candidates;
+    this.candidates_ = candidates;
   }
 
   /** Updates the current candidate page and total page count. */
@@ -106,24 +103,24 @@ class InputUIController {
     candidateCurrentPageIndex: number,
     candidateTotalPageCount: number
   ) {
-    this.candidateCurrentPageIndex = candidateCurrentPageIndex;
-    this.candidateTotalPageCount = candidateTotalPageCount;
+    this.candidateCurrentPageIndex_ = candidateCurrentPageIndex;
+    this.candidateTotalPageCount_ = candidateTotalPageCount;
   }
 
   /** Sets the tooltip. */
   setTooltip(tooltip: string): void {
-    this.tooltip = tooltip;
+    this.tooltip_ = tooltip;
   }
 
   /** Updates the UI. */
   update(): void {
     const state = new InputUIState(
-      this.composingBuffer,
-      this.cursorIndex,
-      this.candidates,
-      this.tooltip,
-      this.candidateTotalPageCount,
-      this.candidateCurrentPageIndex
+      this.composingBuffer_,
+      this.cursorIndex_,
+      this.candidates_,
+      this.tooltip_,
+      this.candidateTotalPageCount_,
+      this.candidateCurrentPageIndex_
     );
     const json = JSON.stringify(state);
     this.ui.update(json);

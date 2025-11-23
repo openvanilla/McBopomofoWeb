@@ -168,6 +168,25 @@ AI agents may call a subagent to run `npm run test:coverage` to find code that i
 
 ---
 
+## Testing & tooling
+
+- Always follow Kent Beck's TDD flow: write a failing test, make it pass, then refactor.
+- Unit tests are required for all new or modified code. Place tests beside implementation files as `*.test.ts`.
+- When code is modified, also update this copilot-instructions.md file if relevant.
+- Jest with `ts-jest` is configured; high-signal tests already exist beside the implementation files (`*.test.ts`).
+- Use `npm run ts-build` for type-checking and `npm run eslint` to enforce the TypeScript ESLint ruleset. Keep CI-friendly scripts free of watch flags.
+- AI agents may call `test:coverage` (via agent) to find code not covered by tests and should address coverage gaps.
+
+## Documentation expectations
+
+- Update this file when introducing new subsystems so Copilot understands how to wire things together.
+- Prefer concise prose and actionable bullet points that tell Copilot _what to favor or avoid_ rather than lengthy narratives.
+
+## Commit expectations
+
+- Follow Conventional Commits for every commit title (e.g., `feat: add reverse lookup cache`).
+- Always include 3–4 short lines after the title that summarize the change, rationale, and any testing performed so history stays self-explanatory.
+
 ## Additional Agent Notes
 
 - Before merging, run `npm run test` and ensure Chrome OS build still compiles via `npm run build:chromeos`.

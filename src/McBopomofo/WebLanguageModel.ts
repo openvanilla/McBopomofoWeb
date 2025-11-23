@@ -84,7 +84,7 @@ export class UserPhrases implements LanguageModel {
  * The main language model.
  */
 export class WebLanguageModel implements LanguageModel {
-  private map_: any;
+
   private userPhrases_: UserPhrases = new UserPhrases();
   private excludedPhrases_: UserPhrases = new UserPhrases();
 
@@ -252,9 +252,7 @@ export class WebLanguageModel implements LanguageModel {
     this.excludedPhrases_.addUserPhrase(key, phrase);
   }
 
-  constructor(map: any) {
-    this.map_ = map;
-  }
+  constructor(private map_: any) {}
 
   getUnigrams(key: string): Unigram[] {
     if (key === " ") {

@@ -26,11 +26,8 @@ export class ReadingGrid {
   private separator_: string = ReadingGrid.kDefaultSeparator;
   private spans_: Span[] = [];
   private readings_: string[] = [];
-  private lm_: LanguageModel;
 
-  constructor(lm: LanguageModel) {
-    this.lm_ = lm;
-  }
+  constructor(private lm_: LanguageModel) {}
 
   /**
    * Clears the grid.
@@ -513,17 +510,14 @@ export enum OverrideType {
  * @class
  */
 export class Node {
-  readonly reading: string;
-  readonly spanningLength: number;
-  readonly unigrams: Unigram[];
   private overrideType_: OverrideType = OverrideType.kNone;
   private selectedIndex_ = 0;
 
-  constructor(reading: string, spanningLength: number, unigrams: Unigram[]) {
-    this.reading = reading;
-    this.spanningLength = spanningLength;
-    this.unigrams = unigrams;
-  }
+  constructor(
+    public readonly reading: string,
+    public readonly spanningLength: number,
+    public readonly unigrams: Unigram[]
+  ) {}
 
   /**
    * The current unigram of the node.
@@ -616,25 +610,13 @@ export class Node {
  * @class
  */
 export class WalkResult {
-  readonly nodes: Node[];
-  readonly vertices: number;
-  readonly edges: number;
-  readonly elapsedMicroseconds: number;
-  readonly totalReadings: number;
-
   constructor(
-    nodes: Node[],
-    vertices: number,
-    edges: number,
-    elapsedMicroseconds: number,
-    totalReadings: number
-  ) {
-    this.nodes = nodes;
-    this.vertices = vertices;
-    this.edges = edges;
-    this.elapsedMicroseconds = elapsedMicroseconds;
-    this.totalReadings = totalReadings;
-  }
+    public readonly nodes: Node[],
+    public readonly vertices: number,
+    public readonly edges: number,
+    public readonly elapsedMicroseconds: number,
+    public readonly totalReadings: number
+  ) {}
 
   /**
    * The values of the nodes as a list of strings.
@@ -710,22 +692,18 @@ export class WalkResult {
  * @class
  */
 export class Candidate {
-  /** The reading of the candidate. For example, when a user tries to input "你
+  constructor(
+    /** The reading of the candidate. For example, when a user tries to input "你
     ", the reading is "ㄋㄧˇ" */
-  readonly reading: string;
-  /** The value of the candidate. For example, when a user tries to input "你"
+    public readonly reading: string,
+    /** The value of the candidate. For example, when a user tries to input "你"
    * with "ㄋㄧˇ", "你" is the value.  */
-  readonly value: string;
-  /** The exact text displayed in the candidate windows. For example, we may
+    public readonly value: string,
+    /** The exact text displayed in the candidate windows. For example, we may
    * have multiple duplicated candidate whose value is "你", but the displayed
    * text could be "你 1", "你 2" and so on. */
-  readonly displayedText: string;
-
-  constructor(reading: string, value: string, displayedText: string) {
-    this.reading = reading;
-    this.value = value;
-    this.displayedText = displayedText;
-  }
+    public readonly displayedText: string
+  ) {}
 }
 
 /**
@@ -813,11 +791,7 @@ export class Span {
  * @implements {LanguageModel}
  */
 export class ScoreRankedLanguageModel implements LanguageModel {
-  private lm_: LanguageModel;
-
-  constructor(lm: LanguageModel) {
-    this.lm_ = lm;
-  }
+  constructor(private lm_: LanguageModel) {}
 
   getUnigrams(key: string): Unigram[] {
     throw new Error("Method not implemented.");
@@ -832,17 +806,10 @@ export class ScoreRankedLanguageModel implements LanguageModel {
  * @class
  */
 export class NodeInSpan {
-  readonly node: Node;
-  readonly spanIndex: number;
-
-  constructor(node: Node, spanIndex: number) {
-    this.node = node;
-    this.spanIndex = spanIndex;
-  }
+  constructor(public readonly node: Node, public readonly spanIndex: number) {}
 }
 
 class Vertex {
-  node: Node;
   edges: Vertex[] = [];
   /** Used during topological-sort. */
   topologicallySorted = false;
@@ -855,9 +822,7 @@ class Vertex {
   distance: number = Number.NEGATIVE_INFINITY;
   prev: Vertex | undefined = undefined;
 
-  constructor(node: Node) {
-    this.node = node;
-  }
+  constructor(public node: Node) {}
 }
 
 /**

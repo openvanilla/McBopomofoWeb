@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright (c) 2022 and onwards The McBopomofo Authors.
+ * Copyright (c) 2025 and onwards The McTabIM Authors.
  * This code is released under the MIT license.
  * SPDX-License-Identifier: MIT
  */
@@ -33,47 +33,16 @@ export enum KeyName {
  * picture), but is sufficient for KeyHandler's needs.
  */
 export class Key {
-  private ascii_: string = "";
-  get ascii(): string {
-    return this.ascii_;
-  }
-
-  private name_: KeyName = KeyName.UNKNOWN;
-  get name(): KeyName {
-    return this.name_;
-  }
-
-  private shiftPressed_: boolean = false;
-  /** If the Shift modifier is pressed. */
-  get shiftPressed(): boolean {
-    return this.shiftPressed_;
-  }
-
-  private ctrlPressed_: boolean = false;
-  /** If the Control modifier is pressed. */
-  get ctrlPressed(): boolean {
-    return this.ctrlPressed_;
-  }
-
-  private isNumpadKey_: boolean = false;
-  /** If the key is on the Numpad. */
-  get isNumpadKey(): boolean {
-    return this.isNumpadKey_;
-  }
-
   constructor(
-    c: string = "",
-    n: KeyName = KeyName.UNKNOWN,
-    shiftPressed: boolean = false,
-    ctrlPressed: boolean = false,
-    isNumpadKey: boolean = false
-  ) {
-    this.ascii_ = c;
-    this.name_ = n;
-    this.shiftPressed_ = shiftPressed;
-    this.ctrlPressed_ = ctrlPressed;
-    this.isNumpadKey_ = isNumpadKey;
-  }
+    public readonly ascii: string = "",
+    public readonly name: KeyName = KeyName.UNKNOWN,
+    /** If the Shift modifier is pressed. */
+    public readonly shiftPressed: boolean = false,
+    /** If the Control modifier is pressed. */
+    public readonly ctrlPressed: boolean = false,
+    /** If the key is on the Numpad. */
+    public readonly isNumpadKey: boolean = false
+  ) {}
 
   static asciiKey(
     c: string,
@@ -95,35 +64,35 @@ export class Key {
   get isCursorKey(): boolean {
     if (this.ctrlPressed) {
       return (
-        this.ascii_ === "a" ||
-        this.ascii_ === "e" ||
-        this.ascii_ === "f" ||
-        this.ascii_ === "b"
+        this.ascii === "a" ||
+        this.ascii === "e" ||
+        this.ascii === "f" ||
+        this.ascii === "b"
       );
     }
 
     return (
-      this.name_ === KeyName.LEFT ||
-      this.name_ === KeyName.RIGHT ||
-      this.name_ === KeyName.HOME ||
-      this.name_ === KeyName.END
+      this.name === KeyName.LEFT ||
+      this.name === KeyName.RIGHT ||
+      this.name === KeyName.HOME ||
+      this.name === KeyName.END
     );
   }
 
   /** If the key is for deleting the previous character. */
   get isDeleteKey(): boolean {
     if (this.ctrlPressed) {
-      return this.ascii_ === "h" || this.ascii_ === "d";
+      return this.ascii === "h" || this.ascii === "d";
     }
     return this.name === KeyName.BACKSPACE || this.name === KeyName.DELETE;
   }
 
   toString(): string {
-    return `Key{ascii: ${this.ascii_}, name: ${this.name_}, shift: ${this.shiftPressed_}, ctrl: ${this.ctrlPressed_}}`;
+    return `Key{ascii: ${this.ascii}, name: ${this.name}, shift: ${this.shiftPressed}, ctrl: ${this.ctrlPressed}}`;
   }
 }
 
-/** Converts a keyboard event in the web browser to a key defined by McBopomofo. */
+/** Converts a keyboard event in the web browser to a key defined by McTabim. */
 export function KeyFromKeyboardEvent(event: KeyboardEvent) {
   let isNumpadKey = false;
   let keyName = KeyName.UNKNOWN;
@@ -193,7 +162,6 @@ export function KeyFromKeyboardEvent(event: KeyboardEvent) {
         keyName = KeyName.ASCII;
         isNumpadKey = true;
       } else {
-        // console.log(event.key);
         switch (event.key) {
           case "ArrowLeft":
             keyName = KeyName.LEFT;

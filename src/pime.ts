@@ -124,19 +124,20 @@ const defaultSettings: Settings = {
  * @enum
  */
 enum PimeMcBopomofoCommand {
-  ModeIcon = 0,
-  SwitchLanguage = 1,
-  OpenHomepage = 2,
-  OpenBugReport = 3,
-  OpenOptions = 4,
-  EditUserPhrase = 5,
-  OpenUserPhrase = 6,
-  OpenExcludedPhrase = 7,
-  ToggleChineseConversion = 8,
-  ToggleHalfWidthPunctuation = 9,
-  Help = 10,
-  OpenMcBopomofoUserDataFolder = 11,
-  ReloadUserPhrase = 12,
+  Separator = 0,
+  ModeIcon = 1,
+  SwitchLanguage = 2,
+  OpenHomepage = 3,
+  OpenBugReport = 4,
+  OpenOptions = 5,
+  EditUserPhrase = 6,
+  OpenUserPhrase = 7,
+  OpenExcludedPhrase = 8,
+  ToggleChineseConversion = 9,
+  ToggleHalfWidthPunctuation = 10,
+  Help = 11,
+  OpenMcBopomofoUserDataFolder = 12,
+  ReloadUserPhrase = 13,
 }
 
 /** Wraps InputController and required states.  */
