@@ -1062,7 +1062,6 @@ export class InputController {
         keys.push(keyCap);
       }
     }
-    console.log("Updating candidates:", candidates, keys);
 
     this.candidateController_.update(candidates, keys);
     const result = this.candidateController_.currentPage;
