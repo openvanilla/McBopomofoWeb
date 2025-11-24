@@ -492,15 +492,12 @@ namespace Tone {
 
 /** Represents the Bopomofo syllables.  */
 export class BopomofoSyllable {
-  /** The Bopomofo syllables in string representation. */
-  bpmf: string;
-  /** The Braille in string representation. */
-  braille: string;
-
-  constructor(bpmf: string, braille: string) {
-    this.bpmf = bpmf;
-    this.braille = braille;
-  }
+  constructor(
+    /** The Bopomofo syllables in string representation. */
+    public bpmf: string,
+    /** The Braille in string representation. */
+    public braille: string
+  ) {}
 
   private static makeBpmf(
     consonant: Consonant | undefined,

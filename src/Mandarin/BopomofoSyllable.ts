@@ -10,10 +10,7 @@ import { BopomofoCharacterMap } from "./BopomofoCharacterMap";
 export type Component = number;
 
 class PinyinWrapper {
-  text: string;
-  constructor(text: string) {
-    this.text = text;
-  }
+  constructor(public text: string) {}
   substring(arg: number): PinyinWrapper {
     return new PinyinWrapper(this.text.substring(arg));
   }
@@ -36,11 +33,7 @@ class PinyinParseHelper {
 
 /** Represents the Bopomofo syllables. */
 export class BopomofoSyllable {
-  private syllable_: Component;
-
-  constructor(syllable: Component = 0) {
-    this.syllable_ = syllable;
-  }
+  constructor(private syllable_: Component = 0) {}
 
   static FromHanyuPinyin(str: string): BopomofoSyllable {
     if (str.length === 0) {

@@ -98,13 +98,10 @@ function FormObservationKey(nodes: Node[], head: number, end: number): string {
 }
 
 export class Suggestion {
-  readonly candidate: string;
-  readonly forceHighScoreOverride;
-
-  constructor(candidate: string, forceHighScoreOverride: boolean) {
-    this.candidate = candidate;
-    this.forceHighScoreOverride = forceHighScoreOverride;
-  }
+  constructor(
+    public readonly candidate: string,
+    public readonly forceHighScoreOverride: boolean
+  ) {}
 }
 
 class Override {

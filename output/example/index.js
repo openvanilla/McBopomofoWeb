@@ -84,7 +84,7 @@ let example = (() => {
           } else {
             s += "<tr>";
           }
-          s += '<td class="keycap">';
+          s += '<td class="keyCap">';
           s += candidate.keyCap;
           s += "</td>";
           s += '<td class="candidate">';

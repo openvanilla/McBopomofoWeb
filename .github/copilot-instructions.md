@@ -20,7 +20,8 @@ McBopomofoWeb is a TypeScript implementation of the McBopomofo (小麥注音) in
 - **InputController.ts**: Main input handling logic and state management
 - **KeyHandler.ts**: Keyboard event processing and key mapping
 - **CandidateController.ts**: Manages candidate selection and display
-- **InputState.ts**: Input state machine and mode management
+- **InputHelperNumber.ts**: A helper class for handling number inputs.
+- **InputState.ts**: Input state machine and mode management. It defines various states like `Inputting`, `ChoosingCandidate`, and a unified `NumberInput` state.
 - **Service.ts**: Core input method service interface
 - **WebLanguageModel.ts**: Language model for character prediction
 - **UserOverrideModel.ts**: User customization and learning
@@ -150,6 +151,42 @@ npm run eslint             # Code linting
 - **Platform-specific guides**: Check `/output/*/README.md` files
 - **Word Add-in**: See `/others/WordAddin/` for Microsoft Word integration
 - **Community**: Follow Code of Conduct in `CODE_OF_CONDUCT.md`
+
+## AI Coding and Test-Driven Development (TDD)
+
+When AI is working on this project, always follow Kent Beck's Test-Driven Development (TDD) flow:
+
+1. **Write a failing unit test first** for any new feature or bug fix.
+2. **Write the minimum code** needed to make the test pass.
+3. **Refactor** the code while keeping all tests green.
+4. **Repeat** for each new feature or change.
+
+**Unit tests are required for all code changes.**
+
+When the code is modified, also update this AGENTS.md file to reflect any new rules, conventions, or requirements.
+
+AI agents may call a subagent to run `npm run test:coverage` to find code that is not covered by tests, and should add or improve tests to increase coverage as needed.
+
+---
+
+## Testing & tooling
+
+- Always follow Kent Beck's TDD flow: write a failing test, make it pass, then refactor.
+- Unit tests are required for all new or modified code. Place tests beside implementation files as `*.test.ts`.
+- When code is modified, also update this copilot-instructions.md file if relevant.
+- Jest with `ts-jest` is configured; high-signal tests already exist beside the implementation files (`*.test.ts`).
+- Use `npm run ts-build` for type-checking and `npm run eslint` to enforce the TypeScript ESLint ruleset. Keep CI-friendly scripts free of watch flags.
+- AI agents may call `test:coverage` (via agent) to find code not covered by tests and should address coverage gaps.
+
+## Documentation expectations
+
+- Update this file when introducing new subsystems so Copilot understands how to wire things together.
+- Prefer concise prose and actionable bullet points that tell Copilot _what to favor or avoid_ rather than lengthy narratives.
+
+## Commit expectations
+
+- Follow Conventional Commits for every commit title (e.g., `feat: add reverse lookup cache`).
+- Always include 3–4 short lines after the title that summarize the change, rationale, and any testing performed so history stays self-explanatory.
 
 ## Additional Agent Notes
 

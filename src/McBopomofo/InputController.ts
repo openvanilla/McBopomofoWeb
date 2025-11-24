@@ -7,25 +7,27 @@
 
 import { Candidate } from "../Gramambular2";
 import { BopomofoKeyboardLayout } from "../Mandarin";
-import { CandidateWrapper, CandidateController } from "./CandidateController";
+import {
+  CandidateWrapper,
+  CandidateController,
+  KeyCap,
+} from "./CandidateController";
 import { CtrlEnterOption } from "./CtrlEnterOption";
 import { inputMacroController } from "./InputMacro";
 
 import {
   Big5,
-  ChineseNumber,
   ChoosingCandidate,
   Committing,
   CustomMenu,
   CustomMenuEntry,
   Empty,
   EmptyIgnoringPrevious,
-  EnclosingNumber,
   InputState,
   Inputting,
   Marking,
   NotEmpty,
-  RomanNumber,
+  NumberInput,
   SelectingDateMacro,
   SelectingDictionary,
   SelectingFeature,
@@ -52,33 +54,30 @@ const ChineseConvert = require("chinese_convert");
  * The main input UI controller.
  */
 class InputUIController {
-  private ui: InputUI;
-  private cursorIndex: number = 0;
-  private tooltip: string = "";
-  private candidates: CandidateWrapper[] = [];
-  private composingBuffer: ComposingBufferText[] = [];
-  private candidateTotalPageCount = 0;
-  private candidateCurrentPageIndex = 0;
+  private cursorIndex_: number = 0;
+  private tooltip_: string = "";
+  private candidates_: CandidateWrapper[] = [];
+  private composingBuffer_: ComposingBufferText[] = [];
+  private candidateTotalPageCount_: number = 0;
+  private candidateCurrentPageIndex_: number = 0;
 
-  constructor(ui: InputUI) {
-    this.ui = ui;
-  }
+  constructor(private ui: InputUI) {}
 
   /**
    * Resets everything, including the cursor index, tooltips. candidates and so
    * on.
    */
   reset(): void {
-    this.cursorIndex = 0;
-    this.tooltip = "";
-    this.candidates = [];
-    this.composingBuffer = [];
+    this.cursorIndex_ = 0;
+    this.tooltip_ = "";
+    this.candidates_ = [];
+    this.composingBuffer_ = [];
     this.ui.reset();
   }
 
   /** Resets the composing buffer. */
   resetComposingBuffer(): void {
-    this.composingBuffer = [];
+    this.composingBuffer_ = [];
   }
 
   /** Commits the composing buffer to the current app. */
@@ -88,17 +87,21 @@ class InputUIController {
 
   /** Appends to existing composing buffer. */
   append(text: ComposingBufferText): void {
-    this.composingBuffer.push(text);
+    this.composingBuffer_.push(text);
+  }
+  /** Appends to existing composing buffer. */
+  setComposingBuffer(buffer: ComposingBufferText[]): void {
+    this.composingBuffer_ = buffer;
   }
 
   /** Sets the cursor index. */
   setCursorIndex(index: number): void {
-    this.cursorIndex = index;
+    this.cursorIndex_ = index;
   }
 
   /** Sets the candidates.  */
   setCandidates(candidates: CandidateWrapper[]): void {
-    this.candidates = candidates;
+    this.candidates_ = candidates;
   }
 
   /** Updates the current candidate page and total page count. */
@@ -106,24 +109,24 @@ class InputUIController {
     candidateCurrentPageIndex: number,
     candidateTotalPageCount: number
   ) {
-    this.candidateCurrentPageIndex = candidateCurrentPageIndex;
-    this.candidateTotalPageCount = candidateTotalPageCount;
+    this.candidateCurrentPageIndex_ = candidateCurrentPageIndex;
+    this.candidateTotalPageCount_ = candidateTotalPageCount;
   }
 
   /** Sets the tooltip. */
   setTooltip(tooltip: string): void {
-    this.tooltip = tooltip;
+    this.tooltip_ = tooltip;
   }
 
   /** Updates the UI. */
   update(): void {
     const state = new InputUIState(
-      this.composingBuffer,
-      this.cursorIndex,
-      this.candidates,
-      this.tooltip,
-      this.candidateTotalPageCount,
-      this.candidateCurrentPageIndex
+      this.composingBuffer_,
+      this.cursorIndex_,
+      this.candidates_,
+      this.tooltip_,
+      this.candidateTotalPageCount_,
+      this.candidateCurrentPageIndex_
     );
     const json = JSON.stringify(state);
     this.ui.update(json);
@@ -516,22 +519,38 @@ export class InputController {
       return false;
     }
 
+    const maybeNumberInput = this.state_;
+    // Number input has both key handling and candidate window, so we should
+    // handle it first.
+    if (maybeNumberInput instanceof NumberInput) {
+      const result = this.keyHandler_.handleNumberInput(
+        key,
+        maybeNumberInput,
+        (newState) => this.enterNewState(newState),
+        () => this.onError_?.()
+      );
+      if (result) {
+        return true;
+      }
+      // Note: if it is number input and there is no candidates, we don't go to
+      // next step to try to handle the candidate list.
+      if ((maybeNumberInput as NumberInput).candidates.length === 0) {
+        return true;
+      }
+    }
     if (
       this.state_ instanceof ChoosingCandidate ||
       this.state_ instanceof SelectingFeature ||
       this.state_ instanceof SelectingDateMacro ||
       this.state_ instanceof SelectingDictionary ||
       this.state_ instanceof CustomMenu ||
-      this.state_ instanceof ShowingCharInfo
+      this.state_ instanceof ShowingCharInfo ||
+      this.state_ instanceof NumberInput
     ) {
       this.handleCandidateKeyEvent(
         key,
-        (newState) => {
-          this.enterNewState(newState);
-        },
-        () => {
-          this.onError_?.();
-        }
+        (newState) => this.enterNewState(newState),
+        () => this.onError_?.()
       );
 
       if (this.state_ instanceof NotEmpty) {
@@ -545,12 +564,8 @@ export class InputController {
     const accepted = this.keyHandler_.handle(
       key,
       this.state_,
-      (newState) => {
-        this.enterNewState(newState);
-      },
-      () => {
-        this.onError_?.();
-      }
+      (newState) => this.enterNewState(newState),
+      () => this.onError_?.()
     );
 
     if (this.state_ instanceof NotEmpty) {
@@ -610,9 +625,10 @@ export class InputController {
       return;
     }
 
-    const selected = this.candidateController_.selectedCandidateWithKey(
-      key.ascii
-    );
+    let keyToTest = key.ascii;
+
+    const selected =
+      this.candidateController_.selectedCandidateWithKey(keyToTest);
 
     if (selected !== undefined) {
       if (this.state_ instanceof SelectingFeature) {
@@ -629,6 +645,9 @@ export class InputController {
           stateCallback
         );
         const newState = this.state_.previousState;
+        stateCallback(newState);
+      } else if (this.state_ instanceof NumberInput) {
+        const newState = new Committing(selected.value);
         stateCallback(newState);
       } else if (this.state_ instanceof ChoosingCandidate) {
         this.keyHandler_.candidateSelected(
@@ -657,8 +676,9 @@ export class InputController {
           this.state_,
           stateCallback
         );
-        // const newState = this.state_.previousState;
-        // stateCallback(newState);
+      } else if (this.state_ instanceof NumberInput) {
+        const newState = new Committing(current.value);
+        stateCallback(newState);
       } else if (this.state_ instanceof ChoosingCandidate) {
         this.keyHandler_.candidateSelected(
           current,
@@ -742,6 +762,7 @@ export class InputController {
         const previous = this.state_.previousState;
         stateCallback(previous);
       }
+      // number input is already handled.
       return;
     }
 
@@ -911,13 +932,9 @@ export class InputController {
       this.handleChoosingCandidate(prev, state);
     } else if (state instanceof ShowingCharInfo) {
       this.handleChoosingCandidate(prev, state);
-    } else if (state instanceof ChineseNumber) {
-      this.handleCustomInput(prev, state);
-    } else if (state instanceof RomanNumber) {
-      this.handleCustomInput(prev, state);
+    } else if (state instanceof NumberInput) {
+      this.handleChoosingCandidate(prev, state);
     } else if (state instanceof Big5) {
-      this.handleCustomInput(prev, state);
-    } else if (state instanceof EnclosingNumber) {
       this.handleCustomInput(prev, state);
     } else if (state instanceof CustomMenu) {
       this.handleChoosingCandidate(prev, state);
@@ -974,6 +991,8 @@ export class InputController {
     let candidates: Candidate[] = [];
     if (state instanceof ChoosingCandidate) {
       candidates = state.candidates;
+    } else if (state instanceof NumberInput) {
+      candidates = state.candidates;
     } else if (state instanceof SelectingFeature) {
       let index = 0;
       for (const item of state.features) {
@@ -1009,10 +1028,38 @@ export class InputController {
       }
     }
 
-    const keys: string[] = [];
+    const shouldUseShiftKeyToSelectCandidate = state instanceof NumberInput;
+
+    const keys: KeyCap[] = [];
     const min = Math.min(this.candidateKeysCount_, this.candidateKeys_.length);
     for (let i = 0; i < min; i++) {
-      keys.push(this.candidateKeys_[i]);
+      let key = this.candidateKeys_[i];
+      if (shouldUseShiftKeyToSelectCandidate) {
+        let displayed = "⇧ " + key;
+        let actualKey = key;
+        const shiftKeyMapping = new Map<string, string>([
+          ["1", "!"],
+          ["2", "@"],
+          ["3", "#"],
+          ["4", "$"],
+          ["5", "%"],
+          ["6", "^"],
+          ["7", "&"],
+          ["8", "*"],
+          ["9", "("],
+          ["0", ")"],
+        ]);
+        if (shiftKeyMapping.has(key)) {
+          actualKey = shiftKeyMapping.get(key)!;
+        } else {
+          actualKey = key.toUpperCase();
+        }
+        const keyCap = new KeyCap(displayed, actualKey);
+        keys.push(keyCap);
+      } else {
+        let keyCap = new KeyCap(key, key);
+        keys.push(keyCap);
+      }
     }
 
     this.candidateController_.update(candidates, keys);
@@ -1024,19 +1071,22 @@ export class InputController {
     if (state instanceof CustomMenu) {
       this.ui_.setTooltip(state.tooltip);
     }
+    if (state instanceof NumberInput) {
+      const composingBuffer = state.composingBuffer;
+      this.ui_.setComposingBuffer([new ComposingBufferText(composingBuffer)]);
+      this.ui_.setCursorIndex(composingBuffer.length);
+    }
+    this.ui_.update();
   }
 
   private handleMarking(prev: InputState, state: Marking) {
     this.updatePreedit(state);
   }
+
   private handleCustomInput(prev: InputState, state: InputState) {
     this.ui_.reset();
     let composingBuffer = "";
-    if (state instanceof ChineseNumber) {
-      composingBuffer = state.composingBuffer;
-    } else if (state instanceof RomanNumber) {
-      composingBuffer = state.composingBuffer;
-    } else if (state instanceof Big5) {
+    if (state instanceof Big5) {
       composingBuffer = state.composingBuffer;
     }
     this.ui_.append(new ComposingBufferText(composingBuffer));

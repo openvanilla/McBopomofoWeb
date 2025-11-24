@@ -229,7 +229,7 @@ export class ShowingCharInfo extends NotEmpty {
 
   private buildMenu() {
     this.menu.push(
-      "JavaScript String length: " + this.selectedPhrase.replace.length
+      "JavaScript String length: " + this.selectedPhrase.length
     );
 
     try {
@@ -256,79 +256,11 @@ export class ShowingCharInfo extends NotEmpty {
   }
 }
 
-/**
- * Enumeration representing different styles for Chinese numbers.
- * @enum {number}
- * @property {number} Lowercase - Chinese numbers in lowercase format (e.g., 一二三)
- * @property {number} Uppercase - Chinese numbers in uppercase format (e.g., 壹贰叁)
- * @property {number} Suzhou - Chinese numbers in Suzhou format (e.g., 〡〢〣)
- */
-/* istanbul ignore next */
-export enum ChineseNumbersStateStyle {
-  Lowercase,
-  Uppercase,
-  Suzhou,
-}
-
-/** Represents that the user is inputting a Chinese number. */
-/* istanbul ignore next */
-export class ChineseNumber implements InputState {
-  /** The user inputted number. */
-  readonly number: string;
-  /** The style of the Chinese number. */
-  readonly style: ChineseNumbersStateStyle;
-
-  constructor(number: string, style: ChineseNumbersStateStyle) {
-    this.number = number;
-    this.style = style;
-  }
+export class NumberInput implements InputState {
+  constructor(readonly number: string, readonly candidates: Candidate[]) {}
 
   get composingBuffer(): string {
-    switch (this.style) {
-      case ChineseNumbersStateStyle.Lowercase:
-        return "[中文數字] " + this.number;
-      case ChineseNumbersStateStyle.Uppercase:
-        return "[大寫數字] " + this.number;
-      case ChineseNumbersStateStyle.Suzhou:
-        return "[蘇州碼] " + this.number;
-      default:
-        break;
-    }
-
-    return "";
-  }
-}
-
-export enum RomanNumberStateStyle {
-  Alphabets,
-  FullWidthUpper,
-  FullWidthLower,
-}
-
-export class RomanNumber implements InputState {
-  /** The user inputted number. */
-  readonly number: string;
-  /** The style of the Roman number. */
-  readonly style: RomanNumberStateStyle;
-
-  constructor(number: string, style: RomanNumberStateStyle) {
-    this.number = number;
-    this.style = style;
-  }
-
-  get composingBuffer(): string {
-    switch (this.style) {
-      case RomanNumberStateStyle.Alphabets:
-        return "[羅馬數字 (字母)] " + this.number;
-      case RomanNumberStateStyle.FullWidthUpper:
-        return "[羅馬數字 (全形大寫)] " + this.number;
-      case RomanNumberStateStyle.FullWidthLower:
-        return "[羅馬數字 (全形小寫)] " + this.number;
-      default:
-        break;
-    }
-
-    return "";
+    return "[數字] " + this.number;
   }
 }
 
@@ -349,21 +281,6 @@ export class Big5 implements InputState {
    */
   get composingBuffer(): string {
     return "[內碼] " + this.code;
-  }
-}
-
-/** Represents that the user is inputting a enclosed number. */
-/* istanbul ignore next */
-export class EnclosingNumber implements InputState {
-  /** The user inputted number. */
-  readonly number: string;
-
-  constructor(number: string = "") {
-    this.number = number;
-  }
-
-  get composingBuffer(): string {
-    return "[標題數字] " + this.number;
   }
 }
 
@@ -442,48 +359,10 @@ export class SelectingFeature implements InputState {
     } catch (e) {
       // bypass
     }
-
     features.push(
       new Feature("日期與時間", () => new SelectingDateMacro(this.converter))
     );
-    features.push(new Feature("標題數字", () => new EnclosingNumber()));
-    features.push(
-      new Feature(
-        "中文數字",
-        () => new ChineseNumber("", ChineseNumbersStateStyle.Lowercase)
-      )
-    );
-    features.push(
-      new Feature(
-        "大寫數字",
-        () => new ChineseNumber("", ChineseNumbersStateStyle.Uppercase)
-      )
-    );
-    features.push(
-      new Feature(
-        "蘇州碼",
-        () => new ChineseNumber("", ChineseNumbersStateStyle.Suzhou)
-      )
-    );
-    features.push(
-      new Feature(
-        "羅馬數字 (字母)",
-        () => new RomanNumber("", RomanNumberStateStyle.Alphabets)
-      )
-    );
-    features.push(
-      new Feature(
-        "羅馬數字 (全形大寫)",
-        () => new RomanNumber("", RomanNumberStateStyle.FullWidthUpper)
-      )
-    );
-    features.push(
-      new Feature(
-        "羅馬數字 (全形小寫)",
-        () => new RomanNumber("", RomanNumberStateStyle.FullWidthLower)
-      )
-    );
-
+    features.push(new Feature("數字輸入", () => new NumberInput("", [])));
     return features;
   })();
 

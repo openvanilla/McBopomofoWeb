@@ -10,19 +10,14 @@ import { WebLanguageModel } from "./WebLanguageModel";
 import { webData } from "./WebData";
 import {
   Big5,
-  ChineseNumber,
-  ChineseNumbersStateStyle,
   ChoosingCandidate,
   Committing,
-  CustomMenu,
   Empty,
   EmptyIgnoringPrevious,
-  EnclosingNumber,
   InputState,
   Inputting,
   Marking,
-  RomanNumber,
-  RomanNumberStateStyle,
+  NumberInput,
   SelectingFeature,
 } from "./InputState";
 import { Key, KeyName } from "./Key";
@@ -1112,587 +1107,6 @@ describe("KeyHandler", () => {
     });
   });
 
-  describe("Chinese number conversion", () => {
-    test("converts lowercase Chinese number on Enter", () => {
-      let currentState: InputState = new ChineseNumber(
-        "",
-        ChineseNumbersStateStyle.Lowercase
-      );
-      let commit: Committing | undefined = undefined;
-      const keys = asciiKey(["1", "2", "3", "5"]);
-      const enter = Key.namedKey(KeyName.RETURN);
-      keys.push(enter);
-      for (const key of keys) {
-        keyHandler.handle(
-          key,
-          currentState,
-          (state) => {
-            if (state instanceof Committing) {
-              commit = state;
-            }
-            currentState = state;
-          },
-          () => {}
-        );
-      }
-      if (commit === undefined) {
-        fail("Committing state not found");
-      } else {
-        expect((commit as Committing).text).toBe("一千二百三十五");
-      }
-    });
-
-    test("converts decimal lowercase Chinese number", () => {
-      let currentState: InputState = new ChineseNumber(
-        "",
-        ChineseNumbersStateStyle.Lowercase
-      );
-      let commit: Committing | undefined = undefined;
-      const keys = asciiKey(["8", "0", "0", "5", "3", ".", "4"]);
-      const enter = Key.namedKey(KeyName.RETURN);
-      keys.push(enter);
-      for (const key of keys) {
-        keyHandler.handle(
-          key,
-          currentState,
-          (state) => {
-            if (state instanceof Committing) {
-              commit = state;
-            }
-            currentState = state;
-          },
-          () => {}
-        );
-      }
-      if (commit === undefined) {
-        fail("Committing state not found");
-      } else {
-        expect((commit as Committing).text).toBe("八萬〇五十三點四");
-      }
-    });
-
-    test("converts uppercase Chinese number on Enter", () => {
-      let currentState: InputState = new ChineseNumber(
-        "",
-        ChineseNumbersStateStyle.Uppercase
-      );
-      let commit: Committing | undefined = undefined;
-      const keys = asciiKey(["0", "0", "5", "3", ".", "4", "0"]);
-      const enter = Key.namedKey(KeyName.RETURN);
-      keys.push(enter);
-      for (const key of keys) {
-        keyHandler.handle(
-          key,
-          currentState,
-          (state) => {
-            if (state instanceof Committing) {
-              commit = state;
-            }
-            currentState = state;
-          },
-          () => {}
-        );
-      }
-      if (commit === undefined) {
-        fail("Committing state not found");
-      } else {
-        expect((commit as Committing).text).toBe("伍拾參點肆");
-      }
-    });
-    describe("Roman number conversion", () => {
-      test("produces lowercase full-width Roman numeral", () => {
-        let currentState: InputState = new RomanNumber(
-          "",
-          RomanNumberStateStyle.FullWidthLower
-        );
-        let commit: Committing | undefined = undefined;
-        const keys = asciiKey(["1", "2", "3"]);
-        const enter = Key.namedKey(KeyName.RETURN);
-        keys.push(enter);
-        for (const key of keys) {
-          keyHandler.handle(
-            key,
-            currentState,
-            (state) => {
-              if (state instanceof Committing) {
-                commit = state;
-              }
-              currentState = state;
-            },
-            () => {}
-          );
-        }
-        if (commit === undefined) {
-          fail("Committing state not found");
-        } else {
-          expect((commit as Committing).text).toBe("ⅽⅹⅹⅲ");
-        }
-      });
-
-      test("produces uppercase ASCII Roman numeral", () => {
-        let currentState: InputState = new RomanNumber(
-          "",
-          RomanNumberStateStyle.Alphabets
-        );
-        let commit: Committing | undefined = undefined;
-        const keys = asciiKey(["4", "4"]);
-        const enter = Key.namedKey(KeyName.RETURN);
-        keys.push(enter);
-        for (const key of keys) {
-          keyHandler.handle(
-            key,
-            currentState,
-            (state) => {
-              if (state instanceof Committing) {
-                commit = state;
-              }
-              currentState = state;
-            },
-            () => {}
-          );
-        }
-        if (commit === undefined) {
-          fail("Committing state not found");
-        } else {
-          expect((commit as Committing).text).toBe("XLIV");
-        }
-      });
-
-      test("produces full-width Roman numeral for ninety-nine", () => {
-        let currentState: InputState = new RomanNumber(
-          "",
-          RomanNumberStateStyle.FullWidthLower
-        );
-        let commit: Committing | undefined = undefined;
-        const keys = asciiKey(["9", "9"]);
-        const enter = Key.namedKey(KeyName.RETURN);
-        keys.push(enter);
-        for (const key of keys) {
-          keyHandler.handle(
-            key,
-            currentState,
-            (state) => {
-              if (state instanceof Committing) {
-                commit = state;
-              }
-              currentState = state;
-            },
-            () => {}
-          );
-        }
-        if (commit === undefined) {
-          fail("Committing state not found");
-        } else {
-          expect((commit as Committing).text).toBe("ⅹⅽⅸ");
-        }
-      });
-
-      test("removes last digit with backspace in Roman mode", () => {
-        let currentState: InputState = new RomanNumber(
-          "",
-          RomanNumberStateStyle.Alphabets
-        );
-        const keys = asciiKey(["1", "2", "3"]);
-        const deleteKey = Key.namedKey(KeyName.BACKSPACE);
-        keys.push(deleteKey);
-        for (const key of keys) {
-          keyHandler.handle(
-            key,
-            currentState,
-            (state) => {
-              currentState = state;
-            },
-            () => {}
-          );
-        }
-        expect(currentState).toBeInstanceOf(RomanNumber);
-        const romanNumber = currentState as RomanNumber;
-        expect(romanNumber.number).toBe("12");
-      });
-
-      test("removes last digit with delete in Roman mode", () => {
-        let currentState: InputState = new RomanNumber(
-          "",
-          RomanNumberStateStyle.Alphabets
-        );
-        const keys = asciiKey(["5", "0"]);
-        const deleteKey = Key.namedKey(KeyName.DELETE);
-        keys.push(deleteKey);
-        for (const key of keys) {
-          keyHandler.handle(
-            key,
-            currentState,
-            (state) => {
-              currentState = state;
-            },
-            () => {}
-          );
-        }
-        expect(currentState).toBeInstanceOf(RomanNumber);
-        const romanNumber = currentState as RomanNumber;
-        expect(romanNumber.number).toBe("5");
-      });
-
-      test("exits Roman mode with ESC", () => {
-        let currentState: InputState = new RomanNumber(
-          "",
-          RomanNumberStateStyle.Alphabets
-        );
-        const keys = asciiKey(["2", "5", "0"]);
-        const esc = Key.namedKey(KeyName.ESC);
-        keys.push(esc);
-        for (const key of keys) {
-          keyHandler.handle(
-            key,
-            currentState,
-            (state) => {
-              currentState = state;
-            },
-            () => {}
-          );
-        }
-        expect(currentState).toBeInstanceOf(Empty);
-      });
-
-      test("commits single-digit Roman numeral", () => {
-        let currentState: InputState = new RomanNumber(
-          "",
-          RomanNumberStateStyle.FullWidthLower
-        );
-        let commit: Committing | undefined = undefined;
-        const keys = asciiKey(["5"]);
-        const enter = Key.namedKey(KeyName.RETURN);
-        keys.push(enter);
-        for (const key of keys) {
-          keyHandler.handle(
-            key,
-            currentState,
-            (state) => {
-              if (state instanceof Committing) {
-                commit = state;
-              }
-              currentState = state;
-            },
-            () => {}
-          );
-        }
-        if (commit === undefined) {
-          fail("Committing state not found");
-        } else {
-          expect((commit as Committing).text).toBe("ⅴ");
-        }
-      });
-
-      test("retains zero input in Roman mode", () => {
-        let currentState: InputState = new RomanNumber(
-          "",
-          RomanNumberStateStyle.Alphabets
-        );
-        const keys = asciiKey(["0"]);
-        for (const key of keys) {
-          keyHandler.handle(
-            key,
-            currentState,
-            (state) => {
-              currentState = state;
-            },
-            () => {}
-          );
-        }
-        expect(currentState).toBeInstanceOf(RomanNumber);
-        const romanNumber = currentState as RomanNumber;
-        expect(romanNumber.number).toBe("0");
-      });
-
-      test("handles large Arabic numbers in Roman mode", () => {
-        let currentState: InputState = new RomanNumber(
-          "",
-          RomanNumberStateStyle.Alphabets
-        );
-        let commit: Committing | undefined = undefined;
-        const keys = asciiKey(["2", "0", "2", "4"]);
-        const enter = Key.namedKey(KeyName.RETURN);
-        keys.push(enter);
-        for (const key of keys) {
-          keyHandler.handle(
-            key,
-            currentState,
-            (state) => {
-              if (state instanceof Committing) {
-                commit = state;
-              }
-              currentState = state;
-            },
-            () => {}
-          );
-        }
-        expect(commit).toBeDefined();
-        expect(commit).toBeInstanceOf(Committing);
-      });
-
-      test("commits uppercase Roman numeral", () => {
-        let currentState: InputState = new RomanNumber(
-          "",
-          RomanNumberStateStyle.Alphabets
-        );
-        let commit: Committing | undefined = undefined;
-        const keys = asciiKey(["1", "0"]);
-        const enter = Key.namedKey(KeyName.RETURN);
-        keys.push(enter);
-        for (const key of keys) {
-          keyHandler.handle(
-            key,
-            currentState,
-            (state) => {
-              if (state instanceof Committing) {
-                commit = state;
-              }
-              currentState = state;
-            },
-            () => {}
-          );
-        }
-        if (commit === undefined) {
-          fail("Committing state not found");
-        } else {
-          expect((commit as Committing).text).toBe("X");
-        }
-      });
-
-      test("supports multiple backspaces in Roman mode", () => {
-        let currentState: InputState = new RomanNumber(
-          "",
-          RomanNumberStateStyle.Alphabets
-        );
-        const keys = asciiKey(["1", "5", "0"]);
-        const backspace = Key.namedKey(KeyName.BACKSPACE);
-        keys.push(backspace);
-        keys.push(backspace);
-        for (const key of keys) {
-          keyHandler.handle(
-            key,
-            currentState,
-            (state) => {
-              currentState = state;
-            },
-            () => {}
-          );
-        }
-        expect(currentState).toBeInstanceOf(RomanNumber);
-        const romanNumber = currentState as RomanNumber;
-        expect(romanNumber.number).toBe("1");
-      });
-
-      test("clears Roman buffer with repeated deletes", () => {
-        let currentState: InputState = new RomanNumber(
-          "",
-          RomanNumberStateStyle.Alphabets
-        );
-        const keys = asciiKey(["2", "5"]);
-        const deleteKey = Key.namedKey(KeyName.DELETE);
-        keys.push(deleteKey);
-        keys.push(deleteKey);
-        keys.push(deleteKey);
-        for (const key of keys) {
-          keyHandler.handle(
-            key,
-            currentState,
-            (state) => {
-              currentState = state;
-            },
-            () => {}
-          );
-        }
-        expect(currentState).toBeInstanceOf(RomanNumber);
-        const romanNumber = currentState as RomanNumber;
-        expect(romanNumber.number).toBe("");
-      });
-    });
-    test("converts Suzhou numerals on Enter", () => {
-      let currentState: InputState = new ChineseNumber(
-        "",
-        ChineseNumbersStateStyle.Suzhou
-      );
-      let commit: Committing | undefined = undefined;
-      const keys = asciiKey(["1", "2", "3", "4"]);
-      const enter = Key.namedKey(KeyName.RETURN);
-      keys.push(enter);
-      for (const key of keys) {
-        keyHandler.handle(
-          key,
-          currentState,
-          (state) => {
-            if (state instanceof Committing) {
-              commit = state;
-            }
-            currentState = state;
-          },
-          () => {}
-        );
-      }
-      if (commit === undefined) {
-        fail("Committing state not found");
-      } else {
-        expect((commit as Committing).text).toBe("〡二〣〤\n千單位");
-      }
-    });
-
-    test("clears Suzhou numeral with delete", () => {
-      let currentState: InputState = new ChineseNumber(
-        "",
-        ChineseNumbersStateStyle.Suzhou
-      );
-      // let commit: Committing | undefined = undefined;
-      const keys = asciiKey(["1"]);
-      const deleteKey = Key.namedKey(KeyName.DELETE);
-      keys.push(deleteKey);
-      for (const key of keys) {
-        keyHandler.handle(
-          key,
-          currentState,
-          (state) => {
-            currentState = state;
-          },
-          () => {}
-        );
-      }
-      expect(currentState).toBeInstanceOf(ChineseNumber);
-      const chineseNumber = currentState as ChineseNumber;
-      expect(chineseNumber.number).toBe("");
-    });
-
-    test("ignores extra deletes in Suzhou mode", () => {
-      let currentState: InputState = new ChineseNumber(
-        "",
-        ChineseNumbersStateStyle.Suzhou
-      );
-      // let commit: Committing | undefined = undefined;
-      const keys = asciiKey(["1"]);
-      const deleteKey = Key.namedKey(KeyName.DELETE);
-      keys.push(deleteKey);
-      keys.push(deleteKey);
-      keys.push(deleteKey);
-      for (const key of keys) {
-        keyHandler.handle(
-          key,
-          currentState,
-          (state) => {
-            currentState = state;
-          },
-          () => {}
-        );
-      }
-      expect(currentState).toBeInstanceOf(ChineseNumber);
-      const chineseNumber = currentState as ChineseNumber;
-      expect(chineseNumber.number).toBe("");
-    });
-
-    test("exits Suzhou mode with ESC", () => {
-      let currentState: InputState = new ChineseNumber(
-        "",
-        ChineseNumbersStateStyle.Suzhou
-      );
-      const keys = asciiKey(["1"]);
-      const esc = Key.namedKey(KeyName.ESC);
-      keys.push(esc);
-      for (const key of keys) {
-        keyHandler.handle(
-          key,
-          currentState,
-          (state) => {
-            currentState = state;
-          },
-          () => {}
-        );
-      }
-      expect(currentState).toBeInstanceOf(Empty);
-    });
-  });
-
-  describe("Enclosing numbers", () => {
-    test("shows enclosing number candidates on Enter", () => {
-      let currentState: InputState = new EnclosingNumber();
-      const keys = asciiKey(["1"]);
-      const enter = Key.namedKey(KeyName.RETURN);
-      keys.push(enter);
-      for (const key of keys) {
-        keyHandler.handle(
-          key,
-          currentState,
-          (state) => {
-            currentState = state;
-          },
-          () => {}
-        );
-      }
-      expect(currentState).toBeInstanceOf(ChoosingCandidate);
-    });
-
-    test("rejects out-of-range enclosing numbers", () => {
-      let currentState: InputState = new EnclosingNumber();
-      const keys = asciiKey(["3", "0"]);
-      const enter = Key.namedKey(KeyName.RETURN);
-      keys.push(enter);
-      for (const key of keys) {
-        keyHandler.handle(
-          key,
-          currentState,
-          (state) => {
-            currentState = state;
-          },
-          () => {}
-        );
-      }
-      expect(currentState).toBeInstanceOf(Empty);
-    });
-
-    test("retains enclosing number after delete", () => {
-      let currentState: InputState = new EnclosingNumber();
-      const keys = asciiKey(["3", "0"]);
-      const deleteKey = Key.namedKey(KeyName.DELETE);
-      keys.push(deleteKey);
-      keys.push(deleteKey);
-      for (const key of keys) {
-        keyHandler.handle(
-          key,
-          currentState,
-          (state) => {
-            currentState = state;
-          },
-          () => {}
-        );
-      }
-      expect(currentState).toBeInstanceOf(EnclosingNumber);
-    });
-
-    test("cancels enclosing number mode with ESC", () => {
-      let currentState: InputState = new EnclosingNumber();
-      const keys = asciiKey(["3", "0"]);
-      const escapeKey = Key.namedKey(KeyName.ESC);
-      keys.push(escapeKey);
-      for (const key of keys) {
-        keyHandler.handle(
-          key,
-          currentState,
-          (state) => {
-            currentState = state;
-          },
-          () => {}
-        );
-      }
-      expect(currentState).toBeInstanceOf(Empty);
-    });
-  });
-
-  describe("Feature selection", () => {
-    test("enters feature selection with Ctrl+\\", () => {
-      const tab = new Key("\\", KeyName.UNKNOWN, false, true, false);
-      const keys = [tab];
-      const state = handleKeySequence(keyHandler, keys);
-      expect(state).toBeInstanceOf(SelectingFeature);
-    });
-  });
-
   describe("Ctrl + Enter", () => {
     test("outputs bopomofo syllables when option 1", () => {
       keyHandler.ctrlEnterOption = 1;
@@ -2350,94 +1764,6 @@ describe("KeyHandler", () => {
   });
 
   describe("Numpad handling", () => {
-    test("appends numerals with numpad in Chinese number mode", () => {
-      let currentState: InputState = new ChineseNumber(
-        "",
-        ChineseNumbersStateStyle.Lowercase
-      );
-
-      // Simulate numpad keys 1, 2, 3
-      const keys = [
-        new Key("1", KeyName.UNKNOWN, false, false, true),
-        new Key("2", KeyName.UNKNOWN, false, false, true),
-        new Key("3", KeyName.UNKNOWN, false, false, true),
-      ];
-
-      for (const key of keys) {
-        keyHandler.handle(
-          key,
-          currentState,
-          (state) => {
-            currentState = state;
-          },
-          () => {}
-        );
-      }
-
-      expect(currentState).toBeInstanceOf(ChineseNumber);
-      const chineseNumber = currentState as ChineseNumber;
-      expect(chineseNumber.number).toBe("123");
-    });
-
-    test("accepts numpad decimal point in Chinese number mode", () => {
-      let currentState: InputState = new ChineseNumber(
-        "",
-        ChineseNumbersStateStyle.Lowercase
-      );
-
-      const keys = [
-        new Key("1", KeyName.UNKNOWN, false, false, true),
-        new Key(".", KeyName.UNKNOWN, false, false, true), // Numpad decimal point
-        new Key("5", KeyName.UNKNOWN, false, false, true),
-      ];
-
-      for (const key of keys) {
-        keyHandler.handle(
-          key,
-          currentState,
-          (state) => {
-            currentState = state;
-          },
-          () => {}
-        );
-      }
-
-      expect(currentState).toBeInstanceOf(ChineseNumber);
-      const chineseNumber = currentState as ChineseNumber;
-      expect(chineseNumber.number).toBe("1.5");
-    });
-
-    test("commits Chinese number with numpad Enter", () => {
-      let currentState: InputState = new ChineseNumber(
-        "",
-        ChineseNumbersStateStyle.Lowercase
-      );
-      let commit: Committing | undefined = undefined;
-
-      const keys = [
-        new Key("4", KeyName.UNKNOWN, false, false, true),
-        new Key("2", KeyName.UNKNOWN, false, false, true),
-        new Key("", KeyName.RETURN, false, false, true), // Numpad Enter
-      ];
-
-      for (const key of keys) {
-        keyHandler.handle(
-          key,
-          currentState,
-          (state) => {
-            if (state instanceof Committing) {
-              commit = state;
-            }
-            currentState = state;
-          },
-          () => {}
-        );
-      }
-
-      expect(commit).toBeDefined();
-      expect(commit).toBeInstanceOf(Committing);
-    });
-
     test("ignores numpad digit in empty state", () => {
       let currentState: InputState = new Empty();
 
@@ -2478,53 +1804,6 @@ describe("KeyHandler", () => {
       expect(currentState).toBeInstanceOf(Big5);
       const big5 = currentState as Big5;
       expect(big5.code).toBe("a12");
-    });
-
-    test("appends digits to EnclosingNumber using numpad", () => {
-      let currentState: InputState = new EnclosingNumber();
-
-      const keys = [
-        new Key("2", KeyName.UNKNOWN, false, false, true), // Numpad 2
-        new Key("0", KeyName.UNKNOWN, false, false, true), // Numpad 0
-      ];
-
-      for (const key of keys) {
-        keyHandler.handle(
-          key,
-          currentState,
-          (state) => {
-            currentState = state;
-          },
-          () => {}
-        );
-      }
-
-      expect(currentState).toBeInstanceOf(EnclosingNumber);
-      const enclosingNumber = currentState as EnclosingNumber;
-      expect(enclosingNumber.number).toBe("20");
-    });
-
-    test("opens enclosing candidates with numpad Enter", () => {
-      let currentState: InputState = new EnclosingNumber();
-
-      const keys = [
-        new Key("1", KeyName.UNKNOWN, false, false, true), // Numpad 1
-        new Key("", KeyName.RETURN, false, false, true), // Numpad Enter
-      ];
-
-      for (const key of keys) {
-        keyHandler.handle(
-          key,
-          currentState,
-          (state) => {
-            currentState = state;
-          },
-          () => {}
-        );
-      }
-
-      // Should transition to ChoosingCandidate state with enclosing number options
-      expect(currentState).toBeInstanceOf(ChoosingCandidate);
     });
 
     test("commits composition when numpad digit pressed", () => {
@@ -2605,6 +1884,85 @@ describe("KeyHandler", () => {
       expect(state).toBeInstanceOf(Committing);
       const committing = state as Committing;
       expect(committing.text).toBe("你好");
+    });
+  });
+
+  describe("Number Input", () => {
+    test("enters number and decimal point", () => {
+      let state: InputState = new NumberInput("", []);
+      const keys = asciiKey(["1", "2", ".", "3"]);
+      for (const key of keys) {
+        keyHandler.handleNumberInput(
+          key,
+          state as NumberInput,
+          (newState) => {
+            state = newState;
+          },
+          () => {}
+        );
+      }
+      expect(state).toBeInstanceOf(NumberInput);
+      expect((state as NumberInput).number).toBe("12.3");
+    });
+
+    test("handles backspace", () => {
+      let state: InputState = new NumberInput("12.3", []);
+      const backspace = Key.namedKey(KeyName.BACKSPACE);
+      keyHandler.handleNumberInput(
+        backspace,
+        state as NumberInput,
+        (newState) => {
+          state = newState;
+        },
+        () => {}
+      );
+      expect(state).toBeInstanceOf(NumberInput);
+      expect((state as NumberInput).number).toBe("12.");
+    });
+
+    test("handles escape key", () => {
+      let state: InputState = new NumberInput("12.3", []);
+      const esc = Key.namedKey(KeyName.ESC);
+      keyHandler.handleNumberInput(
+        esc,
+        state as NumberInput,
+        (newState) => {
+          state = newState;
+        },
+        () => {}
+      );
+      expect(state).toBeInstanceOf(Empty);
+    });
+
+    test("rejects multiple decimal points", () => {
+      let state: InputState = new NumberInput("12.3", []);
+      let errorCalled = false;
+      const dot = Key.asciiKey(".");
+      keyHandler.handleNumberInput(
+        dot,
+        state as NumberInput,
+        (newState) => {
+          state = newState;
+        },
+        () => {
+          errorCalled = true;
+        }
+      );
+      expect(errorCalled).toBe(true);
+    });
+
+    test("rejects long numbers", () => {
+      let state: InputState = new NumberInput("12345678901234567890", []);
+      const one = Key.asciiKey("1");
+      keyHandler.handleNumberInput(
+        one,
+        state as NumberInput,
+        (newState) => {
+          state = newState;
+        },
+        () => {}
+      );
+      expect((state as NumberInput).number.length).toBe(20);
     });
   });
 });

@@ -40,11 +40,8 @@ export interface LanguageModel {
  * @class
  */
 export class Unigram {
-  readonly value: string;
-  readonly score: number;
-
-  constructor(value: string = "", score: number = 0) {
-    this.value = value;
-    this.score = score;
-  }
+  constructor(
+    public readonly value: string = "",
+    public readonly score: number = 0
+  ) {}
 }
