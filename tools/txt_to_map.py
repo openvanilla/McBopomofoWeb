@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import sys
+import json
 
 if __name__ == '__main__':
     map = {}
@@ -21,8 +22,12 @@ if __name__ == '__main__':
         item.append(value)
         item.append(score)
         map[key] = item
-    print("export let webData : any = {")
-    for key in map.keys():
-        value = map[key]
-        print('  "%s":"%s",' % (key, ' '.join(value)))
-    print("};")
+        
+    converted_map = {}
+    for key, values in map.items():
+        converted_map[key] = " ".join(values) 
+
+    json_output = json.dumps(converted_map, ensure_ascii=False, separators=(',', ':'))
+    json_output = json_output.replace('`', '\\`').replace('${', '\\${')
+    print(f'const source = `{json_output}`;')
+    print('export const webData = JSON.parse(source);')
