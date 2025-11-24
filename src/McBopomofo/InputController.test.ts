@@ -10,6 +10,7 @@ import {
   InputState,
   Inputting,
   Marking,
+  NumberInput,
   SelectingDateMacro,
   SelectingDictionary,
   SelectingFeature,
@@ -973,5 +974,24 @@ describe("InputController", () => {
       const { candidates } = uiState;
       expect(candidates[0]["candidate"]["value"]).toBe("中文");
     }
+  });
+
+  describe("Number Input", () => {
+    it("enters number input mode", () => {
+      let key = new Key("\\", KeyName.UNKNOWN, false, true);
+      controller.mcbopomofoKeyEvent(key);
+      key = new Key("3", KeyName.UNKNOWN);
+      controller.mcbopomofoKeyEvent(key);
+      let state = controller.state;
+      expect(state).toBeInstanceOf(NumberInput);
+      inputCStr(controller, "123");
+      state = controller.state;
+      expect(state).toBeInstanceOf(NumberInput);
+      expect((state as NumberInput).number).toBe("123");
+      key = new Key("", KeyName.RETURN);
+      controller.mcbopomofoKeyEvent(key);
+      state = controller.state;
+      expect(state).toBeInstanceOf(Committing);
+    });
   });
 });

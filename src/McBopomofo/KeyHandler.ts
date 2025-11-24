@@ -226,7 +226,7 @@ export class KeyHandler {
       return true;
     }
     if (key.ascii >= "0" && key.ascii <= "9") {
-      if (state.number.length > 20) {
+      if (state.number.length >= 20) {
         errorCallback();
         return true;
       }

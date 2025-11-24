@@ -462,4 +462,21 @@ describe("InputState classes", () => {
       expect(menu.entries).toEqual([]);
     });
   });
+
+  describe("NumberInput", () => {
+    it("creates number input state with number and candidates", () => {
+      const number = "123";
+      const candidates = [new Candidate("c1", "C1", "Candidate 1")];
+      const numberInput = new NumberInput(number, candidates);
+
+      expect(numberInput).toBeInstanceOf(NumberInput);
+      expect(numberInput.number).toBe(number);
+      expect(numberInput.candidates).toBe(candidates);
+    });
+
+    it("has correct composing buffer", () => {
+      const numberInput = new NumberInput("456", []);
+      expect(numberInput.composingBuffer).toBe("[數字] 456");
+    });
+  });
 });

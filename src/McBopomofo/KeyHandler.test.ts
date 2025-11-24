@@ -17,6 +17,7 @@ import {
   InputState,
   Inputting,
   Marking,
+  NumberInput,
   SelectingFeature,
 } from "./InputState";
 import { Key, KeyName } from "./Key";
@@ -1883,6 +1884,85 @@ describe("KeyHandler", () => {
       expect(state).toBeInstanceOf(Committing);
       const committing = state as Committing;
       expect(committing.text).toBe("你好");
+    });
+  });
+
+  describe("Number Input", () => {
+    test("enters number and decimal point", () => {
+      let state: InputState = new NumberInput("", []);
+      const keys = asciiKey(["1", "2", ".", "3"]);
+      for (const key of keys) {
+        keyHandler.handleNumberInput(
+          key,
+          state as NumberInput,
+          (newState) => {
+            state = newState;
+          },
+          () => {}
+        );
+      }
+      expect(state).toBeInstanceOf(NumberInput);
+      expect((state as NumberInput).number).toBe("12.3");
+    });
+
+    test("handles backspace", () => {
+      let state: InputState = new NumberInput("12.3", []);
+      const backspace = Key.namedKey(KeyName.BACKSPACE);
+      keyHandler.handleNumberInput(
+        backspace,
+        state as NumberInput,
+        (newState) => {
+          state = newState;
+        },
+        () => {}
+      );
+      expect(state).toBeInstanceOf(NumberInput);
+      expect((state as NumberInput).number).toBe("12.");
+    });
+
+    test("handles escape key", () => {
+      let state: InputState = new NumberInput("12.3", []);
+      const esc = Key.namedKey(KeyName.ESC);
+      keyHandler.handleNumberInput(
+        esc,
+        state as NumberInput,
+        (newState) => {
+          state = newState;
+        },
+        () => {}
+      );
+      expect(state).toBeInstanceOf(Empty);
+    });
+
+    test("rejects multiple decimal points", () => {
+      let state: InputState = new NumberInput("12.3", []);
+      let errorCalled = false;
+      const dot = Key.asciiKey(".");
+      keyHandler.handleNumberInput(
+        dot,
+        state as NumberInput,
+        (newState) => {
+          state = newState;
+        },
+        () => {
+          errorCalled = true;
+        }
+      );
+      expect(errorCalled).toBe(true);
+    });
+
+    test("rejects long numbers", () => {
+      let state: InputState = new NumberInput("12345678901234567890", []);
+      const one = Key.asciiKey("1");
+      keyHandler.handleNumberInput(
+        one,
+        state as NumberInput,
+        (newState) => {
+          state = newState;
+        },
+        () => {}
+      );
+      expect((state as NumberInput).number.length).toBe(20);
     });
   });
 });
