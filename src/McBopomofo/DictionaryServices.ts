@@ -231,7 +231,11 @@ const httpBasedDictionaryServices = {
 export class DictionaryServices {
   public readonly localizedStrings: LocalizedStrings;
   public onOpenUrl?: ((input: string) => void) | undefined;
-  protected services: DictionaryService[] = [];
+  protected services_: DictionaryService[] = [];
+
+  public get services(): DictionaryService[] {
+    return this.services_;
+  }
 
   /* istanbul ignore next */
   constructor(localizedStrings: LocalizedStrings) {
@@ -241,12 +245,12 @@ export class DictionaryServices {
       if (!window.speechSynthesis || !window.SpeechSynthesisUtterance) {
         throw new Error("Speech synthesis not supported");
       }
-      this.services.push(new SpeakService());
+      this.services_.push(new SpeakService());
     } catch (e) {}
 
     try {
       const _ = new TextEncoder();
-      this.services.push(new CharacterInfoService());
+      this.services_.push(new CharacterInfoService());
     } catch (e) {}
 
     for (const info of httpBasedDictionaryServices.services) {
@@ -259,7 +263,7 @@ export class DictionaryServices {
           }
         }
       );
-      this.services.push(service);
+      this.services_.push(service);
     }
   }
 
@@ -274,7 +278,7 @@ export class DictionaryServices {
   /* istanbul ignore next */
   buildMenu(phrase: string): string[] {
     const output: string[] = [];
-    for (const service of this.services) {
+    for (const service of this.services_) {
       output.push(service.textForMenu(phrase, this.localizedStrings));
     }
     return output;
@@ -297,8 +301,8 @@ export class DictionaryServices {
     state: InputState,
     stateCallback: (state: InputState) => void
   ): boolean {
-    const service = this.services[index];
-    if (index >= this.services.length) {
+    const service = this.services_[index];
+    if (index >= this.services_.length) {
       return false;
     }
     service.lookUp(phrase, state, index, stateCallback);
