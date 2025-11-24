@@ -13,19 +13,15 @@ import {
 import { UserOverrideModel } from "./UserOverrideModel";
 import {
   Big5,
-  ChineseNumber,
-  ChineseNumbersStateStyle,
   ChoosingCandidate,
   Committing,
   Empty,
   EmptyIgnoringPrevious,
-  EnclosingNumber,
   InputState,
   Inputting,
   Marking,
   NotEmpty,
-  RomanNumber,
-  RomanNumberStateStyle as RomanNumbersStateStyle,
+  NumberInput,
   SelectingDictionary,
   SelectingFeature,
 } from "./InputState";
@@ -40,11 +36,10 @@ import {
   WalkResult,
 } from "../Gramambular2";
 import { OverrideType } from "../Gramambular2/ReadingGrid";
-import { ChineseNumbers, SuzhouNumbers, Case } from "../ChineseNumbers";
 import { DictionaryServices } from "./DictionaryServices";
 import { CtrlEnterOption } from "./CtrlEnterOption";
 import { BopomofoBrailleConverter } from "../BopomofoBraille";
-import { RomanNumbers, RomanNumbersStyle } from "../RomanNumbers";
+import { NumberInputHelper } from "./InputHelperNumber";
 
 export class ComposedString {
   head: string = "";
@@ -204,6 +199,67 @@ export class KeyHandler {
     this.grid_.readingSeparator = kJoinSeparator;
   }
 
+  handleNumberInput(
+    key: Key,
+    state: NumberInput,
+    stateCallback: (state: InputState) => void,
+    errorCallback: () => void
+  ): boolean {
+    if (key.name === KeyName.ESC) {
+      stateCallback(new Empty());
+      return true;
+    }
+    if (key.isDeleteKey) {
+      let number = state.number;
+      if (number.length > 0) {
+        number = number.substring(0, number.length - 1);
+      } else {
+        errorCallback();
+        return true;
+      }
+      const candidates = NumberInputHelper.fillCandidates(
+        number,
+        this.languageModel_
+      );
+      const newState = new NumberInput(number, candidates);
+      stateCallback(newState);
+      return true;
+    }
+    if (key.ascii >= "0" && key.ascii <= "9") {
+      if (state.number.length > 20) {
+        errorCallback();
+        return true;
+      }
+      const number = state.number + key.ascii;
+      const candidates = NumberInputHelper.fillCandidates(
+        number,
+        this.languageModel_
+      );
+      const newState = new NumberInput(number, candidates);
+      stateCallback(newState);
+      return true;
+    }
+    if (key.ascii === ".") {
+      if (state.number.indexOf(".") !== -1) {
+        errorCallback();
+        return true;
+      }
+      if (state.number.length === 0 || state.number.length > 20) {
+        errorCallback();
+        return true;
+      }
+      const number = state.number + key.ascii;
+      const candidates = NumberInputHelper.fillCandidates(
+        number,
+        this.languageModel_
+      );
+      const newState = new NumberInput(number, candidates);
+      stateCallback(newState);
+      return true;
+    }
+    return false;
+  }
+
   handle(
     key: Key,
     state: InputState,
@@ -230,25 +286,8 @@ export class KeyHandler {
       return true;
     }
 
-    if (state instanceof ChineseNumber) {
-      return this.handleChineseNumber(key, state, stateCallback, errorCallback);
-    }
-
-    if (state instanceof RomanNumber) {
-      return this.handleRomanNumber(key, state, stateCallback, errorCallback);
-    }
-
     if (state instanceof Big5) {
       return this.handleBig5(key, state, stateCallback, errorCallback);
-    }
-
-    if (state instanceof EnclosingNumber) {
-      return this.handleEnclosingNumber(
-        key,
-        state,
-        stateCallback,
-        errorCallback
-      );
     }
 
     // Numpad
@@ -1125,155 +1164,6 @@ export class KeyHandler {
     );
   }
 
-  private handleChineseNumber(
-    key: Key,
-    state: ChineseNumber,
-    stateCallback: (state: InputState) => void,
-    errorCallback: () => void
-  ): boolean {
-    if (key.name === KeyName.ESC) {
-      stateCallback(new Empty());
-      return true;
-    }
-    if (key.isDeleteKey) {
-      let number = state.number;
-      if (number.length > 0) {
-        number = number.substring(0, number.length - 1);
-      } else {
-        errorCallback();
-        return true;
-      }
-      const newState = new ChineseNumber(number, state.style);
-      stateCallback(newState);
-      return true;
-    }
-    if (key.name === KeyName.RETURN) {
-      if (state.number.length === 0) {
-        stateCallback(new Empty());
-        return true;
-      }
-      const components = state.number.split(".");
-      let intPart = "";
-      let decPart = "";
-      if (components.length === 2) {
-        intPart = components[0];
-        decPart = components[1];
-      } else {
-        intPart = state.number;
-      }
-      let commitString = "";
-      switch (state.style) {
-        case ChineseNumbersStateStyle.Lowercase:
-          commitString = ChineseNumbers.generate(
-            intPart,
-            decPart,
-            Case.lowercase
-          );
-          break;
-        case ChineseNumbersStateStyle.Uppercase:
-          commitString = ChineseNumbers.generate(
-            intPart,
-            decPart,
-            Case.uppercase
-          );
-          break;
-        case ChineseNumbersStateStyle.Suzhou:
-          commitString = SuzhouNumbers.generate(intPart, decPart, "單位", true);
-          break;
-      }
-      const newState = new Committing(commitString);
-      stateCallback(newState);
-      return true;
-    }
-    if (key.ascii >= "0" && key.ascii <= "9") {
-      if (state.number.length > 20) {
-        errorCallback();
-        return true;
-      }
-      const number = state.number + key.ascii;
-      const newState = new ChineseNumber(number, state.style);
-      stateCallback(newState);
-    } else if (key.ascii === ".") {
-      if (state.number.indexOf(".") !== -1) {
-        errorCallback();
-        return true;
-      }
-      if (state.number.length === 0 || state.number.length > 20) {
-        errorCallback();
-        return true;
-      }
-      const number = state.number + key.ascii;
-      const newState = new ChineseNumber(number, state.style);
-      stateCallback(newState);
-    } else {
-      errorCallback();
-    }
-
-    return true;
-  }
-
-  private handleRomanNumber(
-    key: Key,
-    state: RomanNumber,
-    stateCallback: (state: InputState) => void,
-    errorCallback: () => void
-  ): boolean {
-    if (key.name === KeyName.ESC) {
-      stateCallback(new Empty());
-      return true;
-    }
-    if (key.isDeleteKey) {
-      let number = state.number;
-      if (number.length > 0) {
-        number = number.substring(0, number.length - 1);
-      } else {
-        errorCallback();
-        return true;
-      }
-      const newState = new RomanNumber(number, state.style);
-      stateCallback(newState);
-      return true;
-    }
-    if (key.name === KeyName.RETURN) {
-      if (state.number.length === 0) {
-        stateCallback(new Empty());
-        return true;
-      }
-      const number = state.number;
-      let style = RomanNumbersStyle.Alphabets;
-      switch (state.style) {
-        case RomanNumbersStateStyle.Alphabets:
-          style = RomanNumbersStyle.Alphabets;
-          break;
-        case RomanNumbersStateStyle.FullWidthUpper:
-          style = RomanNumbersStyle.FullWidthUpper;
-          break;
-        case RomanNumbersStateStyle.FullWidthLower:
-          style = RomanNumbersStyle.FullWidthLower;
-          break;
-        default:
-          break;
-      }
-      const commitString = RomanNumbers.convertString(number, style);
-      const newState = new Committing(commitString);
-      stateCallback(newState);
-      return true;
-    }
-    if (key.ascii >= "0" && key.ascii <= "9") {
-      if (state.number.length >= 4) {
-        errorCallback();
-        return true;
-      }
-      const number = state.number + key.ascii;
-      const newState = new RomanNumber(number, state.style);
-      stateCallback(newState);
-    } else {
-      errorCallback();
-    }
-
-    return true;
-  }
-
   private handleBig5(
     key: Key,
     state: Big5,
@@ -1328,77 +1218,6 @@ export class KeyHandler {
         const newState = new Big5(appended);
         stateCallback(newState);
       }
-    } else {
-      errorCallback();
-    }
-
-    return true;
-  }
-
-  private handleEnclosingNumber(
-    key: Key,
-    state: EnclosingNumber,
-    stateCallback: (state: InputState) => void,
-    errorCallback: () => void
-  ): boolean {
-    if (key.name === KeyName.ESC) {
-      stateCallback(new Empty());
-      return true;
-    }
-    if (key.isDeleteKey) {
-      let number = state.number;
-      if (number.length > 0) {
-        number = number.substring(0, number.length - 1);
-      } else {
-        errorCallback();
-        return true;
-      }
-      const newState = new EnclosingNumber(number);
-      stateCallback(newState);
-      return true;
-    }
-    if (key.name === KeyName.RETURN) {
-      const key = "_number_" + state.number;
-
-      if (this.languageModel_.hasUnigrams(key)) {
-        if (this.reading_.isEmpty) {
-          const unigrams = this.languageModel_.getUnigrams(key);
-          if (unigrams.length === 1) {
-            const unigram = unigrams[0];
-            const string = unigram.value;
-            const committing = new Committing(string);
-            stateCallback(committing);
-            const empty = new Empty();
-            stateCallback(empty);
-            return true;
-          }
-
-          this.grid_.insertReading(key);
-          this.walk();
-          const originalCursorIndex = this.grid_.cursor;
-          if (this.selectPhraseAfterCursorAsCandidate_) {
-            this.grid_.cursor = originalCursorIndex - 1;
-          }
-          const choosingCandidateState =
-            this.buildChoosingCandidateState(originalCursorIndex);
-          stateCallback(choosingCandidateState);
-        } else {
-          // Punctuation ignored if a bopomofo reading is active..
-          errorCallback();
-        }
-      } else {
-        errorCallback();
-      }
-      return true;
-    }
-    if (key.ascii >= "0" && key.ascii <= "9") {
-      if (state.number.length > 2) {
-        errorCallback();
-        return true;
-      }
-      const number = state.number + key.ascii;
-      const newState = new EnclosingNumber(number);
-      stateCallback(newState);
     } else {
       errorCallback();
     }

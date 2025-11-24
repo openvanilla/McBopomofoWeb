@@ -34,10 +34,14 @@ export class CandidateWrapper {
   }
 }
 
+export class KeyCap {
+  constructor(readonly displayed: string, readonly actual: string) {}
+}
+
 /** Helps to control the candidate window. */
 export class CandidateController {
   private candidates_: Candidate[] = [];
-  private keyCaps_: string[] = [];
+  private keyCaps_: KeyCap[] = [];
   private currentSelectedIndex_: number = 0;
 
   /**
@@ -47,8 +51,10 @@ export class CandidateController {
    */
   selectedCandidateWithKey(key: string): Candidate | undefined {
     let selectedIndex = -1;
+
     for (let i = 0; i < this.keyCaps_.length; i++) {
-      if (this.keyCaps_[i] === key) {
+      const keyCap = this.keyCaps_[i];
+      if (keyCap.actual === key) {
         selectedIndex = i;
         break;
       }
@@ -56,7 +62,9 @@ export class CandidateController {
     if (selectedIndex < 0) {
       return undefined;
     }
-    const current = Math.floor(this.currentSelectedIndex_ / this.keyCaps_.length);
+    const current = Math.floor(
+      this.currentSelectedIndex_ / this.keyCaps_.length
+    );
     const offset = current * this.keyCaps_.length;
     return this.candidates_[offset + selectedIndex];
   }
@@ -97,9 +105,15 @@ export class CandidateController {
    * @param candidates All candidates.
    * @param keyCaps The key caps such as "123456789", "asdfghjkl" and so on.
    */
-  update(candidates: Candidate[], keyCaps: string[]) {
+  update(candidates: Candidate[], keyCaps: (KeyCap | string)[]) {
     this.candidates_ = candidates;
-    this.keyCaps_ = keyCaps;
+    this.keyCaps_ = keyCaps.map((k) => {
+      if (typeof k === "string") {
+        return new KeyCap(k, k);
+      } else {
+        return k;
+      }
+    });
     this.currentSelectedIndex_ = 0;
   }
 
@@ -116,7 +130,7 @@ export class CandidateController {
     var list: CandidateWrapper[] = [];
     for (let i = start; i < end; i++) {
       const candidate = new CandidateWrapper(
-        this.keyCaps_[keyCapIndex],
+        this.keyCaps_[keyCapIndex].displayed,
         this.candidates_[i],
         i === this.currentSelectedIndex_
       );
@@ -166,7 +180,9 @@ export class CandidateController {
   /** Moves to the next page. */
   goToNextPage(): void {
     let current = Math.floor(this.currentSelectedIndex_ / this.keyCaps_.length);
-    const last = Math.floor((this.candidates_.length - 1) / this.keyCaps_.length);
+    const last = Math.floor(
+      (this.candidates_.length - 1) / this.keyCaps_.length
+    );
     if (current === last) {
       return;
     }
@@ -178,7 +194,9 @@ export class CandidateController {
    * first page. */
   goToNextPageButFirstWhenAtEnd(): void {
     let current = Math.floor(this.currentSelectedIndex_ / this.keyCaps_.length);
-    const last = Math.floor((this.candidates_.length - 1) / this.keyCaps_.length);
+    const last = Math.floor(
+      (this.candidates_.length - 1) / this.keyCaps_.length
+    );
     if (current === last) {
       this.currentSelectedIndex_ = 0;
       return;

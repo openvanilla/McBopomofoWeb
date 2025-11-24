@@ -6,7 +6,6 @@
  */
 
 import {
-  InputState,
   Empty,
   EmptyIgnoringPrevious,
   Committing,
@@ -15,17 +14,13 @@ import {
   ChoosingCandidate,
   Marking,
   SelectingDictionary,
-  ChineseNumber,
-  ChineseNumbersStateStyle,
   Big5,
-  EnclosingNumber,
   SelectingDateMacro,
   Feature,
   SelectingFeature,
   CustomMenuEntry,
   CustomMenu,
-  RomanNumber,
-  RomanNumberStateStyle,
+  NumberInput,
 } from "./InputState";
 import { Candidate } from "../Gramambular2";
 
@@ -277,58 +272,6 @@ describe("InputState classes", () => {
     });
   });
 
-  describe("ChineseNumberStyle enum", () => {
-    it("has correct enum values", () => {
-      expect(ChineseNumbersStateStyle.Lowercase).toBe(0);
-      expect(ChineseNumbersStateStyle.Uppercase).toBe(1);
-      expect(ChineseNumbersStateStyle.Suzhou).toBe(2);
-    });
-  });
-
-  describe("ChineseNumber", () => {
-    it("creates chinese number state", () => {
-      const number = "123";
-      const style = ChineseNumbersStateStyle.Lowercase;
-      const chineseNumber = new ChineseNumber(number, style);
-
-      expect(chineseNumber).toBeInstanceOf(ChineseNumber);
-      expect(chineseNumber.number).toBe(number);
-      expect(chineseNumber.style).toBe(style);
-    });
-
-    it("has correct composing buffer for lowercase style", () => {
-      const chineseNumber = new ChineseNumber(
-        "123",
-        ChineseNumbersStateStyle.Lowercase
-      );
-      expect(chineseNumber.composingBuffer).toBe("[中文數字] 123");
-    });
-
-    it("has correct composing buffer for uppercase style", () => {
-      const chineseNumber = new ChineseNumber(
-        "456",
-        ChineseNumbersStateStyle.Uppercase
-      );
-      expect(chineseNumber.composingBuffer).toBe("[大寫數字] 456");
-    });
-
-    it("has correct composing buffer for Suzhou style", () => {
-      const chineseNumber = new ChineseNumber(
-        "789",
-        ChineseNumbersStateStyle.Suzhou
-      );
-      expect(chineseNumber.composingBuffer).toBe("[蘇州碼] 789");
-    });
-
-    it("handles empty number", () => {
-      const chineseNumber = new ChineseNumber(
-        "",
-        ChineseNumbersStateStyle.Lowercase
-      );
-      expect(chineseNumber.composingBuffer).toBe("[中文數字] ");
-    });
-  });
-
   describe("Big5", () => {
     it("creates Big5 state with default empty code", () => {
       const big5 = new Big5();
@@ -350,30 +293,6 @@ describe("InputState classes", () => {
     it("handles empty code in composing buffer", () => {
       const big5 = new Big5();
       expect(big5.composingBuffer).toBe("[內碼] ");
-    });
-  });
-
-  describe("EnclosingNumber", () => {
-    it("creates enclosing number state with default empty number", () => {
-      const enclosing = new EnclosingNumber();
-      expect(enclosing).toBeInstanceOf(EnclosingNumber);
-      expect(enclosing.number).toBe("");
-    });
-
-    it("creates enclosing number state with number", () => {
-      const number = "123";
-      const enclosing = new EnclosingNumber(number);
-      expect(enclosing.number).toBe(number);
-    });
-
-    it("has correct composing buffer", () => {
-      const enclosing = new EnclosingNumber("123");
-      expect(enclosing.composingBuffer).toBe("[標題數字] 123");
-    });
-
-    it("handles empty number in composing buffer", () => {
-      const enclosing = new EnclosingNumber();
-      expect(enclosing.composingBuffer).toBe("[標題數字] ");
     });
   });
 
@@ -459,10 +378,7 @@ describe("InputState classes", () => {
 
       const featureNames = selecting.features.map((f) => f.name);
       expect(featureNames).toContain("日期與時間");
-      expect(featureNames).toContain("標題數字");
-      expect(featureNames).toContain("中文數字");
-      expect(featureNames).toContain("大寫數字");
-      expect(featureNames).toContain("蘇州碼");
+      expect(featureNames).toContain("數字輸入");
     });
 
     it("creates correct next states for features", () => {
@@ -473,15 +389,11 @@ describe("InputState classes", () => {
         (f) => f.name === "日期與時間"
       );
       const numberFeature = selecting.features.find(
-        (f) => f.name === "標題數字"
-      );
-      const chineseFeature = selecting.features.find(
-        (f) => f.name === "中文數字"
+        (f) => f.name === "數字輸入"
       );
 
       expect(dateFeature?.nextState()).toBeInstanceOf(SelectingDateMacro);
-      expect(numberFeature?.nextState()).toBeInstanceOf(EnclosingNumber);
-      expect(chineseFeature?.nextState()).toBeInstanceOf(ChineseNumber);
+      expect(numberFeature?.nextState()).toBeInstanceOf(NumberInput);
     });
 
     it("includes Big5 feature when TextDecoder supports it", () => {
@@ -548,82 +460,6 @@ describe("InputState classes", () => {
     it("handles empty entries", () => {
       const menu = new CustomMenu("test", 1, "title", []);
       expect(menu.entries).toEqual([]);
-    });
-  });
-
-  describe("RomanNumberStyle enum", () => {
-    it("has correct enum values", () => {
-      expect(RomanNumberStateStyle.Alphabets).toBe(0);
-      expect(RomanNumberStateStyle.FullWidthUpper).toBe(1);
-      expect(RomanNumberStateStyle.FullWidthLower).toBe(2);
-    });
-  });
-
-  describe("RomanNumber", () => {
-    it("creates roman number state", () => {
-      const number = "XII";
-      const style = RomanNumberStateStyle.Alphabets;
-      const romanNumber = new RomanNumber(number, style);
-
-      expect(romanNumber).toBeInstanceOf(RomanNumber);
-      expect(romanNumber.number).toBe(number);
-      expect(romanNumber.style).toBe(style);
-    });
-
-    it("has correct composing buffer for Alphabets style", () => {
-      const romanNumber = new RomanNumber(
-        "XV",
-        RomanNumberStateStyle.Alphabets
-      );
-      expect(romanNumber.composingBuffer).toBe("[羅馬數字 (字母)] XV");
-    });
-
-    it("has correct composing buffer for FullWidthUpper style", () => {
-      const romanNumber = new RomanNumber(
-        "XX",
-        RomanNumberStateStyle.FullWidthUpper
-      );
-      expect(romanNumber.composingBuffer).toBe("[羅馬數字 (全形大寫)] XX");
-    });
-
-    it("has correct composing buffer for FullWidthLower style", () => {
-      const romanNumber = new RomanNumber(
-        "IX",
-        RomanNumberStateStyle.FullWidthLower
-      );
-      expect(romanNumber.composingBuffer).toBe("[羅馬數字 (全形小寫)] IX");
-    });
-
-    it("handles empty number", () => {
-      const romanNumber = new RomanNumber("", RomanNumberStateStyle.Alphabets);
-      expect(romanNumber.composingBuffer).toBe("[羅馬數字 (字母)] ");
-    });
-  });
-
-  describe("Interface compliance", () => {
-    it("implements InputState interface", () => {
-      const states: InputState[] = [
-        new Empty(),
-        new EmptyIgnoringPrevious(),
-        new Committing("test"),
-        new Inputting("test", 1),
-        new ChoosingCandidate("test", 1, [], 0),
-        new Marking("test", 1, "", 0, "", "", "", "", true),
-        new SelectingDictionary(new NotEmpty("test", 1), "phrase", 0, []),
-        new ChineseNumber("123", ChineseNumbersStateStyle.Lowercase),
-        new RomanNumber("123", RomanNumberStateStyle.FullWidthLower),
-        new Big5("A440"),
-        new EnclosingNumber("123"),
-        new SelectingDateMacro(() => "converted"),
-        new SelectingFeature(() => "converted"),
-        new CustomMenu("test", 1, "title", []),
-      ];
-
-      states.forEach((state) => {
-        expect(state).toBeDefined();
-        // All states should be objects (implementing InputState interface)
-        expect(typeof state).toBe("object");
-      });
     });
   });
 });
