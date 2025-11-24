@@ -20,7 +20,8 @@ McBopomofoWeb is a TypeScript implementation of the McBopomofo (小麥注音) in
 - **InputController.ts**: Main input handling logic and state management
 - **KeyHandler.ts**: Keyboard event processing and key mapping
 - **CandidateController.ts**: Manages candidate selection and display
-- **InputState.ts**: Input state machine and mode management
+- **InputHelperNumber.ts**: A helper class for handling number inputs.
+- **InputState.ts**: Input state machine and mode management. It defines various states like `Inputting`, `ChoosingCandidate`, and a unified `NumberInput` state.
 - **Service.ts**: Core input method service interface
 - **WebLanguageModel.ts**: Language model for character prediction
 - **UserOverrideModel.ts**: User customization and learning

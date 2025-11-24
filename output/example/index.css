@@ -244,15 +244,13 @@ textarea#feature_excluded_phrases_text_area {
 }
 
 .keyCap {
-  padding: 4px 10px 4px 10px;
-  display: inline-block;
+  padding: 4px 10px 4px 10px !important;
   font-size: 10pt;
 }
 
 .candidate {
-  padding: 4px 10px 4px 0px;
-  display: inline-block;
-  font-size: 15pt;
+  padding: 4px 10px 4px 0px !important;
+  font-size: 12pt !important;
 }
 
 @keyframes blinker {
