@@ -626,7 +626,6 @@ export class InputController {
     }
 
     let keyToTest = key.ascii;
-    let needToShiftKey = this.state_ instanceof NumberInput;
 
     const selected =
       this.candidateController_.selectedCandidateWithKey(keyToTest);
