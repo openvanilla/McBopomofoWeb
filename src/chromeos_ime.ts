@@ -130,7 +130,7 @@ class ChromeMcBopomofo {
    */
   loadSettings() {
     chrome.storage.sync.get("settings", (value) => {
-      this.settings = value.settings;
+      this.settings = value.settings as ChromeMcBopomofoSettings;
       if (this.settings === undefined) {
         this.settings = this.defaultSettings;
       }
