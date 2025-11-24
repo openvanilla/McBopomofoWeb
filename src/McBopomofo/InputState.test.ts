@@ -21,6 +21,7 @@ import {
   CustomMenuEntry,
   CustomMenu,
   NumberInput,
+  ShowingCharInfo,
 } from "./InputState";
 import { Candidate } from "../Gramambular2";
 
@@ -477,6 +478,64 @@ describe("InputState classes", () => {
     it("has correct composing buffer", () => {
       const numberInput = new NumberInput("456", []);
       expect(numberInput.composingBuffer).toBe("[數字] 456");
+    });
+  });
+
+  describe("ShowingCharInfo", () => {
+    it("creates ShowingCharInfo state and builds menu", () => {
+      const previousState = new SelectingDictionary(
+        new NotEmpty("buffer", 1),
+        "phrase",
+        0,
+        []
+      );
+      const selectedString = "你好";
+      const showingCharInfo = new ShowingCharInfo(previousState, selectedString);
+
+      expect(showingCharInfo).toBeInstanceOf(ShowingCharInfo);
+      expect(showingCharInfo).toBeInstanceOf(NotEmpty);
+      expect(showingCharInfo.previousState).toBe(previousState);
+      expect(showingCharInfo.selectedPhrase).toBe(selectedString);
+      expect(showingCharInfo.menu).toBeInstanceOf(Array);
+      expect(showingCharInfo.menu.length).toBeGreaterThan(0);
+
+      // Verify specific menu items
+      expect(showingCharInfo.menu).toContain("JavaScript String length: 2");
+      expect(showingCharInfo.menu).toContain("UTF-8 HEX: E4BDA0E5A5BD");
+      expect(showingCharInfo.menu).toContain("UTF-16 HEX:U+4F60U+597D");
+      expect(showingCharInfo.menu).toContain("URL Encoded: %E4%BD%A0%E5%A5%BD");
+    });
+
+    it("handles single character input", () => {
+      const previousState = new SelectingDictionary(
+        new NotEmpty("buffer", 1),
+        "phrase",
+        0,
+        []
+      );
+      const selectedString = "A";
+      const showingCharInfo = new ShowingCharInfo(previousState, selectedString);
+
+      expect(showingCharInfo.menu).toContain("JavaScript String length: 1");
+      expect(showingCharInfo.menu).toContain("UTF-8 HEX: 41");
+      expect(showingCharInfo.menu).toContain("UTF-16 HEX:U+0041");
+      expect(showingCharInfo.menu).toContain("URL Encoded: A");
+    });
+
+    it("handles empty string input", () => {
+      const previousState = new SelectingDictionary(
+        new NotEmpty("buffer", 1),
+        "phrase",
+        0,
+        []
+      );
+      const selectedString = "";
+      const showingCharInfo = new ShowingCharInfo(previousState, selectedString);
+
+      expect(showingCharInfo.menu).toContain("JavaScript String length: 0");
+      expect(showingCharInfo.menu).toContain("UTF-8 HEX: ");
+      expect(showingCharInfo.menu).toContain("UTF-16 HEX:");
+      expect(showingCharInfo.menu).toContain("URL Encoded: ");
     });
   });
 });

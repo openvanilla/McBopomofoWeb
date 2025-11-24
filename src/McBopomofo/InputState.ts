@@ -229,7 +229,7 @@ export class ShowingCharInfo extends NotEmpty {
 
   private buildMenu() {
     this.menu.push(
-      "JavaScript String length: " + this.selectedPhrase.replace.length
+      "JavaScript String length: " + this.selectedPhrase.length
     );
 
     try {
