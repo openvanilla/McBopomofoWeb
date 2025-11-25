@@ -69,6 +69,13 @@ export class CandidateController {
     return this.candidates_[offset + selectedIndex];
   }
 
+  candidateAtIndex(index: number): Candidate | undefined {
+    if (index < 0 || index >= this.candidates_.length) {
+      return undefined;
+    }
+    return this.candidates_[index];
+  }
+
   /** Returns the selected candidate. */
   get selectedCandidate(): Candidate {
     return this.candidates_[this.currentSelectedIndex_];

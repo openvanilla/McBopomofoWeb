@@ -499,6 +499,17 @@ export class InputController {
     return this.keyHandler_.ctrlEnterOption;
   }
 
+  public selectCandidateAtIndex(candidateID: number): void {
+    const selected = this.candidateController_.candidateAtIndex(candidateID);
+    if (selected !== undefined) {
+      this.handleSelectedCandidate_(
+        selected,
+        (newState) => this.enterNewState(newState),
+        () => this.onError_?.()
+      );
+    }
+  }
+
   /**
    * Handles the passed keyboard events.
    * @param event The keyboard event.
@@ -577,6 +588,46 @@ export class InputController {
     return accepted;
   }
 
+  private handleSelectedCandidate_(
+    selected: Candidate,
+    stateCallback: (state: InputState) => void,
+    errorCallback: () => void
+  ): void {
+    if (this.state_ instanceof SelectingFeature) {
+      stateCallback(this.state_.features[+selected.value].nextState());
+    } else if (this.state_ instanceof SelectingDateMacro) {
+      const newState = new Committing(selected.value);
+      stateCallback(newState);
+    } else if (this.state_ instanceof SelectingDictionary) {
+      const index = +selected.value;
+      this.keyHandler_.dictionaryServices.lookup(
+        this.state_.selectedPrase,
+        index,
+        this.state_,
+        stateCallback
+      );
+      const newState = this.state_.previousState;
+      stateCallback(newState);
+    } else if (this.state_ instanceof NumberInput) {
+      const newState = new Committing(selected.value);
+      stateCallback(newState);
+    } else if (this.state_ instanceof ChoosingCandidate) {
+      this.keyHandler_.candidateSelected(
+        selected,
+        this.state_.originalCursorIndex,
+        (newState) => {
+          this.enterNewState(newState);
+        }
+      );
+    } else if (this.state_ instanceof CustomMenu) {
+      const entry = this.state_.entries[+selected.value];
+      entry.callback();
+    } else if (this.state_ instanceof ShowingCharInfo) {
+      const previous = this.state_.previousState;
+      stateCallback(previous);
+    }
+  }
+
   private handleCandidateKeyEvent(
     key: Key,
     stateCallback: (state: InputState) => void,
@@ -627,74 +678,21 @@ export class InputController {
 
     let keyToTest = key.ascii;
 
-    const selected =
-      this.candidateController_.selectedCandidateWithKey(keyToTest);
-
-    if (selected !== undefined) {
-      if (this.state_ instanceof SelectingFeature) {
-        stateCallback(this.state_.features[+selected.value].nextState());
-      } else if (this.state_ instanceof SelectingDateMacro) {
-        const newState = new Committing(selected.value);
-        stateCallback(newState);
-      } else if (this.state_ instanceof SelectingDictionary) {
-        const index = +selected.value;
-        this.keyHandler_.dictionaryServices.lookup(
-          this.state_.selectedPrase,
-          index,
-          this.state_,
-          stateCallback
-        );
-        const newState = this.state_.previousState;
-        stateCallback(newState);
-      } else if (this.state_ instanceof NumberInput) {
-        const newState = new Committing(selected.value);
-        stateCallback(newState);
-      } else if (this.state_ instanceof ChoosingCandidate) {
-        this.keyHandler_.candidateSelected(
-          selected,
-          this.state_.originalCursorIndex,
-          (newState) => {
-            this.enterNewState(newState);
-          }
-        );
+    {
+      const selected =
+        this.candidateController_.selectedCandidateWithKey(keyToTest);
+      if (selected !== undefined) {
+        this.handleSelectedCandidate_(selected, stateCallback, errorCallback);
+        return;
       }
-      return;
     }
 
     if (key.name === KeyName.RETURN) {
-      const current = this.candidateController_.selectedCandidate;
-      if (this.state_ instanceof SelectingFeature) {
-        stateCallback(this.state_.features[+current.value].nextState());
-      } else if (this.state_ instanceof SelectingDateMacro) {
-        const newState = new Committing(current.value);
-        stateCallback(newState);
-      } else if (this.state_ instanceof SelectingDictionary) {
-        const index = +current.value;
-        this.keyHandler_.dictionaryServices.lookup(
-          this.state_.selectedPrase,
-          index,
-          this.state_,
-          stateCallback
-        );
-      } else if (this.state_ instanceof NumberInput) {
-        const newState = new Committing(current.value);
-        stateCallback(newState);
-      } else if (this.state_ instanceof ChoosingCandidate) {
-        this.keyHandler_.candidateSelected(
-          current,
-          this.state_.originalCursorIndex,
-          (newState) => {
-            stateCallback(newState);
-          }
-        );
-      } else if (this.state_ instanceof CustomMenu) {
-        const entry = this.state_.entries[+current.value];
-        entry.callback();
-      } else if (this.state_ instanceof ShowingCharInfo) {
-        const previous = this.state_.previousState;
-        stateCallback(previous);
+      const selected = this.candidateController_.selectedCandidate;
+      if (selected === undefined) {
+        return;
       }
-
+      this.handleSelectedCandidate_(selected, stateCallback, errorCallback);
       return;
     }
 
