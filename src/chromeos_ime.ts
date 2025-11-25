@@ -905,6 +905,15 @@ chrome.contextMenus.create({
   contexts: ["selection", "editable"],
 });
 
+chrome.input?.ime.onCandidateClicked.addListener(
+  (engineID, candidateID, button) => {
+    if (candidateID < 0) {
+      return;
+    }
+    chromeMcBopomofo.inputController.selectCandidateAtIndex(candidateID);
+  }
+);
+
 /**
  * Converts a keyboard event to a Key object.
  * @param event The keyboard event.
