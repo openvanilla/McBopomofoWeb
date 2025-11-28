@@ -68,4 +68,16 @@ describe("Test Punctuation", () => {
     expect(FullWidthPunctuation.allBraille.length).toBeGreaterThan(0);
     expect(FullWidthPunctuation.allBraille).toContain("⠤");
   });
+
+  test("Test referenceMark", () => {
+    const p = FullWidthPunctuation.referenceMark;
+    expect(p).toBe(FullWidthPunctuation.referenceMark);
+  });
+
+  test("Test toBraille() with referenceMark", () => {
+    const result = FullWidthPunctuation.toBraille(
+      FullWidthPunctuation.referenceMark
+    );
+    expect(result).toBe("⠈⠼");
+  });
 });

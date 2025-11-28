@@ -280,6 +280,14 @@ describe("Test BopomofoBrailleConverter", () => {
     //   expect(r2).toBe(input);
     // });
 
+    test("Test ※ 1234", () => {
+      const input = "※ 1234";
+      const r1 = BopomofoBrailleConverter.convertBpmfToBraille(input);
+      expect(r1).toBe("⠈⠼ ⠼⠂⠆⠒⠲");
+      const r2 = BopomofoBrailleConverter.convertBrailleToBpmf(r1);
+      expect(r2).toBe(input);
+    });
+
     test("should handle empty string input", () => {
       const input = "";
       const r1 = BopomofoBrailleConverter.convertBpmfToBraille(input);

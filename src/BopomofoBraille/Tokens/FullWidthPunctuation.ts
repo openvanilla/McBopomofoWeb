@@ -22,6 +22,7 @@ export enum FullWidthPunctuation {
   slash = "—",
   bookNameMark = "﹏",
   ellipsis = "…",
+  referenceMark = "※",
   doubleRing = "◎",
   singleQuotationMarkLeft = "「",
   singleQuotationMarkRight = "」",
@@ -49,7 +50,7 @@ export namespace FullWidthPunctuation {
     [FullWidthPunctuation.slash, "⠐⠂"],
     [FullWidthPunctuation.bookNameMark, "⠠⠤"],
     [FullWidthPunctuation.ellipsis, "⠐⠐⠐"],
-    // [FullWidthPunctuation.referenceMark, "⠼"],
+    [FullWidthPunctuation.referenceMark, "⠈⠼"],
     [FullWidthPunctuation.doubleRing, "⠪⠕"],
     [FullWidthPunctuation.singleQuotationMarkLeft, "⠰⠤"],
     [FullWidthPunctuation.singleQuotationMarkRight, "⠤⠆"],
@@ -93,6 +94,7 @@ export namespace FullWidthPunctuation {
       FullWidthPunctuation.parenthesesLeft,
       FullWidthPunctuation.bracketLeft,
       FullWidthPunctuation.braceLeft,
+      FullWidthPunctuation.referenceMark,
     ];
     return validPunctuation.includes(c);
   }
