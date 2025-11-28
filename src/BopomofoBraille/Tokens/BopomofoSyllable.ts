@@ -709,6 +709,10 @@ export class BopomofoSyllable {
           throw new Error("Invalid Braille: other");
         }
         const next = braille[i + 1];
+
+        // Determines if the next character indicates connection with 'ㄧ' (yi)
+        // or 'ㄩ' (yv) which affects the consonant interpretation (e.g., ㄒ/ㄙ,
+        // ㄑ/ㄘ, ㄐ/ㄍ).
         const isConnected = BopomofoSyllable.shouldConnectWithYiOrYv(next);
 
         if (c === "⠑") {
