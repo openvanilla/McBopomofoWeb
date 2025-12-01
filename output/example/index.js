@@ -588,27 +588,68 @@ let example = (() => {
       document.getElementById("feature_excluded_phrases_text_area").focus();
     };
 
-    that.loadLastText = () => {
-      const result = window.localStorage.getItem("last_text") || "";
-      document.getElementById("text_area").value = result;
+    return that;
+  })();
+
+  const databaseManager = (() => {
+    let that = {};
+    let db;
+
+    that.init = async () => {
+      return new Promise((resolve, reject) => {
+        const request = indexedDB.open("McBopomofoWeb", 1);
+        request.onupgradeneeded = (event) => {
+          const db = event.target.result;
+          if (!db.objectStoreNames.contains("user_data")) {
+            db.createObjectStore("user_data", { keyPath: "key" });
+          }
+        };
+        request.onsuccess = (event) => {
+          db = event.target.result;
+          resolve();
+        };
+        request.onerror = (event) => {
+          console.error("Database error: ", event.target.error);
+          reject(event.target.error);
+        };
+      });
     };
 
-    that.saveLastText = (result) => {
-      const text = document.getElementById("text_area").value;
-      window.localStorage.setItem("last_text", text);
+    that.loadLastText = async () => {
+      return new Promise((resolve, reject) => {
+        if (!db) {
+          resolve("");
+          return;
+        }
+        const transaction = db.transaction(["user_data"], "readonly");
+        const store = transaction.objectStore("user_data");
+        const request = store.get("last_text");
+        request.onsuccess = () => {
+          resolve(request.result ? request.result.value : "");
+        };
+        request.onerror = (event) => {
+          console.error("Transaction error: ", event.target.error);
+          reject(event.target.error);
+        };
+      });
+    };
+
+    that.saveLastText = (text) => {
+      if (!db) return;
+      const transaction = db.transaction(["user_data"], "readwrite");
+      const store = transaction.objectStore("user_data");
+      store.put({ key: "last_text", value: text });
     };
 
     return that;
   })();
 
-  (function () {
+  (async function () {
     ui.updateByAlphabetMode();
-
     settingsManager.loadSettings();
     settingsManager.applySettings();
     settingsManager.loadUserPhrases();
     settingsManager.loadExcludedPhrases();
-    settingsManager.loadLastText();
 
     let shiftKeyIsPressed = false;
     document.getElementById("text_area").addEventListener("keyup", (event) => {
@@ -835,6 +876,7 @@ let example = (() => {
       for (const feature of features) {
         document.getElementById(feature).style.display = "none";
       }
+      console.log("Toggling feature:", id);
       document.getElementById(id).style.display = "flex";
       if (id === "feature_input") {
         document.getElementById("text_area").focus();
@@ -881,10 +923,12 @@ let example = (() => {
 
     document.getElementById("text_area").addEventListener("input", (event) => {
       console.log("Text changed:", event.target.value);
-      settingsManager.saveLastText();
+      databaseManager.saveLastText(event.target.value);
     });
-
-    document.getElementById("text_area");
+    await databaseManager.init();
+    databaseManager.loadLastText().then((text) => {
+      document.getElementById("text_area").value = text;
+    });
   })();
 
   let example = {};
