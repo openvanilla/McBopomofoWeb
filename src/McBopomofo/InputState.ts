@@ -48,12 +48,10 @@ export class EmptyIgnoringPrevious implements InputState {
 /**  The state for committing text into the desired application. */
 /* istanbul ignore next */
 export class Committing implements InputState {
-  /** The text to commit. */
-  readonly text: string;
-
-  constructor(text: string) {
-    this.text = text;
-  }
+  constructor(
+    /** The text to commit. */
+    readonly text: string
+  ) {}
 
   toString(): string {
     return "Committing " + this.text;
@@ -66,24 +64,20 @@ export class Committing implements InputState {
  */
 /* istanbul ignore next */
 export class NotEmpty implements InputState {
-  /**
-   * A string buffer that stores the current composing text. This represents the
-   * text that is currently being typed but not yet committed.
-   */
-  readonly composingBuffer: string;
-  /**
-   * The current cursor position in the composition buffer. Represents the index
-   * where new input will be inserted.
-   */
-  readonly cursorIndex: number;
-  /** The tooltip to display for this input state */
-  readonly tooltip: string;
-
-  constructor(buf: string, index: number, tooltipText: string = "") {
-    this.composingBuffer = buf;
-    this.cursorIndex = index;
-    this.tooltip = tooltipText;
-  }
+  constructor(
+    /**
+     * A string buffer that stores the current composing text. This represents the
+     * text that is currently being typed but not yet committed.
+     */
+    readonly composingBuffer: string,
+    /**
+     * The current cursor position in the composition buffer. Represents the index
+     * where new input will be inserted.
+     */
+    readonly cursorIndex: number,
+    /** The tooltip to display for this input state */
+    readonly tooltip: string = ""
+  ) {}
 
   toString(): string {
     return "NotEmpty";
@@ -108,20 +102,15 @@ export class Inputting extends NotEmpty {
 /** Candidate selecting state with a non-empty composing buffer. */
 /* istanbul ignore next */
 export class ChoosingCandidate extends NotEmpty {
-  /** The candidates to choose from. */
-  readonly candidates: Candidate[];
-  /** The index of the cursor when the user starts to choose for candidates. */
-  readonly originalCursorIndex: number;
-
   constructor(
     buf: string,
     index: number,
-    cs: Candidate[],
-    originalCursorIndex: number
+    /** The candidates to choose from. */
+    readonly candidates: Candidate[],
+    /** The index of the cursor when the user starts to choose for candidates. */
+    readonly originalCursorIndex: number
   ) {
     super(buf, index);
-    this.candidates = cs;
-    this.originalCursorIndex = originalCursorIndex;
   }
 
   toString(): string {
@@ -142,95 +131,83 @@ export class ChoosingCandidate extends NotEmpty {
  */
 /* istanbul ignore next */
 export class Marking extends NotEmpty {
-  /** The index of the cursor that the user starts to make a marked range. It
-   * helps to restore the position of the cursor. */
-  readonly markStartGridCursorIndex: number;
-  /** THe text before the marked text. */
-  readonly head: string;
-  /** The marked text. */
-  readonly markedText: string;
-  /** The text after the marked text. */
-  readonly tail: string;
-  /** The Bopomofo reading of the marked text. */
-  readonly reading: string;
-  /** Whether the marked text could be saved to the user phrases. */
-  readonly acceptable: boolean;
-
-  toString(): string {
-    return "Marking " + this.markStartGridCursorIndex + "" + this.cursorIndex;
-  }
-
   constructor(
     buf: string,
     index: number,
     tooltipText: string,
-    startCursorIndexInGrid: number,
-    headText: string,
-    markedText: string,
-    tailText: string,
-    readingText: string,
-    canAccept: boolean
+    /** The index of the cursor that the user starts to make a marked range. It
+     * helps to restore the position of the cursor. */
+    readonly markStartGridCursorIndex: number,
+    /** THe text before the marked text. */
+    readonly head: string,
+    /** The marked text. */
+    readonly markedText: string,
+    /** The text after the marked text. */
+    readonly tail: string,
+    /** The Bopomofo reading of the marked text. */
+    readonly reading: string,
+    /** Whether the marked text could be saved to the user phrases. */
+    readonly acceptable: boolean
   ) {
     super(buf, index, tooltipText);
-    this.markStartGridCursorIndex = startCursorIndexInGrid;
-    this.head = headText;
-    this.markedText = markedText;
-    this.tail = tailText;
-    this.reading = readingText;
-    this.acceptable = canAccept;
+  }
+
+  toString(): string {
+    return "Marking " + this.markStartGridCursorIndex + "" + this.cursorIndex;
   }
 }
 
 /** Represents that the user is selecting a dictionary service. */
 /* istanbul ignore next */
 export class SelectingDictionary extends NotEmpty {
-  /** The previous input state. */
-  readonly previousState: NotEmpty;
-  /** The selected phrase. */
-  readonly selectedPrase: string;
-  /** The index of the selected phrase. */
-  readonly selectedIndex: number;
-  /** The menu of dictionary services. */
-  readonly menu: string[];
-
   constructor(
-    previousState: NotEmpty,
-    selectedPrase: string,
-    selectedIndex: number,
-    menu: string[]
+    /** The previous input state. */
+    readonly previousState: NotEmpty,
+    /** The selected phrase. */
+    readonly selectedPrase: string,
+    /** The index of the selected phrase. */
+    readonly selectedIndex: number,
+    /** The menu of dictionary services. */
+    readonly menu: string[]
   ) {
     super(
       previousState.composingBuffer,
       previousState.cursorIndex,
       previousState.tooltip
     );
-    this.previousState = previousState;
-    this.selectedPrase = selectedPrase;
-    this.selectedIndex = selectedIndex;
-    this.menu = menu;
   }
 }
 
+/**
+ * Represents the state where the user is viewing detailed character information
+ * for a selected phrase, such as string length, UTF-8 hex, UTF-16 hex, and
+ * URL-encoded forms.
+ */
 export class ShowingCharInfo extends NotEmpty {
-  readonly previousState: SelectingDictionary;
-  readonly selectedPhrase: string = "";
+  /** The menu of character information. */
   readonly menu: string[] = [];
 
-  constructor(previousState: SelectingDictionary, selectedString: string) {
+  /**
+   * Creates an instance of ShowingCharInfo.
+   * @param previousState The previous input state, which was a dictionary
+   * selection.
+   * @param selectedPhrase The phrase for which character information is being
+   * shown.
+   */
+  constructor(
+    readonly previousState: SelectingDictionary,
+    readonly selectedPhrase: string
+  ) {
     super(
       previousState.composingBuffer,
       previousState.cursorIndex,
       previousState.tooltip
     );
-    this.previousState = previousState;
-    this.selectedPhrase = selectedString;
     this.buildMenu();
   }
 
   private buildMenu() {
-    this.menu.push(
-      "JavaScript String length: " + this.selectedPhrase.length
-    );
+    this.menu.push("JavaScript String length: " + this.selectedPhrase.length);
 
     try {
       const encoder = new TextEncoder();
@@ -256,23 +233,33 @@ export class ShowingCharInfo extends NotEmpty {
   }
 }
 
+/** Represents that the user is inputting a number. */
 export class NumberInput implements InputState {
+  /**
+   * Creates an instance of NumberInput.
+   * @param number The number string entered by the user.
+   * @param candidates The list of candidate characters or phrases corresponding
+   * to the number.
+   */
   constructor(readonly number: string, readonly candidates: Candidate[]) {}
 
+  /**
+   * Gets the composition buffer string with "[數字]" prefix and the current
+   * input number.
+   * @returns A string that combines "[數字]" and the current input number.
+   */
   get composingBuffer(): string {
     return "[數字] " + this.number;
   }
 }
 
 /** Represents that the user is inputting a Big5 code. */
-/* istanbul ignore next */
 export class Big5 implements InputState {
-  /** The user inputted code. */
-  readonly code: string;
-
-  constructor(code: string = "") {
-    this.code = code;
-  }
+  /**
+   * Creates an instance of Big5.
+   * @param code The user inputted code.
+   */
+  constructor(readonly code: string = "") {}
 
   /**
    * Gets the composition buffer string with "[內碼]" prefix and the current
@@ -289,8 +276,11 @@ export class Big5 implements InputState {
  * This class implements the InputState interface and manages a collection of
  * date/time macro strings that can be converted to actual values.
  */
-/* istanbul ignore next */
 export class SelectingDateMacro implements InputState {
+  /**
+   * Defines a list of macro strings representing various date and time formats.
+   * These macros are used to generate corresponding date/time values.
+   */
   static macros: string[] = [
     "MACRO@DATE_TODAY_SHORT",
     "MACRO@DATE_TODAY_MEDIUM",
@@ -327,15 +317,17 @@ export class SelectingDateMacro implements InputState {
  * state.
  */
 export class Feature {
-  /** The name of the feature. */
-  readonly name: string;
-  /** A function that returns the next input state.  */
-  readonly nextState: () => InputState;
-
-  constructor(name: string, nextState: () => InputState) {
-    this.name = name;
-    this.nextState = nextState;
-  }
+  /**
+   * Creates an instance of Feature.
+   * @param name The name of the feature.
+   * @param nextState A function that returns the next input state.
+   */
+  constructor(
+    /** The name of the feature. */
+    readonly name: string,
+    /** A function that returns the next input state.  */
+    readonly nextState: () => InputState
+  ) {}
 
   toString(): string {
     return this.name;
@@ -349,6 +341,9 @@ export class Feature {
  */
 /* istanbul ignore next */
 export class SelectingFeature implements InputState {
+  /**
+   * The list of available features.
+   */
   readonly features: Feature[] = (() => {
     var features: Feature[] = [];
 
@@ -366,7 +361,17 @@ export class SelectingFeature implements InputState {
     return features;
   })();
 
+  /**
+   * A function to convert macro strings (e.g., date/time macros) to their
+   * actual string values.
+   */
   converter: (input: string) => string;
+
+  /**
+   * Constructs a new SelectingFeature instance.
+   * @param converter A function to convert macro strings (e.g., date/time
+   * macros) to their actual string values.
+   */
   constructor(converter: (input: string) => string) {
     this.converter = converter;
   }
@@ -379,13 +384,7 @@ export class SelectingFeature implements InputState {
  * gets executed when the menu item is selected.
  */
 export class CustomMenuEntry {
-  readonly title: string;
-  readonly callback: () => void;
-
-  constructor(title: string, callback: () => void) {
-    this.title = title;
-    this.callback = callback;
-  }
+  constructor(readonly title: string, readonly callback: () => void) {}
 }
 
 /**
@@ -397,16 +396,13 @@ export class CustomMenuEntry {
  * @extends NotEmpty
  */
 export class CustomMenu extends NotEmpty {
-  readonly entries: CustomMenuEntry[];
-
   constructor(
     composingBuffer: string,
     cursorIndex: number,
     title: string,
-    entries: CustomMenuEntry[]
+    readonly entries: CustomMenuEntry[]
   ) {
     super(composingBuffer, cursorIndex, title);
-    this.entries = entries;
   }
 
   toString(): string {

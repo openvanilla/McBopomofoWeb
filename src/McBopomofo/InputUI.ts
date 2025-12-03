@@ -40,11 +40,17 @@ export class InputUIState {
    * @param candidatePageIndex The current page index of candidates.
    */
   constructor(
+    /** The composing buffer. */
     readonly composingBuffer: ComposingBufferText[],
+    /** The cursor index. */
     readonly cursorIndex: number,
+    /** The candidates. */
     readonly candidates: CandidateWrapper[],
+    /** The tooltip. */
     readonly tooltip: string,
+    /** The total number of candidate pages. */
     readonly candidatePageCount: number,
+    /** The current page index of candidates. */
     readonly candidatePageIndex: number
   ) {}
 }
