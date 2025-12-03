@@ -1966,3 +1966,40 @@ describe("KeyHandler", () => {
     });
   });
 });
+
+describe("Changing reading using tone key", () => {
+  function checkChangingReadingUsingToneKey(input: string, expected: string) {
+    let keyHandler: KeyHandler = new KeyHandler(new WebLanguageModel(webData));
+    let currentState: InputState = new Empty();
+    const keys = input.split("");
+
+    for (const char of keys) {
+      const key = Key.asciiKey(char); // Assuming single character input
+      keyHandler.handle(
+        key,
+        currentState,
+        (newState) => {
+          currentState = newState;
+        },
+        () => {}
+      );
+    }
+
+    expect(currentState).toBeInstanceOf(Inputting);
+    if (currentState instanceof Inputting) {
+      expect(currentState.composingBuffer).toBe(expected);
+    }
+  }
+
+  test("Input 小麥 then change to tone 3", () => {
+    checkChangingReadingUsingToneKey("vul3a943", "小買");
+  });
+
+  test("Input 小麥 then change to tone 4", () => {
+    checkChangingReadingUsingToneKey("vul3a946", "小埋");
+  });
+
+  test("Input 小麥 then change to tone 5", () => {
+    checkChangingReadingUsingToneKey("vul3a947", "小麥˙");
+  });
+});

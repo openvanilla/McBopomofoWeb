@@ -8,12 +8,19 @@
 import { BopomofoKeyboardLayout } from "./BopomofoKeyboardLayout";
 import { BopomofoSyllable } from "./BopomofoSyllable";
 
+/**
+ * The buffer used to store the Bopomofo reading.
+ */
 export class BopomofoReadingBuffer {
   private layout_: BopomofoKeyboardLayout;
   private syllable_: BopomofoSyllable = new BopomofoSyllable(0);
   private pinyinMode_: boolean = false;
   private pinyinSequence_: string = "";
 
+  /**
+   * Creates a new reading buffer.
+   * @param layout The keyboard layout to use.
+   */
   constructor(layout: BopomofoKeyboardLayout) {
     this.layout_ = layout;
     if (this.layout_ === BopomofoKeyboardLayout.HanyuPinyinLayout) {
@@ -22,6 +29,9 @@ export class BopomofoReadingBuffer {
     }
   }
 
+  /**
+   * The keyboard layout used by the buffer.
+   */
   public get keyboardLayout(): BopomofoKeyboardLayout {
     return this.layout_;
   }
@@ -36,6 +46,11 @@ export class BopomofoReadingBuffer {
     }
   }
 
+  /**
+   * Checks if a key is valid for the current layout.
+   * @param k The key to check.
+   * @returns True if the key is valid, false otherwise.
+   */
   isValidKey(k: string): boolean {
     if (!this.pinyinMode_) {
       return this.layout_.keyToComponents(k).length > 0;
@@ -64,6 +79,11 @@ export class BopomofoReadingBuffer {
     return false;
   }
 
+  /**
+   * Appends a key to the buffer.
+   * @param k The key to append.
+   * @returns True if the key was successfully appended, false otherwise.
+   */
   combineKey(k: string): boolean {
     if (!this.isValidKey(k)) return false;
 
@@ -79,11 +99,17 @@ export class BopomofoReadingBuffer {
     return true;
   }
 
+  /**
+   * Clears the buffer.
+   */
   clear(): void {
     this.pinyinSequence_ = "";
     this.syllable_.clear();
   }
 
+  /**
+   * Removes the last key from the buffer.
+   */
   backspace(): void {
     if (!this.layout_) return;
 
@@ -105,10 +131,16 @@ export class BopomofoReadingBuffer {
     }
   }
 
+  /**
+   * Whether the buffer is empty.
+   */
   get isEmpty(): boolean {
     return this.syllable_.isEmpty;
   }
 
+  /**
+   * The composed string of the buffer.
+   */
   get composedString(): string {
     if (this.pinyinMode_) {
       return this.pinyinSequence_;
@@ -117,20 +149,48 @@ export class BopomofoReadingBuffer {
     return this.syllable_.composedString;
   }
 
+  /**
+   * The current syllable in the buffer.
+   */
   get syllable(): BopomofoSyllable {
     return this.syllable_;
   }
 
+  /**
+   * Sets the syllable, removing the tone marker.
+   * @param syllable The syllable to set.
+   */
+  setSyllableRemovingTone(syllable: BopomofoSyllable) {
+    const masked =
+      syllable.consonantComponent |
+      syllable.middleVowelComponent |
+      syllable.vowelComponent;
+    this.syllable_ = new BopomofoSyllable(masked);
+    if (this.pinyinMode_) {
+      this.pinyinSequence_ = this.syllable_.HanyuPinyinString(false, false);
+    }
+  }
+
+  /**
+   * Returns the key sequence in the standard layout.
+   * @returns The key sequence.
+   */
   standardLayoutQueryString(): string {
     return BopomofoKeyboardLayout.StandardLayout.keySequenceFromSyllable(
       this.syllable_
     );
   }
 
+  /**
+   * Whether the buffer has a tone marker.
+   */
   get hasToneMarker(): boolean {
     return this.syllable_.hasToneMarker;
   }
 
+  /**
+   * Whether the buffer has only a tone marker.
+   */
   get hasToneMarkerOnly(): boolean {
     return (
       this.syllable_.hasToneMarker &&

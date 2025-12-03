@@ -326,6 +326,53 @@ export class KeyHandler {
       }
     }
 
+    // if (_bpmfReadingBuffer->hasToneMarkerOnly() && _grid->readings().size() > 0 && _grid->cursor() > 0) {
+    //     size_t cursor = _grid->cursor() - 1;
+    //     const std::string reading = _grid->readings()[cursor];
+    //     if (!reading.empty() && reading[0] != '_') {
+    //         Formosa::Mandarin::BopomofoReadingBuffer tmpBuffer(_bpmfReadingBuffer->keyboardLayout());
+    //         Formosa::Mandarin::BopomofoSyllable syllable =      Formosa::Mandarin::BopomofoSyllable::FromComposedString(reading);
+    //         tmpBuffer.setSyllableRemovingTone(syllable);
+    //         tmpBuffer.combineKey((char)charCode);
+    //         std::string newReading = tmpBuffer.syllable().composedString();
+    //         if (_languageModel->hasUnigrams(newReading)) {
+    //             _bpmfReadingBuffer->clear();
+    //             _grid->deleteReadingBeforeCursor();
+    //             _grid->insertReading(newReading);
+    //             [self _walk];
+    //             InputStateInputting *inputting = (InputStateInputting *)[self buildInputtingState];
+    //             stateCallback(inputting);
+    //             return YES;
+    //         }
+    //     }
+    // }
+
+    if (
+      this.reading_.hasToneMarkerOnly &&
+      this.grid_.length > 0 &&
+      this.grid_.cursor > 0
+    ) {
+      const cursor = this.grid_.cursor - 1;
+      const reading = this.grid_.readings[cursor];
+      if (reading.length > 0 && reading[0] !== "_") {
+        const tmpBuffer = new BopomofoReadingBuffer(
+          this.reading_.keyboardLayout
+        );
+        const syllable = BopomofoSyllable.FromComposedString(reading);
+        tmpBuffer.setSyllableRemovingTone(syllable);
+        tmpBuffer.combineKey(key.ascii);
+        const newReading = tmpBuffer.syllable.composedString;
+        if (this.languageModel_.hasUnigrams(newReading)) {
+          this.reading_.clear();
+          this.grid_.deleteReadingBeforeCursor();
+          this.grid_.insertReading(newReading);
+          this.walk();
+          stateCallback(this.buildInputtingState());
+          return true;
+        }
+      }
+    }
+
     // Compose the reading if either there's a tone marker, or if the reading is
     // not empty, and space is pressed.
     const shouldComposeReading =
