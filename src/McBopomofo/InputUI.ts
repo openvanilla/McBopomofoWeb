@@ -15,57 +15,38 @@ export enum ComposingBufferTextStyle {
 
 /** Represents the composing buffer. */
 export class ComposingBufferText {
-  /** The text contained in the composing buffer. */
-  private text: string;
-  /** The text style. */
-  private style: ComposingBufferTextStyle;
-
+  /**
+   * Constructs a `ComposingBufferText` object.
+   * @param text The text content of the buffer segment.
+   * @param style The style of the text content. Defaults to `ComposingBufferTextStyle.Normal`.
+   */
   constructor(
-    text: string,
-    style: ComposingBufferTextStyle = ComposingBufferTextStyle.Normal
-  ) {
-    this.text = text;
-    this.style = style;
-  }
+    private text: string,
+    private style: ComposingBufferTextStyle = ComposingBufferTextStyle.Normal
+  ) {}
 }
 
 /**
  * A data transfer object for the UI state.
  */
 export class InputUIState {
-  /** Represents the composing buffer.   */
-  readonly composingBuffer: ComposingBufferText[];
-
-  /** The index of the cursor in the composing buffer. */
-  readonly cursorIndex: number;
-
-  /** The current page of the candidates. */
-  readonly candidates: CandidateWrapper[];
-
-  /** The total pages of the candidates, */
-  readonly candidatePageCount: number;
-
-  /** The current page index of the candidates, */
-  readonly candidatePageIndex: number;
-
-  /** The tooltip. */
-  readonly tooltip: string;
-
+  /**
+   * Constructs an InputUIState object.
+   * @param composingBuffer An array of `ComposingBufferText` representing the current composing buffer.
+   * @param cursorIndex The current position of the cursor within the composing buffer.
+   * @param candidates An array of `CandidateWrapper` representing the available candidates.
+   * @param tooltip A string to be displayed as a tooltip.
+   * @param candidatePageCount The total number of candidate pages.
+   * @param candidatePageIndex The current page index of candidates.
+   */
   constructor(
-    composingBuffer: ComposingBufferText[],
-    cursorIndex: number,
-    candidates: CandidateWrapper[],
-    tooltip: string,
-    candidatePageCount: number,
-    candidatePageIndex: number
-  ) {
-    this.composingBuffer = composingBuffer;
-    this.cursorIndex = cursorIndex;
-    this.candidates = candidates;
-    this.tooltip = tooltip;
-    this.candidatePageCount = candidatePageCount;
-    this.candidatePageIndex = candidatePageIndex;
-  }
+    readonly composingBuffer: ComposingBufferText[],
+    readonly cursorIndex: number,
+    readonly candidates: CandidateWrapper[],
+    readonly tooltip: string,
+    readonly candidatePageCount: number,
+    readonly candidatePageIndex: number
+  ) {}
 }
 
 /**
