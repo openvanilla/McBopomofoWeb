@@ -153,7 +153,7 @@ export class KeyHandler {
     this.halfWidthPunctuation_ = flag;
   }
 
-  private ctrlEnterOption_: CtrlEnterOption = CtrlEnterOption.none;
+  private ctrlEnterOption_: CtrlEnterOption = CtrlEnterOption.None;
   public get ctrlEnterOption(): CtrlEnterOption {
     return this.ctrlEnterOption_;
   }
@@ -505,7 +505,7 @@ export class KeyHandler {
       }
 
       if (this.traditionalMode_ === false && key.ctrlPressed) {
-        if (this.ctrlEnterOption_ === CtrlEnterOption.bpmfReadings) {
+        if (this.ctrlEnterOption_ === CtrlEnterOption.BpmfReadings) {
           const readings = this.grid_.readings;
           const readingValue = readings.join(kJoinSeparator);
 
@@ -513,7 +513,7 @@ export class KeyHandler {
           stateCallback(committing);
           this.reset();
           return true;
-        } else if (this.ctrlEnterOption_ === CtrlEnterOption.htmlRuby) {
+        } else if (this.ctrlEnterOption_ === CtrlEnterOption.HtmlRuby) {
           let composed = "";
           for (const node of this.latestWalk_?.nodes ?? []) {
             let reading = node.reading;
@@ -532,7 +532,7 @@ export class KeyHandler {
           stateCallback(committing);
           this.reset();
           return true;
-        } else if (this.ctrlEnterOption_ === CtrlEnterOption.bopomofoBraille) {
+        } else if (this.ctrlEnterOption_ === CtrlEnterOption.BopomofoBraille) {
           let composed = "";
 
           for (const node of this.latestWalk_?.nodes ?? []) {
@@ -554,7 +554,7 @@ export class KeyHandler {
           stateCallback(committing);
           this.reset();
           return true;
-        } else if (this.ctrlEnterOption_ === CtrlEnterOption.hanyuPinyin) {
+        } else if (this.ctrlEnterOption_ === CtrlEnterOption.HanyuPinyin) {
           const pinyinComponents = [];
           for (const node of this.latestWalk_?.nodes ?? []) {
             const reading = node.reading;

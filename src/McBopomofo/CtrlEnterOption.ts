@@ -8,9 +8,9 @@
  * - hanyuPinyin: Send the Hanyu Pinyin readings of the text.
  */
 export enum CtrlEnterOption {
-  none = 0,
-  bpmfReadings = 1,
-  htmlRuby = 2,
-  bopomofoBraille = 3,
-  hanyuPinyin = 4,
+  None = 0,
+  BpmfReadings = 1,
+  HtmlRuby = 2,
+  BopomofoBraille = 3,
+  HanyuPinyin = 4,
 }

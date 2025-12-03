@@ -332,11 +332,11 @@ describe("InputController", () => {
     });
 
     it("sets ctrl enter option", () => {
-      controller.setCtrlEnterOption(CtrlEnterOption.none);
-      controller.setCtrlEnterOption(CtrlEnterOption.bpmfReadings);
-      controller.setCtrlEnterOption(CtrlEnterOption.htmlRuby);
-      controller.setCtrlEnterOption(CtrlEnterOption.bopomofoBraille);
-      controller.setCtrlEnterOption(CtrlEnterOption.hanyuPinyin);
+      controller.setCtrlEnterOption(CtrlEnterOption.None);
+      controller.setCtrlEnterOption(CtrlEnterOption.BpmfReadings);
+      controller.setCtrlEnterOption(CtrlEnterOption.HtmlRuby);
+      controller.setCtrlEnterOption(CtrlEnterOption.BopomofoBraille);
+      controller.setCtrlEnterOption(CtrlEnterOption.HanyuPinyin);
       // No exception should be thrown
     });
   });
