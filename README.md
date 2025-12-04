@@ -3,8 +3,9 @@
 ![Static Badge](https://img.shields.io/badge/platform-web-green)
 ![ChromeOS](https://img.shields.io/badge/platform-chome_os-yellow) ![Static Badge](https://img.shields.io/badge/platform-windows-blue) [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/openvanilla/McBopomofoWeb)
 
-本專案嘗試使用 JavaScript/TypeScript 與網頁相關技術實作小麥注音輸入法。小麥注音
-是一套自動選字的注音輸入法，提供多種常用鍵盤配置，以及各種方便快速輸入的功能。
+本專案嘗試使用 JavaScript/TypeScript 與網頁相關技術，實作小麥注音輸入法，並且延
+伸出各種文字服務。小麥注音是一套自動選字的注音輸入法，提供多種常用鍵盤配置，以及
+各種方便快速輸入的功能。
 
 在專案目錄下提供
 
@@ -19,20 +20,18 @@
 - 國字轉換成台灣點字
 - 台灣點字轉換成國字
 
-這些文字服務除了可以用在 Chrome 瀏覽器的右鍵選單之外，也可以當成 MCP server 使用。
-
-## 目錄
+這些文字服務除了可以用在 Chrome 瀏覽器的右鍵選單之外，也可以當成 MCP server 使
+用。
 
 <!-- TOC -->
 
 - [McBopomofoWeb - 使用網頁技術打造的小麥注音輸入法](#mcbopomofoweb---%E4%BD%BF%E7%94%A8%E7%B6%B2%E9%A0%81%E6%8A%80%E8%A1%93%E6%89%93%E9%80%A0%E7%9A%84%E5%B0%8F%E9%BA%A5%E6%B3%A8%E9%9F%B3%E8%BC%B8%E5%85%A5%E6%B3%95)
-  - [目錄](#%E7%9B%AE%E9%8C%84)
   - [使用](#%E4%BD%BF%E7%94%A8)
   - [編譯方式](#%E7%B7%A8%E8%AD%AF%E6%96%B9%E5%BC%8F)
     - [編譯範例網頁](#%E7%B7%A8%E8%AD%AF%E7%AF%84%E4%BE%8B%E7%B6%B2%E9%A0%81)
     - [編譯與測試 Chrome OS 版本](#%E7%B7%A8%E8%AD%AF%E8%88%87%E6%B8%AC%E8%A9%A6-chrome-os-%E7%89%88%E6%9C%AC)
     - [編譯與測試 Windows 上的 PIME 版本](#%E7%B7%A8%E8%AD%AF%E8%88%87%E6%B8%AC%E8%A9%A6-windows-%E4%B8%8A%E7%9A%84-pime-%E7%89%88%E6%9C%AC)
-  - [MCP](#mcp)
+    - [編譯 MCP](#%E7%B7%A8%E8%AD%AF-mcp)
   - [第三方套件](#%E7%AC%AC%E4%B8%89%E6%96%B9%E5%A5%97%E4%BB%B6)
   - [社群公約](#%E7%A4%BE%E7%BE%A4%E5%85%AC%E7%B4%84)
   - [軟體授權](#%E8%BB%9F%E9%AB%94%E6%8E%88%E6%AC%8A)
@@ -89,7 +88,7 @@ set COMMAND="powershell Get-Content -Tail 10 -Wait %LOG_FILE%"
 powershell -noexit %COMMAND%
 ```
 
-## MCP
+### 編譯 MCP
 
 您可以將小麥注音當成 MCP 伺服器使用，提供國字注音、國字轉點字、點字轉國字等服務。要編譯這個 MCP 服務，請執行
 
@@ -124,6 +123,8 @@ node index.js
 
 
 ## 其他
+
+### Microsoft Word Add-in
 
 在 others 目錄中，我們提供了一個 Word Add-in，方便在 Microsoft Word 中使用國字轉換點字的相關功能。使用方式如下：
 
