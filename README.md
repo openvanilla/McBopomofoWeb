@@ -19,20 +19,26 @@
 - 國字轉換成台灣點字
 - 台灣點字轉換成國字
 
+這些文字服務除了可以用在 Chrome 瀏覽器的右鍵選單之外，也可以當成 MCP server 使用。
+
 ## 目錄
 
-- [McBopomofoWeb - 使用網頁技術打造的小麥注音輸入法](#mcbopomofoweb---使用網頁技術打造的小麥注音輸入法)
-  - [目錄](#目錄)
-  - [使用](#使用)
-  - [編譯方式](#編譯方式)
-    - [編譯範例網頁](#編譯範例網頁)
-    - [編譯與測試 Chrome OS 版本](#編譯與測試-chrome-os-版本)
-    - [編譯與測試 Windows 上的 PIME 版本](#編譯與測試-windows-上的-pime-版本)
-  - [其他](#其他)
-  - [第三方套件](#第三方套件)
-  - [社群公約](#社群公約)
-  - [軟體授權](#軟體授權)
-  - [感謝](#感謝)
+<!-- TOC -->
+
+- [McBopomofoWeb - 使用網頁技術打造的小麥注音輸入法](#mcbopomofoweb---%E4%BD%BF%E7%94%A8%E7%B6%B2%E9%A0%81%E6%8A%80%E8%A1%93%E6%89%93%E9%80%A0%E7%9A%84%E5%B0%8F%E9%BA%A5%E6%B3%A8%E9%9F%B3%E8%BC%B8%E5%85%A5%E6%B3%95)
+  - [目錄](#%E7%9B%AE%E9%8C%84)
+  - [使用](#%E4%BD%BF%E7%94%A8)
+  - [編譯方式](#%E7%B7%A8%E8%AD%AF%E6%96%B9%E5%BC%8F)
+    - [編譯範例網頁](#%E7%B7%A8%E8%AD%AF%E7%AF%84%E4%BE%8B%E7%B6%B2%E9%A0%81)
+    - [編譯與測試 Chrome OS 版本](#%E7%B7%A8%E8%AD%AF%E8%88%87%E6%B8%AC%E8%A9%A6-chrome-os-%E7%89%88%E6%9C%AC)
+    - [編譯與測試 Windows 上的 PIME 版本](#%E7%B7%A8%E8%AD%AF%E8%88%87%E6%B8%AC%E8%A9%A6-windows-%E4%B8%8A%E7%9A%84-pime-%E7%89%88%E6%9C%AC)
+  - [MCP](#mcp)
+  - [第三方套件](#%E7%AC%AC%E4%B8%89%E6%96%B9%E5%A5%97%E4%BB%B6)
+  - [社群公約](#%E7%A4%BE%E7%BE%A4%E5%85%AC%E7%B4%84)
+  - [軟體授權](#%E8%BB%9F%E9%AB%94%E6%8E%88%E6%AC%8A)
+  - [感謝](#%E6%84%9F%E8%AC%9D)
+
+<!-- /TOC -->
 
 ## 使用
 
@@ -83,6 +89,40 @@ set COMMAND="powershell Get-Content -Tail 10 -Wait %LOG_FILE%"
 powershell -noexit %COMMAND%
 ```
 
+## MCP
+
+您可以將小麥注音當成 MCP 伺服器使用，提供國字注音、國字轉點字、點字轉國字等服務。要編譯這個 MCP 服務，請執行
+
+```sh
+npm run build:mcp
+```
+
+產出的檔案位在 output/mcp 目錄下。您可以使用 Node.js 執行這個 MCP 伺服器：
+
+```sh
+cd output/mcp
+node index.js
+```
+
+如果要搭配 Claude 使用，以 macOS 為例。您需要打開 claude 的設定檔 `~/Library/ApplicationSupport/Claude/claude_desktop_config.json`，加入以下的設定：
+
+````json
+{
+  "mcpServers": {
+    "my-local-server": {
+      "command": "node",
+      "args": ["/PATH/TO/output/mcp/index.js"],
+      "env": {
+        "PORT": "3000"
+      }
+    }
+  }
+}
+```
+
+您也可以按照自己的需求，部屬在其他的主機上。
+
+
 ## 其他
 
 在 others 目錄中，我們提供了一個 Word Add-in，方便在 Microsoft Word 中使用國字轉換點字的相關功能。使用方式如下：
@@ -91,7 +131,7 @@ powershell -noexit %COMMAND%
 cd others/WordAddin
 npm install
 npm run start:desktop
-```
+````
 
 如果您的電腦（Windows 或 macOS）上裝了 Microsoft Word，那麼就會自動開啟 Word，並且在 Word 中啟用這個 Add-in。如果您想在網頁版本的 Word 當中測試，請參考微軟的文件 [Sideload Office Add-ins to Office on the web](https://learn.microsoft.com/en-us/office/dev/add-ins/testing/sideload-office-add-ins-for-testing)。
 
