@@ -12,6 +12,7 @@ import { z } from "zod";
 import { Service } from "./McBopomofo/Service";
 import express from "express";
 import bodyParser from "body-parser";
+import { BopomofoBrailleConverter } from "./BopomofoBraille";
 
 const service = new Service();
 
@@ -46,6 +47,38 @@ const tools = [
         },
       },
       required: ["text"],
+    },
+  },
+  {
+    name: "convertBpmfToBraille",
+    description:
+      "將注音、數字或英文字母轉換為台灣點字 (Convert Bopomofo syllable to Taiwanese Braille).",
+    inputSchema: {
+      type: "object",
+      properties: {
+        bpmf: {
+          type: "string",
+          description:
+            "包含注音 、數字或英文的字串 (Text content), 例如: ㄗㄠˇㄐㄧㄡˋ",
+        },
+      },
+      required: ["bpmf"],
+    },
+  },
+  {
+    name: "convertBrailleToBpmf",
+    description:
+      "將台灣點字字串轉換為注音 (Convert Taiwanese Braille to Bopomofo syllable).",
+    inputSchema: {
+      type: "object",
+      properties: {
+        braille: {
+          type: "string",
+          description:
+            "點字 Unicode 字串 (Braille Unicode String), 例如: ⠓⠩⠈⠅⠎⠐",
+        },
+      },
+      required: ["braille"],
     },
   },
 ];
@@ -99,6 +132,21 @@ async function runServerTransport() {
           content: [{ type: "text", text: result }],
         };
       }
+      if (name === "convertBpmfToBraille") {
+        const { bpmf } = safeParse(z.object({ bpmf: z.string() }), args);
+        const result = BopomofoBrailleConverter.convertBpmfToBraille(bpmf);
+        return {
+          content: [{ type: "text", text: result }],
+        };
+      }
+      if (name === "convertBrailleToBpmf") {
+        const { braille } = safeParse(z.object({ braille: z.string() }), args);
+        const result = BopomofoBrailleConverter.convertBrailleToBpmf(braille);
+        return {
+          content: [{ type: "text", text: result }],
+        };
+      }
+
       throw new Error(`Unknown tool: ${name}`);
     } catch (error) {
       const errorMessage =
@@ -112,7 +160,7 @@ async function runServerTransport() {
 
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  console.log("McBopomofo Braille MCP Server running on stdio");
+  // console.log("McBopomofo Braille MCP Server running on stdio");
 }
 
 async function runHttpServer() {
@@ -160,14 +208,48 @@ async function runHttpServer() {
     }
   });
 
+  app.post("/convertBpmfToBraille", (req, res) => {
+    try {
+      const { bpmf } = req.body;
+      if (typeof bpmf !== "string") {
+        return res
+          .status(400)
+          .json({ error: "Invalid request: 'bpmf' string is required." });
+      }
+      const result = BopomofoBrailleConverter.convertBpmfToBraille(bpmf);
+      res.json({ type: "text", text: result });
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      res.status(500).json({ error: errorMessage });
+    }
+  });
+
+  app.post("/convertBrailleToBpmf", (req, res) => {
+    try {
+      const { braille } = req.body;
+      if (typeof braille !== "string") {
+        return res
+          .status(400)
+          .json({ error: "Invalid request: 'braille' string is required." });
+      }
+      const result = BopomofoBrailleConverter.convertBrailleToBpmf(braille);
+      res.json({ type: "text", text: result });
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      res.status(500).json({ error: errorMessage });
+    }
+  });
+
   app.get("/tools", (req, res) => {
     res.json({ tools });
   });
 
   app.listen(PORT, () => {
-    console.error(
-      `McBopomofo Braille MCP Server (HTTP) running on port ${PORT}`
-    );
+    // console.error(
+    //   `McBopomofo Braille MCP Server (HTTP) running on port ${PORT}`
+    // );
   });
 }
 
