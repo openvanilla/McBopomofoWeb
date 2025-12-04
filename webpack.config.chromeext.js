@@ -10,6 +10,7 @@ module.exports = {
         include: [path.resolve(__dirname, "src")],
         exclude: [
           path.resolve(__dirname, "src/index.ts"),
+          path.resolve(__dirname, "src/mcp.ts"),
           path.resolve(__dirname, "src/pime.ts"),
           path.resolve(__dirname, "src/pime_keys.ts"),
         ],

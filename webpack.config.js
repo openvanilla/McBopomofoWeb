@@ -11,6 +11,7 @@ module.exports = {
           path.resolve(__dirname, "src/chromeos_ime.ts"),
           path.resolve(__dirname, "src/pime.ts"),
           path.resolve(__dirname, "src/pime_keys.ts"),
+          path.resolve(__dirname, "src/mcp.ts"),
           path.resolve(__dirname, "src/LargeSync/LargeSync.ts"),
         ],
         use: "ts-loader",

@@ -1,8 +1,7 @@
 const path = require("path");
 
 module.exports = {
-  target: "node",
-  entry: "./src/pime.ts",
+  entry: "./src/mcp.ts",
   module: {
     rules: [
       {
@@ -11,7 +10,8 @@ module.exports = {
         exclude: [
           path.resolve(__dirname, "src/index.ts"),
           path.resolve(__dirname, "src/chromeos_ime.ts"),
-          path.resolve(__dirname, "src/mcp.ts"),
+          path.resolve(__dirname, "src/pime.ts"),
+          path.resolve(__dirname, "src/pime_keys.ts"),
           path.resolve(__dirname, "src/LargeSync/LargeSync.ts"),
         ],
         use: "ts-loader",
@@ -21,11 +21,12 @@ module.exports = {
   resolve: {
     extensions: [".ts", ".js"],
   },
+  target: "node",
   output: {
     filename: "index.js",
     library: "mcbopomofo",
     libraryTarget: "umd",
     globalObject: "this",
-    path: path.resolve(__dirname, "output/pime"),
+    path: path.resolve(__dirname, "output/mcp"),
   },
 };

@@ -6,7 +6,6 @@ import { ReadingGrid } from "../Gramambular2";
 import { webData } from "./WebData";
 import { WebLanguageModel } from "./WebLanguageModel";
 import { BopomofoSyllable as MandarinBopomofoSyllable } from "../Mandarin";
-import { read } from "fs";
 
 const ChineseConvert = require("chinese_convert");
 
@@ -323,7 +322,8 @@ export class Service {
         const components = reading.split("-");
         for (let i = 0; i < components.length; i++) {
           const component = components[i];
-          const syllable = MandarinBopomofoSyllable.FromComposedString(component);
+          const syllable =
+            MandarinBopomofoSyllable.FromComposedString(component);
           const pinyin = syllable.HanyuPinyinString(false, false);
           pinyinComponents.push(pinyin);
         }
