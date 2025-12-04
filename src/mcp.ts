@@ -70,32 +70,35 @@ async function runServerTransport() {
     try {
       const { name, arguments: args } = request.params;
 
-      if (name === "convertBrailleToText") {
-        const parseResult = z.object({ braille: z.string() }).safeParse(args);
+      function safeParse(schema: z.ZodType<any>, args: any) {
+        const parseResult = schema.safeParse(args);
         if (!parseResult.success) {
           throw new Error("Invalid arguments: 'braille' string is required.");
         }
+        return parseResult.data;
+      }
 
-        const { braille } = parseResult.data;
+      if (name === "convertBrailleToText") {
+        const { braille } = safeParse(z.object({ braille: z.string() }), args);
         const result = service.convertBrailleToText(braille);
         return {
-          content: [{ type: "text", text: result }],
+          content: [
+            {
+              type: "text",
+              text: result,
+              hint: "這是由一個注音輸入法引擎將點字轉換成國字的轉換結果，當中可能包含中文錯字，LLM 可以按照需要，訂正當中的文字。",
+            },
+          ],
         };
       }
 
       if (name === "convertTextToBraille") {
-        const parseResult = z.object({ text: z.string() }).safeParse(args);
-        if (!parseResult.success) {
-          throw new Error("Invalid arguments: 'text' string is required.");
-        }
-
-        const { text } = parseResult.data;
+        const { text } = safeParse(z.object({ text: z.string() }), args);
         const result = service.convertTextToBraille(text);
         return {
           content: [{ type: "text", text: result }],
         };
       }
-
       throw new Error(`Unknown tool: ${name}`);
     } catch (error) {
       const errorMessage =
@@ -128,7 +131,11 @@ async function runHttpServer() {
       }
 
       const result = service.convertBrailleToText(braille);
-      res.json({ result });
+      res.json({
+        type: "text",
+        text: result,
+        hint: "這是由一個注音輸入法引擎將點字轉換成國字的轉換結果，當中可能包含中文錯字，LLM 可以按照需要，訂正當中的文字。",
+      });
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : String(error);
@@ -145,7 +152,7 @@ async function runHttpServer() {
           .json({ error: "Invalid request: 'text' string is required." });
       }
       const result = service.convertTextToBraille(text);
-      res.json({ result });
+      res.json({ type: "text", text: result });
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : String(error);
