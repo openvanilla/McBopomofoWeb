@@ -8,7 +8,7 @@ bundle.js
 *.crx
 *.LICENSE.txt
 output/pime/index.js
-output/mcp
+output/mcp/index.js
 installer/wix/McBopomofo/bin
 installer/wix/McBopomofo/*.msi
 *.wixpdb
