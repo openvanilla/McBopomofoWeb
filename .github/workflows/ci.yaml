@@ -90,6 +90,20 @@ jobs:
       - run: npm install
       - run: npm run build:pime
 
+  build_mcp:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [24.x, 23.x, 22.x, 21.x, 20.x, 19.x, 18.x]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm install
+      - run: npm run build:mcp
+
   # build_windows_installer:
   #   runs-on: windows-latest
   #   strategy:

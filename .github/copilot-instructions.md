@@ -191,4 +191,5 @@ AI agents may call a subagent to run `npm run test:coverage` to find code that i
 ## Additional Agent Notes
 
 - Before merging, run `npm run test` and ensure Chrome OS build still compiles via `npm run build:chromeos`.
+- CI now runs `npm run build:mcp` across Node 18-24; run this build locally when changing MCP-related code to mirror CI.
 - New language model data must include a short note in `README.md` summarizing changes for translators.
