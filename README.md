@@ -25,17 +25,19 @@
 
 <!-- TOC -->
 
-- [McBopomofoWeb - 使用網頁技術打造的小麥注音輸入法](#mcbopomofoweb---%E4%BD%BF%E7%94%A8%E7%B6%B2%E9%A0%81%E6%8A%80%E8%A1%93%E6%89%93%E9%80%A0%E7%9A%84%E5%B0%8F%E9%BA%A5%E6%B3%A8%E9%9F%B3%E8%BC%B8%E5%85%A5%E6%B3%95)
-  - [使用](#%E4%BD%BF%E7%94%A8)
-  - [編譯方式](#%E7%B7%A8%E8%AD%AF%E6%96%B9%E5%BC%8F)
-    - [編譯範例網頁](#%E7%B7%A8%E8%AD%AF%E7%AF%84%E4%BE%8B%E7%B6%B2%E9%A0%81)
-    - [編譯與測試 Chrome OS 版本](#%E7%B7%A8%E8%AD%AF%E8%88%87%E6%B8%AC%E8%A9%A6-chrome-os-%E7%89%88%E6%9C%AC)
-    - [編譯與測試 Windows 上的 PIME 版本](#%E7%B7%A8%E8%AD%AF%E8%88%87%E6%B8%AC%E8%A9%A6-windows-%E4%B8%8A%E7%9A%84-pime-%E7%89%88%E6%9C%AC)
-    - [編譯 MCP](#%E7%B7%A8%E8%AD%AF-mcp)
-  - [第三方套件](#%E7%AC%AC%E4%B8%89%E6%96%B9%E5%A5%97%E4%BB%B6)
-  - [社群公約](#%E7%A4%BE%E7%BE%A4%E5%85%AC%E7%B4%84)
-  - [軟體授權](#%E8%BB%9F%E9%AB%94%E6%8E%88%E6%AC%8A)
-  - [感謝](#%E6%84%9F%E8%AC%9D)
+- [McBopomofoWeb - 使用網頁技術打造的小麥注音輸入法](#mcbopomofoweb---使用網頁技術打造的小麥注音輸入法)
+  - [使用](#使用)
+  - [編譯方式](#編譯方式)
+    - [編譯範例網頁](#編譯範例網頁)
+    - [編譯與測試 Chrome OS 版本](#編譯與測試-chrome-os-版本)
+    - [編譯與測試 Windows 上的 PIME 版本](#編譯與測試-windows-上的-pime-版本)
+    - [編譯 MCP](#編譯-mcp)
+  - [其他](#其他)
+    - [Microsoft Word Add-in](#microsoft-word-add-in)
+  - [第三方套件](#第三方套件)
+  - [社群公約](#社群公約)
+  - [軟體授權](#軟體授權)
+  - [感謝](#感謝)
 
 <!-- /TOC -->
 
@@ -105,7 +107,7 @@ node index.js
 
 如果要搭配 Claude 使用，以 macOS 為例。您需要打開 claude 的設定檔 `~/Library/ApplicationSupport/Claude/claude_desktop_config.json`，加入以下的設定：
 
-````json
+```json
 {
   "mcpServers": {
     "my-local-server": {
@@ -121,7 +123,6 @@ node index.js
 
 您也可以按照自己的需求，部屬在其他的主機上。
 
-
 ## 其他
 
 ### Microsoft Word Add-in
@@ -132,7 +133,7 @@ node index.js
 cd others/WordAddin
 npm install
 npm run start:desktop
-````
+```
 
 如果您的電腦（Windows 或 macOS）上裝了 Microsoft Word，那麼就會自動開啟 Word，並且在 Word 中啟用這個 Add-in。如果您想在網頁版本的 Word 當中測試，請參考微軟的文件 [Sideload Office Add-ins to Office on the web](https://learn.microsoft.com/en-us/office/dev/add-ins/testing/sideload-office-add-ins-for-testing)。
 
