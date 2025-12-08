@@ -8,7 +8,7 @@ body {
 #edit_area {
   display: flex;
   flex-direction: column;
-  border: 2px solid #000;
+  border: 2px dashed #000;
   height: 100%;
   overflow: auto !important;
 }
@@ -48,10 +48,9 @@ textarea:focus {
 
 textarea#text_area {
   flex-grow: 1;
-  background-color: darkgray;
   font-size: 14pt;
   line-height: 16pt;
-  color: white;
+  color: #000;
   border: 0;
   margin: 0;
   width: 100%;
@@ -67,10 +66,14 @@ textarea#text_area::placeholder {
 }
 
 textarea#text_area:focus {
-  background-color: blue;
   border: 0;
   outline: none;
-  color: white;
+  color: #000;
+}
+
+textarea#text_area:focus ~ * #edit_area,
+#edit_area:has(textarea#text_area:focus) {
+  border: 2px solid black;
 }
 
 textarea#feature_user_phrases_text_area {
