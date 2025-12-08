@@ -275,8 +275,10 @@ textarea#feature_excluded_phrases_text_area {
   position: absolute;
   top: 0;
   left: 20;
-  color: #fff;
-  background-color: #000;
+  color: #000;
+  background-color: #fff;
+  border: 2px solid #000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   padding: 10px;
   display: block;
 }
@@ -394,5 +396,46 @@ blockquote {
 
   blockquote {
     background-color: #666;
+  }
+
+  textarea {
+    background-color: #333;
+  }
+
+  #edit_area {
+    border: 2px dashed #c8c8c8;
+  }
+
+  textarea#text_area:focus ~ * #edit_area,
+  #edit_area:has(textarea#text_area:focus) {
+    border: 2px solid #86c25e;
+  }
+
+  textarea#text_area::placeholder {
+    color: #ccc;
+  }
+
+  textarea#text_area {
+    color: #fff;
+  }
+
+  textarea#text_area:focus {
+    color: #fff;
+  }
+
+  #composing_buffer p {
+    background-color: #444;
+    border: 1px solid #ccc;
+    color: #ffffff;
+  }
+  .cursor {
+    color: rgb(255, 68, 68);
+  }
+
+  #loading {
+    color: #fff;
+    background-color: #111;
+    border: 2px solid #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
 }
