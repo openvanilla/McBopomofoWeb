@@ -68,7 +68,6 @@ textarea#text_area::placeholder {
 textarea#text_area:focus {
   border: 0;
   outline: none;
-  color: #000;
 }
 
 textarea#text_area:focus ~ * #edit_area,
@@ -416,10 +415,6 @@ blockquote {
   }
 
   textarea#text_area {
-    color: #fff;
-  }
-
-  textarea#text_area:focus {
     color: #fff;
   }
 
