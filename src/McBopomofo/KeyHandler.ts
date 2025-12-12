@@ -781,6 +781,10 @@ export class KeyHandler {
       if (key.ascii === "Shift") {
         shouldPromptAlert = false;
       }
+      if (key.ascii === "Ctrl") {
+        shouldPromptAlert = false;
+      }
+
 
       if (shouldPromptAlert) {
         errorCallback();

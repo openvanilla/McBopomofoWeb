@@ -61,7 +61,7 @@ class InputUIController {
   private candidateTotalPageCount_: number = 0;
   private candidateCurrentPageIndex_: number = 0;
 
-  constructor(private ui: InputUI) {}
+  constructor(private ui: InputUI) { }
 
   /**
    * Resets everything, including the cursor index, tooltips. candidates and so
@@ -456,15 +456,15 @@ export class InputController {
     (this.lm_ as WebLanguageModel).setConverter(
       flag
         ? (input) => {
-            return ChineseConvert.tw2cn(input);
-          }
+          return ChineseConvert.tw2cn(input);
+        }
         : undefined
     );
     (this.lm_ as WebLanguageModel).setAddUserPhraseConverter(
       flag
         ? (input) => {
-            return ChineseConvert.cn2tw(input);
-          }
+          return ChineseConvert.cn2tw(input);
+        }
         : undefined
     );
   }
@@ -522,8 +522,10 @@ export class InputController {
 
   public mcbopomofoKeyEvent(key: Key): boolean {
     const simpleAscii = key.ascii;
+    console.log(key);
     if (
       (simpleAscii === "Shift" && key.name === KeyName.ASCII) ||
+      (simpleAscii === "Ctrl" && key.name === KeyName.ASCII) ||
       simpleAscii === "Meta" ||
       simpleAscii === "Alt"
     ) {
