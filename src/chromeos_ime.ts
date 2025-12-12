@@ -118,7 +118,7 @@ class ChromeMcBopomofo {
     this.inputController.setOnOpenUrl((input: string) => {
       this.tryOpen(input);
     });
-    this.inputController.setOnError(() => {});
+    this.inputController.setOnError(() => { });
 
     // The horizontal candidate windows on ChromeOS is actually broken so we
     // use the vertical one only.
@@ -431,15 +431,17 @@ class ChromeMcBopomofo {
               visible: false,
             },
           });
-        } catch (e) {}
+        } catch (e) { }
       },
 
       commitString: (text: string) => {
         if (this.context === undefined) return;
-        chrome.input.ime.commitText({
-          contextID: this.context.contextID,
-          text: text,
-        });
+        try {
+          chrome.input.ime.commitText({
+            contextID: this.context.contextID,
+            text: text,
+          });
+        } catch (e) { }
       },
 
       update: (stateString: string) => {
@@ -544,7 +546,7 @@ class ChromeMcBopomofo {
               auxiliaryTextVisible: true,
               visible: true,
               cursorVisible: false,
-              windowPosition: "composition",
+              windowPosition: "cursor",
               pageSize: 1, // pageSize has to be at least 1 otherwise ChromeOS crashes.
             },
           });
@@ -585,12 +587,12 @@ chrome.input?.ime.onActivate.addListener((engineID) => {
   chromeMcBopomofo.inputController.setOnPhraseChange((userPhrases) => {
     const obj = Object.fromEntries(userPhrases);
     const jsonString = JSON.stringify(obj);
-    largeSync.set({ user_phrase: jsonString }, () => {});
+    largeSync.set({ user_phrase: jsonString }, () => { });
   });
   chromeMcBopomofo.inputController.setOnExcludedPhraseChange((userPhrases) => {
     const obj = Object.fromEntries(userPhrases);
     const jsonString = JSON.stringify(obj);
-    largeSync.set({ excluded_phrase: jsonString }, () => {});
+    largeSync.set({ excluded_phrase: jsonString }, () => { });
   });
 });
 
@@ -741,7 +743,7 @@ async function keepAlive() {
       await chrome.scripting.executeScript(args);
       chrome.tabs.onUpdated.removeListener(retryOnTabUpdate);
       return;
-    } catch (e) {}
+    } catch (e) { }
   }
   chrome.tabs.onUpdated.addListener(retryOnTabUpdate);
 }
@@ -760,7 +762,6 @@ keepAlive();
 
 chrome.contextMenus.onClicked.addListener((event, tab) => {
   function handle(selectionText: string, menuItemId: string, tabId: number) {
-    // console.log(selectionText);
     if (selectionText.length === 0) {
       return;
     }

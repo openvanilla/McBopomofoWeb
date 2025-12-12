@@ -523,6 +523,12 @@ export class InputController {
   public mcbopomofoKeyEvent(key: Key): boolean {
     const simpleAscii = key.ascii;
     console.log(key);
+    console.log(this.state_);
+    if (this.state_ instanceof Committing) {
+      this.state_ = new Empty();
+    }
+
+    console.log(this.state_);
     if (
       (simpleAscii === "Shift" && key.name === KeyName.ASCII) ||
       (simpleAscii === "Ctrl" && key.name === KeyName.ASCII) ||
@@ -530,6 +536,17 @@ export class InputController {
       simpleAscii === "Alt"
     ) {
       return false;
+    }
+    if (this.state_ instanceof Empty) {
+      if (key.isCursorKey) {
+        return false;
+      }
+      if (key.isDeleteKey) {
+        return false;
+      }
+      if (key.isNumpadKey) {
+        return false;
+      }
     }
 
     const maybeNumberInput = this.state_;
