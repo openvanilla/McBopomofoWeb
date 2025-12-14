@@ -520,6 +520,11 @@ export class InputController {
     return this.mcbopomofoKeyEvent(key);
   }
 
+  /**
+   * Handles a McBopomofo-specific key event.
+   * @param key The key event to handle.
+   * @returns True if the key event was handled, false otherwise.
+   */
   public mcbopomofoKeyEvent(key: Key): boolean {
     const simpleAscii = key.ascii;
     if (this.state_ instanceof Committing) {

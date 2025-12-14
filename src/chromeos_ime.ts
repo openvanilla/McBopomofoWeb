@@ -118,7 +118,7 @@ class ChromeMcBopomofo {
     this.inputController.setOnOpenUrl((input: string) => {
       this.tryOpen(input);
     });
-    this.inputController.setOnError(() => { });
+    this.inputController.setOnError(() => {});
 
     // The horizontal candidate windows on ChromeOS is actually broken so we
     // use the vertical one only.
@@ -431,7 +431,7 @@ class ChromeMcBopomofo {
               visible: false,
             },
           });
-        } catch (e) { }
+        } catch (e) {}
       },
 
       commitString: (text: string) => {
@@ -441,7 +441,7 @@ class ChromeMcBopomofo {
             contextID: this.context.contextID,
             text: text,
           });
-        } catch (e) { }
+        } catch (e) {}
       },
 
       update: (stateString: string) => {
@@ -546,6 +546,8 @@ class ChromeMcBopomofo {
               auxiliaryTextVisible: true,
               visible: true,
               cursorVisible: false,
+              // Use "cursor" positioning for tooltips so that the candidate
+              // window appears near the text cursor..
               windowPosition: "cursor",
               pageSize: 1, // pageSize has to be at least 1 otherwise ChromeOS crashes.
             },
@@ -587,12 +589,12 @@ chrome.input?.ime.onActivate.addListener((engineID) => {
   chromeMcBopomofo.inputController.setOnPhraseChange((userPhrases) => {
     const obj = Object.fromEntries(userPhrases);
     const jsonString = JSON.stringify(obj);
-    largeSync.set({ user_phrase: jsonString }, () => { });
+    largeSync.set({ user_phrase: jsonString }, () => {});
   });
   chromeMcBopomofo.inputController.setOnExcludedPhraseChange((userPhrases) => {
     const obj = Object.fromEntries(userPhrases);
     const jsonString = JSON.stringify(obj);
-    largeSync.set({ excluded_phrase: jsonString }, () => { });
+    largeSync.set({ excluded_phrase: jsonString }, () => {});
   });
 });
 
@@ -743,7 +745,7 @@ async function keepAlive() {
       await chrome.scripting.executeScript(args);
       chrome.tabs.onUpdated.removeListener(retryOnTabUpdate);
       return;
-    } catch (e) { }
+    } catch (e) {}
   }
   chrome.tabs.onUpdated.addListener(retryOnTabUpdate);
 }
