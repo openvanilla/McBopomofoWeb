@@ -1,6 +1,4 @@
 #!/usr/bin/env node
-// import { Server } from "@modelcontextprotocol/sdk/server/index.js";
-// import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 
@@ -87,7 +85,7 @@ async function runServerTransport() {
   const server = new Server(
     {
       name: "mcp-mcbopomofo",
-      version: "1.9.1",
+      version: "1.9.2",
     },
     {
       capabilities: {
