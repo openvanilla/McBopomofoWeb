@@ -326,27 +326,6 @@ export class KeyHandler {
       }
     }
 
-    // if (_bpmfReadingBuffer->hasToneMarkerOnly() && _grid->readings().size() > 0 && _grid->cursor() > 0) {
-    //     size_t cursor = _grid->cursor() - 1;
-    //     const std::string reading = _grid->readings()[cursor];
-    //     if (!reading.empty() && reading[0] != '_') {
-    //         Formosa::Mandarin::BopomofoReadingBuffer tmpBuffer(_bpmfReadingBuffer->keyboardLayout());
-    //         Formosa::Mandarin::BopomofoSyllable syllable =      Formosa::Mandarin::BopomofoSyllable::FromComposedString(reading);
-    //         tmpBuffer.setSyllableRemovingTone(syllable);
-    //         tmpBuffer.combineKey((char)charCode);
-    //         std::string newReading = tmpBuffer.syllable().composedString();
-    //         if (_languageModel->hasUnigrams(newReading)) {
-    //             _bpmfReadingBuffer->clear();
-    //             _grid->deleteReadingBeforeCursor();
-    //             _grid->insertReading(newReading);
-    //             [self _walk];
-    //             InputStateInputting *inputting = (InputStateInputting *)[self buildInputtingState];
-    //             stateCallback(inputting);
-    //             return YES;
-    //         }
-    //     }
-    // }
-
     if (
       this.reading_.hasToneMarkerOnly &&
       this.grid_.length > 0 &&
@@ -359,7 +338,11 @@ export class KeyHandler {
           this.reading_.keyboardLayout
         );
         const syllable = BopomofoSyllable.FromComposedString(reading);
-        tmpBuffer.setSyllableRemovingTone(syllable);
+        const keys =
+          this.reading_.keyboardLayout.keySequenceFromSyllable(syllable);
+        for (const k of keys) {
+          tmpBuffer.combineKey(k);
+        }
         tmpBuffer.combineKey(key.ascii);
         const newReading = tmpBuffer.syllable.composedString;
         if (this.languageModel_.hasUnigrams(newReading)) {
@@ -778,7 +761,11 @@ export class KeyHandler {
       if (key.ctrlPressed) {
         shouldPromptAlert = false;
       }
-      if (key.ascii === "Shift") {
+      if (
+        key.ascii === "Shift" ||
+        key.ascii === "Ctrl" ||
+        key.ascii === "Alt"
+      ) {
         shouldPromptAlert = false;
       }
 

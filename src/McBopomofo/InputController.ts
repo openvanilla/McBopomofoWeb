@@ -520,14 +520,28 @@ export class InputController {
     return this.mcbopomofoKeyEvent(key);
   }
 
+  /**
+   * Handles a McBopomofo-specific key event.
+   * @param key The key event to handle.
+   * @returns True if the key event was handled, false otherwise.
+   */
   public mcbopomofoKeyEvent(key: Key): boolean {
     const simpleAscii = key.ascii;
+    if (this.state_ instanceof Committing) {
+      this.state_ = new Empty();
+    }
     if (
       (simpleAscii === "Shift" && key.name === KeyName.ASCII) ||
+      (simpleAscii === "Ctrl" && key.name === KeyName.ASCII) ||
       simpleAscii === "Meta" ||
       simpleAscii === "Alt"
     ) {
       return false;
+    }
+    if (this.state_ instanceof Empty) {
+      if (key.isCursorKey || key.isNumpadKey || key.isDeleteKey) {
+        return false;
+      }
     }
 
     const maybeNumberInput = this.state_;

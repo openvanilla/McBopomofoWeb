@@ -157,21 +157,6 @@ export class BopomofoReadingBuffer {
   }
 
   /**
-   * Sets the syllable, removing the tone marker.
-   * @param syllable The syllable to set.
-   */
-  setSyllableRemovingTone(syllable: BopomofoSyllable) {
-    const masked =
-      syllable.consonantComponent |
-      syllable.middleVowelComponent |
-      syllable.vowelComponent;
-    this.syllable_ = new BopomofoSyllable(masked);
-    if (this.pinyinMode_) {
-      this.pinyinSequence_ = this.syllable_.HanyuPinyinString(false, false);
-    }
-  }
-
-  /**
    * Returns the key sequence in the standard layout.
    * @returns The key sequence.
    */
