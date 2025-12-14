@@ -778,13 +778,13 @@ export class KeyHandler {
       if (key.ctrlPressed) {
         shouldPromptAlert = false;
       }
-      if (key.ascii === "Shift") {
+      if (
+        key.ascii === "Shift" ||
+        key.ascii === "Ctrl" ||
+        key.ascii === "Alt"
+      ) {
         shouldPromptAlert = false;
       }
-      if (key.ascii === "Ctrl") {
-        shouldPromptAlert = false;
-      }
-
 
       if (shouldPromptAlert) {
         errorCallback();
