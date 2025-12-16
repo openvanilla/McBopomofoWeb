@@ -61,7 +61,7 @@ class InputUIController {
   private candidateTotalPageCount_: number = 0;
   private candidateCurrentPageIndex_: number = 0;
 
-  constructor(private ui: InputUI) {}
+  constructor(private ui: InputUI) { }
 
   /**
    * Resets everything, including the cursor index, tooltips. candidates and so
@@ -207,6 +207,12 @@ export class InputController {
   /** Resets to empty state. */
   public reset(): void {
     this.enterNewState(new Empty());
+    this.ui_.update();
+    this.keyHandler_.reset();
+  }
+
+  public resetIgnoringPreviousState(): void {
+    this.enterNewState(new EmptyIgnoringPrevious());
     this.ui_.update();
     this.keyHandler_.reset();
   }
@@ -456,15 +462,15 @@ export class InputController {
     (this.lm_ as WebLanguageModel).setConverter(
       flag
         ? (input) => {
-            return ChineseConvert.tw2cn(input);
-          }
+          return ChineseConvert.tw2cn(input);
+        }
         : undefined
     );
     (this.lm_ as WebLanguageModel).setAddUserPhraseConverter(
       flag
         ? (input) => {
-            return ChineseConvert.cn2tw(input);
-          }
+          return ChineseConvert.cn2tw(input);
+        }
         : undefined
     );
   }
