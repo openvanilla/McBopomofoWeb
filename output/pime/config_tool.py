@@ -1,10 +1,11 @@
+import json
+import os
+import random
+import sys
+import uuid  # use to generate a random auth token
+
 import tornado.ioloop
 import tornado.web
-import sys
-import os
-import uuid  # use to generate a random auth token
-import random
-import json
 
 current_dir = os.path.dirname(__file__)
 

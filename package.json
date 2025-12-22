@@ -44,21 +44,21 @@
   "homepage": "https://github.com/openvanilla/McBopomofoWeb#readme",
   "dependencies": {
     "@cfworker/json-schema": "^4.1.1",
-    "@modelcontextprotocol/sdk": "^1.24.3",
+    "@modelcontextprotocol/sdk": "^1.25.1",
     "chinese_convert": "^1.0.8",
     "dayjs": "^1.11.19",
     "express": "^5.2.1",
     "lodash": "^4.17.21",
     "lz-string": "^1.5.0",
     "minimatch": ">=10.1.1",
-    "zod": "^4.2.0"
+    "zod": "^4.2.1"
   },
   "devDependencies": {
     "@types/chrome": "^0.1.32",
     "@types/express": "^5.0.6",
     "@types/jest": "^30.0.0",
     "@types/lodash": "^4.17.21",
-    "@types/node": "^25.0.2",
+    "@types/node": "^25.0.3",
     "@typescript-eslint/eslint-plugin": "^8.50.0",
     "@typescript-eslint/parser": "^8.50.0",
     "eslint": "^9.39.2",
@@ -68,7 +68,7 @@
     "ts-jest": "^29.4.6",
     "ts-loader": "^9.5.4",
     "typescript": "^5.9.3",
-    "webpack": "^5.103.0",
+    "webpack": "^5.104.1",
     "webpack-cli": "^6.0.1"
   },
   "browser": {
