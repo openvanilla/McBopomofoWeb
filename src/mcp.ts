@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 
@@ -79,6 +78,37 @@ const tools = [
       required: ["braille"],
     },
   },
+  {
+    name: "convertTextToBpmfReadings",
+    description:
+      "將國字轉換成注音 (Convert Chinese text to Bopomofo syllable).",
+    inputSchema: {
+      type: "object",
+      properties: {
+        text: {
+          type: "string",
+          description:
+            "包含國字 、數字或英文的字串 (Text content), 例如: ㄗㄠˇㄐㄧㄡˋ",
+        },
+      },
+      required: ["text"],
+    },
+  },
+  {
+    name: "convertTextToPinyin",
+    description: "將國字轉換成漢語拼音 (Convert Chinese text to Hanyu Pinyin).",
+    inputSchema: {
+      type: "object",
+      properties: {
+        text: {
+          type: "string",
+          description:
+            "包含國字 、數字或英文的字串 (Text content), 例如: Ni hao",
+        },
+      },
+      required: ["text"],
+    },
+  },
 ];
 
 async function runServerTransport() {
@@ -140,6 +170,20 @@ async function runServerTransport() {
       if (name === "convertBrailleToBpmf") {
         const { braille } = safeParse(z.object({ braille: z.string() }), args);
         const result = BopomofoBrailleConverter.convertBrailleToBpmf(braille);
+        return {
+          content: [{ type: "text", text: result }],
+        };
+      }
+      if (name === "convertTextToBpmfReadings") {
+        const { text } = safeParse(z.object({ text: z.string() }), args);
+        const result = service.convertTextToBpmfReadings(text);
+        return {
+          content: [{ type: "text", text: result }],
+        };
+      }
+      if (name === "convertTextToPinyin") {
+        const { text } = safeParse(z.object({ text: z.string() }), args);
+        const result = service.convertTextToPinyin(text);
         return {
           content: [{ type: "text", text: result }],
         };
@@ -240,6 +284,40 @@ async function runHttpServer() {
     }
   });
 
+  app.post("/convertTextToBpmfReadings", (req, res) => {
+    try {
+      const { text } = req.body;
+      if (typeof text !== "string") {
+        return res
+          .status(400)
+          .json({ error: "Invalid request: 'text' string is required." });
+      }
+      const result = service.convertTextToBpmfReadings(text);
+      res.json({ type: "text", text: result });
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      res.status(500).json({ error: errorMessage });
+    }
+  });
+
+  app.post("/convertTextToPinyin", (req, res) => {
+    try {
+      const { text } = req.body;
+      if (typeof text !== "string") {
+        return res
+          .status(400)
+          .json({ error: "Invalid request: 'text' string is required." });
+      }
+      const result = service.convertTextToPinyin(text);
+      res.json({ type: "text", text: result });
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      res.status(500).json({ error: errorMessage });
+    }
+  });
+
   app.get("/tools", (req, res) => {
     res.json({ tools });
   });
@@ -252,7 +330,7 @@ async function runHttpServer() {
 }
 
 async function run() {
-  runHttpServer();
+  // runHttpServer();
   runServerTransport();
 }
 

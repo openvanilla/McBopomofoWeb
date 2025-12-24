@@ -257,6 +257,17 @@ export class Service {
     );
   }
 
+  /**
+   * Converts text to raw Bopomofo readings.
+   * @param input The text input
+   * @returns The raw Bopomofo output
+   * @example
+   * ``` typescript
+   * let service = new Service();
+   * let input = "小麥注音";
+   * let output = service.convertTextToRawReadings(input);
+   * ```
+   */
   public convertTextToRawReadings(input: string): string {
     let output = this.convertText(
       input,
