@@ -63,7 +63,7 @@ async function runServerTransport() {
     "convertBpmfToBraille",
     {
       description:
-        "將注音、數字或英文字母轉換為台灣點字 (Convert Bopomofo syllable to Taiwanese Braille).",
+        "將注音、數字或英文字母轉換為台灣點字 (Convert Bopomofo syllable to Taiwanese Braille). 如果 LLM 需要精確的點字轉換，LLM 可以先將國字轉換成注音，再用這個工具，將注音轉換成點字。 (If LLM needs precise braille conversion, LLM can first convert Chinese characters to pinyin, then use this tool to convert pinyin to braille)",
       inputSchema: {
         bpmf: z
           .string()
@@ -89,7 +89,7 @@ async function runServerTransport() {
     "convertBrailleToBpmf",
     {
       description:
-        "將台灣點字字串轉換為注音 (Convert Taiwanese Braille to Bopomofo syllable).",
+        "將台灣點字字串轉換為注音 (Convert Taiwanese Braille to Bopomofo syllable). 如果 LLM 需要精確的注音轉換，LLM 可以先用這個工具將點字轉換成注音，然後用 LLM 的能力，將注音轉換成國字 (If LLM needs precise braille conversion, LLM can first use this tool to convert braille to pinyin, then use LLM's ability to convert pinyin to Chinese characters)",
       inputSchema: {
         braille: z
           .string()
