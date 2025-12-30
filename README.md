@@ -70,7 +70,7 @@ npm run build:mcp # 編譯 MCP Server 版本
 
 想要測試 Chrome OS 版本，可以參考以下步驟
 
-- 先根據之前的指令 `npm run build:chromeos`，編譯出 chomeos 目錄下的 bundle.js。
+- 先根據之前的指令 `npm run build:chromeos`，編譯出 chromeos 目錄下的 bundle.js。
 - 您可以在您的 Chromebook 上建立 Node.js 開發環境，請參考 [Wiki 中的文件](https://github.com/openvanilla/McBopomofoWeb/wiki/Chrome-OS-%E8%BC%B8%E5%85%A5%E6%B3%95%E9%96%8B%E7%99%BC)。
 - 如果您是在其他的個人電腦上編譯，您可以把整個 output/chromeos 目錄搬到 Google Drive，然後同步到你的 Chromebook 上。
 - 在您的 Chromebook 上，或是其他裝了 Chrome OS 的裝置上，輸入 `chrome://extensions`，選擇 "load unpacked"，選擇 Google Drive 上的 `chromeos` 目錄。
@@ -127,7 +127,7 @@ node index.js
 - 請將以下點字轉換成國字。
 - 請將以下點字轉換成注音後，再用 LLM 自己的能力，將注音轉換成國字。
 
-您也可以按照自己的需求，部屬在其他支援 MCP 的 AI 服務上，像是 Gemini CLI 等。
+您也可以按照自己的需求，部署在其他支援 MCP 的 AI 服務上，像是 Gemini CLI 等。
 
 ## 其他
 
@@ -145,7 +145,7 @@ npm run start:desktop
 
 ## 第三方套件
 
-本軟體使用了下套件
+本軟體使用了下列套件
 
 - [chinese_convert](https://github.com/ccckmit/chinese_convert): 處理簡繁轉換
 - [chrome-storage-largeSync](https://github.com/dtuit/chrome-storage-largeSync): 用來儲存使用者詞庫
