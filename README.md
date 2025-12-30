@@ -3,16 +3,17 @@
 ![Static Badge](https://img.shields.io/badge/platform-web-green)
 ![ChromeOS](https://img.shields.io/badge/platform-chome_os-yellow) ![Static Badge](https://img.shields.io/badge/platform-windows-blue) [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/openvanilla/McBopomofoWeb)
 
-本專案嘗試使用 JavaScript/TypeScript 與網頁相關技術，實作小麥注音輸入法，並且延
-伸出各種文字服務。小麥注音是一套自動選字的注音輸入法，提供多種常用鍵盤配置，以及
-各種方便快速輸入的功能。
+本專案嘗試使用 JavaScript/TypeScript 與網頁相關技術，實作小麥注音輸入法，進而延伸出各種文字服務。
 
-在專案目錄下提供
+小麥注音是一套自動選字的注音輸入法，提供多種常用鍵盤配置，以及各種方便快速輸入的功能。而基於這套輸入法所衍生出的服務，則包括注音與國字的雙向轉換，以及國字與台灣點字的雙向轉換。
+
+在專案目錄下提供：
 
 - [src](https://github.com/openvanilla/McBopomofoWeb/tree/main/src)：使用 TypeScript 寫成的小麥輸入法核心
 - [output/example](https://github.com/openvanilla/McBopomofoWeb/tree/main/output/example)：範例網頁
 - [output/chromeos](https://github.com/openvanilla/McBopomofoWeb/tree/main/output/chromeos)：Chrome OS 下的輸入法
 - [output/pime](https://github.com/openvanilla/McBopomofoWeb/tree/main/output/pime)：在 Windows 上的輸入法 (基於 [PIME](https://github.com/EasyIME/PIME) 框架)
+- [output/mcp](https://github.com/openvanilla/McBopomofoWeb/tree/main/output/mcp)：MCP 服務
 
 除了輸入法之外，這個專案中也提供以下的文字轉換服務：
 
@@ -31,7 +32,7 @@
     - [編譯範例網頁](#編譯範例網頁)
     - [編譯與測試 Chrome OS 版本](#編譯與測試-chrome-os-版本)
     - [編譯與測試 Windows 上的 PIME 版本](#編譯與測試-windows-上的-pime-版本)
-    - [編譯 MCP](#編譯-mcp)
+    - [編譯 MCP 服務](#編譯-mcp-服務)
   - [其他](#其他)
     - [Microsoft Word Add-in](#microsoft-word-add-in)
   - [第三方套件](#第三方套件)
@@ -56,6 +57,7 @@ npm install
 npm run build # 編譯翻譯網頁版本
 npm run build:chromeos # 編譯 Chrome OS 版本
 npm run build:pime # 編譯 Windows PIME 版本
+npm run build:mcp # 編譯 MCP Server 版本
 ```
 
 這個指令會在 output，分別建立對應的檔案，通常叫做 bundle.js。
@@ -68,7 +70,7 @@ npm run build:pime # 編譯 Windows PIME 版本
 
 想要測試 Chrome OS 版本，可以參考以下步驟
 
-- 先根據之前的指令，編譯出 chomeos 目錄下的 bundle.js。
+- 先根據之前的指令 `npm run build:chromeos`，編譯出 chomeos 目錄下的 bundle.js。
 - 您可以在您的 Chromebook 上建立 Node.js 開發環境，請參考 [Wiki 中的文件](https://github.com/openvanilla/McBopomofoWeb/wiki/Chrome-OS-%E8%BC%B8%E5%85%A5%E6%B3%95%E9%96%8B%E7%99%BC)。
 - 如果您是在其他的個人電腦上編譯，您可以把整個 output/chromeos 目錄搬到 Google Drive，然後同步到你的 Chromebook 上。
 - 在您的 Chromebook 上，或是其他裝了 Chrome OS 的裝置上，輸入 `chrome://extensions`，選擇 "load unpacked"，選擇 Google Drive 上的 `chromeos` 目錄。
@@ -90,9 +92,9 @@ set COMMAND="powershell Get-Content -Tail 10 -Wait %LOG_FILE%"
 powershell -noexit %COMMAND%
 ```
 
-### 編譯 MCP
+### 編譯 MCP 服務
 
-您可以將小麥注音當成 MCP 伺服器使用，提供國字注音、國字轉點字、點字轉國字等服務。要編譯這個 MCP 服務，請執行
+您可以將小麥注音當成 MCP 伺服器使用，提供國字注音、國字轉點字、點字轉國字等轉換功能。要編譯這個 MCP 服務，請執行：
 
 ```sh
 npm run build:mcp
@@ -105,23 +107,27 @@ cd output/mcp
 node index.js
 ```
 
-如果要搭配 Claude 使用，以 macOS 為例。您需要打開 claude 的設定檔 `~/Library/ApplicationSupport/Claude/claude_desktop_config.json`，加入以下的設定：
+如果要搭配 [Claude](https://claude.ai/) 使用，以 macOS 為例。您需要打開 claude 的設定檔 `~/Library/ApplicationSupport/Claude/claude_desktop_config.json`，加入以下的設定：
 
 ```json
 {
   "mcpServers": {
     "my-local-server": {
       "command": "node",
-      "args": ["/PATH/TO/output/mcp/index.js"],
-      "env": {
-        "PORT": "3000"
-      }
+      "args": ["/PATH/TO/output/mcp/index.js"]
     }
   }
 }
 ```
 
-您也可以按照自己的需求，部屬在其他的主機上。
+安裝了小麥注音的 MCP 伺服器之後，您可以試試看以下的 prompt：
+
+- 請將以下的國字轉換成點字。
+- 請將以下的國字，用 LLM 自己的 AI 能力轉換成注音後，然後將注音轉換成台灣點字。
+- 請將以下點字轉換成國字。
+- 請將以下點字轉換成注音後，再用 LLM 自己的能力，將注音轉換成國字。
+
+您也可以按照自己的需求，部屬在其他支援 MCP 的 AI 服務上，像是 Gemini CLI 等。
 
 ## 其他
 
