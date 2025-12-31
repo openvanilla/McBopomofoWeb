@@ -80,6 +80,8 @@ class ChromeMcBopomofo {
     use_notification: true,
     repeated_punctuation_choose_candidate: false,
   };
+
+  // The current settings.
   settings: ChromeMcBopomofoSettings = {
     input_mode: "use_mcbopomofo",
     layout: "standard",
@@ -134,11 +136,8 @@ class ChromeMcBopomofo {
       if (this.settings === undefined) {
         this.settings = this.defaultSettings;
       }
-      if (this.settings.input_mode === "use_plainbopomofo") {
-        this.inputController.setTraditionalMode(true);
-      } else {
-        this.inputController.setTraditionalMode(false);
-      }
+      const useTraditionalMode = this.settings.input_mode === "use_plainbopomofo";
+      this.inputController.setTraditionalMode(useTraditionalMode);
 
       if (
         this.settings.shift_key_toggle_alphabet_mode === undefined ||
@@ -603,9 +602,13 @@ chrome.input?.ime.onBlur.addListener((context) => {
   chromeMcBopomofo.deferredReset();
 });
 
-chrome.input?.ime.onReset.addListener((context) => {
-  // chromeMcBopomofo.deferredReset();
-});
+// Note: When typing in Google Docs, it repeatedly sends onReset event.
+// We disable the deferred reset to prevent the IME from being reset,
+// otherwise it will cause a bad user experience.
+//
+// chrome.input?.ime.onReset.addListener((context) => {
+//   chromeMcBopomofo.deferredReset();
+// });
 
 // Called when the user switch to another input method.
 chrome.input?.ime.onDeactivated.addListener((context) => {
