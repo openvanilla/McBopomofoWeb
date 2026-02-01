@@ -53,10 +53,10 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@types/chrome": "^0.1.32",
+    "@types/chrome": "^0.1.36",
     "@types/jest": "^30.0.0",
     "@types/lodash": "^4.17.23",
-    "@types/node": "^25.0.3",
+    "@types/node": "^25.1.0",
     "@typescript-eslint/eslint-plugin": "^8.54.0",
     "@typescript-eslint/parser": "^8.54.0",
     "eslint": "^9.39.2",
