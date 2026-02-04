@@ -1,6 +1,6 @@
 {
   "name": "@openvanilla/mcbopomofoweb",
-  "version": "1.9.3",
+  "version": "1.9.5",
   "description": "McBopomofo input method built with TypeScript and other Web technologies",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
