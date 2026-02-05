@@ -44,7 +44,7 @@
   "homepage": "https://github.com/openvanilla/McBopomofoWeb#readme",
   "dependencies": {
     "@cfworker/json-schema": "^4.1.1",
-    "@modelcontextprotocol/sdk": "^1.25.3",
+    "@modelcontextprotocol/sdk": "^1.26.0",
     "chinese_convert": "^1.0.8",
     "dayjs": "^1.11.19",
     "lodash": "^4.17.23",
