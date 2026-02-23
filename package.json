@@ -53,7 +53,7 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@types/chrome": "^0.1.36",
+    "@types/chrome": "^0.1.37",
     "@types/jest": "^30.0.0",
     "@types/lodash": "^4.17.23",
     "@types/node": "^25.2.0",
