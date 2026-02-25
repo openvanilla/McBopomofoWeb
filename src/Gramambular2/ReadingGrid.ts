@@ -144,119 +144,70 @@ export class ReadingGrid {
     }
     const start = GetEpochNowInMicroseconds();
 
-  // Defines a state in the DP table. This structure tracks the maximum
-  // accumulated score and the back-pointer required for path reconstruction in
-  // the Viterbi algorithm.
-  class State {
-     fromIndex:number = 0;
-     fromNode: (Node | undefined) = undefined;
-     maxScore: number = -Number.MAX_VALUE;
-  };
+    // Defines a state in the DP table. This structure tracks the maximum
+    // accumulated score and the back-pointer required for path reconstruction in
+    // the Viterbi algorithm.
+    class State {
+      fromIndex: number = 0;
+      fromNode: Node | undefined = undefined;
+      maxScore: number = -Number.MAX_VALUE;
+    }
 
-  const readingLen = this.readings_.length;
-  const viterbi: State[] = new Array(readingLen + 1);
-  viterbi[0].maxScore = 0.0;
+    const readingLen = this.readings_.length;
+    const viterbi: State[] = Array.from(
+      { length: readingLen + 1 },
+      () => new State()
+    );
+    viterbi[0].maxScore = 0.0;
 
-  // Iterate through the grid and compute the maximum accumulated score for each
-  // reachable position. Since the grid is a lattice where edges only point
-  // forward, processing nodes in index order is equivalent to processing them
-  // in topological order.
-  let reachableStates = 0;
-  let evaluatedEdges = 0;
-  for (let i = 0; i < readingLen; ++i) {
-    ++reachableStates;
+    // Iterate through the grid and compute the maximum accumulated score for each
+    // reachable position. Since the grid is a lattice where edges only point
+    // forward, processing nodes in index order is equivalent to processing them
+    // in topological order.
+    let reachableStates = 0;
+    let evaluatedEdges = 0;
+    for (let i = 0; i < readingLen; ++i) {
+      ++reachableStates;
 
-    const span = this.spans_[i];
-    const maxSpanLen = span.maxLength;
+      const span = this.spans_[i];
+      const maxSpanLen = span.maxLength;
 
-      for (size_t spanLen = 1; spanLen <= maxSpanLen; ++spanLen) {
-      const ReadingGrid::NodePtr& node = span.nodeOf(spanLen);
-      if (node == nullptr) {
-         continue;
-      }
-      ++evaluatedEdges;
+      for (let spanLen = 1; spanLen <= maxSpanLen; ++spanLen) {
+        const node = span.nodeOf(spanLen);
+        if (node === undefined) {
+          continue;
+        }
+        ++evaluatedEdges;
 
-      // Performs a relaxation on a transition. This updates the destination
-      // state if the path through the current node yields a higher score than
-      // the previously known best path. This is the core operation of the
-      // Viterbi algorithm, adapted for finding the maximum likelihood path.
-      double score = viterbi[i].maxScore + node->score();
-      State& target = viterbi[i + spanLen];
-      if (score > target.maxScore) {
-        target.maxScore = score;
-        target.fromNode = node;
-        target.fromIndex = i;
+        // Performs a relaxation on a transition. This updates the destination
+        // state if the path through the current node yields a higher score than
+        // the previously known best path. This is the core operation of the
+        // Viterbi algorithm, adapted for finding the maximum likelihood path.
+        const score = viterbi[i].maxScore + node.score;
+        const target = viterbi[i + spanLen];
+        if (score > target.maxScore) {
+          target.maxScore = score;
+          target.fromNode = node;
+          target.fromIndex = i;
+        }
       }
     }
-  }
-  // Vertices are the reachable states
-  // Edges are the candidate word transitions
-  result.vertices = reachableStates;
-  result.edges = evaluatedEdges;
 
-  // Reconstruct the most likely path by tracing back from the end of the grid
-  // to the root using the back-pointers
+    let vertices = reachableStates;
+    let edges = evaluatedEdges;
 
-
-    // const vspans: VertexSpan[] = [];
-    // for (let i = 0; i < this.spans_.length; ++i) {
-    //   vspans.push([]);
-    // }
-    // let vertices = 0;
-    // let edges = 0;
-
-    // for (let i = 0, len = this.spans_.length; i < len; ++i) {
-    //   const span = this.spans_[i];
-    //   for (let j = 1, maxSpanLen = span.maxLength; j <= maxSpanLen; ++j) {
-    //     const p = span.nodeOf(j);
-    //     if (p !== undefined) {
-    //       const v = new Vertex(p);
-    //       vspans[i].push(v);
-    //       ++vertices;
-    //     }
-    //   }
-    // }
-
-    // const terminal = new Vertex(new Node("_TERMINAL_", -99, []));
-
-    // for (let i = 0, vspansLen = vspans.length; i < vspansLen; ++i) {
-    //   for (const v of vspans[i]) {
-    //     const nextVertexPos = i + v.node.spanningLength;
-    //     if (nextVertexPos === vspansLen) {
-    //       v.edges.push(terminal);
-    //       continue;
-    //     }
-
-    //     for (const nv of vspans[nextVertexPos]) {
-    //       v.edges.push(nv);
-    //       ++edges;
-    //     }
-    //   }
-    // }
-
-    // const root = new Vertex(new Node("_ROOT_", 0, []));
-    // root.distance = 0;
-    // for (const v of vspans[0]) {
-    //   root.edges.push(v);
-    // }
-
-    // const ordered = TopologicalSort(root);
-    // const reversed = ordered.reverse();
-    // for (const u of reversed) {
-    //   for (const v of u.edges) {
-    //     Relax(u, v);
-    //   }
-    // }
-
-    const walkedNodes: Node[] = [];
+    // Reconstruct the most likely path by tracing back from the end of the grid
+    // to the root using the back-pointers
     let totalReadingLen = 0;
-    let currentVertex = terminal;
-    while (currentVertex.prev !== undefined) {
-      walkedNodes.push(currentVertex.prev.node);
-      currentVertex = currentVertex.prev;
-      totalReadingLen += currentVertex.node.spanningLength;
+    const walkedNodes: Node[] = [];
+    for (let curr = readingLen; curr > 0; curr = viterbi[curr].fromIndex) {
+      let fromNode = viterbi[curr].fromNode;
+      if (fromNode === undefined) {
+        continue;
+      }
+      totalReadingLen += fromNode.spanningLength;
+      walkedNodes.push(fromNode);
     }
-    walkedNodes.pop();
     walkedNodes.reverse();
 
     const result = new WalkResult(
@@ -863,92 +814,6 @@ export class ScoreRankedLanguageModel implements LanguageModel {
 export class NodeInSpan {
   constructor(public readonly node: Node, public readonly spanIndex: number) {}
 }
-
-// class Vertex {
-//   edges: Vertex[] = [];
-//   /** Used during topological-sort. */
-//   topologicallySorted = false;
-//   /**
-//    * Used during shortest-path computation. We are actually computing the path
-//    * with the *largest* weight, hence distance's initial value being negative
-//    * infinity. If we were to compute the *shortest* weight/distance, we would
-//    * have initialized this to infinity.
-//    */
-//   distance: number = Number.NEGATIVE_INFINITY;
-//   prev: Vertex | undefined = undefined;
-
-//   constructor(public node: Node) {}
-// }
-
-// /**
-//  * Cormen et al. 2001 explains the historical origin of the term "relax."
-//  * @param u The source vertex.
-//  * @param v The destination vertex.
-//  */
-// function Relax(u: Vertex, v: Vertex) {
-//   // The distance from u to w is simply v's score.
-//   const w = v.node.score;
-
-//   // Since we are computing the largest weight, we update v's distance and prev
-//   // if the current distance to v is *less* than that of u's plus the distance
-//   // to v (which is represented by w).
-
-//   if (v.distance < u.distance + w) {
-//     v.distance = u.distance + w;
-//     v.prev = u;
-//   }
-// }
-
-// type VertexSpan = Vertex[];
-
-// Topological-sorts a DAG that has a single root and returns the vertices in
-// topological order. Here, a non-recursive version is implemented using our own
-// stack and state definitions, so that we are not constrained by the current
-// thread's stack size. This is the equivalent to this recursive version:
-//
-//  void TopologicalSort(Vertex* v) {
-//    for (Vertex* nv : v->edges) {
-//      if (!nv->topologicallySorted) {
-//        dfs(nv, result);
-//      }
-//    }
-//    v->topologicallySorted = true;
-//    result.push_back(v);
-//  }
-//
-// The recursive version is similar to the TOPOLOGICAL-SORT algorithm found in
-// Cormen et al. 2001.
-// function TopologicalSort(root: Vertex): Vertex[] {
-//   class State {
-//     v: Vertex;
-//     iterIndex: number;
-//     constructor(v: Vertex, iterIndex: number = 0) {
-//       this.v = v;
-//       this.iterIndex = iterIndex;
-//     }
-//   }
-
-//   const result: Vertex[] = [];
-//   const stack: State[] = [];
-//   stack.push(new State(root));
-
-//   while (stack.length > 0) {
-//     const state = stack[stack.length - 1];
-//     const v = state.v;
-//     if (state.iterIndex < state.v.edges.length) {
-//       const nv = state.v.edges[state.iterIndex];
-//       state.iterIndex++;
-//       if (!nv.topologicallySorted) {
-//         stack.push(new State(nv));
-//         continue;
-//       }
-//     }
-//     v.topologicallySorted = true;
-//     result.push(v);
-//     stack.pop();
-//   }
-//   return result;
-// }
 
 function GetEpochNowInMicroseconds(): number {
   return new Date().getTime();
