@@ -922,7 +922,7 @@ let example = (() => {
     });
 
     document.getElementById("text_area").addEventListener("input", (event) => {
-      console.log("Text changed:", event.target.value);
+      // console.log("Text changed:", event.target.value);
       databaseManager.saveLastText(event.target.value);
     });
     await databaseManager.init();
