@@ -129,13 +129,13 @@ export class ReadingGrid {
 
   /**
    * Find the weightiest path in the grid graph. The path represents the most
-   * likely hidden chain of events from the observations. We use the
-   * DAG-SHORTEST-PATHS algorithm in Cormen et al. 2001 to compute such path.
-   * Instead of computing the path with the shortest distance, though, we
-   * compute the path with the longest distance (so the weightiest), since with
-   * log probability a larger value means a larger probability. The algorithm
-   * runs in O(|V| + |E|) time for G = (V, E) where G is a DAG. This means the
-   * walk is fairly economical even when the grid is large.
+   * likely hidden chain of events from the observations. We use the Viterbi
+   * algorithm compute such path. Instead of computing the path with the
+   * shortest distance, though, we compute the path with the longest distance
+   * (so the weightiest), since with log probability a larger value means a
+   * larger probability. The algorithm runs in O(|V| + |E|) time for G = (V, E)
+   * where G is a DAG. This means the walk is fairly economical even when the
+   * grid is large.
    * @returns The result of the walk.
    */
   walk(): WalkResult {
@@ -143,55 +143,110 @@ export class ReadingGrid {
       return new WalkResult([], 0, 0, 0, 0);
     }
     const start = GetEpochNowInMicroseconds();
-    const vspans: VertexSpan[] = [];
-    for (let i = 0; i < this.spans_.length; ++i) {
-      vspans.push([]);
-    }
-    let vertices = 0;
-    let edges = 0;
 
-    for (let i = 0, len = this.spans_.length; i < len; ++i) {
-      const span = this.spans_[i];
-      for (let j = 1, maxSpanLen = span.maxLength; j <= maxSpanLen; ++j) {
-        const p = span.nodeOf(j);
-        if (p !== undefined) {
-          const v = new Vertex(p);
-          vspans[i].push(v);
-          ++vertices;
-        }
+  // Defines a state in the DP table. This structure tracks the maximum
+  // accumulated score and the back-pointer required for path reconstruction in
+  // the Viterbi algorithm.
+  class State {
+     fromIndex:number = 0;
+     fromNode: (Node | undefined) = undefined;
+     maxScore: number = -Number.MAX_VALUE;
+  };
+
+  const readingLen = this.readings_.length;
+  const viterbi: State[] = new Array(readingLen + 1);
+  viterbi[0].maxScore = 0.0;
+
+  // Iterate through the grid and compute the maximum accumulated score for each
+  // reachable position. Since the grid is a lattice where edges only point
+  // forward, processing nodes in index order is equivalent to processing them
+  // in topological order.
+  let reachableStates = 0;
+  let evaluatedEdges = 0;
+  for (let i = 0; i < readingLen; ++i) {
+    ++reachableStates;
+
+    const span = this.spans_[i];
+    const maxSpanLen = span.maxLength;
+
+      for (size_t spanLen = 1; spanLen <= maxSpanLen; ++spanLen) {
+      const ReadingGrid::NodePtr& node = span.nodeOf(spanLen);
+      if (node == nullptr) {
+         continue;
+      }
+      ++evaluatedEdges;
+
+      // Performs a relaxation on a transition. This updates the destination
+      // state if the path through the current node yields a higher score than
+      // the previously known best path. This is the core operation of the
+      // Viterbi algorithm, adapted for finding the maximum likelihood path.
+      double score = viterbi[i].maxScore + node->score();
+      State& target = viterbi[i + spanLen];
+      if (score > target.maxScore) {
+        target.maxScore = score;
+        target.fromNode = node;
+        target.fromIndex = i;
       }
     }
+  }
+  // Vertices are the reachable states
+  // Edges are the candidate word transitions
+  result.vertices = reachableStates;
+  result.edges = evaluatedEdges;
 
-    const terminal = new Vertex(new Node("_TERMINAL_", -99, []));
+  // Reconstruct the most likely path by tracing back from the end of the grid
+  // to the root using the back-pointers
 
-    for (let i = 0, vspansLen = vspans.length; i < vspansLen; ++i) {
-      for (const v of vspans[i]) {
-        const nextVertexPos = i + v.node.spanningLength;
-        if (nextVertexPos === vspansLen) {
-          v.edges.push(terminal);
-          continue;
-        }
 
-        for (const nv of vspans[nextVertexPos]) {
-          v.edges.push(nv);
-          ++edges;
-        }
-      }
-    }
+    // const vspans: VertexSpan[] = [];
+    // for (let i = 0; i < this.spans_.length; ++i) {
+    //   vspans.push([]);
+    // }
+    // let vertices = 0;
+    // let edges = 0;
 
-    const root = new Vertex(new Node("_ROOT_", 0, []));
-    root.distance = 0;
-    for (const v of vspans[0]) {
-      root.edges.push(v);
-    }
+    // for (let i = 0, len = this.spans_.length; i < len; ++i) {
+    //   const span = this.spans_[i];
+    //   for (let j = 1, maxSpanLen = span.maxLength; j <= maxSpanLen; ++j) {
+    //     const p = span.nodeOf(j);
+    //     if (p !== undefined) {
+    //       const v = new Vertex(p);
+    //       vspans[i].push(v);
+    //       ++vertices;
+    //     }
+    //   }
+    // }
 
-    const ordered = TopologicalSort(root);
-    const reversed = ordered.reverse();
-    for (const u of reversed) {
-      for (const v of u.edges) {
-        Relax(u, v);
-      }
-    }
+    // const terminal = new Vertex(new Node("_TERMINAL_", -99, []));
+
+    // for (let i = 0, vspansLen = vspans.length; i < vspansLen; ++i) {
+    //   for (const v of vspans[i]) {
+    //     const nextVertexPos = i + v.node.spanningLength;
+    //     if (nextVertexPos === vspansLen) {
+    //       v.edges.push(terminal);
+    //       continue;
+    //     }
+
+    //     for (const nv of vspans[nextVertexPos]) {
+    //       v.edges.push(nv);
+    //       ++edges;
+    //     }
+    //   }
+    // }
+
+    // const root = new Vertex(new Node("_ROOT_", 0, []));
+    // root.distance = 0;
+    // for (const v of vspans[0]) {
+    //   root.edges.push(v);
+    // }
+
+    // const ordered = TopologicalSort(root);
+    // const reversed = ordered.reverse();
+    // for (const u of reversed) {
+    //   for (const v of u.edges) {
+    //     Relax(u, v);
+    //   }
+    // }
 
     const walkedNodes: Node[] = [];
     let totalReadingLen = 0;
@@ -697,11 +752,11 @@ export class Candidate {
     ", the reading is "ㄋㄧˇ" */
     public readonly reading: string,
     /** The value of the candidate. For example, when a user tries to input "你"
-   * with "ㄋㄧˇ", "你" is the value.  */
+     * with "ㄋㄧˇ", "你" is the value.  */
     public readonly value: string,
     /** The exact text displayed in the candidate windows. For example, we may
-   * have multiple duplicated candidate whose value is "你", but the displayed
-   * text could be "你 1", "你 2" and so on. */
+     * have multiple duplicated candidate whose value is "你", but the displayed
+     * text could be "你 1", "你 2" and so on. */
     public readonly displayedText: string
   ) {}
 }
@@ -809,42 +864,42 @@ export class NodeInSpan {
   constructor(public readonly node: Node, public readonly spanIndex: number) {}
 }
 
-class Vertex {
-  edges: Vertex[] = [];
-  /** Used during topological-sort. */
-  topologicallySorted = false;
-  /**
-   * Used during shortest-path computation. We are actually computing the path
-   * with the *largest* weight, hence distance's initial value being negative
-   * infinity. If we were to compute the *shortest* weight/distance, we would
-   * have initialized this to infinity.
-   */
-  distance: number = Number.NEGATIVE_INFINITY;
-  prev: Vertex | undefined = undefined;
+// class Vertex {
+//   edges: Vertex[] = [];
+//   /** Used during topological-sort. */
+//   topologicallySorted = false;
+//   /**
+//    * Used during shortest-path computation. We are actually computing the path
+//    * with the *largest* weight, hence distance's initial value being negative
+//    * infinity. If we were to compute the *shortest* weight/distance, we would
+//    * have initialized this to infinity.
+//    */
+//   distance: number = Number.NEGATIVE_INFINITY;
+//   prev: Vertex | undefined = undefined;
 
-  constructor(public node: Node) {}
-}
+//   constructor(public node: Node) {}
+// }
 
-/**
- * Cormen et al. 2001 explains the historical origin of the term "relax."
- * @param u The source vertex.
- * @param v The destination vertex.
- */
-function Relax(u: Vertex, v: Vertex) {
-  // The distance from u to w is simply v's score.
-  const w = v.node.score;
+// /**
+//  * Cormen et al. 2001 explains the historical origin of the term "relax."
+//  * @param u The source vertex.
+//  * @param v The destination vertex.
+//  */
+// function Relax(u: Vertex, v: Vertex) {
+//   // The distance from u to w is simply v's score.
+//   const w = v.node.score;
 
-  // Since we are computing the largest weight, we update v's distance and prev
-  // if the current distance to v is *less* than that of u's plus the distance
-  // to v (which is represented by w).
+//   // Since we are computing the largest weight, we update v's distance and prev
+//   // if the current distance to v is *less* than that of u's plus the distance
+//   // to v (which is represented by w).
 
-  if (v.distance < u.distance + w) {
-    v.distance = u.distance + w;
-    v.prev = u;
-  }
-}
+//   if (v.distance < u.distance + w) {
+//     v.distance = u.distance + w;
+//     v.prev = u;
+//   }
+// }
 
-type VertexSpan = Vertex[];
+// type VertexSpan = Vertex[];
 
 // Topological-sorts a DAG that has a single root and returns the vertices in
 // topological order. Here, a non-recursive version is implemented using our own
@@ -863,37 +918,37 @@ type VertexSpan = Vertex[];
 //
 // The recursive version is similar to the TOPOLOGICAL-SORT algorithm found in
 // Cormen et al. 2001.
-function TopologicalSort(root: Vertex): Vertex[] {
-  class State {
-    v: Vertex;
-    iterIndex: number;
-    constructor(v: Vertex, iterIndex: number = 0) {
-      this.v = v;
-      this.iterIndex = iterIndex;
-    }
-  }
+// function TopologicalSort(root: Vertex): Vertex[] {
+//   class State {
+//     v: Vertex;
+//     iterIndex: number;
+//     constructor(v: Vertex, iterIndex: number = 0) {
+//       this.v = v;
+//       this.iterIndex = iterIndex;
+//     }
+//   }
 
-  const result: Vertex[] = [];
-  const stack: State[] = [];
-  stack.push(new State(root));
+//   const result: Vertex[] = [];
+//   const stack: State[] = [];
+//   stack.push(new State(root));
 
-  while (stack.length > 0) {
-    const state = stack[stack.length - 1];
-    const v = state.v;
-    if (state.iterIndex < state.v.edges.length) {
-      const nv = state.v.edges[state.iterIndex];
-      state.iterIndex++;
-      if (!nv.topologicallySorted) {
-        stack.push(new State(nv));
-        continue;
-      }
-    }
-    v.topologicallySorted = true;
-    result.push(v);
-    stack.pop();
-  }
-  return result;
-}
+//   while (stack.length > 0) {
+//     const state = stack[stack.length - 1];
+//     const v = state.v;
+//     if (state.iterIndex < state.v.edges.length) {
+//       const nv = state.v.edges[state.iterIndex];
+//       state.iterIndex++;
+//       if (!nv.topologicallySorted) {
+//         stack.push(new State(nv));
+//         continue;
+//       }
+//     }
+//     v.topologicallySorted = true;
+//     result.push(v);
+//     stack.pop();
+//   }
+//   return result;
+// }
 
 function GetEpochNowInMicroseconds(): number {
   return new Date().getTime();
