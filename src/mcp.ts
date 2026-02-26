@@ -1,3 +1,18 @@
+/**
+ * @license
+ * Copyright (c) 2022 and onwards The McBopomofo Authors.
+ * This code is released under the MIT license.
+ * SPDX-License-Identifier: MIT
+ * The main entrance of the IME for ChromeOS.
+ */
+
+/**
+ * @file mcp.ts
+ * @description Model Context Protocol (MCP) server implementation for
+ * McBopomofo. This server provides tools for converting between Chinese text,
+ * Bopomofo, Pinyin, and Taiwanese Braille.
+ */
+
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 
@@ -5,15 +20,22 @@ import { z } from "zod";
 import { Service } from "./McBopomofo/Service";
 import { BopomofoBrailleConverter } from "./BopomofoBraille";
 
+/**
+ * Initializes and runs the MCP server with registered tools for text
+ * conversion. The server communicates via standard I/O using
+ * StdioServerTransport.
+ */
 async function runServerTransport() {
   const service = new Service();
 
+  // Create an MCP server instance with basic metadata.
   const server = new McpServer({
     name: "mcp-mcbopomofo",
     title: "McBopomofo",
     version: "1.9.6",
   });
 
+  // Tool: Convert Taiwanese Braille to Chinese text.
   server.registerTool(
     "convertBrailleToText",
     {
@@ -38,6 +60,9 @@ async function runServerTransport() {
       };
     }
   );
+
+  // Tool: Convert Chinese text, numbers, or English letters to Taiwanese
+  // Braille.
   server.registerTool(
     "convertTextToBraille",
     {
@@ -59,6 +84,8 @@ async function runServerTransport() {
       };
     }
   );
+
+  // Tool: Convert Bopomofo, numbers, or English letters to Taiwanese Braille.
   server.registerTool(
     "convertBpmfToBraille",
     {
@@ -85,6 +112,8 @@ async function runServerTransport() {
       };
     }
   );
+
+  // Tool: Convert Taiwanese Braille to Bopomofo.
   server.registerTool(
     "convertBrailleToBpmf",
     {
@@ -108,6 +137,8 @@ async function runServerTransport() {
       };
     }
   );
+
+  // Tool: Convert Chinese text to Bopomofo readings.
   server.registerTool(
     "convertTextToBpmfReadings",
     {
@@ -131,6 +162,8 @@ async function runServerTransport() {
       };
     }
   );
+
+  // Tool: Convert Chinese text to Hanyu Pinyin.
   server.registerTool(
     "convertTextToPinyin",
     {
@@ -155,13 +188,18 @@ async function runServerTransport() {
     }
   );
 
+  // Connect to the transport.
   await server.connect(new StdioServerTransport());
 }
 
+/**
+ * Entry point for the MCP server.
+ */
 async function run() {
   runServerTransport();
 }
 
+// Start the server and handle any fatal errors.
 run().catch((error) => {
   console.error("Fatal error running server:", error);
   process.exit(1);

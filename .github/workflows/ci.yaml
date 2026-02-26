@@ -104,35 +104,6 @@ jobs:
       - run: npm install
       - run: npm run build:mcp
 
-  # build_windows_installer:
-  #   runs-on: windows-latest
-  #   strategy:
-  #     matrix:
-  #       node-version: [21.x]
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - name: Use Node.js ${{ matrix.node-version }}
-  #       uses: actions/setup-node@v4
-  #       with:
-  #         node-version: ${{ matrix.node-version }}
-  #     - run: npm install
-  #     - run: npm run build:pime
-  #     - name: Add msbuild to PATH
-  #       uses: microsoft/setup-msbuild@v1.1
-  #       if: runner.os == 'Windows'
-  #     - name: Install WiX
-  #       run: dotnet tool install --global wix --version 4.0.4
-  #       if: runner.os == 'Windows'
-  #     - run: .\build_pime_installer.bat
-  #     - name: Add generated binary to artifact
-  #       uses: actions/upload-artifact@v4
-  #       with:
-  #         name: mcbopomofof-build
-  #         path: |
-  #           ./installer/wix/Bundle/bin/Release/McBopomofo.exe
-  #         if-no-files-found: error
-  #       if: always()
-
   build_publish:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
