@@ -602,13 +602,34 @@ chrome.input?.ime.onBlur.addListener((context) => {
   chromeMcBopomofo.deferredReset();
 });
 
-// Note: When typing in Google Docs, it repeatedly sends onReset event.
+// Note: Workaround for Google Docs
+// 
+// When typing in Google Docs, it repeatedly sends onReset event.
 // We disable the deferred reset to prevent the IME from being reset,
 // otherwise it will cause a bad user experience.
 //
-// chrome.input?.ime.onReset.addListener((context) => {
-//   chromeMcBopomofo.deferredReset();
-// });
+chrome.input?.ime.onReset.addListener((context) => {
+  let mayBeGoogleDocs = false;
+  if (chromeMcBopomofo.context != undefined) {
+    mayBeGoogleDocs = chromeMcBopomofo.context.type === "text" &&
+      (chromeMcBopomofo.context.autoCapitalize !== "characters" &&
+        chromeMcBopomofo.context.autoCapitalize !== "words" &&
+        chromeMcBopomofo.context.autoCapitalize !== "sentences"
+      ) &&
+      chromeMcBopomofo.context.spellCheck === false;
+  }
+  if (mayBeGoogleDocs) {
+    return;
+  }
+  // Reset only when it is not Google Docs.
+  // Called when the user switch to another input method.
+  if (chromeMcBopomofo.deferredResetTimeout !== null) {
+    clearTimeout(chromeMcBopomofo.deferredResetTimeout);
+  }
+  chromeMcBopomofo.context = undefined;
+  chromeMcBopomofo.inputController.reset();
+  chromeMcBopomofo.deferredResetTimeout = null;
+});
 
 // Called when the user switch to another input method.
 chrome.input?.ime.onDeactivated.addListener((context) => {
@@ -624,6 +645,7 @@ chrome.input?.ime.onDeactivated.addListener((context) => {
 // time.
 chrome.input?.ime.onFocus.addListener((context) => {
   chromeMcBopomofo.context = context;
+
   if (chromeMcBopomofo.deferredResetTimeout !== null) {
     clearTimeout(chromeMcBopomofo.deferredResetTimeout);
   } else {
