@@ -9,6 +9,7 @@ McBopomofoWeb is a TypeScript implementation of the McBopomofo (小麥注音) in
 - **Web browsers**: Example implementation for web pages
 - **Chrome OS**: Chrome extension for input method
 - **Windows**: PIME-based input method framework
+- **MCP Server**: Model Context Protocol server exposing LLM tools
 - **Additional utilities**: Text conversion services (Chinese to Braille, etc.)
 
 ## Architecture Overview
@@ -32,8 +33,9 @@ McBopomofoWeb is a TypeScript implementation of the McBopomofo (小麥注音) in
 - **`/src/Mandarin/`**: Bopomofo phonetic processing, keyboard layouts, syllable parsing
 - **`/src/BopomofoBraille/`**: Chinese to Braille conversion utilities
 - **`/src/ChineseNumbers/`**: Chinese numeral processing (including Suzhou numerals)
-- **`/src/Gramambular2/`**: Advanced text processing and reading grids
+- **`/src/Gramambular2/`**: Advanced text processing and reading grids (using the Viterbi algorithm for path selection)
 - **`/src/LargeSync/`**: Chrome storage utilities for large data synchronization
+- **`mcp.ts`**: MCP (Model Context Protocol) server exposing text and braille conversion tools to LLMs via `stdio`
 
 ### Build System
 
@@ -46,6 +48,7 @@ McBopomofoWeb is a TypeScript implementation of the McBopomofo (小麥注音) in
 - **`/output/example/`**: Web demo and testing interface
 - **`/output/chromeos/`**: Chrome OS extension files
 - **`/output/pime/`**: Windows PIME input method files
+- **`/output/mcp/`**: Compiled MCP server script and files
 
 ## Development Practices
 
@@ -77,6 +80,17 @@ McBopomofoWeb is a TypeScript implementation of the McBopomofo (小麥注音) in
 - **Keyboard layouts**: Extend `BopomofoKeyboardLayout` for different input schemes
 - **Platform integration**: Implement platform-specific adapters in respective output directories
 
+### Platform Quirks & Workarounds
+
+- **Google Docs (Chrome OS)**: Google Docs repeatedly sends `onReset` events. Workarounds are implemented (e.g., in `chromeos_ime.ts`) to prevent aggressive IME state resets by conditionally rejecting `onReset`.
+- **Candidate manipulation**: Users can boost (`+`) or exclude (`-`) specific candidates dynamically during the candidate selection phrase.
+
+### Working with the MCP Server
+
+- **Building**: Run `npm run build:mcp` to compile the MCP server to `output/mcp/index.js`.
+- **Running**: The server communicates via standard input/output (`stdio`). It can be started using `node output/mcp/index.js` or the wrapper `output/mcp/run.sh`.
+- **Tools**: It exposes LLM tools for text, Bopomofo, Pinyin, and Braille conversion (e.g., `convertBrailleToText`, `convertTextToBraille`, `convertTextToPinyin`).
+
 ### Testing Guidelines
 
 - Run tests with: `npm run test`
@@ -103,6 +117,7 @@ npm run build:watch        # Watch mode for development
 npm run build              # Web bundle
 npm run build:chromeos     # Chrome OS extension
 npm run build:pime         # Windows PIME version
+npm run build:mcp          # MCP Server definition
 
 # Testing
 npm run test               # Run all tests
@@ -128,7 +143,7 @@ npm run eslint             # Code linting
 - **`Key`**: Represents keyboard input with platform abstraction
 - **`InputState`**: Manages input method state and mode transitions
 - **`BopomofoSyllable`**: Core phonetic representation
-- **`CandidateController`**: Manages candidate selection and ranking
+- **`CandidateController`**: Manages candidate selection and ranking (including user overrides via `+`/`-` keys)
 
 ## Common Tasks
 
