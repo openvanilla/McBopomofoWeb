@@ -56,6 +56,13 @@ McBopomofoWeb is a TypeScript implementation of the McBopomofo (小麥注音) in
 - **Linting**: ESLint with TypeScript parser
 - **File naming**: PascalCase for classes, camelCase for files
 
+## Coding Conventions
+
+- Use modern TypeScript (target TS 5.9). Prefer `const` + arrow functions, explicit return types on exported symbols, and named exports (no default exports in this repo).
+- Keep data-structure types close to their usage (e.g., interfaces in the same file). Add brief inline comments only for non-obvious logic such as Unicode range calculations in `InputTableManager`.
+- When mutating state, create new objects instead of altering inputs in place—most consumers rely on immutability for predictable UI rendering.
+
+
 ### Key Development Patterns
 
 1. **State Management**: Centralized input state with clear transitions
@@ -76,6 +83,13 @@ McBopomofoWeb is a TypeScript implementation of the McBopomofo (小麥注音) in
 - Test coverage: `npm run test:coverage`
 - Focus areas: Input state transitions, phonetic parsing, character selection logic
 - Mock external dependencies and platform-specific APIs
+
+## Testing & tooling
+
+- Always follow Kent Beck's TDD flow: write a failing test, make it pass, then refactor.
+- Unit tests are required for all new or modified code. Place tests beside implementation files as `*.test.ts`.
+- When code is modified, also update this copilot-instructions.md file if relevant.
+- AI agents may call `test:coverage` (via agent) to find code not covered by tests and should address coverage gaps.
 
 ### Building and Deployment
 
