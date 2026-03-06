@@ -787,7 +787,7 @@ try {
 
   fs.watch(pimeMcBopomofo.userSettingsPath, (event, filename) => {
     if (filename) {
-      pimeMcBopomofo.loadSettings(() => {});
+      pimeMcBopomofo.loadSettings(() => { });
     }
   });
 
@@ -1138,6 +1138,10 @@ module.exports = {
           text: "打開使用者資料夾",
           id: PimeMcBopomofoCommand.OpenMcBopomofoUserDataFolder,
         },
+        {},
+        {
+          text: "小麥注音輸入法 for PIME 1.9.6",
+        }
       ];
       const response = Object.assign({}, responseTemplate, { return: menu });
       return response;
