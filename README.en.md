@@ -11,12 +11,15 @@ The project directory provides:
 - [output/example](https://github.com/openvanilla/McBopomofoWeb/tree/main/output/example): Example web page
 - [output/chromeos](https://github.com/openvanilla/McBopomofoWeb/tree/main/output/chromeos): Input method for Chrome OS
 - [output/pime](https://github.com/openvanilla/McBopomofoWeb/tree/main/output/pime): Input method for Windows (based on [PIME](https://github.com/EasyIME/PIME) framework)
+- [output/mcp](https://github.com/openvanilla/McBopomofoWeb/tree/main/output/mcp): MCP service
 
 In addition to the input method, this project also provides the following text conversion services:
 
 - Adding Bopomofo annotations to Chinese characters, including HTML Ruby format
 - Converting Chinese characters to Taiwan Braille
 - Converting Taiwan Braille to Chinese characters
+
+These text conversion services can be used not only in the Chrome browser's right-click context menu, but also as an MCP server.
 
 ## Table of Contents
 
@@ -27,6 +30,7 @@ In addition to the input method, this project also provides the following text c
     - [Building Example Web Page](#building-example-web-page)
     - [Building and Testing Chrome OS Version](#building-and-testing-chrome-os-version)
     - [Building and Testing Windows PIME Version](#building-and-testing-windows-pime-version)
+    - [Building MCP Service](#building-mcp-service)
   - [Others](#others)
   - [Third-party Packages](#third-party-packages)
   - [Community Guidelines](#community-guidelines)
@@ -48,6 +52,7 @@ npm install
 npm run build # Build web version
 npm run build:chromeos # Build Chrome OS version
 npm run build:pime # Build Windows PIME version
+npm run build:mcp # Build MCP Server version
 ```
 
 These commands will create corresponding files in the output directory, usually called bundle.js.
@@ -81,6 +86,43 @@ set LOG_FILE="%localappdata%\\PIME\Log\\PIMELauncher.log"
 set COMMAND="powershell Get-Content -Tail 10 -Wait %LOG_FILE%"
 powershell -noexit %COMMAND%
 ```
+
+### Building MCP Service
+
+You can use McBopomofo as an MCP server, providing text conversion functions such as adding Bopomofo annotations to Chinese characters, converting Chinese characters to Braille, and converting Braille to Chinese characters. To build this MCP service, please execute:
+
+```sh
+npm run build:mcp
+```
+
+The output files are generated in the `output/mcp` directory. You can use Node.js to run this MCP server:
+
+```sh
+cd output/mcp
+node index.js
+```
+
+To use it with [Claude](https://claude.ai/), taking macOS as an example, you need to open Claude's configuration file `~/Library/ApplicationSupport/Claude/claude_desktop_config.json` and add the following settings:
+
+```json
+{
+  "mcpServers": {
+    "my-local-server": {
+      "command": "node",
+      "args": ["/PATH/TO/output/mcp/index.js"]
+    }
+  }
+}
+```
+
+After installing the McBopomofo MCP server, you can try the following prompts with Claude:
+
+- Please convert the following Chinese characters to Braille.
+- Please convert the following Chinese characters into Bopomofo using the LLM's own AI capabilities, and then convert the Bopomofo into Taiwan Braille.
+- Please convert the following Braille to Chinese characters.
+- Please convert the following Braille to Bopomofo, and then use the LLM's own capabilities to convert the Bopomofo into Chinese characters.
+
+You can also deploy it to other AI services that support MCP, such as Gemini CLI, according to your own needs.
 
 ## Others
 
