@@ -73,6 +73,8 @@ interface Settings {
   ctrl_enter_option: number;
   /** Whether to use repeated punctuation to choose candidate. */
   repeated_punctuation_choose_candidate: boolean;
+  /** Whether BPMF font annotation support is enabled. */
+  bopomofo_font_annotation_support_enabled: boolean;
 }
 
 /**
@@ -117,6 +119,7 @@ const defaultSettings: Settings = {
   ctrl_enter_option: 0,
   moving_cursor_option: MovingCursorOption.Disabled,
   repeated_punctuation_choose_candidate: false,
+  bopomofo_font_annotation_support_enabled: false,
 };
 
 /**
@@ -138,6 +141,7 @@ enum PimeMcBopomofoCommand {
   Help = 11,
   OpenMcBopomofoUserDataFolder = 12,
   ReloadUserPhrase = 13,
+  ToggleBpmfFontAnnotationSupport = 14,
 }
 
 /** Wraps InputController and required states.  */
@@ -388,6 +392,9 @@ class PimeMcBopomofo {
     );
     this.inputController.setRepeatedPunctuationChooseCandidate(
       this.settings.repeated_punctuation_choose_candidate
+    );
+    this.inputController.setBopomofoFontAnnotationSupportEnabled(
+      this.settings.bopomofo_font_annotation_support_enabled
     );
     this.inputController.setLanguageCode("zh-TW");
   }
@@ -767,6 +774,14 @@ class PimeMcBopomofo {
           pimeMcBopomofo.loadUserPhrases();
         }
         break;
+      case PimeMcBopomofoCommand.ToggleBpmfFontAnnotationSupport: {
+        let currentSetting =
+          pimeMcBopomofo.settings.bopomofo_font_annotation_support_enabled;
+        pimeMcBopomofo.settings.bopomofo_font_annotation_support_enabled =
+          !currentSetting;
+        pimeMcBopomofo.applySettings();
+        pimeMcBopomofo.writeSettings();
+      }
       default:
         break;
     }
@@ -1108,14 +1123,16 @@ module.exports = {
         },
         {},
         {
-          text: "輸入簡體中文",
+          text:
+            "簡繁模式：" +
+            (pimeMcBopomofo.settings.chineseConversion ? "簡體" : "繁體"),
           id: PimeMcBopomofoCommand.ToggleChineseConversion,
-          checked: pimeMcBopomofo.settings.chineseConversion,
         },
         {
-          text: "輸入半形標點",
+          text:
+            "標點模式：" +
+            (pimeMcBopomofo.settings.half_width_punctuation ? "半形" : "全形"),
           id: PimeMcBopomofoCommand.ToggleHalfWidthPunctuation,
-          checked: pimeMcBopomofo.settings.half_width_punctuation,
         },
         {},
         {
@@ -1138,10 +1155,17 @@ module.exports = {
           text: "打開使用者資料夾",
           id: PimeMcBopomofoCommand.OpenMcBopomofoUserDataFolder,
         },
+        {
+          text: "打開注音字體支援",
+          id: PimeMcBopomofoCommand.ToggleBpmfFontAnnotationSupport,
+          checked:
+            pimeMcBopomofo.settings.bopomofo_font_annotation_support_enabled,
+        },
         {},
         {
           text: "小麥注音輸入法 for PIME 1.9.6",
         }
+
       ];
       const response = Object.assign({}, responseTemplate, { return: menu });
       return response;
