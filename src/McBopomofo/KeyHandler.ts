@@ -40,17 +40,19 @@ import { DictionaryServices } from "./DictionaryServices";
 import { CtrlEnterOption } from "./CtrlEnterOption";
 import { BopomofoBrailleConverter } from "../BopomofoBraille";
 import { NumberInputHelper } from "./InputHelperNumber";
+import {
+  VariantAnnotator,
+  VariantAnnotatorCombinedResult,
+} from "./VariantAnnotator";
+import { webBpmfvsPua } from "./WebBpmfvsPua";
+import { webBpmfvsVariants } from "./WebBpmfvsVariants";
 
 export class ComposedString {
-  head: string = "";
-  tail: string = "";
-  tooltip: string = "";
-
-  constructor(head: string, tail: string, tooltip: string) {
-    this.head = head;
-    this.tail = tail;
-    this.tooltip = tooltip;
-  }
+  constructor(
+    public readonly head: string,
+    public readonly tail: string,
+    public readonly tooltip: string
+  ) {}
 }
 
 const kPunctuationListKey = "`"; // Hit the key to bring up the list.
@@ -89,6 +91,11 @@ function getTimestamp(): number {
 }
 
 export class KeyHandler {
+  private variantAnnotator_ = new VariantAnnotator(
+    webBpmfvsPua,
+    webBpmfvsVariants
+  );
+
   private localizedStrings_: LocalizedStrings = new LocalizedStrings();
 
   public get languageCode(): string {
@@ -167,6 +174,14 @@ export class KeyHandler {
   }
   public set repeatedPunctuationToSelectCandidateEnabled(flag: boolean) {
     this.repeatedPunctuationToSelectCandidateEnabled_ = flag;
+  }
+
+  private bopomofoFontAnnotationSupportEnabled_: boolean = false;
+  public get bopomofoFontAnnotationSupportEnabled(): boolean {
+    return this.bopomofoFontAnnotationSupportEnabled_;
+  }
+  public set bopomofoFontAnnotationSupportEnabled(flag: boolean) {
+    this.bopomofoFontAnnotationSupportEnabled_ = flag;
   }
 
   private languageModel_: LanguageModel;
@@ -880,9 +895,52 @@ export class KeyHandler {
 
     let tooltip = "";
 
+    let bopomofoAnnotationUsed = false;
+    let bopomofoAnnotationHasPUAs = false;
+    let bopomofoAnnotationHasVariants = false;
+
     for (const node of this.latestWalk_?.nodes ?? []) {
+      // zonble
       const value = node.value;
-      composed += value;
+      let composedValueLength = value.length;
+      let nodeHasBopomofoAnnotation = false;
+
+      let nodeAnnotationResult = new VariantAnnotatorCombinedResult(
+        "",
+        [],
+        false,
+        false
+      );
+
+      if (!this.bopomofoFontAnnotationSupportEnabled || this.traditionalMode_) {
+        composed += value;
+      } else {
+        const length = value.length;
+        if (length !== node.spanningLength) {
+          composed += value;
+        } else {
+          let characters = value.split("");
+          let readings = node.reading.split("-");
+          if (characters.length !== readings.length) {
+            composed += value;
+          } else {
+            nodeAnnotationResult = this.variantAnnotator_.annotate(
+              characters,
+              readings
+            );
+            nodeHasBopomofoAnnotation = true;
+            bopomofoAnnotationUsed = true;
+            bopomofoAnnotationHasPUAs =
+              nodeAnnotationResult.hasPUACodePoints ||
+              bopomofoAnnotationHasPUAs;
+            bopomofoAnnotationHasVariants =
+              nodeAnnotationResult.hasVariantSelectors ||
+              bopomofoAnnotationHasVariants;
+            composed += nodeAnnotationResult.annotatedString;
+            composedValueLength = nodeAnnotationResult.annotatedString.length;
+          }
+        }
+      }
 
       // No work if runningCursor has already caught up with builderCursor.
       if (runningCursor === builderCursor) {
@@ -891,7 +949,7 @@ export class KeyHandler {
       const spanningLength = node.spanningLength;
       // Simple case: if the running cursor is behind, add the spanning length.
       if (runningCursor + spanningLength <= builderCursor) {
-        composedCursor += value.length;
+        composedCursor += composedValueLength;
         runningCursor += spanningLength;
         continue;
       }
@@ -899,8 +957,16 @@ export class KeyHandler {
       const distance = builderCursor - runningCursor;
       const u32Value = _.toArray(value);
       const cpLen = Math.min(distance, u32Value.length);
-      const actualString = _.join(u32Value.slice(0, cpLen), "");
-      composedCursor += actualString.length;
+
+      if (nodeHasBopomofoAnnotation) {
+        // TODO: Fix the cuesor
+        let length = nodeAnnotationResult.accumulatedStringLength[distance];
+        composedCursor += length;
+      } else {
+        const actualString = _.join(u32Value.slice(0, cpLen), "");
+        composedCursor += actualString.length;
+      }
+
       runningCursor += distance;
 
       // Create a tooltip to warn the user that their cursor is between two
@@ -921,8 +987,31 @@ export class KeyHandler {
       }
     }
 
+    if (bopomofoAnnotationUsed) {
+      let annotationTooltip = this.localizedStrings_.bopomofoAnnotationOn();
+      if (bopomofoAnnotationHasVariants && bopomofoAnnotationHasPUAs) {
+        annotationTooltip =
+          this.localizedStrings_.bopomofoAnnotationWithVariantsAndPUA();
+      } else if (bopomofoAnnotationHasVariants) {
+        annotationTooltip =
+          this.localizedStrings_.bopomofoAnnotationWithVariants();
+      } else if (bopomofoAnnotationHasPUAs) {
+        annotationTooltip = this.localizedStrings_.bopomofoAnnotationWithPUA();
+      }
+
+      if (tooltip.length > 0) {
+        tooltip = tooltip + " / " + annotationTooltip;
+      } else {
+        tooltip = annotationTooltip;
+      }
+    }
+
     const head = composed.substring(0, composedCursor);
     const tail = composed.substring(composedCursor, composed.length);
+
+    console.log("composedCursor" + composedCursor);
+    console.log("head" + head);
+    console.log("tail" + tail);
     return new ComposedString(head, tail, tooltip);
   }
 
@@ -1068,6 +1157,15 @@ export class KeyHandler {
     }
 
     if (key.shiftPressed && this.grid_.cursor !== markBeginCursorIndex) {
+      if (this.bopomofoFontAnnotationSupportEnabled) {
+        const inputting = this.buildInputtingState();
+        const inputtintWithTooltip =
+          this.inputtingStateWithMarkingStateUnsupportedTooltip(inputting);
+        errorCallback();
+        stateCallback(inputtintWithTooltip);
+        return true;
+      }
+
       stateCallback(this.buildMarkingState(markBeginCursorIndex));
     } else {
       stateCallback(this.buildInputtingState());
@@ -1268,6 +1366,7 @@ export class KeyHandler {
 
     const composingBuffer = head + reading + tail;
     const cursorIndex = head.length + reading.length;
+    console.log("cursorIndex " + cursorIndex);
     return new Inputting(composingBuffer, cursorIndex, composedString.tooltip);
   }
 
@@ -1419,6 +1518,14 @@ export class KeyHandler {
         phrase
       );
     }
+  }
+
+  inputtingStateWithMarkingStateUnsupportedTooltip(
+    state: Inputting
+  ): Inputting {
+    const tooltip =
+      this.localizedStrings_.canNotAddNewPhraseWhenBopomoroAnnotationIs();
+    return new Inputting(state.composingBuffer, state.cursorIndex, tooltip);
   }
 }
 

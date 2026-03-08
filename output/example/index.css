@@ -61,6 +61,11 @@ textarea#text_area {
   min-height: 600px;
 }
 
+textarea#text_area {
+  font-family: "BpmfZihiSans-Regular";
+  font-size: 24;
+}
+
 textarea#text_area::placeholder {
   color: #666;
 }

@@ -107,17 +107,52 @@ export class LocalizedStrings {
     return "Boost";
   }
 
-  exclude() {
+  exclude(): string {
     if (this.languageCode === "zh-TW") {
       return "排除";
     }
     return "Exclude";
   }
 
-  cancel() {
+  cancel(): string {
     if (this.languageCode === "zh-TW") {
       return "取消";
     }
     return "Cancel";
+  }
+
+  canNotAddNewPhraseWhenBopomoroAnnotationIs() {
+    if (this.languageCode === "zh-TW") {
+      return "注音字型破音字標記模式開啟時，不能增加新詞";
+    }
+    return "Cannot add new phrases when Bopomofo annotation is on.";
+  }
+
+  bopomofoAnnotationOn(): string {
+    if (this.languageCode === "zh-TW") {
+      return "注音字型標記模式已開啟";
+    }
+    return "Bopomofo annotation support on";
+  }
+
+  bopomofoAnnotationWithVariantsAndPUA(): string {
+    if (this.languageCode === "zh-TW") {
+      return "注音字型標記：文字中包含變體選擇器與 PUA 字元";
+    }
+    return "Bopomofo annotation: variant selectors and PUA blocks in text";
+  }
+
+  bopomofoAnnotationWithVariants(): string {
+    if (this.languageCode === "zh-TW") {
+      return "注音字型標記：文字中包含變體選擇器";
+    }
+    return "Bopomofo annotation: variant selectors in text";
+  }
+
+  bopomofoAnnotationWithPUA(): string {
+    if (this.languageCode === "zh-TW") {
+      return "注音字型標記：文字中包含 PUA 字元";
+    }
+    return "Bopomofo annotation: PUA blocks in text";
   }
 }
