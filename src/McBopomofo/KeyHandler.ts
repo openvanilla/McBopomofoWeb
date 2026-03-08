@@ -42,15 +42,11 @@ import { BopomofoBrailleConverter } from "../BopomofoBraille";
 import { NumberInputHelper } from "./InputHelperNumber";
 
 export class ComposedString {
-  head: string = "";
-  tail: string = "";
-  tooltip: string = "";
-
-  constructor(head: string, tail: string, tooltip: string) {
-    this.head = head;
-    this.tail = tail;
-    this.tooltip = tooltip;
-  }
+  constructor(
+    public readonly head: string,
+    public readonly tail: string,
+    public readonly tooltip: string
+  ) {}
 }
 
 const kPunctuationListKey = "`"; // Hit the key to bring up the list.
