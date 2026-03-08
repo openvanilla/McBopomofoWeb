@@ -48,27 +48,31 @@ let example = (() => {
             "hidden";
         } else {
           let i = 0;
+          let cusrorNotAtEnd = false;
           for (const item of buffer) {
             if (item.style === "highlighted") {
               renderText += '<span class="marking">';
             }
+            console.log("state.cursorIndex " + state.cursorIndex);
             const text = item.text;
             plainText += text;
             for (const c of text) {
               if (i === state.cursorIndex) {
                 renderText += "<span class='cursor'>|</span>";
+                cusrorNotAtEnd = true;
               }
-              renderText += c;
+              if (c) renderText += c;
               i++;
             }
             if (item.style === "highlighted") {
               renderText += "</span>";
             }
           }
-          if (i === state.cursorIndex) {
+          if (!cusrorNotAtEnd) {
             renderText += "<span class='cursor'>|</span>";
           }
           renderText += "</p>";
+          console.log(renderText);
           document.getElementById("composing_buffer").innerHTML = renderText;
           document.getElementById("composing_buffer").style.visibility =
             "visible";
@@ -383,6 +387,7 @@ let example = (() => {
       moving_cursor_option: 0,
       beep_on_error: true,
       repeated_punctuation_choose_candidate: false,
+      bopomofo_font_annotation_support_enabled: false,
     };
 
     that.settings = that.defaultSettings;
@@ -508,6 +513,15 @@ let example = (() => {
           "repeated_punctuation_choose_candidate"
         ).checked = settings.repeated_punctuation_choose_candidate;
       }
+      {
+        controller.setBopomofoFontAnnotationSupportEnabled(
+          settings.bopomofo_font_annotation_support_enabled
+        );
+        document.getElementById(
+          "bopomofo_font_annotation_support_enabled"
+        ).checked = settings.bopomofo_font_annotation_support_enabled;
+      }
+
       {
         controller.setMovingCursorOption(settings.moving_cursor_option);
         const select = document.getElementById("moving_cursor_option");
@@ -798,6 +812,19 @@ let example = (() => {
         settingsManager.saveSettings();
         document.getElementById("text_area").focus();
       };
+
+    document.getElementById(
+      "bopomofo_font_annotation_support_enabled"
+    ).onchange = (event) => {
+      const checked = document.getElementById(
+        "bopomofo_font_annotation_support_enabled"
+      ).checked;
+      controller.setBopomofoFontAnnotationSupportEnabled(checked);
+      settingsManager.settings.bopomofo_font_annotation_support_enabled =
+        checked;
+      settingsManager.saveSettings();
+      document.getElementById("text_area").focus();
+    };
 
     document.getElementById("uppercase_letters").onchange = (event) => {
       controller.setLetterMode("upper");

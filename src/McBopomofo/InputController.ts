@@ -233,6 +233,8 @@ export class InputController {
     const onError = this.onError_;
     const onOpenUrl = this.keyHandler_.onOpenUrl;
     const ctrlEnterOption = this.keyHandler_.ctrlEnterOption;
+    const bopomofoFontAnnotationSupportEnabled =
+      this.keyHandler_.bopomofoFontAnnotationSupportEnabled;
 
     const macroConverter = this.lm_.getMacroConverter();
     const converter = this.lm_.getConverter();
@@ -271,6 +273,8 @@ export class InputController {
     this.onError_ = onError;
     this.keyHandler_.onOpenUrl = onOpenUrl;
     this.keyHandler_.ctrlEnterOption = ctrlEnterOption;
+    this.keyHandler_.bopomofoFontAnnotationSupportEnabled =
+      bopomofoFontAnnotationSupportEnabled;
   }
 
   /**
@@ -508,6 +512,10 @@ export class InputController {
         () => this.onError_?.()
       );
     }
+  }
+
+  public setBopomofoFontAnnotationSupportEnabled(flag: boolean) {
+    this.keyHandler_.bopomofoFontAnnotationSupportEnabled = flag;
   }
 
   /**
