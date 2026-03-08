@@ -34,6 +34,22 @@ let example = (() => {
         ? '<a href="" onclick="example.globalUi.enterChineseMode(); return false;">【英文】</a>'
         : '<a href="" onclick="example.globalUi.enterAlphabetMode(); return false;">【中文】</a>';
     };
+    that.updateByBmpFontSupport = () => {
+      // console.log("updateByBmpFontSupport");
+      const textArea = document.getElementById("text_area");
+      if (globalUi.bpmvdFontsSupport) {
+        // console.log("add");
+        textArea.style.fontFamily = "BpmfZihiSerif-Regular";
+        textArea.style.fontSize = 24;
+        textArea.style.lineHeight = "1.2em";
+      } else {
+        // console.log("remove");
+        textArea.style.fontFamily = "Helvetica, Arial, sans-serif";
+        textArea.style.fontSize = 20;
+        textArea.style.lineHeight = "1.2em";
+      }
+    };
+    // that.update
 
     that.update = (string) => {
       const state = JSON.parse(string);
@@ -53,7 +69,7 @@ let example = (() => {
             if (item.style === "highlighted") {
               renderText += '<span class="marking">';
             }
-            console.log("state.cursorIndex " + state.cursorIndex);
+            // console.log("state.cursorIndex " + state.cursorIndex);
             const text = item.text;
             plainText += text;
             for (const c of text) {
@@ -61,7 +77,7 @@ let example = (() => {
                 renderText += "<span class='cursor'>|</span>";
                 cusrorNotAtEnd = true;
               }
-              if (c) renderText += c;
+              renderText += c;
               i++;
             }
             if (item.style === "highlighted") {
@@ -72,7 +88,7 @@ let example = (() => {
             renderText += "<span class='cursor'>|</span>";
           }
           renderText += "</p>";
-          console.log(renderText);
+          // console.log(renderText);
           document.getElementById("composing_buffer").innerHTML = renderText;
           document.getElementById("composing_buffer").style.visibility =
             "visible";
@@ -194,6 +210,17 @@ let example = (() => {
   const globalUi = (() => {
     let that = {};
     that.alphabetMode = false;
+    that.bpmvdFontsSupport = false;
+
+    that.startSupportBpmfvsFont = () => {
+      that.bpmvdFontsSupport = true;
+      ui.updateByBmpFontSupport();
+    };
+
+    that.stopSupportBpmfvsFont = () => {
+      that.bpmvdFontsSupport = false;
+      ui.updateByBmpFontSupport();
+    };
 
     that.enterAlphabetMode = () => {
       that.alphabetMode = true;
@@ -514,12 +541,16 @@ let example = (() => {
         ).checked = settings.repeated_punctuation_choose_candidate;
       }
       {
-        controller.setBopomofoFontAnnotationSupportEnabled(
-          settings.bopomofo_font_annotation_support_enabled
-        );
+        let enabled = settings.bopomofo_font_annotation_support_enabled;
+        if (enabled) {
+          globalUi.startSupportBpmfvsFont();
+        } else {
+          globalUi.stopSupportBpmfvsFont();
+        }
+        controller.setBopomofoFontAnnotationSupportEnabled(enabled);
         document.getElementById(
           "bopomofo_font_annotation_support_enabled"
-        ).checked = settings.bopomofo_font_annotation_support_enabled;
+        ).checked = enabled;
       }
 
       {
@@ -823,6 +854,11 @@ let example = (() => {
       settingsManager.settings.bopomofo_font_annotation_support_enabled =
         checked;
       settingsManager.saveSettings();
+      if (checked) {
+        globalUi.startSupportBpmfvsFont();
+      } else {
+        globalUi.stopSupportBpmfvsFont();
+      }
       document.getElementById("text_area").focus();
     };
 
