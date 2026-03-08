@@ -57,7 +57,6 @@ let example = (() => {
         that.updateByAlphabetMode();
         const buffer = state.composingBuffer;
         let renderText = "<p>";
-        let plainText = "";
         if (buffer.length === 0) {
           renderText += "<span class='cursor'>|</span>";
           document.getElementById("composing_buffer").style.visibility =
@@ -69,10 +68,9 @@ let example = (() => {
             if (item.style === "highlighted") {
               renderText += '<span class="marking">';
             }
-            // console.log("state.cursorIndex " + state.cursorIndex);
             const text = item.text;
-            plainText += text;
-            for (const c of text) {
+            for (let j = 0; j < text.length; j++) {
+              let c = text[j];
               if (i === state.cursorIndex) {
                 renderText += "<span class='cursor'>|</span>";
                 cusrorNotAtEnd = true;
@@ -80,6 +78,7 @@ let example = (() => {
               renderText += c;
               i++;
             }
+
             if (item.style === "highlighted") {
               renderText += "</span>";
             }
@@ -88,11 +87,10 @@ let example = (() => {
             renderText += "<span class='cursor'>|</span>";
           }
           renderText += "</p>";
-          // console.log(renderText);
+
           document.getElementById("composing_buffer").innerHTML = renderText;
           document.getElementById("composing_buffer").style.visibility =
             "visible";
-          composingBuffer = plainText;
         }
       }
 
