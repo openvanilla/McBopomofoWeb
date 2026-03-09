@@ -1,4 +1,12 @@
 @REM Run as administrator
+net session >nul 2>&1
+if %errorLevel% neq 0 (
+    echo =======================================================
+    echo = ALARM: You must run this script as Administrator.   =
+    echo =======================================================
+    pause
+    exit /b 1
+)
 
 echo * Build McBopomopfo for PIME
 call npm run build:pime
