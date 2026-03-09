@@ -1,28 +1,79 @@
 {
-  "languageCode": { "message": "en" },
-  "manifestName": { "message": "McBopomofo" },
-  "manifestDesc": { "message": "McBopomofo for ChromeOS" },
-  "commandToggleChineseConvert": { "message": "Toggle Chinese Conversion" },
-  "imeUS": { "message": "McBopomofo (US Keyboard)" },
-  "imeDvorak": { "message": "McBopomofo (Dvorak Keyboard)" },
-  "imeColmak": { "message": "McBopomofo (Colmak Keyboard)" },
-  "menuAlphabetMode": { "message": "English Mode" },
-  "menuChineseConversion": { "message": "Input Simplified Chinese" },
-  "menuHalfWidthPunctuation": { "message": "Input Half-Width Punctuations" },
-  "menuOptions": { "message": "Options" },
-  "menuUserPhrases": { "message": "User Phrases" },
-  "homepage": { "message": "Homepage" },
-  "tooltip": { "message": "Tooltip" },
-  "optionTitle": { "message": "McBopomofo Options" },
-  "optionKeyboardLayout": { "message": "Keyboard Layout:" },
-  "optionKeyboardLayoutStandard": { "message": "Standard" },
-  "optionKeyboardLayoutEten": { "message": "ETen" },
-  "optionKeyboardLayoutHsu": { "message": "Hsu" },
-  "optionKeyboardLayoutEten26": { "message": "ETen26" },
-  "optionKeyboardLayoutHanyuPinyin": { "message": "Hanyu Pinyin" },
-  "optionKeyboardLayoutIBM": { "message": "IBM" },
-  "optionCandidateKeys": { "message": "Candidate Keys:" },
-  "optionSelectCandidate": { "message": "Select Candidate:" },
+  "languageCode": {
+    "message": "en"
+  },
+  "manifestName": {
+    "message": "McBopomofo"
+  },
+  "manifestDesc": {
+    "message": "McBopomofo for ChromeOS"
+  },
+  "commandToggleChineseConvert": {
+    "message": "Toggle Chinese Conversion"
+  },
+  "imeUS": {
+    "message": "McBopomofo (US Keyboard)"
+  },
+  "imeDvorak": {
+    "message": "McBopomofo (Dvorak Keyboard)"
+  },
+  "imeColmak": {
+    "message": "McBopomofo (Colmak Keyboard)"
+  },
+  "menuAlphabetMode": {
+    "message": "English Mode"
+  },
+  "menuChineseConversion": {
+    "message": "Input Simplified Chinese"
+  },
+  "menuHalfWidthPunctuation": {
+    "message": "Input Half-Width Punctuations"
+  },
+  "menuOptions": {
+    "message": "Options"
+  },
+  "menuUserPhrases": {
+    "message": "User Phrases"
+  },
+  "menuBopomofoFontAnnotation": {
+    "message": "Bopomofo Font Support Enabled"
+  },
+  "homepage": {
+    "message": "Homepage"
+  },
+  "tooltip": {
+    "message": "Tooltip"
+  },
+  "optionTitle": {
+    "message": "McBopomofo Options"
+  },
+  "optionKeyboardLayout": {
+    "message": "Keyboard Layout:"
+  },
+  "optionKeyboardLayoutStandard": {
+    "message": "Standard"
+  },
+  "optionKeyboardLayoutEten": {
+    "message": "ETen"
+  },
+  "optionKeyboardLayoutHsu": {
+    "message": "Hsu"
+  },
+  "optionKeyboardLayoutEten26": {
+    "message": "ETen26"
+  },
+  "optionKeyboardLayoutHanyuPinyin": {
+    "message": "Hanyu Pinyin"
+  },
+  "optionKeyboardLayoutIBM": {
+    "message": "IBM"
+  },
+  "optionCandidateKeys": {
+    "message": "Candidate Keys:"
+  },
+  "optionSelectCandidate": {
+    "message": "Select Candidate:"
+  },
   "optionSelectCandidateBeforeCursor": {
     "message": "Before the Cursor (like Hanin)"
   },
@@ -32,60 +83,126 @@
   "optionSelectCandidateMoveCursor": {
     "message": "Move the cursor after selecting a candidate"
   },
-  "optionEscKeyTitle": { "message": "ESC Key:" },
-  "optionEscKeyLabel": { "message": "ESC key clears entire composing buffer" },
-  "optionShiftKeyTitle": { "message": "Shift Key:" },
+  "optionEscKeyTitle": {
+    "message": "ESC Key:"
+  },
+  "optionEscKeyLabel": {
+    "message": "ESC key clears entire composing buffer"
+  },
+  "optionShiftKeyTitle": {
+    "message": "Shift Key:"
+  },
   "optionShiftKeyLabel": {
     "message": "Shift key toggles English/Chinese mode"
   },
-  "optionShiftLetterTitle": { "message": "Shift + Letter Keys:" },
-  "optionShiftLetterUppercase": { "message": "Input uppercase letters" },
-  "optionShiftLetterLowercase": { "message": "Input lowercase letters" },
-  "optionOthersTitle": { "message": "Others:" },
-  "optionOtherManageUserPhrases": { "message": "Manage User Phrases" },
+  "optionShiftLetterTitle": {
+    "message": "Shift + Letter Keys:"
+  },
+  "optionShiftLetterUppercase": {
+    "message": "Input uppercase letters"
+  },
+  "optionShiftLetterLowercase": {
+    "message": "Input lowercase letters"
+  },
+  "optionOthersTitle": {
+    "message": "Others:"
+  },
+  "optionOtherManageUserPhrases": {
+    "message": "Manage User Phrases"
+  },
   "optionOtherManageKeyboardShortcuts": {
     "message": "Manage Keyboard Shortcuts"
   },
-  "userPhrasesPageTitle": { "message": "McBopomofo User Phrases" },
-  "btnReload": { "message": "Reload" },
-  "btnSave": { "message": "Save" },
-  "chineseConversionOn": { "message": "Chinese conversion is now on." },
-  "chineseConversionOff": { "message": "Chinese conversion is now off." },
-  "messageFromMcBopomofo": { "message": "Message from McBopomofo." },
+  "userPhrasesPageTitle": {
+    "message": "McBopomofo User Phrases"
+  },
+  "btnReload": {
+    "message": "Reload"
+  },
+  "btnSave": {
+    "message": "Save"
+  },
+  "chineseConversionOn": {
+    "message": "Chinese conversion is now on."
+  },
+  "chineseConversionOff": {
+    "message": "Chinese conversion is now off."
+  },
+  "messageFromMcBopomofo": {
+    "message": "Message from McBopomofo."
+  },
   "others_keyboard_shortcut": {
     "message": "You can also set the keyboard shortcuts by visiting chrome://extensions/shortcuts ."
   },
-  "ctrl_enter_key": { "message": "Ctrl + Enter Key:" },
-  "ctrl_enter_none": { "message": "None" },
-  "ctrl_enter_bpmf_reading": { "message": "Input Bopomofo Reading" },
-  "ctrl_enter_html_ruby": { "message": "Input HTML Ruby" },
-  "ctrl_enter_taiwanese_braille": { "message": "Input Taiwanese Braille" },
-  "ctrl_enter_hanyu_pinyin": { "message": "Hanyu Pinyin" },
-  "candidate_keys_count": { "message": "Candidate Keys Count:" },
-  "system": { "message": "System:" },
-  "use_notification": { "message": "Use system notification" },
-  "alphabet_mode": { "message": "English Mode" },
-  "chinese_mode": { "message": "Chinese Mode" },
-  "chinese_conversion_on": { "message": "Chinese Conversion On" },
-  "chinese_conversion_off": { "message": "Chinese Conversion Off" },
-  "using_half_width_punctuation": { "message": "Using half-width punctuation" },
-  "using_full_width_punctuation": { "message": "Using full-width punctuation" },
+  "ctrl_enter_key": {
+    "message": "Ctrl + Enter Key:"
+  },
+  "ctrl_enter_none": {
+    "message": "None"
+  },
+  "ctrl_enter_bpmf_reading": {
+    "message": "Input Bopomofo Reading"
+  },
+  "ctrl_enter_html_ruby": {
+    "message": "Input HTML Ruby"
+  },
+  "ctrl_enter_taiwanese_braille": {
+    "message": "Input Taiwanese Braille"
+  },
+  "ctrl_enter_hanyu_pinyin": {
+    "message": "Hanyu Pinyin"
+  },
+  "candidate_keys_count": {
+    "message": "Candidate Keys Count:"
+  },
+  "system": {
+    "message": "System:"
+  },
+  "use_notification": {
+    "message": "Use system notification"
+  },
+  "alphabet_mode": {
+    "message": "English Mode"
+  },
+  "chinese_mode": {
+    "message": "Chinese Mode"
+  },
+  "chinese_conversion_on": {
+    "message": "Chinese Conversion On"
+  },
+  "chinese_conversion_off": {
+    "message": "Chinese Conversion Off"
+  },
+  "using_half_width_punctuation": {
+    "message": "Using half-width punctuation"
+  },
+  "using_full_width_punctuation": {
+    "message": "Using full-width punctuation"
+  },
   "convert_text_to_bpmf_syllables": {
     "message": "Convert text to Bopomofo syllables"
   },
   "append_bpmf_syllables_to_text": {
     "message": "Append Bopomofo syllables to text"
   },
-  "convert_text_to_html_ruby": { "message": "Convert text to HTML Ruby" },
-  "append_taiwanese_braille": { "message": "Append Taiwanese Braille" },
+  "convert_text_to_html_ruby": {
+    "message": "Convert text to HTML Ruby"
+  },
+  "append_taiwanese_braille": {
+    "message": "Append Taiwanese Braille"
+  },
   "convert_text_to_taiwanese_braille": {
     "message": "Convert text to Taiwanese Braille"
   },
   "convert_taiwanese_braille_to_text": {
     "message": "Convert Taiwanese Braille to text"
   },
-  "convert_text_to_hanyu_pinyin": { "message": "Convert text to Hanyu Pinyin" },
-  "menuHelp": { "message": "Help..." },
+  "convert_text_to_hanyu_pinyin": {
+    "message": "Convert text to Hanyu Pinyin"
+  },
+  "menuHelp": {
+    "message": "Help..."
+  },
   "repeated_punctuation_choose_candidate_title": {
     "message": "Punctuation Symbols:"
   },
@@ -95,13 +212,37 @@
   "placeholder": {
     "message": "# Each phrase per line. Example:\n輸入範例 ㄕㄨ-ㄖㄨˋ-ㄈㄢˋ-ㄌㄧˋ"
   },
-  "user_phrases_link": { "message": "Edit User Phrases" },
-  "excluded_phrases_link": { "message": "Edit Excluded Phrases" },
-  "when_choosing_candidates": { "message": "When Choosing Candidates:" },
-  "moving_cursor_is_not_allowed": { "message": "Moving cursor is not allowed" },
-  "jk_keys_move_the_cursor": { "message": "JK keys move the cursor" },
-  "hl_keys_move_the_cursor": { "message": "HL keys move the cursor" },
-  "input_mode_title": { "message": "Input Mode:" },
-  "use_mcbopomofo": { "message": "Use McBopomofo" },
-  "use_plainbopomofo": { "message": "Use Plain Bopomofo" }
+  "user_phrases_link": {
+    "message": "Edit User Phrases"
+  },
+  "excluded_phrases_link": {
+    "message": "Edit Excluded Phrases"
+  },
+  "when_choosing_candidates": {
+    "message": "When Choosing Candidates:"
+  },
+  "moving_cursor_is_not_allowed": {
+    "message": "Moving cursor is not allowed"
+  },
+  "jk_keys_move_the_cursor": {
+    "message": "JK keys move the cursor"
+  },
+  "hl_keys_move_the_cursor": {
+    "message": "HL keys move the cursor"
+  },
+  "input_mode_title": {
+    "message": "Input Mode:"
+  },
+  "use_mcbopomofo": {
+    "message": "Use McBopomofo"
+  },
+  "use_plainbopomofo": {
+    "message": "Use Plain Bopomofo"
+  },
+  "bpmf_annotation_support_on": {
+    "message": "Bopomofo Font Annotation Support On"
+  },
+  "bpmf_annotation_support_off": {
+    "message": "Bopomofo Font Annotation Support Off"
+  }
 }

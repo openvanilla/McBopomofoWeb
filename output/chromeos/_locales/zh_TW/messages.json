@@ -1,94 +1,251 @@
 {
-  "languageCode": { "message": "zh-TW" },
-  "manifestName": { "message": "小麥注音" },
-  "manifestDesc": { "message": "小麥注音 ChromeOS 版" },
-  "commandToggleChineseConvert": { "message": "切換是否使用簡繁轉換" },
-  "imeUS": { "message": "小麥注音 (美式鍵盤)" },
-  "imeDvorak": { "message": "小麥注音 (Dvorak 鍵盤)" },
-  "imeColmak": { "message": "小麥注音 (Colmak 鍵盤)" },
-  "menuAlphabetMode": { "message": "輸入英文字母" },
-  "menuChineseConversion": { "message": "輸入簡體中文" },
-  "menuHalfWidthPunctuation": { "message": "輸入半形標點" },
-  "menuOptions": { "message": "選項" },
-  "menuUserPhrases": { "message": "使用者詞彙" },
-  "homepage": { "message": "專案首頁" },
-  "tooltip": { "message": "提示" },
-  "optionTitle": { "message": "小麥注音選項" },
-  "optionKeyboardLayout": { "message": "鍵盤配置：" },
-  "optionKeyboardLayoutStandard": { "message": "標準" },
-  "optionKeyboardLayoutEten": { "message": "倚天" },
-  "optionKeyboardLayoutHsu": { "message": "許式" },
-  "optionKeyboardLayoutEten26": { "message": "倚天 26 鍵" },
-  "optionKeyboardLayoutHanyuPinyin": { "message": "漢語拼音" },
-  "optionKeyboardLayoutIBM": { "message": "IBM" },
-  "optionCandidateKeys": { "message": "選字按鍵：" },
-  "optionSelectCandidate": { "message": "選擇候選字：" },
+  "languageCode": {
+    "message": "zh-TW"
+  },
+  "manifestName": {
+    "message": "小麥注音"
+  },
+  "manifestDesc": {
+    "message": "小麥注音 ChromeOS 版"
+  },
+  "commandToggleChineseConvert": {
+    "message": "切換是否使用簡繁轉換"
+  },
+  "imeUS": {
+    "message": "小麥注音 (美式鍵盤)"
+  },
+  "imeDvorak": {
+    "message": "小麥注音 (Dvorak 鍵盤)"
+  },
+  "imeColmak": {
+    "message": "小麥注音 (Colmak 鍵盤)"
+  },
+  "menuAlphabetMode": {
+    "message": "輸入英文字母"
+  },
+  "menuChineseConversion": {
+    "message": "輸入簡體中文"
+  },
+  "menuHalfWidthPunctuation": {
+    "message": "輸入半形標點"
+  },
+  "menuOptions": {
+    "message": "選項"
+  },
+  "menuUserPhrases": {
+    "message": "使用者詞彙"
+  },
+  "menuBopomofoFontAnnotation": {
+    "message": "支援注音符號字體"
+  },
+  "homepage": {
+    "message": "專案首頁"
+  },
+  "tooltip": {
+    "message": "提示"
+  },
+  "optionTitle": {
+    "message": "小麥注音選項"
+  },
+  "optionKeyboardLayout": {
+    "message": "鍵盤配置："
+  },
+  "optionKeyboardLayoutStandard": {
+    "message": "標準"
+  },
+  "optionKeyboardLayoutEten": {
+    "message": "倚天"
+  },
+  "optionKeyboardLayoutHsu": {
+    "message": "許式"
+  },
+  "optionKeyboardLayoutEten26": {
+    "message": "倚天 26 鍵"
+  },
+  "optionKeyboardLayoutHanyuPinyin": {
+    "message": "漢語拼音"
+  },
+  "optionKeyboardLayoutIBM": {
+    "message": "IBM"
+  },
+  "optionCandidateKeys": {
+    "message": "選字按鍵："
+  },
+  "optionSelectCandidate": {
+    "message": "選擇候選字："
+  },
   "optionSelectCandidateBeforeCursor": {
     "message": "游標之前（類似漢音輸入法）"
   },
   "optionSelectCandidateAfterCursor": {
     "message": "游標之後（類似微軟新注音輸入法）"
   },
-  "optionSelectCandidateMoveCursor": { "message": "選字之後自動移動游標位置" },
-  "optionEscKeyTitle": { "message": "ESC 按鍵：" },
-  "optionEscKeyLabel": { "message": "ESC 按鍵會清除整個輸入緩衝區的內容" },
-  "optionShiftKeyTitle": { "message": "Shift 按鍵：" },
-  "optionShiftKeyLabel": { "message": "使用 Shift 按鍵切換中英文" },
-  "optionShiftLetterTitle": { "message": "Shift + 字母按鍵：" },
-  "optionShiftLetterUppercase": { "message": "輸入大寫字母" },
-  "optionShiftLetterLowercase": { "message": "輸入小寫字母" },
-  "optionOthersTitle": { "message": "其他：" },
-  "optionOtherManageUserPhrases": { "message": "管理使用者詞彙" },
+  "optionSelectCandidateMoveCursor": {
+    "message": "選字之後自動移動游標位置"
+  },
+  "optionEscKeyTitle": {
+    "message": "ESC 按鍵："
+  },
+  "optionEscKeyLabel": {
+    "message": "ESC 按鍵會清除整個輸入緩衝區的內容"
+  },
+  "optionShiftKeyTitle": {
+    "message": "Shift 按鍵："
+  },
+  "optionShiftKeyLabel": {
+    "message": "使用 Shift 按鍵切換中英文"
+  },
+  "optionShiftLetterTitle": {
+    "message": "Shift + 字母按鍵："
+  },
+  "optionShiftLetterUppercase": {
+    "message": "輸入大寫字母"
+  },
+  "optionShiftLetterLowercase": {
+    "message": "輸入小寫字母"
+  },
+  "optionOthersTitle": {
+    "message": "其他："
+  },
+  "optionOtherManageUserPhrases": {
+    "message": "管理使用者詞彙"
+  },
   "optionOtherManageKeyboardShortcuts": {
     "message": "管理鍵盤快速鍵"
   },
-  "userPhrasesPageTitle": { "message": "小麥注音使用者詞彙" },
-  "btnReload": { "message": "重新載入" },
-  "btnSave": { "message": "儲存" },
-  "chineseConversionOn": { "message": "簡繁轉換已開啟" },
-  "chineseConversionOff": { "message": "簡繁轉換已關閉" },
-  "messageFromMcBopomofo": { "message": "來自小麥注音的通知訊息" },
+  "userPhrasesPageTitle": {
+    "message": "小麥注音使用者詞彙"
+  },
+  "btnReload": {
+    "message": "重新載入"
+  },
+  "btnSave": {
+    "message": "儲存"
+  },
+  "chineseConversionOn": {
+    "message": "簡繁轉換已開啟"
+  },
+  "chineseConversionOff": {
+    "message": "簡繁轉換已關閉"
+  },
+  "messageFromMcBopomofo": {
+    "message": "來自小麥注音的通知訊息"
+  },
   "others_keyboard_shortcut": {
     "message": "您也可以在 chrome://extensions/shortcuts 頁面中設置鍵盤快速鍵。"
   },
-  "ctrl_enter_key": { "message": "Ctrl + Enter 按鍵：" },
-  "ctrl_enter_none": { "message": "不使用" },
-  "ctrl_enter_bpmf_reading": { "message": "輸入注音符號" },
-  "ctrl_enter_html_ruby": { "message": "輸入 HTML Ruby" },
-  "ctrl_enter_taiwanese_braille": { "message": "輸入台灣點字" },
-  "ctrl_enter_hanyu_pinyin": { "message": "輸入漢語拼音" },
-  "candidate_keys_count": { "message": "選字按鍵數量：" },
-  "use_jk_key": { "message": "使用 JK 按鍵在選字時移動游標" },
-  "system": { "message": "系統：" },
-  "use_notification": { "message": "使用系統提示通知" },
-  "alphabet_mode": { "message": "英文模式" },
-  "chinese_mode": { "message": "中文模式" },
-  "chinese_conversion_on": { "message": "簡繁轉換已開啟" },
-  "chinese_conversion_off": { "message": "簡繁轉換已關閉" },
-  "using_half_width_punctuation": { "message": "使用半形標點" },
-  "using_full_width_punctuation": { "message": "使用全形標點" },
-  "convert_text_to_bpmf_syllables": { "message": "將國字轉換為注音符號" },
-  "append_bpmf_syllables_to_text": { "message": "將國字加上注音符號" },
-  "convert_text_to_html_ruby": { "message": "以 HTML Ruby 將國字加上注音符號" },
-  "append_taiwanese_braille": { "message": "將國字加上台灣點字" },
-  "convert_text_to_taiwanese_braille": { "message": "將國字轉為台灣點字" },
-  "convert_taiwanese_braille_to_text": { "message": "將台灣點字轉為國字" },
-  "convert_text_to_hanyu_pinyin": { "message": "將國字轉換為漢語拼音" },
-  "menuHelp": { "message": "輔助說明" },
-  "repeated_punctuation_choose_candidate_title": { "message": "標點符號：" },
+  "ctrl_enter_key": {
+    "message": "Ctrl + Enter 按鍵："
+  },
+  "ctrl_enter_none": {
+    "message": "不使用"
+  },
+  "ctrl_enter_bpmf_reading": {
+    "message": "輸入注音符號"
+  },
+  "ctrl_enter_html_ruby": {
+    "message": "輸入 HTML Ruby"
+  },
+  "ctrl_enter_taiwanese_braille": {
+    "message": "輸入台灣點字"
+  },
+  "ctrl_enter_hanyu_pinyin": {
+    "message": "輸入漢語拼音"
+  },
+  "candidate_keys_count": {
+    "message": "選字按鍵數量："
+  },
+  "use_jk_key": {
+    "message": "使用 JK 按鍵在選字時移動游標"
+  },
+  "system": {
+    "message": "系統："
+  },
+  "use_notification": {
+    "message": "使用系統提示通知"
+  },
+  "alphabet_mode": {
+    "message": "英文模式"
+  },
+  "chinese_mode": {
+    "message": "中文模式"
+  },
+  "chinese_conversion_on": {
+    "message": "簡繁轉換已開啟"
+  },
+  "chinese_conversion_off": {
+    "message": "簡繁轉換已關閉"
+  },
+  "using_half_width_punctuation": {
+    "message": "使用半形標點"
+  },
+  "using_full_width_punctuation": {
+    "message": "使用全形標點"
+  },
+  "convert_text_to_bpmf_syllables": {
+    "message": "將國字轉換為注音符號"
+  },
+  "append_bpmf_syllables_to_text": {
+    "message": "將國字加上注音符號"
+  },
+  "convert_text_to_html_ruby": {
+    "message": "以 HTML Ruby 將國字加上注音符號"
+  },
+  "append_taiwanese_braille": {
+    "message": "將國字加上台灣點字"
+  },
+  "convert_text_to_taiwanese_braille": {
+    "message": "將國字轉為台灣點字"
+  },
+  "convert_taiwanese_braille_to_text": {
+    "message": "將台灣點字轉為國字"
+  },
+  "convert_text_to_hanyu_pinyin": {
+    "message": "將國字轉換為漢語拼音"
+  },
+  "menuHelp": {
+    "message": "輔助說明"
+  },
+  "repeated_punctuation_choose_candidate_title": {
+    "message": "標點符號："
+  },
   "repeated_punctuation_choose_candidate_label": {
     "message": "重複輸入標點符號時，會輸入下一個候選的標點"
   },
   "placeholder": {
     "message": "# 一個詞彙一行。範例如下：\n輸入範例 ㄕㄨ-ㄖㄨˋ-ㄈㄢˋ-ㄌㄧˋ"
   },
-  "user_phrases_link": { "message": "編輯使用者詞彙" },
-  "excluded_phrases_link": { "message": "編輯排除的詞彙" },
-  "when_choosing_candidates": { "message": "選字時：" },
-  "moving_cursor_is_not_allowed": { "message": "不移動游標" },
-  "jk_keys_move_the_cursor": { "message": "JK 按鍵移動游標" },
-  "hl_keys_move_the_cursor": { "message": "HL 按鍵移動游標" },
-  "input_mode_title": { "message": "輸入模式：" },
-  "use_mcbopomofo": { "message": "使用小麥注音（自動選字）" },
-  "use_plainbopomofo": { "message": "使用傳統注音（手動選字）" }
+  "user_phrases_link": {
+    "message": "編輯使用者詞彙"
+  },
+  "excluded_phrases_link": {
+    "message": "編輯排除的詞彙"
+  },
+  "when_choosing_candidates": {
+    "message": "選字時："
+  },
+  "moving_cursor_is_not_allowed": {
+    "message": "不移動游標"
+  },
+  "jk_keys_move_the_cursor": {
+    "message": "JK 按鍵移動游標"
+  },
+  "hl_keys_move_the_cursor": {
+    "message": "HL 按鍵移動游標"
+  },
+  "input_mode_title": {
+    "message": "輸入模式："
+  },
+  "use_mcbopomofo": {
+    "message": "使用小麥注音（自動選字）"
+  },
+  "use_plainbopomofo": {
+    "message": "使用傳統注音（手動選字）"
+  },
+  "bpmf_annotation_support_on": {
+    "message": "注音符號字體支援"
+  },
+  "bpmf_annotation_support_off": {
+    "message": "不支援注音符號字體"
+  }
 }

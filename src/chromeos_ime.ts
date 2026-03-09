@@ -50,8 +50,10 @@ type ChromeMcBopomofoSettings = {
   use_notification: boolean;
   /** Whether to use repeated punctuation to choose candidate. */
   repeated_punctuation_choose_candidate: boolean;
+  /** Whether BPMF font annotation support is enabled. */
+  bopomofo_font_annotation_support_enabled: boolean;
 };
-
+``
 /**
  * The main class for the McBopomofo IME on ChromeOS.
  */
@@ -79,6 +81,7 @@ class ChromeMcBopomofo {
     moving_cursor_option: MovingCursorOption.Disabled,
     use_notification: true,
     repeated_punctuation_choose_candidate: false,
+    bopomofo_font_annotation_support_enabled: false
   };
 
   // The current settings.
@@ -98,6 +101,7 @@ class ChromeMcBopomofo {
     moving_cursor_option: MovingCursorOption.Disabled,
     use_notification: true,
     repeated_punctuation_choose_candidate: false,
+    bopomofo_font_annotation_support_enabled: false
   };
   lang = "en";
   isShiftHold = false;
@@ -182,6 +186,9 @@ class ChromeMcBopomofo {
       this.inputController.setRepeatedPunctuationChooseCandidate(
         this.settings.repeated_punctuation_choose_candidate
       );
+      this.inputController.setBopomofoFontAnnotationSupportEnabled(
+        this.settings.bopomofo_font_annotation_support_enabled
+      );
     });
   }
 
@@ -262,6 +269,12 @@ class ChromeMcBopomofo {
         id: "mcbopomofo-user-phrase",
         label: chrome.i18n.getMessage("menuUserPhrases"),
         style: "check" as const,
+      },
+      {
+        id: "mcbopomofo-bopomofo-font-annotation",
+        label: chrome.i18n.getMessage("menuBopomofoFontAnnotation"),
+        style: "check" as const,
+        checked: this.settings.bopomofo_font_annotation_support_enabled === true,
       },
       {
         id: "mcbopomofo-help",
@@ -363,6 +376,35 @@ class ChromeMcBopomofo {
     });
   }
 
+  toggleBopomofoFontAnnotation() {
+    let checked = this.settings.bopomofo_font_annotation_support_enabled;
+    checked = !checked;
+    this.settings.bopomofo_font_annotation_support_enabled = checked;
+    this.inputController.setBopomofoFontAnnotationSupportEnabled(checked);
+
+    chrome.notifications.create(
+      "mcbopomofo-bopomofo-font-annotation" + Date.now(),
+      {
+        title: checked
+          ? chrome.i18n.getMessage("bpmf_annotation_support_on")
+          : chrome.i18n.getMessage("bpmf_annotation_support_off"),
+
+        message: "",
+        type: "basic",
+        iconUrl: "icons/icon48.png",
+      }
+    );
+
+    chrome.storage.sync.set({ settings: this.settings }, () => {
+      if (this.engineID === undefined) return;
+      if (this.context === undefined) return;
+
+      this.loadSettings();
+      this.updateMenu();
+    });
+  }
+
+
   /**
    * Tries to open a URL in a new tab or focus on an existing tab with the same URL.
    * @param url The URL to open.
@@ -421,7 +463,7 @@ class ChromeMcBopomofo {
           // try/catch block here.
           chrome.input.ime.clearComposition({
             contextID: this.context.contextID,
-          });
+          }).catch(() => { });
           chrome.input.ime.setCandidateWindowProperties({
             engineID: this.engineID,
             properties: {
@@ -429,18 +471,16 @@ class ChromeMcBopomofo {
               auxiliaryTextVisible: false,
               visible: false,
             },
-          });
+          }).catch(() => { });
         } catch (e) { }
       },
 
       commitString: (text: string) => {
         if (this.context === undefined) return;
-        try {
-          chrome.input.ime.commitText({
-            contextID: this.context.contextID,
-            text: text,
-          });
-        } catch (e) { }
+        chrome.input.ime.commitText({
+          contextID: this.context.contextID,
+          text: text,
+        }).catch(() => { });
       },
 
       update: (stateString: string) => {
@@ -458,9 +498,10 @@ class ChromeMcBopomofo {
         let index = 0;
         for (const item of buffer) {
           text += item.text;
+          const length = item.text.length;
           if (item.style === "highlighted") {
             selectionStart = index;
-            selectionEnd = index + item.text.length;
+            selectionEnd = index + length;
             const segment = {
               start: index,
               end: index + item.text.length,
@@ -470,29 +511,33 @@ class ChromeMcBopomofo {
           } else {
             const segment = {
               start: index,
-              end: index + item.text.length,
+              end: index + length,
               style: "underline" as const,
             };
             segments.push(segment);
           }
-          index += item.text.length;
+          index += length;
         }
 
-        // This shall not happen, but we make sure the cursor index to be not
-        // larger than the text length.
-        let localCursorIndex = state.cursorIndex;
-        if (localCursorIndex > text.length) {
-          localCursorIndex = text.length;
+        let exactCharacterCount = 0;
+        let subString = text.substring(0, state.cursorIndex);
+        for (const c of subString) {
+          exactCharacterCount++;
+        }
+        if (exactCharacterCount > text.length) {
+          exactCharacterCount = text.length;
         }
 
-        chrome.input.ime.setComposition({
-          contextID: this.context.contextID,
-          cursor: localCursorIndex,
-          segments: segments,
-          text: text,
-          selectionStart: selectionStart,
-          selectionEnd: selectionEnd,
-        });
+        if (text.length) {
+          chrome.input.ime.setComposition({
+            contextID: this.context.contextID,
+            cursor: exactCharacterCount,
+            segments: segments,
+            text: text,
+            selectionStart: selectionStart,
+            selectionEnd: selectionEnd,
+          });
+        }
 
         if (candidates.length) {
           const chromeCandidates = [];
@@ -723,6 +768,9 @@ chrome.input?.ime.onMenuItemActivated.addListener((engineID, name) => {
       break;
     case "mcbopomofo-homepage":
       chromeMcBopomofo.tryOpen("https://mcbopomofo.openvanilla.org/");
+      break;
+    case "mcbopomofo-bopomofo-font-annotation":
+      chromeMcBopomofo.toggleBopomofoFontAnnotation();
       break;
   }
 });

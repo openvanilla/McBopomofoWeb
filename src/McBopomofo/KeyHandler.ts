@@ -52,7 +52,7 @@ export class ComposedString {
     public readonly head: string,
     public readonly tail: string,
     public readonly tooltip: string
-  ) {}
+  ) { }
 }
 
 const kPunctuationListKey = "`"; // Hit the key to bring up the list.
@@ -1008,10 +1008,6 @@ export class KeyHandler {
 
     const head = composed.substring(0, composedCursor);
     const tail = composed.substring(composedCursor, composed.length);
-
-    console.log("composedCursor" + composedCursor);
-    console.log("head" + head);
-    console.log("tail" + tail);
     return new ComposedString(head, tail, tooltip);
   }
 
@@ -1366,7 +1362,6 @@ export class KeyHandler {
 
     const composingBuffer = head + reading + tail;
     const cursorIndex = head.length + reading.length;
-    console.log("cursorIndex " + cursorIndex);
     return new Inputting(composingBuffer, cursorIndex, composedString.tooltip);
   }
 
