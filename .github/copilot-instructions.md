@@ -26,6 +26,8 @@ McBopomofoWeb is a TypeScript implementation of the McBopomofo (小麥注音) in
 - **Service.ts**: Core input method service interface
 - **WebLanguageModel.ts**: Language model for character prediction
 - **UserOverrideModel.ts**: User customization and learning
+- **VariantAnnotator.ts**: Handles Bopomofo font support by annotating characters with Unicode IVS (Ideographic Variation Selectors) or PUA (Private Use Area) code points.
+- **WebBpmfvsVariants.ts**, **WebBpmfvsPua.ts**: Data files for IVS and PUA mappings.
 - **LocalizedStrings.ts**: Internationalization support
 
 #### Supporting Modules
@@ -50,6 +52,11 @@ McBopomofoWeb is a TypeScript implementation of the McBopomofo (小麥注音) in
 - **`/output/pime/`**: Windows PIME input method files
 - **`/output/mcp/`**: Compiled MCP server script and files
 
+### Tools Directory (`/tools/`)
+
+- Contains utilities for data management, such as `txt_to_map.py` and `encode.cpp`.
+- Provides a `Makefile` to update the phrases database using `data.txt` from the upstream McBopomofo project.
+
 ## Development Practices
 
 ### Code Style
@@ -64,7 +71,6 @@ McBopomofoWeb is a TypeScript implementation of the McBopomofo (小麥注音) in
 - Use modern TypeScript (target TS 5.9). Prefer `const` + arrow functions, explicit return types on exported symbols, and named exports (no default exports in this repo).
 - Keep data-structure types close to their usage (e.g., interfaces in the same file). Add brief inline comments only for non-obvious logic such as Unicode range calculations in `InputTableManager`.
 - When mutating state, create new objects instead of altering inputs in place—most consumers rely on immutability for predictable UI rendering.
-
 
 ### Key Development Patterns
 
@@ -84,6 +90,14 @@ McBopomofoWeb is a TypeScript implementation of the McBopomofo (小麥注音) in
 
 - **Google Docs (Chrome OS)**: Google Docs repeatedly sends `onReset` events. Workarounds are implemented (e.g., in `chromeos_ime.ts`) to prevent aggressive IME state resets by conditionally rejecting `onReset`.
 - **Candidate manipulation**: Users can boost (`+`) or exclude (`-`) specific candidates dynamically during the candidate selection phrase.
+
+### Bopomofo Font Support (Unicode IVS)
+
+The input method supports rendering Bopomofo alongside Chinese characters using specialized fonts (e.g., from ButTaiwan). This is achieved through:
+
+1.  **VariantAnnotator.ts**: Core logic to find and apply IVS/PUA annotations based on the character and its reading.
+2.  **Data Mappings**: `WebBpmfvsVariants.ts` (IVS) and `WebBpmfvsPua.ts` (PUA).
+3.  **Platform Toggle**: Platforms like Chrome OS and PIME can toggle this feature. When enabled, the committed text includes these variation selectors. Note that cursor index calculations in `pime.ts` and `chromeos_ime.ts` may need adjustments to account for these extra characters.
 
 ### Working with the MCP Server
 
