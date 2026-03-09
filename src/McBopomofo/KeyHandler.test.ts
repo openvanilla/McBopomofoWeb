@@ -90,6 +90,56 @@ describe("KeyHandler", () => {
       const choosingCandidate = state as ChoosingCandidate;
       expect(choosingCandidate.candidates[2].value).toBe("你");
     });
+
+    test("manages bopomofoFontAnnotationSupportEnabled property", () => {
+      expect(keyHandler.bopomofoFontAnnotationSupportEnabled).toBe(false);
+      keyHandler.bopomofoFontAnnotationSupportEnabled = true;
+      keyHandler.languageCode = "zh-TW";
+      expect(keyHandler.bopomofoFontAnnotationSupportEnabled).toBe(true);
+
+      const keys = asciiKey(["x", "u", "l", "3"]); // ㄌㄧㄠˇ -> 了 (with variant)
+      const state = handleKeySequence(keyHandler, keys);
+      expect(state).toBeInstanceOf(Inputting);
+      const inputting = state as Inputting;
+      expect(inputting.composingBuffer).toBe("了󠇡");
+      expect(inputting.tooltip).toContain("注音字型");
+    });
+
+    test("does not add annotations when bopomofoFontAnnotationSupportEnabled is false", () => {
+      keyHandler.bopomofoFontAnnotationSupportEnabled = false;
+      const keys = asciiKey(["x", "u", "l", "3"]); // ㄌㄧㄠˇ -> 了
+      const state = handleKeySequence(keyHandler, keys);
+      expect(state).toBeInstanceOf(Inputting);
+      const inputting = state as Inputting;
+      expect(inputting.composingBuffer).toBe("了");
+      expect(inputting.tooltip).not.toContain("注音字型");
+    });
+
+    test("does not add annotations when traditionalMode is true even if bopomofoFontAnnotationSupportEnabled is true", () => {
+      keyHandler.bopomofoFontAnnotationSupportEnabled = true;
+      keyHandler.traditionalMode = true;
+      const keys = asciiKey(["x", "u", "l", "3"]); // ㄌㄧㄠˇ -> 了
+      // In traditional mode, typing a full syllable may enter ChoosingCandidate or Inputting.
+      const state = handleKeySequence(keyHandler, keys);
+      if (state instanceof Inputting) {
+        expect(state.composingBuffer).toBe("了");
+      } else if (state instanceof ChoosingCandidate) {
+        expect(state.composingBuffer).toBe("了");
+      }
+    });
+
+    test("prevents Marking state when bopomofoFontAnnotationSupportEnabled is true", () => {
+      keyHandler.bopomofoFontAnnotationSupportEnabled = true;
+      keyHandler.languageCode = "zh-TW";
+      const keys = asciiKey(["x", "u", "l", "3"]); // 了
+      // Move cursor left with Shift to try to enter Marking state
+      const shiftLeft = Key.namedKey(KeyName.LEFT, true, false);
+      keys.push(shiftLeft);
+      const state = handleKeySequence(keyHandler, keys);
+      expect(state).toBeInstanceOf(Inputting);
+      const inputting = state as Inputting;
+      expect(inputting.tooltip).toContain("不能增加新詞");
+    });
   });
 
   describe("Empty State", () => {
