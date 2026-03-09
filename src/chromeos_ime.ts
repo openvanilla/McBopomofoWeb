@@ -654,18 +654,35 @@ chrome.input?.ime.onBlur.addListener((context) => {
 // otherwise it will cause a bad user experience.
 //
 chrome.input?.ime.onReset.addListener((context) => {
-  let mayBeGoogleDocs = false;
+  let maybeGoogleDocs = false;
   if (chromeMcBopomofo.context != undefined) {
-    mayBeGoogleDocs = chromeMcBopomofo.context.type === "text" &&
+    maybeGoogleDocs = chromeMcBopomofo.context.type === "text" &&
       (chromeMcBopomofo.context.autoCapitalize !== "characters" &&
         chromeMcBopomofo.context.autoCapitalize !== "words" &&
         chromeMcBopomofo.context.autoCapitalize !== "sentences"
       ) &&
       chromeMcBopomofo.context.spellCheck === false;
   }
-  if (mayBeGoogleDocs) {
+  if (maybeGoogleDocs) {
     return;
   }
+
+  let maybeTwitter = false;
+  if (chromeMcBopomofo.context != undefined) {
+    maybeTwitter = chromeMcBopomofo.context.type === "text" &&
+      chromeMcBopomofo.context.autoCapitalize === "sentences" &&
+      chromeMcBopomofo.context.autoComplete === true &&
+      chromeMcBopomofo.context.autoCorrect === true &&
+      chromeMcBopomofo.context.shouldDoLearning == true &&
+      chromeMcBopomofo.context.spellCheck === true;
+  }
+  if (maybeTwitter) {
+    return;
+  }
+
+  console.log("chromeMcBopomofo onReset");
+  console.log(chromeMcBopomofo.context);
+
   // Reset only when it is not Google Docs.
   // Called when the user switch to another input method.
   if (chromeMcBopomofo.deferredResetTimeout !== null) {
