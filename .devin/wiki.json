@@ -1,7 +1,7 @@
-The content has been copied to your clipboard. Please paste it here to complete the file creation.{
+{
   "repo_notes": [
     {
-      "content": "The project ports the McBopomofo Input Method for macOS to JavaScript supproted platforms."
+      "content": "The project ports the McBopomofo Input Method for macOS to JavaScript supported platforms."
     }
   ],
   "pages": [
@@ -28,7 +28,7 @@ The content has been copied to your clipboard. Please paste it here to complete 
       "purpose": "Overview of the core input method engine components, introducing the main classes and their responsibilities",
       "page_notes": [
         {
-          "content": "Note that the inpou and output are both abstracted. There is an abstract laayer for Key events for web browser and TSF key events. The outout is also an interface and the code IME engine does not manipulate the UI and output directly."
+          "content": "Note that the input and output are both abstracted. There is an abstract layer for Key events for web browser and TSF key events. The output is also an interface and the core IME engine does not manipulate the UI and output directly."
         }
       ]
     },
@@ -44,7 +44,7 @@ The content has been copied to your clipboard. Please paste it here to complete 
           "content": "In the TypeScript code, we do not use create the JavaScript dictionary object directly but call JSON.parse to use the native JSON parser but not the JavaScript parser to load the data. It can improve the loading performance."
         },
         {
-          "content": "Explain how the input data are from. We do not built data in the project but convert the input data from an upstream project, McBopomofo, and convert them into JSON format to let webpack to paack the data into single JavaScript package.",
+          "content": "Explain where the input data comes from. We do not build data in the project but convert the input data from an upstream project, McBopomofo, and convert them into JSON format to let webpack to pack the data into a single JavaScript package.",
           "parent": "Core IME Engine"
         }
       ]
