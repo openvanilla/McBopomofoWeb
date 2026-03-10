@@ -53,7 +53,7 @@ type ChromeMcBopomofoSettings = {
   /** Whether BPMF font annotation support is enabled. */
   bopomofo_font_annotation_support_enabled: boolean;
 };
-``
+``;
 /**
  * The main class for the McBopomofo IME on ChromeOS.
  */
@@ -81,7 +81,7 @@ class ChromeMcBopomofo {
     moving_cursor_option: MovingCursorOption.Disabled,
     use_notification: true,
     repeated_punctuation_choose_candidate: false,
-    bopomofo_font_annotation_support_enabled: false
+    bopomofo_font_annotation_support_enabled: false,
   };
 
   // The current settings.
@@ -101,7 +101,7 @@ class ChromeMcBopomofo {
     moving_cursor_option: MovingCursorOption.Disabled,
     use_notification: true,
     repeated_punctuation_choose_candidate: false,
-    bopomofo_font_annotation_support_enabled: false
+    bopomofo_font_annotation_support_enabled: false,
   };
   lang = "en";
   isShiftHold = false;
@@ -124,7 +124,7 @@ class ChromeMcBopomofo {
     this.inputController.setOnOpenUrl((input: string) => {
       this.tryOpen(input);
     });
-    this.inputController.setOnError(() => { });
+    this.inputController.setOnError(() => {});
 
     // The horizontal candidate windows on ChromeOS is actually broken so we
     // use the vertical one only.
@@ -140,7 +140,8 @@ class ChromeMcBopomofo {
       if (this.settings === undefined) {
         this.settings = this.defaultSettings;
       }
-      const useTraditionalMode = this.settings.input_mode === "use_plainbopomofo";
+      const useTraditionalMode =
+        this.settings.input_mode === "use_plainbopomofo";
       this.inputController.setTraditionalMode(useTraditionalMode);
 
       if (
@@ -274,7 +275,8 @@ class ChromeMcBopomofo {
         id: "mcbopomofo-bopomofo-font-annotation",
         label: chrome.i18n.getMessage("menuBopomofoFontAnnotation"),
         style: "check" as const,
-        checked: this.settings.bopomofo_font_annotation_support_enabled === true,
+        checked:
+          this.settings.bopomofo_font_annotation_support_enabled === true,
       },
       {
         id: "mcbopomofo-help",
@@ -404,7 +406,6 @@ class ChromeMcBopomofo {
     });
   }
 
-
   /**
    * Tries to open a URL in a new tab or focus on an existing tab with the same URL.
    * @param url The URL to open.
@@ -461,26 +462,32 @@ class ChromeMcBopomofo {
         try {
           // The context might be destroyed by the time we reset it, so we use a
           // try/catch block here.
-          chrome.input.ime.clearComposition({
-            contextID: this.context.contextID,
-          }).catch(() => { });
-          chrome.input.ime.setCandidateWindowProperties({
-            engineID: this.engineID,
-            properties: {
-              auxiliaryText: "",
-              auxiliaryTextVisible: false,
-              visible: false,
-            },
-          }).catch(() => { });
-        } catch (e) { }
+          chrome.input.ime
+            .clearComposition({
+              contextID: this.context.contextID,
+            })
+            .catch(() => {});
+          chrome.input.ime
+            .setCandidateWindowProperties({
+              engineID: this.engineID,
+              properties: {
+                auxiliaryText: "",
+                auxiliaryTextVisible: false,
+                visible: false,
+              },
+            })
+            .catch(() => {});
+        } catch (e) {}
       },
 
       commitString: (text: string) => {
         if (this.context === undefined) return;
-        chrome.input.ime.commitText({
-          contextID: this.context.contextID,
-          text: text,
-        }).catch(() => { });
+        chrome.input.ime
+          .commitText({
+            contextID: this.context.contextID,
+            text: text,
+          })
+          .catch(() => {});
       },
 
       update: (stateString: string) => {
@@ -518,6 +525,15 @@ class ChromeMcBopomofo {
           }
           index += length;
         }
+
+        // Note: A quick fix for the cursor index when BPMF font support is
+        // enabled.
+        //
+        // The cursor index now includes additional control characters, but PIME
+        // does not count these characters. We use JavaScript's `for...of`
+        // syntax, which correctly iterates over Unicode code points instead of
+        // code units, to skip these control characters and recalculate the
+        // cursor index for Chrome OS.
 
         let exactCharacterCount = 0;
         let subString = text.substring(0, state.cursorIndex);
@@ -633,12 +649,12 @@ chrome.input?.ime.onActivate.addListener((engineID) => {
   chromeMcBopomofo.inputController.setOnPhraseChange((userPhrases) => {
     const obj = Object.fromEntries(userPhrases);
     const jsonString = JSON.stringify(obj);
-    largeSync.set({ user_phrase: jsonString }, () => { });
+    largeSync.set({ user_phrase: jsonString }, () => {});
   });
   chromeMcBopomofo.inputController.setOnExcludedPhraseChange((userPhrases) => {
     const obj = Object.fromEntries(userPhrases);
     const jsonString = JSON.stringify(obj);
-    largeSync.set({ excluded_phrase: jsonString }, () => { });
+    largeSync.set({ excluded_phrase: jsonString }, () => {});
   });
 });
 
@@ -648,7 +664,7 @@ chrome.input?.ime.onBlur.addListener((context) => {
 });
 
 // Note: Workaround for Google Docs
-// 
+//
 // When typing in Google Docs, it repeatedly sends onReset event.
 // We disable the deferred reset to prevent the IME from being reset,
 // otherwise it will cause a bad user experience.
@@ -656,11 +672,11 @@ chrome.input?.ime.onBlur.addListener((context) => {
 chrome.input?.ime.onReset.addListener((context) => {
   let maybeGoogleDocs = false;
   if (chromeMcBopomofo.context != undefined) {
-    maybeGoogleDocs = chromeMcBopomofo.context.type === "text" &&
-      (chromeMcBopomofo.context.autoCapitalize !== "characters" &&
-        chromeMcBopomofo.context.autoCapitalize !== "words" &&
-        chromeMcBopomofo.context.autoCapitalize !== "sentences"
-      ) &&
+    maybeGoogleDocs =
+      chromeMcBopomofo.context.type === "text" &&
+      chromeMcBopomofo.context.autoCapitalize !== "characters" &&
+      chromeMcBopomofo.context.autoCapitalize !== "words" &&
+      chromeMcBopomofo.context.autoCapitalize !== "sentences" &&
       chromeMcBopomofo.context.spellCheck === false;
   }
   if (maybeGoogleDocs) {
@@ -669,7 +685,8 @@ chrome.input?.ime.onReset.addListener((context) => {
 
   let maybeTwitter = false;
   if (chromeMcBopomofo.context != undefined) {
-    maybeTwitter = chromeMcBopomofo.context.type === "text" &&
+    maybeTwitter =
+      chromeMcBopomofo.context.type === "text" &&
       chromeMcBopomofo.context.autoCapitalize === "sentences" &&
       chromeMcBopomofo.context.autoComplete === true &&
       chromeMcBopomofo.context.autoCorrect === true &&
@@ -835,7 +852,7 @@ async function keepAlive() {
       await chrome.scripting.executeScript(args);
       chrome.tabs.onUpdated.removeListener(retryOnTabUpdate);
       return;
-    } catch (e) { }
+    } catch (e) {}
   }
   chrome.tabs.onUpdated.addListener(retryOnTabUpdate);
 }

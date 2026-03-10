@@ -512,12 +512,14 @@ class PimeMcBopomofo {
           hideMessage = false;
         }
 
-        // Note: A quick fix for the cursor index when BPMF font support is enabled.
+        // Note: A quick fix for the cursor index when BPMF font support is
+        // enabled.
         //
         // The cursor index now includes additional control characters, but PIME
-        // does not count these characters. We use JavaScript's `for...of` syntax, 
-        // which correctly iterates over Unicode code points instead of code units, 
-        // to skip these control characters and recalculate the cursor index for PIME.
+        // does not count these characters. We use JavaScript's `for...of`
+        // syntax, which correctly iterates over Unicode code points instead of
+        // code units, to skip these control characters and recalculate the
+        // cursor index for PIME.
         let reportedCursorIndex = state.cursorIndex;
         let subString = compositionString.substring(0, reportedCursorIndex);
         let exactCharacterCount = 0;
@@ -816,7 +818,7 @@ try {
 
   fs.watch(pimeMcBopomofo.userSettingsPath, (event, filename) => {
     if (filename) {
-      pimeMcBopomofo.loadSettings(() => { });
+      pimeMcBopomofo.loadSettings(() => {});
     }
   });
 
@@ -1177,9 +1179,8 @@ module.exports = {
         },
         {},
         {
-          text: "小麥注音輸入法 for PIME 1.9.6",
-        }
-
+          text: "小麥注音輸入法 for PIME 2.0.0",
+        },
       ];
       const response = Object.assign({}, responseTemplate, { return: menu });
       return response;
