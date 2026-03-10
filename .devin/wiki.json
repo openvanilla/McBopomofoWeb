@@ -1,0 +1,310 @@
+The content has been copied to your clipboard. Please paste it here to complete the file creation.{
+  "repo_notes": [
+    {
+      "content": "The project ports the McBopomofo Input Method for macOS to JavaScript supproted platforms."
+    }
+  ],
+  "pages": [
+    {
+      "title": "Overview",
+      "purpose": "Introduce McBopomofoWeb, explaining what it is, its purpose as a multi-platform Bopomofo input method, and high-level system capabilities",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "System Architecture",
+      "purpose": "Present the high-level architecture showing how the TypeScript core is compiled into multiple platform-specific implementations and how major subsystems relate",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Core IME Engine",
+      "purpose": "Overview of the core input method engine components, introducing the main classes and their responsibilities",
+      "page_notes": [
+        {
+          "content": "Note that the inpou and output are both abstracted. There is an abstract laayer for Key events for web browser and TSF key events. The outout is also an interface and the code IME engine does not manipulate the UI and output directly."
+        }
+      ]
+    },
+    {
+      "title": "Input Processing Pipeline",
+      "purpose": "Detail the flow from keyboard input to character output, covering InputController, KeyHandler, and the event-driven architecture",
+      "parent": "Core IME Engine",
+      "page_notes": [
+        {
+          "content": ""
+        },
+        {
+          "content": "In the TypeScript code, we do not use create the JavaScript dictionary object directly but call JSON.parse to use the native JSON parser but not the JavaScript parser to load the data. It can improve the loading performance."
+        },
+        {
+          "content": "Explain how the input data are from. We do not built data in the project but convert the input data from an upstream project, McBopomofo, and convert them into JSON format to let webpack to paack the data into single JavaScript package.",
+          "parent": "Core IME Engine"
+        }
+      ]
+    },
+    {
+      "title": "Phonetic Processing and Keyboard Layouts",
+      "purpose": "Explain BopomofoReadingBuffer, BopomofoSyllable, keyboard layouts (Standard, ETen, Hsu, etc.), and Hanyu Pinyin support",
+      "parent": "Core IME Engine",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "State Machine and Input States",
+      "purpose": "Document the InputState hierarchy (Empty, Inputting, ChoosingCandidate, Marking, etc.) and state transition logic",
+      "parent": "Core IME Engine",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Language Model and Reading Grid",
+      "purpose": "Explain WebLanguageModel, ReadingGrid, Viterbi algorithm for candidate path finding, and dictionary structure",
+      "parent": "Core IME Engine",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Dictionary Services and Character Information",
+      "purpose": "Cover dictionary lookup services, character information display, and external dictionary integration",
+      "parent": "Core IME Engine",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "User Learning and Personalization",
+      "purpose": "Explain UserOverrideModel, user phrase management, excluded phrases, and how the system learns from user selections",
+      "parent": "Core IME Engine",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Candidate Selection and Display",
+      "purpose": "Detail CandidateController, pagination logic, candidate window management, and selection methods",
+      "parent": "Core IME Engine",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Special Input Features",
+      "purpose": "Document special features like Big5 code input, number input, date macros, marking mode, and Ctrl+Enter options",
+      "parent": "Core IME Engine",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Text Conversion Services",
+      "purpose": "Overview of the Service module and its role in providing text transformation capabilities beyond character input",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Service Layer Architecture",
+      "purpose": "Explain the Service class design, its integration with language model, and the convertText method pattern",
+      "parent": "Text Conversion Services",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Bopomofo-Braille Conversion System",
+      "purpose": "Detail the bidirectional Bopomofo-Braille conversion, BopomofoBrailleConverter, state machine, and token processing",
+      "parent": "Text Conversion Services",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Text Format Conversions",
+      "purpose": "Cover conversions to HTML Ruby, Bopomofo readings, raw readings, Hanyu Pinyin, and their use cases",
+      "parent": "Text Conversion Services",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Platform Implementations",
+      "purpose": "Overview of how the core engine is adapted to different platforms through platform-specific implementations",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Platform Adapter Pattern and InputUI Interface",
+      "purpose": "Explain the InputUI abstraction and how different platforms implement it for their specific UI systems",
+      "parent": "Platform Implementations",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "ChromeOS Extension Implementation",
+      "purpose": "Overview of the Chrome extension architecture, manifest structure, and IME components",
+      "parent": "Platform Implementations",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "ChromeOS IME Integration",
+      "purpose": "Detail chrome.input.ime API integration, event handlers, service worker, and content script",
+      "parent": "Platform Implementations",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "ChromeOS Settings and Storage",
+      "purpose": "Explain chrome.storage.sync usage, settings management, localization, and LargeSync for user phrases",
+      "parent": "Platform Implementations",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "ChromeOS Context Menus and Notifications",
+      "purpose": "Cover context menu integration, commands, notification system, and mode toggles",
+      "parent": "Platform Implementations",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Windows PIME Implementation",
+      "purpose": "Overview of PIME integration, architecture differences from Chrome, and Windows-specific features",
+      "parent": "Platform Implementations",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "PIME Request/Response Protocol",
+      "purpose": "Detail the request/response communication pattern, method handlers, and UI state management",
+      "parent": "Platform Implementations",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "PIME Configuration and File Management",
+      "purpose": "Explain file-based settings storage, user phrase files, file watching, and options UI",
+      "parent": "Platform Implementations",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Web Example Application",
+      "purpose": "Document the web demo, its features, IndexedDB storage, text transformation tools, and UI architecture",
+      "parent": "Platform Implementations",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "MCP Server for AI Integration",
+      "purpose": "Explain the Model Context Protocol server, its tools, stdio transport, and integration with Claude/Gemini",
+      "parent": "Platform Implementations",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Microsoft Word Add-in",
+      "purpose": "Cover the Office Add-in implementation, build pipeline, and integration with Word",
+      "parent": "Platform Implementations",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Build System and Deployment",
+      "purpose": "Overview of the multi-platform build strategy and how a single codebase produces five different distributions",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Project Structure and Dependencies",
+      "purpose": "Detail package.json, dependencies, npm scripts, and module organization",
+      "parent": "Build System and Deployment",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Multi-Platform Build Strategy",
+      "purpose": "Explain webpack configurations for each platform, build:chromeos, build:pime, build:mcp, and shared code strategies",
+      "parent": "Build System and Deployment",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    }
+  ]
+}
