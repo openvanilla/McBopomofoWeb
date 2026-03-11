@@ -126,6 +126,12 @@ node index.js
 - 請將以下的國字，用 LLM 自己的 AI 能力轉換成注音後，然後將注音轉換成台灣點字。
 - 請將以下點字轉換成國字。
 - 請將以下點字轉換成注音後，再用 LLM 自己的能力，將注音轉換成國字。
+- 請將以下的國字轉換成帶有注音標記的網頁。
+- 請使用小麥注音 MCP 工具，將以下的國字轉換成注音字型內碼。
+
+小麥注音 MCP 支援產生注音字型（BPMF annotation font）所需要的內碼，但這個功能需要額外的字型支援。您可以從[這裡](https://github.com/ButTaiwan/bpmfvs/releases/tag/v1.500)下載支援的字型。如果您要請 AI 產生帶有注音的 HTML 網頁，您可以在 prompt 提醒 AI：
+
+> 請在 HTML 中加上 CSS stylesheet `https://oikasu1.github.io/fonts/twfonts.css`，然後在對應的元素套用 `BpmfZihiSerif-Regular`、`BpmfZihiSans-Regular` 或 `BpmfZihiKaiStd-Regular` 字體。
 
 您也可以按照自己的需求，部署在其他支援 MCP 的 AI 服務上，像是 Gemini CLI 等。
 

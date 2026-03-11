@@ -180,25 +180,28 @@
     "message": "Using full-width punctuation"
   },
   "convert_text_to_bpmf_syllables": {
-    "message": "Convert text to Bopomofo syllables"
+    "message": "Convert to Bopomofo syllables"
   },
   "append_bpmf_syllables_to_text": {
     "message": "Append Bopomofo syllables to text"
   },
   "convert_text_to_html_ruby": {
-    "message": "Convert text to HTML Ruby"
+    "message": "Convert to HTML Ruby"
   },
   "append_taiwanese_braille": {
     "message": "Append Taiwanese Braille"
   },
   "convert_text_to_taiwanese_braille": {
-    "message": "Convert text to Taiwanese Braille"
+    "message": "Convert to Taiwanese Braille"
   },
   "convert_taiwanese_braille_to_text": {
     "message": "Convert Taiwanese Braille to text"
   },
   "convert_text_to_hanyu_pinyin": {
-    "message": "Convert text to Hanyu Pinyin"
+    "message": "Convert to Hanyu Pinyin"
+  },
+  "convert_text_to_bpmf_font_annotated_text": {
+    "message": "Convert to annotated text with Bopomofo Font support"
   },
   "menuHelp": {
     "message": "Help..."

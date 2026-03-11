@@ -12,16 +12,16 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-        checks: write
-        pull-requests: write
-        contents: write
+      checks: write
+      pull-requests: write
+      contents: write
     strategy:
       matrix:
         node-version: [24.x, 23.x, 22.x, 21.x, 20.x, 19.x, 18.x]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm install
@@ -30,16 +30,16 @@ jobs:
   test:
     runs-on: ubuntu-latest
     permissions:
-        checks: write
-        pull-requests: write
-        contents: write
+      checks: write
+      pull-requests: write
+      contents: write
     strategy:
       matrix:
         node-version: [24.x, 23.x, 22.x, 21.x, 20.x, 19.x, 18.x]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm install
@@ -68,9 +68,9 @@ jobs:
       matrix:
         node-version: [24.x, 23.x, 22.x, 21.x, 20.x, 19.x, 18.x]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm install
@@ -82,9 +82,9 @@ jobs:
       matrix:
         node-version: [24.x, 23.x, 22.x, 21.x, 20.x, 19.x, 18.x]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm install
@@ -98,7 +98,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm install
@@ -112,7 +112,7 @@ jobs:
   #   steps:
   #     - uses: actions/checkout@v4
   #     - name: Use Node.js ${{ matrix.node-version }}
-  #       uses: actions/setup-node@v4
+  #       uses: actions/setup-node@v6
   #       with:
   #         node-version: ${{ matrix.node-version }}
   #     - run: npm install
@@ -142,7 +142,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm install

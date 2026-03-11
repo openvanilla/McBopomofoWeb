@@ -671,7 +671,7 @@ chrome.input?.ime.onBlur.addListener((context) => {
 //
 chrome.input?.ime.onReset.addListener((context) => {
   let maybeGoogleDocs = false;
-  if (chromeMcBopomofo.context != undefined) {
+  if (chromeMcBopomofo.context !== undefined) {
     maybeGoogleDocs =
       chromeMcBopomofo.context.type === "text" &&
       chromeMcBopomofo.context.autoCapitalize !== "characters" &&
@@ -684,13 +684,13 @@ chrome.input?.ime.onReset.addListener((context) => {
   }
 
   let maybeTwitter = false;
-  if (chromeMcBopomofo.context != undefined) {
+  if (chromeMcBopomofo.context !== undefined) {
     maybeTwitter =
       chromeMcBopomofo.context.type === "text" &&
       chromeMcBopomofo.context.autoCapitalize === "sentences" &&
       chromeMcBopomofo.context.autoComplete === true &&
       chromeMcBopomofo.context.autoCorrect === true &&
-      chromeMcBopomofo.context.shouldDoLearning == true &&
+      chromeMcBopomofo.context.shouldDoLearning === true &&
       chromeMcBopomofo.context.spellCheck === true;
   }
   if (maybeTwitter) {
@@ -876,6 +876,7 @@ chrome.contextMenus.onClicked.addListener((event, tab) => {
     }
     let converted = selectionText;
     let isHtml = false;
+    let useBpmfFont = false;
 
     if (menuItemId === "convert_text_to_bpmf_syllables") {
       const lines = selectionText.split("\n");
@@ -909,7 +910,6 @@ chrome.contextMenus.onClicked.addListener((event, tab) => {
         convertedLines.push(convertedLine);
       }
       converted = convertedLines.join("\n");
-
       isHtml = true;
     } else if (menuItemId === "append_taiwanese_braille") {
       const lines = selectionText.split("\n");
@@ -951,12 +951,25 @@ chrome.contextMenus.onClicked.addListener((event, tab) => {
         convertedLines.push(convertedLine);
       }
       converted = convertedLines.join("\n");
+    } else if (menuItemId === "convert_text_to_bpmf_font_annotated_text") {
+      useBpmfFont = true;
+      const lines = selectionText.split("\n");
+      const convertedLines = [];
+      for (const line of lines) {
+        let convertedLine = ChineseConvert.cn2tw(line);
+        convertedLine =
+          chromeMcBopomofo.service.convertTextToBpmfAnnotatedText(
+            convertedLine
+          );
+        convertedLines.push(convertedLine);
+      }
+      converted = convertedLines.join("\n");
     }
-
     chrome.tabs.sendMessage(tabId, {
       command: "replace_text",
       text: converted,
       isHtml: isHtml,
+      useBpmfFont: useBpmfFont,
     });
   }
 
@@ -966,11 +979,15 @@ chrome.contextMenus.onClicked.addListener((event, tab) => {
     return;
   }
 
-  const selected = event.selectionText;
-  if (selected === undefined) {
-    return;
-  }
-  handle(selected, menuItemId as string, tabId as number);
+  chrome.tabs.sendMessage(
+    tabId,
+    { command: "get_selected_text" },
+    (response) => {
+      if (response && response.text) {
+        handle(response.text, menuItemId as string, tabId as number);
+      }
+    }
+  );
 });
 
 chrome.contextMenus.create({
@@ -1012,6 +1029,12 @@ chrome.contextMenus.create({
 chrome.contextMenus.create({
   id: "convert_text_to_hanyu_pinyin",
   title: chrome.i18n.getMessage("convert_text_to_hanyu_pinyin"),
+  contexts: ["selection", "editable"],
+});
+
+chrome.contextMenus.create({
+  id: "convert_text_to_bpmf_font_annotated_text",
+  title: chrome.i18n.getMessage("convert_text_to_bpmf_font_annotated_text"),
   contexts: ["selection", "editable"],
 });
 

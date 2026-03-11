@@ -6,25 +6,33 @@ import { ReadingGrid } from "../Gramambular2";
 import { webData } from "./WebData";
 import { WebLanguageModel } from "./WebLanguageModel";
 import { BopomofoSyllable as MandarinBopomofoSyllable } from "../Mandarin";
+import { VariantAnnotator } from "./VariantAnnotator";
+import { webBpmfvsPua } from "./WebBpmfvsPua";
+import { webBpmfvsVariants } from "./WebBpmfvsVariants";
 
 const ChineseConvert = require("chinese_convert");
 
 /**
- * The text conversion service.
+ * The text conversion service used in the Chrome Extension and the MCP server.
  *
  * The service provides the following functions:
  *  - Convert Taiwanese Braille to text
  *  - Convert text to Bopomofo readings
+ *  - Convert text to Hanyu Pinyin
  *  - Convert text to HTML Ruby
  *  - Convert text to Taiwanese Braille
+ *  - Convert text to Bopomofo annotated text (for Bopomofo annotation fonts)
+ *  - Annotate a single character with its Bopomofo reading
  */
 export class Service {
   private lm_: WebLanguageModel;
   private grid_: ReadingGrid;
+  private vs_: VariantAnnotator;
 
   constructor() {
     this.lm_ = new WebLanguageModel(webData);
     this.grid_ = new ReadingGrid(this.lm_);
+    this.vs_ = new VariantAnnotator(webBpmfvsPua, webBpmfvsVariants);
   }
 
   /**
@@ -258,6 +266,32 @@ export class Service {
   }
 
   /**
+   * Converts text to Bopomofo annotated text.
+   * @param input The text input
+   * @returns The annotated text output
+   * @example
+   * ``` typescript
+   * let service = new Service();
+   * let input = "小麥注音輸入法";
+   * let output = service.convertTextToBpmfAnnotatedText(input);
+   * ```
+   */
+  public convertTextToBpmfAnnotatedText(input: string): string {
+    return this.convertText(
+      input,
+      (reading: string, value: string) => {
+        let valueComponents = value.split("");
+        let readings = reading.split("-");
+        const result = this.vs_.annotate(valueComponents, readings);
+        return result.annotatedString;
+      },
+      (input: string) => {
+        return input;
+      }
+    );
+  }
+
+  /**
    * Converts text to raw Bopomofo readings.
    * @param input The text input
    * @returns The raw Bopomofo output
@@ -346,5 +380,16 @@ export class Service {
       true,
       true
     );
+  }
+
+  /**
+   * Annotates a single character with its Bopomofo reading.
+   *
+   * @param input - The character to be annotated.
+   * @param reading - The Bopomofo reading for the character.
+   * @returns The annotated string representation of the character.
+   */
+  public annotateSingleCharacter(input: string, reading: string): string {
+    return this.vs_.annotateSingleCharacter(input, reading).annotatedString;
   }
 }
