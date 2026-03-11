@@ -99,7 +99,13 @@
 <li>請將以下的國字，用 LLM 自己的 AI 能力轉換成注音後，然後將注音轉換成台灣點字。</li>
 <li>請將以下點字轉換成國字。</li>
 <li>請將以下點字轉換成注音後，再用 LLM 自己的能力，將注音轉換成國字。</li>
+<li>請將以下的國字轉換成帶有注音標記的網頁。</li>
+<li>請使用小麥注音 MCP 工具，將以下的國字轉換成注音字型內碼。</li>
 </ul>
+<p>小麥注音 MCP 支援產生注音字型（BPMF annotation font）所需要的內碼，但這個功能需要額外的字型支援。您可以從<a href="https://github.com/ButTaiwan/bpmfvs/releases/tag/v1.500">這裡</a>下載支援的字型。如果您要請 AI 產生帶有注音的 HTML 網頁，您可以在 prompt 提醒 AI：</p>
+<blockquote>
+<p>請在 HTML 中加上 CSS stylesheet <code>https://oikasu1.github.io/fonts/twfonts.css</code>，然後在對應的元素套用 <code>BpmfZihiSerif-Regular</code>、<code>BpmfZihiSans-Regular</code> 或 <code>BpmfZihiKaiStd-Regular</code> 字體。</p>
+</blockquote>
 <p>您也可以按照自己的需求，部署在其他支援 MCP 的 AI 服務上，像是 Gemini CLI 等。</p>
 <h2 id="其他" class="tsd-anchor-link">其他<a href="#其他" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
 <h3 id="microsoft-word-add-in" class="tsd-anchor-link">Microsoft Word Add-in<a href="#microsoft-word-add-in" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3>
