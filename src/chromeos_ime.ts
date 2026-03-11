@@ -684,13 +684,13 @@ chrome.input?.ime.onReset.addListener((context) => {
   }
 
   let maybeTwitter = false;
-  if (chromeMcBopomofo.context != undefined) {
+  if (chromeMcBopomofo.context !== undefined) {
     maybeTwitter =
       chromeMcBopomofo.context.type === "text" &&
       chromeMcBopomofo.context.autoCapitalize === "sentences" &&
       chromeMcBopomofo.context.autoComplete === true &&
       chromeMcBopomofo.context.autoCorrect === true &&
-      chromeMcBopomofo.context.shouldDoLearning == true &&
+      chromeMcBopomofo.context.shouldDoLearning === true &&
       chromeMcBopomofo.context.spellCheck === true;
   }
   if (maybeTwitter) {
