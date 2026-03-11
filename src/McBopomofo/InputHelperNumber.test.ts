@@ -1,6 +1,5 @@
-
-import { NumberInputHelper } from "./InputHelperNumber";
 import { LanguageModel, Unigram } from "../Gramambular2";
+import { NumberInputHelper } from "./InputHelperNumber";
 
 class MockLanguageModel implements LanguageModel {
   private unigrams: Map<string, Unigram[]> = new Map();

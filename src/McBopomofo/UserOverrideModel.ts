@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { WalkResult, Node } from "../Gramambular2";
+import { Node, WalkResult } from "../Gramambular2";
 
 // Fully decay after about 20 generations.
 const kDecayThreshold: number = 1.0 / 1048576.0;

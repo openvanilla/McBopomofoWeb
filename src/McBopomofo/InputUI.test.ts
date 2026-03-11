@@ -1,9 +1,9 @@
+import { CandidateWrapper } from "./CandidateController";
 import {
   ComposingBufferText,
   ComposingBufferTextStyle,
   InputUIState,
 } from "./InputUI";
-import { CandidateWrapper } from "./CandidateController";
 
 describe("ComposingBufferText", () => {
   it("should construct with default style", () => {

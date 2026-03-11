@@ -13,7 +13,7 @@
  */
 
 export {
+  RomanNumbers,
   RomanNumbersError,
   RomanNumbersStyle,
-  RomanNumbers,
 } from "./RomanNumbers";

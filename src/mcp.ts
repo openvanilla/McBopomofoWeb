@@ -1,9 +1,9 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-
 import { z } from "zod";
-import { Service } from "./McBopomofo/Service";
+
 import { BopomofoBrailleConverter } from "./BopomofoBraille";
+import { Service } from "./McBopomofo/Service";
 
 async function runServerTransport() {
   const service = new Service();

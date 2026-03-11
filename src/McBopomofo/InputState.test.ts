@@ -5,25 +5,25 @@
  * SPDX-License-Identifier: MIT
  */
 
+import { Candidate } from "../Gramambular2";
 import {
+  Big5,
+  ChoosingCandidate,
+  Committing,
+  CustomMenu,
+  CustomMenuEntry,
   Empty,
   EmptyIgnoringPrevious,
-  Committing,
-  NotEmpty,
-  Inputting,
-  ChoosingCandidate,
-  Marking,
-  SelectingDictionary,
-  Big5,
-  SelectingDateMacro,
   Feature,
-  SelectingFeature,
-  CustomMenuEntry,
-  CustomMenu,
+  Inputting,
+  Marking,
+  NotEmpty,
   NumberInput,
+  SelectingDateMacro,
+  SelectingDictionary,
+  SelectingFeature,
   ShowingCharInfo,
 } from "./InputState";
-import { Candidate } from "../Gramambular2";
 
 describe("InputState classes", () => {
   describe("Empty", () => {
@@ -490,7 +490,10 @@ describe("InputState classes", () => {
         []
       );
       const selectedString = "你好";
-      const showingCharInfo = new ShowingCharInfo(previousState, selectedString);
+      const showingCharInfo = new ShowingCharInfo(
+        previousState,
+        selectedString
+      );
 
       expect(showingCharInfo).toBeInstanceOf(ShowingCharInfo);
       expect(showingCharInfo).toBeInstanceOf(NotEmpty);
@@ -514,7 +517,10 @@ describe("InputState classes", () => {
         []
       );
       const selectedString = "A";
-      const showingCharInfo = new ShowingCharInfo(previousState, selectedString);
+      const showingCharInfo = new ShowingCharInfo(
+        previousState,
+        selectedString
+      );
 
       expect(showingCharInfo.menu).toContain("JavaScript String length: 1");
       expect(showingCharInfo.menu).toContain("UTF-8 HEX: 41");
@@ -530,7 +536,10 @@ describe("InputState classes", () => {
         []
       );
       const selectedString = "";
-      const showingCharInfo = new ShowingCharInfo(previousState, selectedString);
+      const showingCharInfo = new ShowingCharInfo(
+        previousState,
+        selectedString
+      );
 
       expect(showingCharInfo.menu).toContain("JavaScript String length: 0");
       expect(showingCharInfo.menu).toContain("UTF-8 HEX: ");

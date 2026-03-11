@@ -1,6 +1,5 @@
-// ...existing code...
-import { ReadingGrid } from "./ReadingGrid";
 import { LanguageModel, Unigram } from "./LanguageModel";
+import { ReadingGrid } from "./ReadingGrid";
 
 class MockLanguageModel implements LanguageModel {
   getUnigrams(key: string): Unigram[] {

@@ -1,4 +1,4 @@
-import { Key, KeyName, KeyFromKeyboardEvent } from "./Key";
+import { Key, KeyFromKeyboardEvent, KeyName } from "./Key";
 
 describe("Key", () => {
   describe("construction", () => {

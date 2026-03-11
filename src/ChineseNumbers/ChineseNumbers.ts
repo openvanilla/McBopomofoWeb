@@ -6,8 +6,8 @@
  */
 
 import {
-  TrimZerosAtStart,
   TrimZerosAtEnd as TrimZerosAtEnd,
+  TrimZerosAtStart,
 } from "./StringUtils";
 
 /**

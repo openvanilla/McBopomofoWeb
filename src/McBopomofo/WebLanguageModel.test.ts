@@ -1,6 +1,6 @@
-import { webData } from "./WebData";
-import { WebLanguageModel, UserPhrases } from "./WebLanguageModel";
 import { Unigram } from "../Gramambular2";
+import { webData } from "./WebData";
+import { UserPhrases, WebLanguageModel } from "./WebLanguageModel";
 
 describe("getReading", () => {
   test("returns reading for supplied character", () => {

@@ -6,18 +6,19 @@
  * The main entrance of the IME for ChromeOS.
  */
 
+import child_process from "child_process";
+import fs from "fs";
+import { List } from "lodash";
+import path from "path";
+import process from "process";
+
 import {
   InputController,
   MovingCursorOption,
 } from "./McBopomofo/InputController";
+import { Empty } from "./McBopomofo/InputState";
 import { InputUI } from "./McBopomofo/InputUI";
 import { KeyFromKeyboardEvent, VK_Keys } from "./pime_keys";
-import { List } from "lodash";
-import child_process from "child_process";
-import fs from "fs";
-import path from "path";
-import process from "process";
-import { Empty } from "./McBopomofo/InputState";
 
 /**
  * The McBopomofo Settings.

@@ -3,12 +3,12 @@ import {
   BopomofoSyllable as BrailleBopomofoSyllable,
 } from "../BopomofoBraille";
 import { ReadingGrid } from "../Gramambular2";
-import { webData } from "./WebData";
-import { WebLanguageModel } from "./WebLanguageModel";
 import { BopomofoSyllable as MandarinBopomofoSyllable } from "../Mandarin";
 import { VariantAnnotator } from "./VariantAnnotator";
 import { webBpmfvsPua } from "./WebBpmfvsPua";
 import { webBpmfvsVariants } from "./WebBpmfvsVariants";
+import { webData } from "./WebData";
+import { WebLanguageModel } from "./WebLanguageModel";
 
 const ChineseConvert = require("chinese_convert");
 

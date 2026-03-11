@@ -1,5 +1,5 @@
-import { InputController, MovingCursorOption } from "./InputController";
 import { CtrlEnterOption } from "./CtrlEnterOption";
+import { InputController, MovingCursorOption } from "./InputController";
 import {
   Big5,
   ChoosingCandidate,

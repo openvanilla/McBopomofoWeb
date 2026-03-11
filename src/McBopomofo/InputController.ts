@@ -8,13 +8,12 @@
 import { Candidate } from "../Gramambular2";
 import { BopomofoKeyboardLayout } from "../Mandarin";
 import {
-  CandidateWrapper,
   CandidateController,
+  CandidateWrapper,
   KeyCap,
 } from "./CandidateController";
 import { CtrlEnterOption } from "./CtrlEnterOption";
 import { inputMacroController } from "./InputMacro";
-
 import {
   Big5,
   ChoosingCandidate,
@@ -33,14 +32,12 @@ import {
   SelectingFeature,
   ShowingCharInfo,
 } from "./InputState";
-
 import {
   ComposingBufferText,
   ComposingBufferTextStyle,
   InputUI,
   InputUIState,
 } from "./InputUI";
-
 import { Key, KeyFromKeyboardEvent, KeyName } from "./Key";
 import { KeyHandler } from "./KeyHandler";
 import { LocalizedStrings } from "./LocalizedStrings";

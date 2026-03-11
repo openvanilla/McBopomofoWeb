@@ -11,4 +11,4 @@
  * This module exports the LanguageModel and ReadingGrid classes.
  */
 export { LanguageModel, Unigram } from "./LanguageModel";
-export { ReadingGrid, Candidate, WalkResult, Node } from "./ReadingGrid";
+export { Candidate, Node, ReadingGrid, WalkResult } from "./ReadingGrid";

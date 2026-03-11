@@ -5,12 +5,24 @@
  * SPDX-License-Identifier: MIT
  */
 
+import * as _ from "lodash";
+
+import { BopomofoBrailleConverter } from "../BopomofoBraille";
+import {
+  Candidate,
+  LanguageModel,
+  ReadingGrid,
+  WalkResult,
+} from "../Gramambular2";
+import { OverrideType } from "../Gramambular2/ReadingGrid";
 import {
   BopomofoKeyboardLayout,
   BopomofoReadingBuffer,
   BopomofoSyllable,
 } from "../Mandarin";
-import { UserOverrideModel } from "./UserOverrideModel";
+import { CtrlEnterOption } from "./CtrlEnterOption";
+import { DictionaryServices } from "./DictionaryServices";
+import { NumberInputHelper } from "./InputHelperNumber";
 import {
   Big5,
   ChoosingCandidate,
@@ -27,32 +39,21 @@ import {
 } from "./InputState";
 import { Key, KeyName } from "./Key";
 import { LocalizedStrings } from "./LocalizedStrings";
-import { WebLanguageModel } from "./WebLanguageModel";
-import * as _ from "lodash";
-import {
-  Candidate,
-  LanguageModel,
-  ReadingGrid,
-  WalkResult,
-} from "../Gramambular2";
-import { OverrideType } from "../Gramambular2/ReadingGrid";
-import { DictionaryServices } from "./DictionaryServices";
-import { CtrlEnterOption } from "./CtrlEnterOption";
-import { BopomofoBrailleConverter } from "../BopomofoBraille";
-import { NumberInputHelper } from "./InputHelperNumber";
+import { UserOverrideModel } from "./UserOverrideModel";
 import {
   VariantAnnotator,
   VariantAnnotatorCombinedResult,
 } from "./VariantAnnotator";
 import { webBpmfvsPua } from "./WebBpmfvsPua";
 import { webBpmfvsVariants } from "./WebBpmfvsVariants";
+import { WebLanguageModel } from "./WebLanguageModel";
 
 export class ComposedString {
   constructor(
     public readonly head: string,
     public readonly tail: string,
     public readonly tooltip: string
-  ) { }
+  ) {}
 }
 
 const kPunctuationListKey = "`"; // Hit the key to bring up the list.

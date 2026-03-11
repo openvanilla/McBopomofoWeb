@@ -17,5 +17,5 @@
  * @packageDocumentation
  */
 
-export { BopomofoSyllable } from "./Tokens/BopomofoSyllable";
 export { BopomofoBrailleConverter } from "./Converter";
+export { BopomofoSyllable } from "./Tokens/BopomofoSyllable";

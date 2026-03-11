@@ -1,5 +1,5 @@
-import { UserOverrideModel, Suggestion } from "./UserOverrideModel";
-import { WalkResult, Node, Unigram } from "../Gramambular2";
+import { Node, Unigram, WalkResult } from "../Gramambular2";
+import { Suggestion, UserOverrideModel } from "./UserOverrideModel";
 
 describe("UserOverrideModel", () => {
   let model: UserOverrideModel;

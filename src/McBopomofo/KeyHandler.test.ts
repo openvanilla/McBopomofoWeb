@@ -5,9 +5,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { KeyHandler } from "./KeyHandler";
-import { WebLanguageModel } from "./WebLanguageModel";
-import { webData } from "./WebData";
+import { BopomofoKeyboardLayout } from "../Mandarin";
 import {
   Big5,
   ChoosingCandidate,
@@ -21,7 +19,9 @@ import {
   SelectingFeature,
 } from "./InputState";
 import { Key, KeyName } from "./Key";
-import { BopomofoKeyboardLayout } from "../Mandarin";
+import { KeyHandler } from "./KeyHandler";
+import { webData } from "./WebData";
+import { WebLanguageModel } from "./WebLanguageModel";
 
 function asciiKey(input: string[]): Key[] {
   const keys: Key[] = [];

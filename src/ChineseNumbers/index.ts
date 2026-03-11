@@ -17,5 +17,5 @@
  * @packageDocumentation
  */
 
-export { ChineseNumbers, Case } from "./ChineseNumbers";
+export { Case, ChineseNumbers } from "./ChineseNumbers";
 export { SuzhouNumbers } from "./SuzhouNumbers";

@@ -6,8 +6,8 @@
  */
 
 import {
-  BopomofoReadingBuffer,
   BopomofoKeyboardLayout,
+  BopomofoReadingBuffer,
   BopomofoSyllable,
 } from "./index";
 

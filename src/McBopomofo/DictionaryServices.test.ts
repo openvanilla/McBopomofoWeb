@@ -6,14 +6,8 @@
  */
 
 import { DictionaryServices } from "./DictionaryServices";
+import { Empty } from "./InputState";
 import { LocalizedStrings } from "./LocalizedStrings";
-import {
-  InputState,
-  SelectingDictionary,
-  ShowingCharInfo,
-  NotEmpty,
-  Empty,
-} from "./InputState";
 
 // Mock the entire DictionaryServices module
 jest.mock("./DictionaryServices", () => {

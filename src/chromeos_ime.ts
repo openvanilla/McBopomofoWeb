@@ -6,13 +6,13 @@
  * The main entrance of the IME for ChromeOS.
  */
 
+import { LargeSync } from "./LargeSync/LargeSync";
 import {
   InputController,
   MovingCursorOption,
 } from "./McBopomofo/InputController";
-import { Service } from "./McBopomofo/Service";
 import { Key, KeyName } from "./McBopomofo/Key";
-import { LargeSync } from "./LargeSync/LargeSync";
+import { Service } from "./McBopomofo/Service";
 const ChineseConvert = require("chinese_convert");
 
 const largeSync = new LargeSync();
