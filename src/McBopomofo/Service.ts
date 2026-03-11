@@ -378,4 +378,15 @@ export class Service {
       true
     );
   }
+
+  /**
+   * Annotates a single character with its Bopomofo reading.
+   *
+   * @param input - The character to be annotated.
+   * @param reading - The Bopomofo reading for the character.
+   * @returns The annotated string representation of the character.
+   */
+  public annotateSingleCharacter(input: string, reading: string): string {
+    return this.vs_.annotateSingleCharacter(input, reading).annotatedString;
+  }
 }
