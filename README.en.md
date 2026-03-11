@@ -121,6 +121,12 @@ After installing the McBopomofo MCP server, you can try the following prompts wi
 - Please convert the following Chinese characters into Bopomofo using the LLM's own AI capabilities, and then convert the Bopomofo into Taiwan Braille.
 - Please convert the following Braille to Chinese characters.
 - Please convert the following Braille to Bopomofo, and then use the LLM's own capabilities to convert the Bopomofo into Chinese characters.
+- Please convert the following Chinese characters to a Bopomofo annotated web page.
+- Please use the MCP tool to generate text with Bopomofo annotations.
+
+Note that the McBopomofo MCP supports generating the codes required for Bopomofo annotation fonts, but this feature requires additional font support. You can download the supported fonts from [here](https://github.com/ButTaiwan/bpmfvs/releases/tag/v1.500). If you want the AI to generate an HTML page with Bopomofo annotations, you can remind the AI in the prompt:
+
+> Please add the CSS stylesheet `https://oikasu1.github.io/fonts/twfonts.css` to the HTML, and then apply the `BpmfZihiSerif-Regular`, `BpmfZihiSans-Regular`, or `BpmfZihiKaiStd-Regular` font to the corresponding elements.
 
 You can also deploy it to other AI services that support MCP, such as Gemini CLI, according to your own needs.
 

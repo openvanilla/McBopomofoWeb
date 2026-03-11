@@ -223,4 +223,13 @@ describe("Service", () => {
     const result2 = service.convertTextToBpmfAnnotatedText("還錢");
     expect(result2).toBe("還󠇡錢");
   });
+
+  test("test annotateSingleCharacter", () => {
+    const service = new Service();
+    const result = service.annotateSingleCharacter("一", "ㄧ");
+    expect(result).toBe("一");
+
+    const result2 = service.annotateSingleCharacter("還", "ㄏㄨㄢˊ");
+    expect(result2).toBe("還󠇡");
+  });
 });

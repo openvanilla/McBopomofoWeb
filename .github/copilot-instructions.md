@@ -103,7 +103,7 @@ The input method supports rendering Bopomofo alongside Chinese characters using 
 
 - **Building**: Run `npm run build:mcp` to compile the MCP server to `output/mcp/index.js`.
 - **Running**: The server communicates via standard input/output (`stdio`). It can be started using `node output/mcp/index.js` or the wrapper `output/mcp/run.sh`.
-- **Tools**: It exposes LLM tools for text, Bopomofo, Pinyin, and Braille conversion (e.g., `convertBrailleToText`, `convertTextToBraille`, `convertTextToPinyin`).
+- **Tools**: It exposes LLM tools for text, Bopomofo, Pinyin, Bopomofo annotation font, and Braille conversion (e.g., `convertBrailleToText`, `convertTextToBraille`, `convertTextToPinyin`, `convertTextToBpmfAnnotatedText`).
 
 ### Testing Guidelines
 
@@ -233,6 +233,7 @@ AI agents may call a subagent to run `npm run test:coverage` to find code that i
 
 ## Additional Agent Notes
 
+- **DO NOT** modify any files under the `node_modules` directory.
 - Before merging, run `npm run test` and ensure Chrome OS build still compiles via `npm run build:chromeos`.
 - CI now runs `npm run build:mcp` across Node 18-24; run this build locally when changing MCP-related code to mirror CI.
 - New language model data must include a short note in `README.md` summarizing changes for translators.

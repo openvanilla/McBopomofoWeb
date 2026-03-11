@@ -13,13 +13,16 @@ import { webBpmfvsVariants } from "./WebBpmfvsVariants";
 const ChineseConvert = require("chinese_convert");
 
 /**
- * The text conversion service.
+ * The text conversion service used in the Chrome Extension and the MCP server.
  *
  * The service provides the following functions:
  *  - Convert Taiwanese Braille to text
  *  - Convert text to Bopomofo readings
+ *  - Convert text to Hanyu Pinyin
  *  - Convert text to HTML Ruby
  *  - Convert text to Taiwanese Braille
+ *  - Convert text to Bopomofo annotated text (for Bopomofo annotation fonts)
+ *  - Annotate a single character with its Bopomofo reading
  */
 export class Service {
   private lm_: WebLanguageModel;
