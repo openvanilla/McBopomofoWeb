@@ -34,7 +34,6 @@
           const end = activeElement.selectionEnd;
           activeElement.value =
             val.slice(0, start) + replacementText + val.slice(end);
-          console.log("path 1");
         } else {
           if (sel.rangeCount) {
             range = sel.getRangeAt(0);
@@ -46,10 +45,8 @@
                 div.style.fontFamily = "BpmfZihiSans-Regular";
               }
               range.insertNode(div);
-              console.log("path 2");
             } else {
               const lines = replacementText.split("\n").reverse();
-              console.log("lines", lines);
               if (lines.length > 1) {
                 for (const line of lines) {
                   if (line.length === 0) {
@@ -63,7 +60,6 @@
                   }
                   range.insertNode(p);
                 }
-                console.log("path 3");
               } else {
                 let node = document.createTextNode(replacementText);
                 if (useBpmfFont) {

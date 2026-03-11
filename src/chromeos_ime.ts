@@ -984,7 +984,6 @@ chrome.contextMenus.onClicked.addListener((event, tab) => {
     { command: "get_selected_text" },
     (response) => {
       if (response && response.text) {
-        // console.log("這才有換行：", response.text);
         handle(response.text, menuItemId as string, tabId as number);
       }
     }
