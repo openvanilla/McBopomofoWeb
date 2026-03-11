@@ -207,4 +207,20 @@ describe("Service", () => {
     const result = service.convertTextToRawReadings(input);
     expect(result).toBe("ㄒㄧㄠˇ-ㄇㄞˋ-ㄓㄨˋ-ㄧㄣ-ㄕㄨ-ㄖㄨˋ-ㄈㄚˇ");
   });
+
+  test("test convertTextToBpmfAnnotatedText", () => {
+    const service = new Service();
+    const input = "一二三";
+    const result = service.convertTextToBpmfAnnotatedText(input);
+    // 一 (ㄧ), 二 (ㄦˋ), 三 (ㄙㄢ)
+    // From WebBpmfvsVariants.ts:
+    // "一-ㄧ": "一"
+    // "二-ㄦˋ": "二"
+    // "三-ㄙㄢ": "三"
+    // So there should be no variation selectors here as they are default readings.
+    expect(result).toBe("一二三");
+
+    const result2 = service.convertTextToBpmfAnnotatedText("還錢");
+    expect(result2).toBe("還󠇡錢");
+  });
 });
