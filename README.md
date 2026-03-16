@@ -120,6 +120,16 @@ node index.js
 }
 ```
 
+如果要搭配 [Codex](https://openai.com/codex/) 使用，可以編輯 `~/.codex/config.toml`，加入以下設定：
+
+```toml
+[mcp_servers.mcbopomofo]
+command = "node"
+args = ["/PATH/TO/output/mcp/index.js"]
+```
+
+修改設定之後，重新啟動 Codex 即可。若您是在這個專案目錄下編譯，實際路徑通常會是 `.../McBopomofoWeb/output/mcp/index.js`。
+
 安裝了小麥注音的 MCP 伺服器之後，您可以試試看以下的 prompt：
 
 - 請將以下的國字轉換成點字。

@@ -23,19 +23,24 @@ These text conversion services can be used not only in the Chrome browser's righ
 
 ## Table of Contents
 
+<!-- TOC -->
+
 - [McBopomofoWeb - McBopomofo Input Method Built with Web Technologies](#mcbopomofoweb---mcbopomofo-input-method-built-with-web-technologies)
-  - [Table of Contents](#table-of-contents)
-  - [Usage](#usage)
-  - [Build Instructions](#build-instructions)
-    - [Building Example Web Page](#building-example-web-page)
-    - [Building and Testing Chrome OS Version](#building-and-testing-chrome-os-version)
-    - [Building and Testing Windows PIME Version](#building-and-testing-windows-pime-version)
-    - [Building MCP Service](#building-mcp-service)
-  - [Others](#others)
-  - [Third-party Packages](#third-party-packages)
-  - [Community Guidelines](#community-guidelines)
-  - [Software License](#software-license)
-  - [Acknowledgments](#acknowledgments)
+    - [Table of Contents](#table-of-contents)
+    - [Usage](#usage)
+    - [Build Instructions](#build-instructions)
+        - [Building Example Web Page](#building-example-web-page)
+        - [Building and Testing Chrome OS Version](#building-and-testing-chrome-os-version)
+        - [Building and Testing Windows PIME Version](#building-and-testing-windows-pime-version)
+        - [Building MCP Service](#building-mcp-service)
+    - [Others](#others)
+        - [Microsoft Word Add-in](#microsoft-word-add-in)
+    - [Third-party Packages](#third-party-packages)
+    - [Community Guidelines](#community-guidelines)
+    - [Software License](#software-license)
+    - [Acknowledgments](#acknowledgments)
+
+<!-- /TOC -->
 
 ## Usage
 
@@ -115,6 +120,16 @@ To use it with [Claude](https://claude.ai/), taking macOS as an example, you nee
 }
 ```
 
+If you want to use it with [Codex](https://openai.com/codex/), edit `~/.codex/config.toml` and add the following settings:
+
+```toml
+[mcp_servers.mcbopomofo]
+command = "node"
+args = ["/PATH/TO/output/mcp/index.js"]
+```
+
+After modifying the settings, restart Codex. If you compiled in this project directory, the actual path will typically be `.../McBopomofoWeb/output/mcp/index.js`.
+
 After installing the McBopomofo MCP server, you can try the following prompts with Claude:
 
 - Please convert the following Chinese characters to Braille.
@@ -131,6 +146,8 @@ Note that the McBopomofo MCP supports generating the codes required for Bopomofo
 You can also deploy it to other AI services that support MCP, such as Gemini CLI, according to your own needs.
 
 ## Others
+
+### Microsoft Word Add-in
 
 In the others directory, we provide a Word Add-in that facilitates the use of Chinese character to Braille conversion functions in Microsoft Word. Usage is as follows:
 
