@@ -27,6 +27,30 @@ describe("LocalizedStrings", () => {
     });
   });
 
+  describe("speak", () => {
+    it("returns zh-TW speak text when languageCode is zh-TW", () => {
+      localizedStrings.languageCode = "zh-TW";
+      expect(localizedStrings.speak("測試")).toBe("朗讀「測試」");
+    });
+
+    it("returns English speak text when languageCode is not zh-TW", () => {
+      localizedStrings.languageCode = "en";
+      expect(localizedStrings.speak("test")).toBe('Speak "test"');
+    });
+  });
+
+  describe("characterInfo", () => {
+    it("returns zh-TW character info text when languageCode is zh-TW", () => {
+      localizedStrings.languageCode = "zh-TW";
+      expect(localizedStrings.characterInfo()).toBe("字元資訊");
+    });
+
+    it("returns English character info text when languageCode is not zh-TW", () => {
+      localizedStrings.languageCode = "en";
+      expect(localizedStrings.characterInfo()).toBe("Character Information");
+    });
+  });
+
   describe("cursorIsBetweenSyllables", () => {
     it("reports zh-TW cursor guidance when languageCode is zh-TW", () => {
       localizedStrings.languageCode = "zh-TW";
@@ -210,6 +234,78 @@ describe("LocalizedStrings", () => {
       localizedStrings.languageCode = "en";
       const result = localizedStrings.cancel();
       expect(result).toBe("Cancel");
+    });
+  });
+
+  describe("annotation notices", () => {
+    it("returns zh-TW text when adding phrases is blocked by annotation mode", () => {
+      localizedStrings.languageCode = "zh-TW";
+      expect(localizedStrings.canNotAddNewPhraseWhenBopomoroAnnotationIs()).toBe(
+        "注音字型破音字標記模式開啟時，不能增加新詞"
+      );
+    });
+
+    it("returns English text when adding phrases is blocked by annotation mode", () => {
+      localizedStrings.languageCode = "en";
+      expect(localizedStrings.canNotAddNewPhraseWhenBopomoroAnnotationIs()).toBe(
+        "Cannot add new phrases when Bopomofo annotation is on."
+      );
+    });
+
+    it("returns zh-TW text for annotation mode enabled", () => {
+      localizedStrings.languageCode = "zh-TW";
+      expect(localizedStrings.bopomofoAnnotationOn()).toBe(
+        "注音字型標記模式已開啟"
+      );
+    });
+
+    it("returns English text for annotation mode enabled", () => {
+      localizedStrings.languageCode = "en";
+      expect(localizedStrings.bopomofoAnnotationOn()).toBe(
+        "Bopomofo annotation support on"
+      );
+    });
+
+    it("returns zh-TW text for variant and PUA annotation mode", () => {
+      localizedStrings.languageCode = "zh-TW";
+      expect(localizedStrings.bopomofoAnnotationWithVariantsAndPUA()).toBe(
+        "注音字型標記：文字中包含變體選擇器與 PUA 字元"
+      );
+    });
+
+    it("returns English text for variant and PUA annotation mode", () => {
+      localizedStrings.languageCode = "en";
+      expect(localizedStrings.bopomofoAnnotationWithVariantsAndPUA()).toBe(
+        "Bopomofo annotation: variant selectors and PUA blocks in text"
+      );
+    });
+
+    it("returns zh-TW text for variant-only annotation mode", () => {
+      localizedStrings.languageCode = "zh-TW";
+      expect(localizedStrings.bopomofoAnnotationWithVariants()).toBe(
+        "注音字型標記：文字中包含變體選擇器"
+      );
+    });
+
+    it("returns English text for variant-only annotation mode", () => {
+      localizedStrings.languageCode = "en";
+      expect(localizedStrings.bopomofoAnnotationWithVariants()).toBe(
+        "Bopomofo annotation: variant selectors in text"
+      );
+    });
+
+    it("returns zh-TW text for PUA-only annotation mode", () => {
+      localizedStrings.languageCode = "zh-TW";
+      expect(localizedStrings.bopomofoAnnotationWithPUA()).toBe(
+        "注音字型標記：文字中包含 PUA 字元"
+      );
+    });
+
+    it("returns English text for PUA-only annotation mode", () => {
+      localizedStrings.languageCode = "en";
+      expect(localizedStrings.bopomofoAnnotationWithPUA()).toBe(
+        "Bopomofo annotation: PUA blocks in text"
+      );
     });
   });
 
