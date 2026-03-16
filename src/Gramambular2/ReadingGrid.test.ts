@@ -214,4 +214,18 @@ describe("ReadingGrid", () => {
     expect(grid.length).toBe(1);
     expect(grid.cursor).toBe(1);
   });
+
+  it("should bypass combineReading for single-reading updates", () => {
+    const mockLM = new MockLanguageModel();
+    const grid = new ReadingGrid(mockLM);
+    const combineReadingSpy = jest.spyOn(grid as any, "combineReading");
+
+    grid.insertReading("testReading");
+
+    expect(combineReadingSpy).not.toHaveBeenCalled();
+
+    grid.insertReading("testReading2");
+
+    expect(combineReadingSpy).toHaveBeenCalled();
+  });
 });

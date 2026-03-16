@@ -457,14 +457,16 @@ export class ReadingGrid {
       end = this.readings_.length;
     }
     for (let pos = begin; pos < end; pos++) {
+      let combinedReading = "";
       for (
         let len = 1;
         len <= ReadingGrid.kMaximumSpanLength && pos + len <= end;
         len++
       ) {
-        const combinedReading = this.combineReading(
-          this.readings_.slice(pos, pos + len)
-        );
+        combinedReading =
+          len === 1
+            ? this.readings_[pos]
+            : this.combineReading(this.readings_.slice(pos, pos + len));
 
         if (!this.hasNodeAt(pos, len, combinedReading)) {
           const unigrams = this.lm_.getUnigrams(combinedReading);
