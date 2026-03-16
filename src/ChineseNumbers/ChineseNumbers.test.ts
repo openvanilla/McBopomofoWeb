@@ -172,8 +172,19 @@ describe("ChineseNumbers.generate edge cases", () => {
     expect(output).toBe("一");
   });
 
+  test("returns zero when the integer component is all zeros", () => {
+    const output = ChineseNumbers.generate("0000", "", Case.lowercase);
+    expect(output).toBe("〇");
+  });
+
   test("formats numbers with repeated zero sections", () => {
     const output = ChineseNumbers.generate("100020003", "", Case.lowercase);
     expect(output).toBe("一億〇二萬〇三");
+  });
+
+  test("throws for unsupported numeral case values", () => {
+    expect(() =>
+      ChineseNumbers.generate("123", "", 999 as unknown as Case)
+    ).toThrow("Invalid case");
   });
 });

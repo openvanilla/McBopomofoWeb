@@ -1,6 +1,34 @@
 import { Service } from "./Service";
 
 describe("Service", () => {
+  test("forwards user phrases to the language model", () => {
+    const service = new Service();
+    const setUserPhrases = jest.fn();
+    (service as any).lm_ = {
+      ...(service as any).lm_,
+      setUserPhrases,
+    };
+    const phrases = new Map([["ㄘㄜˋ-ㄕˋ", ["測試"]]]);
+
+    service.setUserPhrases(phrases);
+
+    expect(setUserPhrases).toHaveBeenCalledWith(phrases);
+  });
+
+  test("forwards excluded phrases to the language model", () => {
+    const service = new Service();
+    const setExcludedPhrases = jest.fn();
+    (service as any).lm_ = {
+      ...(service as any).lm_,
+      setExcludedPhrases,
+    };
+    const phrases = new Map([["ㄘㄜˋ-ㄕˋ", ["測試"]]]);
+
+    service.setExcludedPhrases(phrases);
+
+    expect(setExcludedPhrases).toHaveBeenCalledWith(phrases);
+  });
+
   test("round-trips full sentence through Braille conversion", () => {
     const service = new Service();
     const input = "由「小麥」的作者";
@@ -150,11 +178,27 @@ describe("Service", () => {
     expect(result).toBe(expected);
   });
 
+  test("passes through non-reading text when converting to HTML ruby", () => {
+    const service = new Service();
+
+    expect(service.convertTextToHtmlRuby("OpenVanilla 123")).toBe(
+      "OpenVanilla 123"
+    );
+  });
+
   test("converts text to Pinyin readings", () => {
     const service = new Service();
     const input = "小麥注音輸入法";
     const r1 = service.convertTextToPinyin(input);
     expect(r1).toEqual("xiao mai zhu yin shu ru fa");
+  });
+
+  test("passes through non-reading text when converting to Pinyin", () => {
+    const service = new Service();
+
+    expect(service.convertTextToPinyin("OpenVanilla 123")).toBe(
+      "OpenVanilla 123"
+    );
   });
 
   test("converts text to Bopomofo readings", () => {
@@ -208,6 +252,14 @@ describe("Service", () => {
     expect(result).toBe("ㄒㄧㄠˇ-ㄇㄞˋ-ㄓㄨˋ-ㄧㄣ-ㄕㄨ-ㄖㄨˋ-ㄈㄚˇ");
   });
 
+  test("passes through non-reading text when converting to raw readings", () => {
+    const service = new Service();
+
+    expect(service.convertTextToRawReadings("OpenVanilla 123")).toBe(
+      "OpenVanilla 123"
+    );
+  });
+
   test("test convertTextToBpmfAnnotatedText", () => {
     const service = new Service();
     const input = "一二三";
@@ -222,6 +274,29 @@ describe("Service", () => {
 
     const result2 = service.convertTextToBpmfAnnotatedText("還錢");
     expect(result2).toBe("還󠇡錢");
+  });
+
+  test("passes through non-reading text when converting to annotated text", () => {
+    const service = new Service();
+
+    expect(service.convertTextToBpmfAnnotatedText("OpenVanilla 123")).toBe(
+      "OpenVanilla 123"
+    );
+  });
+
+  test("uses a combined reading when the language model returns fewer readings than characters", () => {
+    const service = new Service();
+    (service as any).lm_ = {
+      ...(service as any).lm_,
+      getReading: jest.fn((input: string) => {
+        if (input === "測試") {
+          return "ㄘㄜˋ ㄕˋ";
+        }
+        return undefined;
+      }),
+    };
+
+    expect(service.convertTextToBpmfReadings("測試")).toBe("ㄘㄜˋ ㄕˋ");
   });
 
   test("test annotateSingleCharacter", () => {

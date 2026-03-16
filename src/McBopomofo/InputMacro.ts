@@ -779,6 +779,7 @@ class InputMacroController {
       new InputMacroDateTomorrowMediumRoc(),
       new InputMacroDateTomorrowMediumChinese(),
       new InputMacroDateTomorrowMediumJapanese(),
+      new InputMacroDateTomorrowFullJapanese(),
       new InputMacroDateTimeNowShort(),
       new InputMacroDateTimeNowMedium(),
       new InputMacroTimeZoneStandard(),

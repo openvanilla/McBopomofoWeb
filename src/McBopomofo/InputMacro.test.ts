@@ -386,6 +386,9 @@ describe("InputMacro", () => {
       expect(
         inputMacroController.handle("MACRO@DATE_TOMORROW_MEDIUM_JAPANESE")
       ).toBe("");
+      expect(
+        inputMacroController.handle("MACRO@DATE_TOMORROW_FULL_JAPANESE")
+      ).toBe("");
     });
   });
 
