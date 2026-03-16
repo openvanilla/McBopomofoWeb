@@ -1,4 +1,66 @@
 let example = (() => {
+  const $ = (id) => document.getElementById(id);
+  const focusElement = (id) => {
+    $(id).focus();
+  };
+  const getTrimmedValue = (id) => $(id).value.trim();
+  const getValue = (id) => $(id).value;
+  const getChecked = (id) => $(id).checked;
+  const setChecked = (id, checked) => {
+    $(id).checked = checked;
+  };
+  const setDisplay = (id, display) => {
+    $(id).style.display = display;
+  };
+  const setSelectValue = (id, value) => {
+    const select = $(id);
+    const options = select.getElementsByTagName("option");
+    for (const option of options) {
+      if (option.value === String(value)) {
+        option.selected = "selected";
+        break;
+      }
+    }
+  };
+  const renderOutputLines = (output) => {
+    const lines = output.split("\n");
+    let html = "<h2>轉換結果如下</h2>";
+    for (const line of lines) {
+      html += "<p>" + line + "</p>";
+    }
+    return html;
+  };
+  const renderEmptyInput = (outputId, focusId) => {
+    $(outputId).innerHTML = "<p>您沒有輸入任何內容！</p>";
+    focusElement(focusId);
+  };
+  const serializePhraseMap = (phrases) => {
+    let output = "";
+    for (const [key, phrase] of phrases) {
+      console.log(`Key: ${key}, Phrase: ${phrase}`);
+      for (let i = 0; i < phrase.length; i++) {
+        output += phrase[i] + " " + key + "\n";
+      }
+    }
+    return output;
+  };
+  const runTextConversion = ({
+    inputId,
+    outputId,
+    emptyOutputId = outputId,
+    converter,
+  }) => {
+    const text = getTrimmedValue(inputId);
+    if (text.length === 0) {
+      renderEmptyInput(emptyOutputId, inputId);
+      return null;
+    }
+    const output = converter(text);
+    $(outputId).innerHTML = renderOutputLines(output);
+    focusElement(inputId);
+    return output;
+  };
+
   const ui = (() => {
     const that = {};
     that.beep = () => {
@@ -9,34 +71,34 @@ let example = (() => {
     };
 
     that.reset = () => {
-      document.getElementById("function").style.visibility = "hidden";
-      document.getElementById("composing_buffer").style.visibility = "hidden";
-      document.getElementById("candidates").style.visibility = "hidden";
+      $("function").style.visibility = "hidden";
+      $("composing_buffer").style.visibility = "hidden";
+      $("candidates").style.visibility = "hidden";
       const renderText = "<span class='cursor'>|</span>";
-      document.getElementById("composing_buffer").innerHTML = renderText;
-      document.getElementById("candidates").innerHTML = "";
+      $("composing_buffer").innerHTML = renderText;
+      $("candidates").innerHTML = "";
     };
 
     that.commitString = (string) => {
-      const selectionStart =
-        document.getElementById("text_area").selectionStart;
-      const selectionEnd = document.getElementById("text_area").selectionEnd;
-      const text = document.getElementById("text_area").value;
+      const textArea = $("text_area");
+      const selectionStart = textArea.selectionStart;
+      const selectionEnd = textArea.selectionEnd;
+      const text = textArea.value;
       const head = text.substring(0, selectionStart);
       const tail = text.substring(selectionEnd);
-      document.getElementById("text_area").value = head + string + tail;
+      textArea.value = head + string + tail;
       const start = selectionStart + string.length;
-      document.getElementById("text_area").setSelectionRange(start, start);
+      textArea.setSelectionRange(start, start);
     };
 
     that.updateByAlphabetMode = () => {
-      document.getElementById("status").innerHTML = globalUi.alphabetMode
+      $("status").innerHTML = globalUi.alphabetMode
         ? '<a href="" onclick="example.globalUi.enterChineseMode(); return false;">【英文】</a>'
         : '<a href="" onclick="example.globalUi.enterAlphabetMode(); return false;">【中文】</a>';
     };
     that.updateByBmpFontSupport = () => {
       // console.log("updateByBmpFontSupport");
-      const textArea = document.getElementById("text_area");
+      const textArea = $("text_area");
       if (globalUi.bpmvdFontsSupport) {
         // console.log("add");
         textArea.style.fontFamily = "BpmfZihiSerif-Regular";
@@ -59,8 +121,7 @@ let example = (() => {
         let renderText = "<p>";
         if (buffer.length === 0) {
           renderText += "<span class='cursor'>|</span>";
-          document.getElementById("composing_buffer").style.visibility =
-            "hidden";
+          $("composing_buffer").style.visibility = "hidden";
         } else {
           let i = 0;
           let cusrorNotAtEnd = false;
@@ -88,9 +149,8 @@ let example = (() => {
           }
           renderText += "</p>";
 
-          document.getElementById("composing_buffer").innerHTML = renderText;
-          document.getElementById("composing_buffer").style.visibility =
-            "visible";
+          $("composing_buffer").innerHTML = renderText;
+          $("composing_buffer").style.visibility = "visible";
         }
       }
 
@@ -117,10 +177,10 @@ let example = (() => {
         s += "</tr>";
         s += "</table>";
 
-        document.getElementById("candidates").innerHTML = s;
+        $("candidates").innerHTML = s;
       }
 
-      const tooltipDeb = document.getElementById("tooltip");
+      const tooltipDeb = $("tooltip");
       if (state.candidates.length !== 0) {
         tooltipDeb.innerHTML = "";
         tooltipDeb.style.visibility = "hidden";
@@ -138,15 +198,14 @@ let example = (() => {
         }
       }
 
-      document.getElementById("candidates").style.visibility = state.candidates
-        .length
+      $("candidates").style.visibility = state.candidates.length
         ? "visible"
         : "hidden";
 
       // Create a temporary mirror div to measure actual caret position
-      document.getElementById("function").style.visibility = "visible";
-      const textArea = document.getElementById("text_area");
-      const functionDiv = document.getElementById("function");
+      $("function").style.visibility = "visible";
+      const textArea = $("text_area");
+      const functionDiv = $("function");
       const rect = textArea.getBoundingClientRect();
       const textAreaStyle = window.getComputedStyle(textArea);
       const lineHeight = parseInt(textAreaStyle.lineHeight) || 20;
@@ -224,14 +283,14 @@ let example = (() => {
       that.alphabetMode = true;
       ui.updateByAlphabetMode();
       controller.reset();
-      document.getElementById("text_area").focus();
+      focusElement("text_area");
     };
 
     that.enterChineseMode = () => {
       that.alphabetMode = false;
       ui.updateByAlphabetMode();
       controller.reset();
-      document.getElementById("text_area").focus();
+      focusElement("text_area");
     };
 
     return that;
@@ -244,25 +303,11 @@ let example = (() => {
     controller.setLanguageCode("zh-TW");
     controller.setOnPhraseChange((userPhrases) => {
       console.log("userPhrases changed");
-      let string = "";
-      for (const [key, phrase] of userPhrases) {
-        console.log(`Key: ${key}, Phrase: ${phrase}`);
-        for (let i = 0; i < phrase.length; i++) {
-          string += phrase[i] + " " + key + "\n";
-        }
-      }
-      settingsManager.saveUserPhrases(string);
+      settingsManager.saveUserPhrases(serializePhraseMap(userPhrases));
     });
     controller.setOnExcludedPhraseChange((userPhrases) => {
       console.log("excludedPhrases changed");
-      let string = "";
-      for (const [key, phrase] of userPhrases) {
-        console.log(`Key: ${key}, Phrase: ${phrase}`);
-        for (let i = 0; i < phrase.length; i++) {
-          string += phrase[i] + " " + key + "\n";
-        }
-      }
-      saveExcludedPhrases(string);
+      saveExcludedPhrases(serializePhraseMap(userPhrases));
     });
     controller.setOnOpenUrl((url) => {
       window.open(url, "_blank", "noopener,noreferrer");
@@ -281,102 +326,53 @@ let example = (() => {
     that.service = new Service();
 
     that.textToBraille = () => {
-      const text = document
-        .getElementById("text_to_braille_text_area")
-        .value.trim();
-      if (text.length === 0) {
-        document.getElementById("text_to_braille_output").innerHTML =
-          "<p>您沒有輸入任何內容！</p>";
-        document.getElementById("text_to_braille_text_area").focus();
-        return;
-      }
-      const output = that.service.convertTextToBraille(text);
-      const lines = output.split("\n");
-      let html = "<h2>轉換結果如下</h2>";
-      for (const line of lines) {
-        html += "<p>" + line + "</p>";
-      }
-
-      document.getElementById("text_to_braille_output").innerHTML = html;
-      document.getElementById("text_to_braille_text_area").focus();
+      runTextConversion({
+        inputId: "text_to_braille_text_area",
+        outputId: "text_to_braille_output",
+        converter: (text) => that.service.convertTextToBraille(text),
+      });
     };
 
     that.brailleToText = () => {
-      const text = document
-        .getElementById("braille_to_text_text_area")
-        .value.trim();
-      if (text.length === 0) {
-        document.getElementById("braille_to_text_output").innerHTML =
-          "<p>您沒有輸入任何內容！</p>";
-        document.getElementById("braille_to_text_text_area").focus();
-        return;
-      }
-      const output = that.service.convertBrailleToText(text);
-      const lines = output.split("\n");
-      let html = "<h2>轉換結果如下</h2>";
-      for (const line of lines) {
-        html += "<p>" + line + "</p>";
-      }
-
-      document.getElementById("braille_to_text_output").innerHTML = html;
-      document.getElementById("braille_to_text_text_area").focus();
+      runTextConversion({
+        inputId: "braille_to_text_text_area",
+        outputId: "braille_to_text_output",
+        converter: (text) => that.service.convertBrailleToText(text),
+      });
     };
 
     that.addBpmf = function () {
-      const text = document.getElementById("add_bpmf_text_area").value.trim();
-      if (text.length === 0) {
-        document.getElementById("add_bpmf_output").innerHTML =
-          "<p>您沒有輸入任何內容！</p>";
-        document.getElementById("add_bpmf_text_area").focus();
-        return;
-      }
-      let output = "";
-      if (document.getElementById("convert_to_reading").checked) {
-        output = that.service.convertTextToBpmfReadings(text);
-      } else if (document.getElementById("add_reading").checked) {
-        output = that.service.appendBpmfReadingsToText(text);
-      } else {
-        output = that.service.convertTextToHtmlRuby(text);
-      }
-      const lines = output.split("\n");
-      let html = "<h2>轉換結果如下</h2>";
-      for (const line of lines) {
-        html += "<p>" + line + "</p>";
-      }
-
-      document.getElementById("add_bpmf_output").innerHTML = html;
-      document.getElementById("add_bpmf_text_area").focus();
+      runTextConversion({
+        inputId: "add_bpmf_text_area",
+        outputId: "add_bpmf_output",
+        converter: (text) => {
+          if (getElement("convert_to_reading").checked) {
+            return that.service.convertTextToBpmfReadings(text);
+          }
+          if (getElement("add_reading").checked) {
+            return that.service.appendBpmfReadingsToText(text);
+          }
+          return that.service.convertTextToHtmlRuby(text);
+        },
+      });
     };
 
     that.convertHanyuPinyin = () => {
-      const text = document
-        .getElementById("convert_hanyupnyin_text_area")
-        .value.trim();
-      if (text.length === 0) {
-        document.getElementById("convert_hanyupnyin_output").innerHTML =
-          "<p>您沒有輸入任何內容！</p>";
-        document.getElementById("convert_hanyupnyin_text_area").focus();
-        return;
-      }
-      const output = that.service.convertTextToPinyin(text);
-      const lines = output.split("\n");
-      let html = "<h2>轉換結果如下</h2>";
-      for (const line of lines) {
-        html += "<p>" + line + "</p>";
-      }
-
-      document.getElementById("convert_hanyupnyin_output").innerHTML = html;
-      document.getElementById("convert_hanyupnyin_text_area").focus();
+      runTextConversion({
+        inputId: "convert_hanyupnyin_text_area",
+        outputId: "convert_hanyupnyin_output",
+        converter: (text) => that.service.convertTextToPinyin(text),
+      });
     };
 
     that.generatePhrases = () => {
-      const text = document.getElementById("phrase_generate_input");
+      const text = getElement("phrase_generate_input");
       const lines = text.value.trim().split("\n");
       if (lines.length === 0) {
-        document.getElementById(
-          "phrase_generate_input_output_container"
-        ).innerHTML = "<p>您沒有輸入任何內容！</p>";
-        document.getElementById("phrase_generate_output").focus();
+        renderEmptyInput(
+          "phrase_generate_input_output_container",
+          "phrase_generate_output"
+        );
         return;
       }
       let output = [];
@@ -387,7 +383,7 @@ let example = (() => {
         output.push(perline);
       }
       let finalOutput = output.join("\n");
-      let outputTextArea = document.getElementById("phrase_generate_output");
+      let outputTextArea = getElement("phrase_generate_output");
       outputTextArea.value = finalOutput;
       outputTextArea.focus();
     };
@@ -450,94 +446,58 @@ let example = (() => {
       const settings = that.settings;
       {
         controller.setTraditionalMode(settings.trad_mode);
-        if (settings.trad_mode) {
-          document.getElementById("use_plainbopomofo").checked = true;
-          document.getElementById("use_mcbopomofo").checked = false;
-        } else {
-          document.getElementById("use_mcbopomofo").checked = true;
-          document.getElementById("use_plainbopomofo").checked = false;
-        }
+        setChecked("use_plainbopomofo", settings.trad_mode);
+        setChecked("use_mcbopomofo", !settings.trad_mode);
       }
       {
         controller.setChineseConversionEnabled(settings.chinese_conversion);
-        if (settings.chinese_conversion) {
-          document.getElementById("chinese_convert_simp").checked = true;
-          document.getElementById("chinese_convert_trad").checked = false;
-        } else {
-          document.getElementById("chinese_convert_trad").checked = true;
-          document.getElementById("chinese_convert_simp").checked = false;
-        }
+        setChecked("chinese_convert_simp", settings.chinese_conversion);
+        setChecked("chinese_convert_trad", !settings.chinese_conversion);
       }
       {
         controller.setHalfWidthPunctuationEnabled(
           settings.half_width_punctuation
         );
-        if (settings.half_width_punctuation) {
-          document.getElementById("full_width_punctuation").checked = true;
-          document.getElementById("half_width_punctuation").checked = false;
-        } else {
-          document.getElementById("full_width_punctuation").checked = true;
-          document.getElementById("half_width_punctuation").checked = false;
-        }
+        setChecked("full_width_punctuation", !settings.half_width_punctuation);
+        setChecked("half_width_punctuation", settings.half_width_punctuation);
       }
       {
         controller.setKeyboardLayout(settings.layout);
-        const select = document.getElementById("layout");
-        const options = select.getElementsByTagName("option");
-        for (const option of options) {
-          if (option.value === settings.layout) {
-            option.selected = "selected";
-            break;
-          }
-        }
+        setSelectValue("layout", settings.layout);
       }
       {
         controller.setCandidateKeys(settings.candidate_keys);
-        const select = document.getElementById("keys");
-        const options = select.getElementsByTagName("option");
-        for (const option of options) {
-          if (option.value === settings.candidate_keys) {
-            option.selected = "selected";
-            break;
-          }
-        }
+        setSelectValue("keys", settings.candidate_keys);
       }
       {
         controller.setCandidateKeysCount(settings.candidate_keys_count);
-        const select = document.getElementById("keys_count");
-        const options = select.getElementsByTagName("option");
-        for (const option of options) {
-          if (option.value === settings.candidate_keys_count) {
-            option.selected = "selected";
-            break;
-          }
-        }
+        setSelectValue("keys_count", settings.candidate_keys_count);
       }
       {
         if (settings.select_phrase === "before_cursor") {
           controller.setSelectPhrase("before_cursor");
-          document.getElementById("before_cursor").checked = true;
-          document.getElementById("after_cursor").checked = false;
+          setChecked("before_cursor", true);
+          setChecked("after_cursor", false);
         } else if (settings.select_phrase === "after_cursor") {
           controller.setSelectPhrase("after_cursor");
-          document.getElementById("before_cursor").checked = false;
-          document.getElementById("after_cursor").checked = true;
+          setChecked("before_cursor", false);
+          setChecked("after_cursor", true);
         }
       }
       {
         controller.setEscClearEntireBuffer(
           settings.esc_key_clear_entire_buffer
         );
-        document.getElementById("esc_key").checked =
-          settings.esc_key_clear_entire_buffer;
+        setChecked("esc_key", settings.esc_key_clear_entire_buffer);
       }
       {
         controller.setRepeatedPunctuationChooseCandidate(
           settings.repeated_punctuation_choose_candidate
         );
-        document.getElementById(
-          "repeated_punctuation_choose_candidate"
-        ).checked = settings.repeated_punctuation_choose_candidate;
+        setChecked(
+          "repeated_punctuation_choose_candidate",
+          settings.repeated_punctuation_choose_candidate
+        );
       }
       {
         let enabled = settings.bopomofo_font_annotation_support_enabled;
@@ -547,59 +507,42 @@ let example = (() => {
           globalUi.stopSupportBpmfvsFont();
         }
         controller.setBopomofoFontAnnotationSupportEnabled(enabled);
-        document.getElementById(
-          "bopomofo_font_annotation_support_enabled"
-        ).checked = enabled;
+        setChecked("bopomofo_font_annotation_support_enabled", enabled);
       }
 
       {
         controller.setMovingCursorOption(settings.moving_cursor_option);
-        const select = document.getElementById("moving_cursor_option");
-        const options = select.getElementsByTagName("option");
-        for (const option of options) {
-          if (option.value === settings.moving_cursor_option + "") {
-            option.selected = "selected";
-            break;
-          }
-        }
+        setSelectValue("moving_cursor_option", settings.moving_cursor_option);
       }
       {
-        document.getElementById("beep_on_error").checked =
-          settings.beep_on_error;
+        setChecked("beep_on_error", settings.beep_on_error);
       }
       {
-        document.getElementById("move_cursor").checked = settings.move_cursor;
+        setChecked("move_cursor", settings.move_cursor);
         controller.setMoveCursorAfterSelection(settings.move_cursor);
       }
 
       {
         if (settings.letter_mode === "upper") {
-          document.getElementById("uppercase_letters").checked = true;
-          document.getElementById("lowercase_letters").checked = false;
+          setChecked("uppercase_letters", true);
+          setChecked("lowercase_letters", false);
           controller.setLetterMode("upper");
         } else if (settings.letter_mode === "lower") {
-          document.getElementById("uppercase_letters").checked = false;
-          document.getElementById("lowercase_letters").checked = true;
+          setChecked("uppercase_letters", false);
+          setChecked("lowercase_letters", true);
           controller.setLetterMode("lower");
         }
       }
       {
         controller.setCtrlEnterOption(settings.ctrl_enter_option);
-        const select = document.getElementById("ctrl_enter_option");
-        const options = select.getElementsByTagName("option");
-        for (const option of options) {
-          if (option.value === settings.ctrl_enter_option + "") {
-            option.selected = "selected";
-            break;
-          }
-        }
+        setSelectValue("ctrl_enter_option", settings.ctrl_enter_option);
       }
     };
 
     that.loadUserPhrases = () => {
       const result = window.localStorage.getItem("user_phrases") || "";
-      document.getElementById("feature_user_phrases_text_area").value = result;
-      document.getElementById("feature_user_phrases_text_area").focus();
+      $("feature_user_phrases_text_area").value = result;
+      focusElement("feature_user_phrases_text_area");
       console.log("userPhrases:\n" + result);
       controller.setUserPhrases(result);
       service.service.setUserPhrases(result);
@@ -609,15 +552,14 @@ let example = (() => {
       window.localStorage.setItem("user_phrases", result);
       controller.setUserPhrases(result);
       service.service.setUserPhrases(result);
-      document.getElementById("feature_user_phrases_text_area").value = result;
-      document.getElementById("feature_user_phrases_text_area").focus();
+      $("feature_user_phrases_text_area").value = result;
+      focusElement("feature_user_phrases_text_area");
     };
 
     that.loadExcludedPhrases = () => {
       const result = window.localStorage.getItem("excluded_phrases") || "";
-      document.getElementById("feature_excluded_phrases_text_area").value =
-        result;
-      document.getElementById("feature_excluded_phrases_text_area").focus();
+      $("feature_excluded_phrases_text_area").value = result;
+      focusElement("feature_excluded_phrases_text_area");
       console.log("excludedPhrases:\n" + result);
       controller.setExcludedPhrases(result);
       service.service.setExcludedPhrases(result);
@@ -627,9 +569,8 @@ let example = (() => {
       window.localStorage.setItem("excluded_phrases", result);
       controller.setExcludedPhrases(result);
       service.service.setExcludedPhrases(result);
-      document.getElementById("feature_excluded_phrases_text_area").value =
-        result;
-      document.getElementById("feature_excluded_phrases_text_area").focus();
+      $("feature_excluded_phrases_text_area").value = result;
+      focusElement("feature_excluded_phrases_text_area");
     };
 
     return that;
@@ -696,7 +637,7 @@ let example = (() => {
     settingsManager.loadExcludedPhrases();
 
     let shiftKeyIsPressed = false;
-    document.getElementById("text_area").addEventListener("keyup", (event) => {
+    $("text_area").addEventListener("keyup", (event) => {
       if (event.key === "Shift" && shiftKeyIsPressed) {
         globalUi.alphabetMode = !globalUi.alphabetMode;
         controller.reset();
@@ -704,9 +645,7 @@ let example = (() => {
       }
     });
 
-    document
-      .getElementById("text_area")
-      .addEventListener("keydown", (event) => {
+    $("text_area").addEventListener("keydown", (event) => {
         if (event.metaKey || event.altKey) {
           controller.reset();
           return;
@@ -723,132 +662,128 @@ let example = (() => {
         }
       });
 
-    document.getElementById("use_mcbopomofo").onchange = (event) => {
+    $("use_mcbopomofo").onchange = (event) => {
       controller.setTraditionalMode(false);
       settingsManager.settings.trad_mode = false;
       settingsManager.saveSettings();
-      document.getElementById("text_area").focus();
+      focusElement("text_area");
     };
 
-    document.getElementById("use_plainbopomofo").onchange = (event) => {
+    $("use_plainbopomofo").onchange = (event) => {
       controller.setTraditionalMode(true);
       settingsManager.settings.trad_mode = true;
       settingsManager.saveSettings();
-      document.getElementById("text_area").focus();
+      focusElement("text_area");
     };
 
-    document.getElementById("chinese_convert_trad").onchange = (event) => {
+    $("chinese_convert_trad").onchange = (event) => {
       controller.setChineseConversionEnabled(false);
       settingsManager.settings.chinese_conversion = false;
       settingsManager.saveSettings();
-      document.getElementById("text_area").focus();
+      focusElement("text_area");
     };
 
-    document.getElementById("chinese_convert_simp").onchange = (event) => {
+    $("chinese_convert_simp").onchange = (event) => {
       controller.setChineseConversionEnabled(true);
       settingsManager.settings.chinese_conversion = true;
       settingsManager.saveSettings();
-      document.getElementById("text_area").focus();
+      focusElement("text_area");
     };
 
-    document.getElementById("full_width_punctuation").onchange = (event) => {
+    $("full_width_punctuation").onchange = (event) => {
       controller.setHalfWidthPunctuationEnabled(false);
       settingsManager.settings.half_width_punctuation = false;
       settingsManager.saveSettings();
-      document.getElementById("text_area").focus();
+      focusElement("text_area");
     };
 
-    document.getElementById("half_width_punctuation").onchange = (event) => {
+    $("half_width_punctuation").onchange = (event) => {
       controller.setHalfWidthPunctuationEnabled(true);
       settingsManager.settings.half_width_punctuation = true;
       settingsManager.saveSettings();
-      document.getElementById("text_area").focus();
+      focusElement("text_area");
     };
 
-    document.getElementById("layout").onchange = (event) => {
-      const value = document.getElementById("layout").value;
+    $("layout").onchange = (event) => {
+      const value = getValue("layout");
       controller.setKeyboardLayout(value);
       settingsManager.settings.layout = value;
       settingsManager.saveSettings();
-      document.getElementById("text_area").focus();
+      focusElement("text_area");
     };
 
-    document.getElementById("layout").onblur = (event) => {
-      document.getElementById("text_area").focus();
+    $("layout").onblur = (event) => {
+      focusElement("text_area");
     };
 
-    document.getElementById("keys").onchange = (event) => {
-      const value = document.getElementById("keys").value;
+    $("keys").onchange = (event) => {
+      const value = getValue("keys");
       controller.setCandidateKeys(value);
       settingsManager.settings.candidate_keys = value;
       settingsManager.saveSettings();
-      document.getElementById("text_area").focus();
+      focusElement("text_area");
     };
 
-    document.getElementById("keys").onblur = (event) => {
-      document.getElementById("text_area").focus();
+    $("keys").onblur = (event) => {
+      focusElement("text_area");
     };
 
-    document.getElementById("keys_count").onchange = (event) => {
-      const value = +document.getElementById("keys_count").value;
+    $("keys_count").onchange = (event) => {
+      const value = +getValue("keys_count");
       controller.setCandidateKeysCount(value);
       settingsManager.settings.candidate_keys_count = value;
       settingsManager.saveSettings();
-      document.getElementById("text_area").focus();
+      focusElement("text_area");
     };
 
-    document.getElementById("keys_count").onblur = (event) => {
-      document.getElementById("text_area").focus();
+    $("keys_count").onblur = (event) => {
+      focusElement("text_area");
     };
 
-    document.getElementById("moving_cursor_option").onchange = (event) => {
-      const value = +document.getElementById("moving_cursor_option").value;
+    $("moving_cursor_option").onchange = (event) => {
+      const value = +getValue("moving_cursor_option");
       controller.setMovingCursorOption(value);
       settingsManager.settings.moving_cursor_option = value;
       settingsManager.saveSettings();
-      document.getElementById("text_area").focus();
+      focusElement("text_area");
     };
 
-    document.getElementById("before_cursor").onchange = (event) => {
+    $("before_cursor").onchange = (event) => {
       controller.setSelectPhrase("before_cursor");
       settingsManager.settings.select_phrase = "before_cursor";
       settingsManager.saveSettings();
-      document.getElementById("text_area").focus();
+      focusElement("text_area");
     };
 
-    document.getElementById("after_cursor").onchange = (event) => {
+    $("after_cursor").onchange = (event) => {
       controller.setSelectPhrase("after_cursor");
       settingsManager.settings.select_phrase = "after_cursor";
       settingsManager.saveSettings();
-      document.getElementById("text_area").focus();
+      focusElement("text_area");
     };
 
-    document.getElementById("esc_key").onchange = (event) => {
-      const checked = document.getElementById("esc_key").checked;
+    $("esc_key").onchange = (event) => {
+      const checked = getChecked("esc_key");
       controller.setEscClearEntireBuffer(checked);
       settingsManager.settings.esc_key_clear_entire_buffer = checked;
       settingsManager.saveSettings();
-      document.getElementById("text_area").focus();
+      focusElement("text_area");
     };
 
-    document.getElementById("repeated_punctuation_choose_candidate").onchange =
+    $("repeated_punctuation_choose_candidate").onchange =
       (event) => {
-        const checked = document.getElementById(
-          "repeated_punctuation_choose_candidate"
-        ).checked;
+        const checked = getChecked("repeated_punctuation_choose_candidate");
         controller.setRepeatedPunctuationChooseCandidate(checked);
         settingsManager.settings.repeated_punctuation_choose_candidate =
           checked;
         settingsManager.saveSettings();
-        document.getElementById("text_area").focus();
+        focusElement("text_area");
       };
 
-    document.getElementById(
-      "bopomofo_font_annotation_support_enabled"
-    ).onchange = (event) => {
-      const checked = document.getElementById(
-        "bopomofo_font_annotation_support_enabled"
-      ).checked;
+    $("bopomofo_font_annotation_support_enabled").onchange = (
+      event
+    ) => {
+      const checked = getChecked("bopomofo_font_annotation_support_enabled");
       controller.setBopomofoFontAnnotationSupportEnabled(checked);
       settingsManager.settings.bopomofo_font_annotation_support_enabled =
         checked;
@@ -858,48 +793,48 @@ let example = (() => {
       } else {
         globalUi.stopSupportBpmfvsFont();
       }
-      document.getElementById("text_area").focus();
+      focusElement("text_area");
     };
 
-    document.getElementById("uppercase_letters").onchange = (event) => {
+    $("uppercase_letters").onchange = (event) => {
       controller.setLetterMode("upper");
       settingsManager.settings.letter_mode = "upper";
       settingsManager.saveSettings();
-      document.getElementById("text_area").focus();
+      focusElement("text_area");
     };
 
-    document.getElementById("lowercase_letters").onchange = (event) => {
+    $("lowercase_letters").onchange = (event) => {
       controller.setLetterMode("lower");
       settingsManager.settings.letter_mode = "lower";
       settingsManager.saveSettings();
-      document.getElementById("text_area").focus();
+      focusElement("text_area");
     };
 
-    document.getElementById("move_cursor").onchange = (event) => {
-      const checked = document.getElementById("move_cursor").checked;
+    $("move_cursor").onchange = (event) => {
+      const checked = getChecked("move_cursor");
       controller.setMoveCursorAfterSelection(checked);
       settingsManager.settings.move_cursor = checked;
       settingsManager.saveSettings();
-      document.getElementById("text_area").focus();
+      focusElement("text_area");
     };
 
-    document.getElementById("ctrl_enter_option").onchange = (event) => {
-      const value = +document.getElementById("ctrl_enter_option").value;
+    $("ctrl_enter_option").onchange = (event) => {
+      const value = +getValue("ctrl_enter_option");
       controller.setCtrlEnterOption(value);
       settingsManager.settings.ctrl_enter_option = value;
       settingsManager.saveSettings();
-      document.getElementById("text_area").focus();
+      focusElement("text_area");
     };
 
-    document.getElementById("beep_on_error").onchange = (event) => {
-      const value = document.getElementById("beep_on_error").checked;
+    $("beep_on_error").onchange = (event) => {
+      const value = getChecked("beep_on_error");
       settingsManager.settings.beep_on_error = value;
       settingsManager.saveSettings();
-      document.getElementById("text_area").focus();
+      focusElement("text_area");
     };
 
-    document.getElementById("fullscreen").onclick = (event) => {
-      const elem = document.getElementById("edit_area");
+    $("fullscreen").onclick = (event) => {
+      const elem = $("edit_area");
       if (elem.requestFullscreen) {
         elem.requestFullscreen();
       } else if (elem.msRequestFullscreen) {
@@ -909,17 +844,17 @@ let example = (() => {
       } else if (elem.webkitRequestFullscreen) {
         elem.webkitRequestFullscreen();
       }
-      document.getElementById("text_area").focus();
+      focusElement("text_area");
       return false;
     };
 
-    document.getElementById("text_area").onblur = () => {
+    $("text_area").onblur = () => {
       controller.reset();
     };
 
-    document.getElementById("loading").innerText = "載入完畢！";
+    $("loading").innerText = "載入完畢！";
     setTimeout(() => {
-      document.getElementById("loading").style.display = "none";
+      setDisplay("loading", "none");
       onHashChange();
     }, 2000);
     ui.reset();
@@ -936,33 +871,33 @@ let example = (() => {
         "feature_generate_phrases",
       ];
       for (const feature of features) {
-        document.getElementById(feature).style.display = "none";
+        setDisplay(feature, "none");
       }
       console.log("Toggling feature:", id);
-      document.getElementById(id).style.display = "flex";
+      setDisplay(id, "flex");
       if (id === "feature_input") {
-        document.getElementById("text_area").focus();
+        focusElement("text_area");
         document.title = "小麥注音輸入法 - 輸入功能";
       } else if (id === "feature_user_phrases") {
-        document.getElementById("feature_user_phrases_text_area").focus();
+        focusElement("feature_user_phrases_text_area");
         document.title = "小麥注音輸入法 - 自定詞管理";
       } else if (id === "feature_excluded_phrases") {
-        document.getElementById("feature_excluded_phrases_text_area").focus();
+        focusElement("feature_excluded_phrases_text_area");
         document.title = "小麥注音輸入法 - 管理排除的詞彙";
       } else if (id === "feature_text_to_braille") {
-        document.getElementById("text_to_braille_text_area").focus();
+        focusElement("text_to_braille_text_area");
         document.title = "小麥注音輸入法 - 中文轉注音點字";
       } else if (id === "feature_braille_to_text") {
-        document.getElementById("braille_to_text_text_area").focus();
+        focusElement("braille_to_text_text_area");
         document.title = "小麥注音輸入法 - 注音點字轉中文";
       } else if (id === "feature_add_bpmf") {
-        document.getElementById("add_bpmf_text_area").focus();
+        focusElement("add_bpmf_text_area");
         document.title = "小麥注音輸入法 - 國字加注音";
       } else if (id === "feature_convert_hanyupnyin") {
-        document.getElementById("convert_hanyupnyin_text_area").focus();
+        focusElement("convert_hanyupnyin_text_area");
         document.title = "小麥注音輸入法 - 國字轉拼音";
       } else if (id === "feature_generate_phrases") {
-        document.getElementById("phrase_generate_input").focus();
+        focusElement("phrase_generate_input");
         document.title = "小麥注音輸入法 - 詞庫產生工具";
       }
     }
@@ -983,13 +918,13 @@ let example = (() => {
       onHashChange();
     });
 
-    document.getElementById("text_area").addEventListener("input", (event) => {
+    $("text_area").addEventListener("input", (event) => {
       // console.log("Text changed:", event.target.value);
       databaseManager.saveLastText(event.target.value);
     });
     await databaseManager.init();
     databaseManager.loadLastText().then((text) => {
-      document.getElementById("text_area").value = text;
+      $("text_area").value = text;
     });
   })();
 
