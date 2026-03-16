@@ -860,33 +860,22 @@
     }, 2000);
     ui.reset();
 
+    const featureTitlePrefix = "小麥注音輸入法 - ";
     const featureConfig = {
-      feature_input: ["text_area", "小麥注音輸入法 - 輸入功能"],
-      feature_user_phrases: [
-        "feature_user_phrases_text_area",
-        "小麥注音輸入法 - 自定詞管理",
-      ],
+      feature_input: ["text_area", "輸入功能"],
+      feature_user_phrases: ["feature_user_phrases_text_area", "自定詞管理"],
       feature_excluded_phrases: [
         "feature_excluded_phrases_text_area",
-        "小麥注音輸入法 - 管理排除的詞彙",
+        "管理排除的詞彙",
       ],
-      feature_text_to_braille: [
-        "text_to_braille_text_area",
-        "小麥注音輸入法 - 中文轉注音點字",
-      ],
-      feature_braille_to_text: [
-        "braille_to_text_text_area",
-        "小麥注音輸入法 - 注音點字轉中文",
-      ],
-      feature_add_bpmf: ["add_bpmf_text_area", "小麥注音輸入法 - 國字加注音"],
+      feature_text_to_braille: ["text_to_braille_text_area", "中文轉注音點字"],
+      feature_braille_to_text: ["braille_to_text_text_area", "注音點字轉中文"],
+      feature_add_bpmf: ["add_bpmf_text_area", "國字加注音"],
       feature_convert_hanyupnyin: [
         "convert_hanyupnyin_text_area",
-        "小麥注音輸入法 - 國字轉拼音",
+        "國字轉拼音",
       ],
-      feature_generate_phrases: [
-        "phrase_generate_input",
-        "小麥注音輸入法 - 詞庫產生工具",
-      ],
+      feature_generate_phrases: ["phrase_generate_input", "詞庫產生工具"],
     };
 
     function toggle_feature(id) {
@@ -899,7 +888,7 @@
       if (config) {
         const [focusId, title] = config;
         focusElement(focusId);
-        document.title = title;
+        document.title = featureTitlePrefix + title;
       }
     }
 

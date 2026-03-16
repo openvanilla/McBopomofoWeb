@@ -406,6 +406,10 @@ blockquote {
     background-color: #333;
   }
 
+  textarea:focus {
+    border: 1px solid #86c25e;
+  }
+
   #edit_area {
     border: 2px dashed #c8c8c8;
   }
