@@ -236,4 +236,5 @@ AI agents may call a subagent to run `npm run test:coverage` to find code that i
 - **DO NOT** modify any files under the `node_modules` directory.
 - Before merging, run `npm run test` and ensure Chrome OS build still compiles via `npm run build:chromeos`.
 - CI now runs `npm run build:mcp` across Node 18-24; run this build locally when changing MCP-related code to mirror CI.
+- Codecov uploads in GitHub Actions use `codecov/codecov-action@v5` with OIDC (`id-token: write`) and currently run from the Node 24.x coverage job instead of repository tokens.
 - New language model data must include a short note in `README.md` summarizing changes for translators.

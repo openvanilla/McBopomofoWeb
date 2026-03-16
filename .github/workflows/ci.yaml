@@ -33,6 +33,7 @@ jobs:
       checks: write
       pull-requests: write
       contents: write
+      id-token: write
     strategy:
       matrix:
         node-version: [24.x, 23.x, 22.x, 21.x, 20.x, 19.x, 18.x]
@@ -46,21 +47,13 @@ jobs:
       - run: npm run test:coverage
         # continue-on-error: true
       - name: Jest Coverage Report
-        if: matrix.node-version == '21.x'
+        if: matrix.node-version == '24.x'
         uses: ArtiomTr/jest-coverage-report-action@v2
       - name: Upload coverage reports to Codecov
-        if: matrix.node-version == '21.x'
-        uses: codecov/codecov-action@v4
+        if: github.ref == 'refs/heads/main'
+        uses: codecov/codecov-action@v5
         with:
-          file: ./coverage/clover.xml
-          flags: unittests
-          name: codecov-umbrella
-          fail_ci_if_error: false
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      # - name: Jest Coverage Comment
-      #   id: coverageComment
-      #   uses: MishaKav/jest-coverage-comment@main
+          token: ${{ secrets.CODECOV_TOKEN }}
 
   build_chromeos:
     runs-on: ubuntu-latest
