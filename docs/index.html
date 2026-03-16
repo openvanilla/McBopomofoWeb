@@ -93,6 +93,13 @@
 <pre><code class="json"><span class="hl-1">{</span><br/><span class="hl-1">  </span><span class="hl-7">&quot;mcpServers&quot;</span><span class="hl-1">: {</span><br/><span class="hl-1">    </span><span class="hl-7">&quot;my-local-server&quot;</span><span class="hl-1">: {</span><br/><span class="hl-1">      </span><span class="hl-7">&quot;command&quot;</span><span class="hl-1">: </span><span class="hl-2">&quot;node&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">      </span><span class="hl-7">&quot;args&quot;</span><span class="hl-1">: [</span><span class="hl-2">&quot;/PATH/TO/output/mcp/index.js&quot;</span><span class="hl-1">]</span><br/><span class="hl-1">    }</span><br/><span class="hl-1">  }</span><br/><span class="hl-1">}</span>
 </code><button type="button">Copy</button></pre>
 
+<p>如果要搭配 <a href="https://openai.com/codex/">Codex</a> 使用，可以編輯 <code>~/.codex/config.toml</code>，加入以下設定：</p>
+<pre><code class="toml">[mcp_servers.mcbopomofo]
+command = "node"
+args = ["/PATH/TO/output/mcp/index.js"]
+</code><button type="button">Copy</button></pre>
+
+<p>修改設定之後，重新啟動 Codex 即可。若您是在這個專案目錄下編譯，實際路徑通常會是 <code>.../McBopomofoWeb/output/mcp/index.js</code>。</p>
 <p>安裝了小麥注音的 MCP 伺服器之後，您可以試試看以下的 prompt：</p>
 <ul>
 <li>請將以下的國字轉換成點字。</li>
