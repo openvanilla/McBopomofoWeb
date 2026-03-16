@@ -1,4 +1,4 @@
-let example = (() => {
+(() => {
   const $ = (id) => document.getElementById(id);
   const focusElement = (id) => {
     $(id).focus();
@@ -65,7 +65,7 @@ let example = (() => {
     const that = {};
     that.beep = () => {
       const snd = new Audio(
-        "data:audio/wav;base64,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qJrx4KOQjahZxWbcZgztj2c49nKmkId44S71j0c8eV9yDK6uPRzx5X18eDvjvQ6yKo9ZSS6l//8elePK/Lf//IInrOF/FvDoADYAGBMGb7FtErm5MXMlmPAJQVgWta7Zx2go+8xJ0UiCb8LHHdftWyLJE0QIAIsI+UbXu67dZMjmgDGCGl1H+vpF4NSDckSIkk7Vd+sxEhBQMRU8j/12UIRhzSaUdQ+rQU5kGeFxm+hb1oh6pWWmv3uvmReDl0UnvtapVaIzo1jZbf/pD6ElLqSX+rUmOQNpJFa/r+sa4e/pBlAABoAAAAA3CUgShLdGIxsY7AUABPRrgCABdDuQ5GC7DqPQCgbbJUAoRSUj+NIEig0YfyWUho1VBBBA//uQZB4ABZx5zfMakeAAAAmwAAAAF5F3P0w9GtAAACfAAAAAwLhMDmAYWMgVEG1U0FIGCBgXBXAtfMH10000EEEEEECUBYln03TTTdNBDZopopYvrTTdNa325mImNg3TTPV9q3pmY0xoO6bv3r00y+IDGid/9aaaZTGMuj9mpu9Mpio1dXrr5HERTZSmqU36A3CumzN/9Robv/Xx4v9ijkSRSNLQhAWumap82WRSBUqXStV/YcS+XVLnSS+WLDroqArFkMEsAS+eWmrUzrO0oEmE40RlMZ5+ODIkAyKAGUwZ3mVKmcamcJnMW26MRPgUw6j+LkhyHGVGYjSUUKNpuJUQoOIAyDvEyG8S5yfK6dhZc0Tx1KI/gviKL6qvvFs1+bWtaz58uUNnryq6kt5RzOCkPWlVqVX2a/EEBUdU1KrXLf40GoiiFXK///qpoiDXrOgqDR38JB0bw7SoL+ZB9o1RCkQjQ2CBYZKd/+VJxZRRZlqSkKiws0WFxUyCwsKiMy7hUVFhIaCrNQsKkTIsLivwKKigsj8XYlwt/WKi2N4d//uQRCSAAjURNIHpMZBGYiaQPSYyAAABLAAAAAAAACWAAAAApUF/Mg+0aohSIRobBAsMlO//Kk4soosy1JSFRYWaLC4qZBYWFRGZdwqKiwkNBVmoWFSJkWFxX4FFRQWR+LsS4W/rFRb/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////VEFHAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAU291bmRib3kuZGUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMjAwNGh0dHA6Ly93d3cuc291bmRib3kuZGUAAAAAAAAAACU="
+        "data:audio/wav;base64,//uQRAAAAWMSLwUIYAAsYkXgoQwAEaYLWfkWgAI0wWs/ItAAAGDgYtAgAyN+QWaAAihwMWm4G8QQRDiMcCBcH3Cc+CDv/7xA4Tvh9Rz/y8QADBwMWgQAZG/ILNAARQ4GLTcDeIIIhxGOBAuD7hOfBB3/94gcJ3w+o5/5eIAIAAAVwWgQAVQ2ORaIQwEMAJiDg95G4nQL7mQVWI6GwRcfsZAcsKkJvxgxEjzFUgfHoSQ9Qq7KNwqHwuB13MA4a1q/DmBrHgPcmjiGoh//EwC5nGPEmS4RcfkVKOhJf+WOgoxJclFz3kgn//dBA+ya1GhurNn8zb//9NNutNuhz31f////9vt///z+IdAEAAAK4LQIAKobHItEIYCGAExBwe8jcToF9zIKrEdDYIuP2MgOWFSE34wYiR5iqQPj0JIeoVdlG4VD4XA67mAcNa1fhzA1jwHuTRxDUQ//iYBczjHiTJcIuPyKlHQkv/LHQUYkuSi57yQT//uggfZNajQ3Vmz+Zt//+mm3Wm3Q576v////+32///5/EOgAAADVghQAAAAA//uQZAUAB1WI0PZugAAAAAoQwAAAEk3nRd2qAAAAACiDgAAAAAAABCqEEQRLCgwpBGMlJkIz8jKhGvj4k6jzRnqasNKIeoh5gI7BJaC1A1AoNBjJgbyApVS4IDlZgDU5WUAxEKDNmmALHzZp0Fkz1FMTmGFl1FMEyodIavcCAUHDWrKAIA4aa2oCgILEBupZgHvAhEBcZ6joQBxS76AgccrFlczBvKLC0QI2cBoCFvfTDAo7eoOQInqDPBtvrDEZBNYN5xwNwxQRfw8ZQ5wQVLvO8OYU+mHvFLlDh05Mdg7BT6YrRPpCBznMB2r//xKJjyyOh+cImr2/4doscwD6neZjuZR4AgAABYAAAABy1xcdQtxYBYYZdifkUDgzzXaXn98Z0oi9ILU5mBjFANmRwlVJ3/6jYDAmxaiDG3/6xjQQCCKkRb/6kg/wW+kSJ5//rLobkLSiKmqP/0ikJuDaSaSf/6JiLYLEYnW/+kXg1WRVJL/9EmQ1YZIsv/6Qzwy5qk7/+tEU0nkls3/zIUMPKNX/6yZLf+kFgAfgGyLFAUwY//uQZAUABcd5UiNPVXAAAApAAAAAE0VZQKw9ISAAACgAAAAAVQIygIElVrFkBS+Jhi+EAuu+lKAkYUEIsmEAEoMeDmCETMvfSHTGkF5RWH7kz/ESHWPAq/kcCRhqBtMdokPdM7vil7RG98A2sc7zO6ZvTdM7pmOUAZTnJW+NXxqmd41dqJ6mLTXxrPpnV8avaIf5SvL7pndPvPpndJR9Kuu8fePvuiuhorgWjp7Mf/PRjxcFCPDkW31srioCExivv9lcwKEaHsf/7ow2Fl1T/9RkXgEhYElAoCLFtMArxwivDJJ+bR1HTKJdlEoTELCIqgEwVGSQ+hIm0NbK8WXcTEI0UPoa2NbG4y2K00JEWbZavJXkYaqo9CRHS55FcZTjKEk3NKoCYUnSQ0rWxrZbFKbKIhOKPZe1cJKzZSaQrIyULHDZmV5K4xySsDRKWOruanGtjLJXFEmwaIbDLX0hIPBUQPVFVkQkDoUNfSoDgQGKPekoxeGzA4DUvnn4bxzcZrtJyipKfPNy5w+9lnXwgqsiyHNeSVpemw4bWb9psYeq//uQZBoABQt4yMVxYAIAAAkQoAAAHvYpL5m6AAgAACXDAAAAD59jblTirQe9upFsmZbpMudy7Lz1X1DYsxOOSWpfPqNX2WqktK0DMvuGwlbNj44TleLPQ+Gsfb+GOWOKJoIrWb3cIMeeON6lz2umTqMXV8Mj30yWPpjoSa9ujK8SyeJP5y5mOW1D6hvLepeveEAEDo0mgCRClOEgANv3B9a6fikgUSu/DmAMATrGx7nng5p5iimPNZsfQLYB2sDLIkzRKZOHGAaUyDcpFBSLG9MCQALgAIgQs2YunOszLSAyQYPVC2YdGGeHD2dTdJk1pAHGAWDjnkcLKFymS3RQZTInzySoBwMG0QueC3gMsCEYxUqlrcxK6k1LQQcsmyYeQPdC2YfuGPASCBkcVMQQqpVJshui1tkXQJQV0OXGAZMXSOEEBRirXbVRQW7ugq7IM7rPWSZyDlM3IuNEkxzCOJ0ny2ThNkyRai1b6ev//3dzNGzNb//4uAvHT5sURcZCFcuKLhOFs8mLAAEAt4UWAAIABAAAAAB4qbHo0tIjVkUU//uQZAwABfSFz3ZqQAAAAAngwAAAE1HjMp2qAAAAACZDgAAAD5UkTE1UgZEUExqYynN1qZvqIOREEFmBcJQkwdxiFtw0qEOkGYfRDifBui9MQg4QAHAqWtAWHoCxu1Yf4VfWLPIM2mHDFsbQEVGwyqQoQcwnfHeIkNt9YnkiaS1oizycqJrx4KOQjahZxWbcZgztj2c49nKmkId44S71j0c8eV9yDK6uPRzx5X18eDvjvQ6yKo9ZSS6l//8elePK/Lf//IInrOF/FvDoADYAGBMGb7FtErm5MXMlmPAJQVgWta7Zx2go+8xJ0UiCb8LHHdftWyLJE0QIAIsI+UbXu67dZMjmgDGCGl1H+vpF4NSDckSIkk7Vd+sxEhBQMRU8j/12UIRhzSaUdQ+rQU5kGeFxm+hb1oh6pWWmv3uvmReDl0UnvtapVaIzo1jZbf/pD6ElLqSX+rUmOQNpJFa/r+sa4e/pBlAABoAAAAA3CUgShLdGIxsY7AUABPRrgCABdDuQ5GC7DqPQCgbbJUAoRSUj+NIEig0YfyWUho1VBBBA//uQZB4ABZx5zfMakeAAAAmwAAAAF5F3P0w9GtAAACfAAAAAwLhMDmAYWMgVEG1U0FIGCBgXBXAtfMH10000EEEEEECUBYln03TTTdNBDZopopYvrTTdNa325mImNg3TTPV9q3pmY0xoO6bv3r00y+IDGid/9aaaZTGMuj9mpu9Mpio1dXrr5HERTZSmqU36A3CumzN/9Robv/Xx4v9ijkSRSNLQhAWumap82WRSBUqXStV/YcS+XVLnSS+WLDroqArFkMEsAS+eWmrUzrO0oEmE40RlMZ5+ODIkAyKAGUwZ3mVKmcamcJnMW26MRPgUw6j+LkhyHGVGYjSUUKNpuJUQoOIAyDvEyG8S5yfK6dhZc0Tx1KI/gviKL6qvvFs1+bWtaz58uUNnryq6kt5RzOCkPWlVqVX2a/EEBUdU1KrXLf40GoiiFXK///qpoiDXrOgqDR38JB0bw7SoL+ZB9o1RCkQjQ2CBYZKd/+VJxZRRZlqSkKiws0WFxUyCwsKiMy7hUVFhIaCrNQsKkTIsLivwKKigsj8XYlwt/WKi2N4d//uQRCSAAjURNIHpMZBGYiaQPSYyAAABLAAAAAAAACWAAAAApUF/Mg+0aohSIRobBAsMlO//Kk4soosy1JSFRYWaLC4qZBYWFRGZdwqKiwkNBVmoWFSJkWFxX4FFRQWR+LsS4W/rFRb/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////VEFHAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAU291bmRib3kuZGUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMjAwNGh0dHA6Ly93d3cuc291bmRib3kuZGUAAAAAAAAAACU=",
       );
       snd.play();
     };
@@ -180,21 +180,21 @@ let example = (() => {
         $("candidates").innerHTML = s;
       }
 
-      const tooltipDeb = $("tooltip");
+      const tooltipDiv = $("tooltip");
       if (state.candidates.length !== 0) {
-        tooltipDeb.innerHTML = "";
-        tooltipDeb.style.visibility = "hidden";
-        tooltipDeb.style.width = null;
+        tooltipDiv.innerHTML = "";
+        tooltipDiv.style.visibility = "hidden";
+        tooltipDiv.style.width = null;
       } else {
         const tooltip = state.tooltip;
         if (tooltip) {
-          tooltipDeb.innerHTML = tooltip;
-          tooltipDeb.style.visibility = "visible";
-          tooltipDeb.style.width = "auto";
+          tooltipDiv.innerHTML = tooltip;
+          tooltipDiv.style.visibility = "visible";
+          tooltipDiv.style.width = "auto";
         } else {
-          tooltipDeb.innerHTML = "";
-          tooltipDeb.style.visibility = "hidden";
-          tooltipDeb.style.width = null;
+          tooltipDiv.innerHTML = "";
+          tooltipDiv.style.visibility = "hidden";
+          tooltipDiv.style.width = null;
         }
       }
 
@@ -371,7 +371,7 @@ let example = (() => {
       if (lines.length === 0) {
         renderEmptyInput(
           "phrase_generate_input_output_container",
-          "phrase_generate_output"
+          "phrase_generate_output",
         );
         return;
       }
@@ -444,99 +444,104 @@ let example = (() => {
 
     that.applySettings = () => {
       const settings = that.settings;
-      {
-        controller.setTraditionalMode(settings.trad_mode);
-        setChecked("use_plainbopomofo", settings.trad_mode);
-        setChecked("use_mcbopomofo", !settings.trad_mode);
-      }
-      {
-        controller.setChineseConversionEnabled(settings.chinese_conversion);
-        setChecked("chinese_convert_simp", settings.chinese_conversion);
-        setChecked("chinese_convert_trad", !settings.chinese_conversion);
-      }
-      {
-        controller.setHalfWidthPunctuationEnabled(
-          settings.half_width_punctuation
-        );
-        setChecked("full_width_punctuation", !settings.half_width_punctuation);
-        setChecked("half_width_punctuation", settings.half_width_punctuation);
-      }
-      {
-        controller.setKeyboardLayout(settings.layout);
-        setSelectValue("layout", settings.layout);
-      }
-      {
-        controller.setCandidateKeys(settings.candidate_keys);
-        setSelectValue("keys", settings.candidate_keys);
-      }
-      {
-        controller.setCandidateKeysCount(settings.candidate_keys_count);
-        setSelectValue("keys_count", settings.candidate_keys_count);
-      }
-      {
-        if (settings.select_phrase === "before_cursor") {
-          controller.setSelectPhrase("before_cursor");
-          setChecked("before_cursor", true);
-          setChecked("after_cursor", false);
-        } else if (settings.select_phrase === "after_cursor") {
-          controller.setSelectPhrase("after_cursor");
-          setChecked("before_cursor", false);
-          setChecked("after_cursor", true);
+      const applyTogglePair = (enabled, enabledId, disabledId, setter) => {
+        setter(enabled);
+        setChecked(enabledId, enabled);
+        setChecked(disabledId, !enabled);
+      };
+      const applySelectSetting = (id, value, setter) => {
+        setter(value);
+        setSelectValue(id, value);
+      };
+      const applyCheckboxSetting = (id, checked, setter) => {
+        if (setter) {
+          setter(checked);
         }
-      }
-      {
-        controller.setEscClearEntireBuffer(
-          settings.esc_key_clear_entire_buffer
-        );
-        setChecked("esc_key", settings.esc_key_clear_entire_buffer);
-      }
-      {
-        controller.setRepeatedPunctuationChooseCandidate(
-          settings.repeated_punctuation_choose_candidate
-        );
-        setChecked(
-          "repeated_punctuation_choose_candidate",
-          settings.repeated_punctuation_choose_candidate
-        );
-      }
-      {
-        let enabled = settings.bopomofo_font_annotation_support_enabled;
-        if (enabled) {
-          globalUi.startSupportBpmfvsFont();
-        } else {
-          globalUi.stopSupportBpmfvsFont();
-        }
-        controller.setBopomofoFontAnnotationSupportEnabled(enabled);
-        setChecked("bopomofo_font_annotation_support_enabled", enabled);
+        setChecked(id, checked);
+      };
+
+      applyTogglePair(
+        settings.trad_mode,
+        "use_plainbopomofo",
+        "use_mcbopomofo",
+        (enabled) => controller.setTraditionalMode(enabled),
+      );
+      applyTogglePair(
+        settings.chinese_conversion,
+        "chinese_convert_simp",
+        "chinese_convert_trad",
+        (enabled) => controller.setChineseConversionEnabled(enabled),
+      );
+      applyTogglePair(
+        settings.half_width_punctuation,
+        "half_width_punctuation",
+        "full_width_punctuation",
+        (enabled) => controller.setHalfWidthPunctuationEnabled(enabled),
+      );
+
+      applySelectSetting("layout", settings.layout, (value) =>
+        controller.setKeyboardLayout(value),
+      );
+      applySelectSetting("keys", settings.candidate_keys, (value) =>
+        controller.setCandidateKeys(value),
+      );
+      applySelectSetting("keys_count", settings.candidate_keys_count, (value) =>
+        controller.setCandidateKeysCount(value),
+      );
+      applySelectSetting(
+        "moving_cursor_option",
+        settings.moving_cursor_option,
+        (value) => controller.setMovingCursorOption(value),
+      );
+      applySelectSetting(
+        "ctrl_enter_option",
+        settings.ctrl_enter_option,
+        (value) => controller.setCtrlEnterOption(value),
+      );
+
+      if (settings.select_phrase === "before_cursor") {
+        controller.setSelectPhrase("before_cursor");
+        setChecked("before_cursor", true);
+        setChecked("after_cursor", false);
+      } else if (settings.select_phrase === "after_cursor") {
+        controller.setSelectPhrase("after_cursor");
+        setChecked("before_cursor", false);
+        setChecked("after_cursor", true);
       }
 
-      {
-        controller.setMovingCursorOption(settings.moving_cursor_option);
-        setSelectValue("moving_cursor_option", settings.moving_cursor_option);
-      }
-      {
-        setChecked("beep_on_error", settings.beep_on_error);
-      }
-      {
-        setChecked("move_cursor", settings.move_cursor);
-        controller.setMoveCursorAfterSelection(settings.move_cursor);
-      }
+      applyCheckboxSetting(
+        "esc_key",
+        settings.esc_key_clear_entire_buffer,
+        (checked) => controller.setEscClearEntireBuffer(checked),
+      );
+      applyCheckboxSetting(
+        "repeated_punctuation_choose_candidate",
+        settings.repeated_punctuation_choose_candidate,
+        (checked) => controller.setRepeatedPunctuationChooseCandidate(checked),
+      );
+      applyCheckboxSetting("beep_on_error", settings.beep_on_error);
+      applyCheckboxSetting("move_cursor", settings.move_cursor, (checked) =>
+        controller.setMoveCursorAfterSelection(checked),
+      );
 
-      {
-        if (settings.letter_mode === "upper") {
-          setChecked("uppercase_letters", true);
-          setChecked("lowercase_letters", false);
-          controller.setLetterMode("upper");
-        } else if (settings.letter_mode === "lower") {
-          setChecked("uppercase_letters", false);
-          setChecked("lowercase_letters", true);
-          controller.setLetterMode("lower");
-        }
+      if (settings.bopomofo_font_annotation_support_enabled) {
+        globalUi.startSupportBpmfvsFont();
+      } else {
+        globalUi.stopSupportBpmfvsFont();
       }
-      {
-        controller.setCtrlEnterOption(settings.ctrl_enter_option);
-        setSelectValue("ctrl_enter_option", settings.ctrl_enter_option);
-      }
+      applyCheckboxSetting(
+        "bopomofo_font_annotation_support_enabled",
+        settings.bopomofo_font_annotation_support_enabled,
+        (checked) =>
+          controller.setBopomofoFontAnnotationSupportEnabled(checked),
+      );
+
+      applyTogglePair(
+        settings.letter_mode === "upper",
+        "uppercase_letters",
+        "lowercase_letters",
+        (isUpper) => controller.setLetterMode(isUpper ? "upper" : "lower"),
+      );
     };
 
     that.loadUserPhrases = () => {
@@ -646,21 +651,21 @@ let example = (() => {
     });
 
     $("text_area").addEventListener("keydown", (event) => {
-        if (event.metaKey || event.altKey) {
-          controller.reset();
-          return;
-        }
+      if (event.metaKey || event.altKey) {
+        controller.reset();
+        return;
+      }
 
-        shiftKeyIsPressed = event.key === "Shift";
-        if (globalUi.alphabetMode) {
-          return;
-        }
+      shiftKeyIsPressed = event.key === "Shift";
+      if (globalUi.alphabetMode) {
+        return;
+      }
 
-        const accepted = controller.keyEvent(event);
-        if (accepted) {
-          event.preventDefault();
-        }
-      });
+      const accepted = controller.keyEvent(event);
+      if (accepted) {
+        event.preventDefault();
+      }
+    });
 
     $("use_mcbopomofo").onchange = (event) => {
       controller.setTraditionalMode(false);
@@ -770,19 +775,15 @@ let example = (() => {
       focusElement("text_area");
     };
 
-    $("repeated_punctuation_choose_candidate").onchange =
-      (event) => {
-        const checked = getChecked("repeated_punctuation_choose_candidate");
-        controller.setRepeatedPunctuationChooseCandidate(checked);
-        settingsManager.settings.repeated_punctuation_choose_candidate =
-          checked;
-        settingsManager.saveSettings();
-        focusElement("text_area");
-      };
+    $("repeated_punctuation_choose_candidate").onchange = (event) => {
+      const checked = getChecked("repeated_punctuation_choose_candidate");
+      controller.setRepeatedPunctuationChooseCandidate(checked);
+      settingsManager.settings.repeated_punctuation_choose_candidate = checked;
+      settingsManager.saveSettings();
+      focusElement("text_area");
+    };
 
-    $("bopomofo_font_annotation_support_enabled").onchange = (
-      event
-    ) => {
+    $("bopomofo_font_annotation_support_enabled").onchange = (event) => {
       const checked = getChecked("bopomofo_font_annotation_support_enabled");
       controller.setBopomofoFontAnnotationSupportEnabled(checked);
       settingsManager.settings.bopomofo_font_annotation_support_enabled =
@@ -859,46 +860,46 @@ let example = (() => {
     }, 2000);
     ui.reset();
 
+    const featureConfig = {
+      feature_input: ["text_area", "小麥注音輸入法 - 輸入功能"],
+      feature_user_phrases: [
+        "feature_user_phrases_text_area",
+        "小麥注音輸入法 - 自定詞管理",
+      ],
+      feature_excluded_phrases: [
+        "feature_excluded_phrases_text_area",
+        "小麥注音輸入法 - 管理排除的詞彙",
+      ],
+      feature_text_to_braille: [
+        "text_to_braille_text_area",
+        "小麥注音輸入法 - 中文轉注音點字",
+      ],
+      feature_braille_to_text: [
+        "braille_to_text_text_area",
+        "小麥注音輸入法 - 注音點字轉中文",
+      ],
+      feature_add_bpmf: ["add_bpmf_text_area", "小麥注音輸入法 - 國字加注音"],
+      feature_convert_hanyupnyin: [
+        "convert_hanyupnyin_text_area",
+        "小麥注音輸入法 - 國字轉拼音",
+      ],
+      feature_generate_phrases: [
+        "phrase_generate_input",
+        "小麥注音輸入法 - 詞庫產生工具",
+      ],
+    };
+
     function toggle_feature(id) {
-      const features = [
-        "feature_input",
-        "feature_user_phrases",
-        "feature_excluded_phrases",
-        "feature_text_to_braille",
-        "feature_braille_to_text",
-        "feature_add_bpmf",
-        "feature_convert_hanyupnyin",
-        "feature_generate_phrases",
-      ];
-      for (const feature of features) {
+      for (const feature of Object.keys(featureConfig)) {
         setDisplay(feature, "none");
       }
       console.log("Toggling feature:", id);
       setDisplay(id, "flex");
-      if (id === "feature_input") {
-        focusElement("text_area");
-        document.title = "小麥注音輸入法 - 輸入功能";
-      } else if (id === "feature_user_phrases") {
-        focusElement("feature_user_phrases_text_area");
-        document.title = "小麥注音輸入法 - 自定詞管理";
-      } else if (id === "feature_excluded_phrases") {
-        focusElement("feature_excluded_phrases_text_area");
-        document.title = "小麥注音輸入法 - 管理排除的詞彙";
-      } else if (id === "feature_text_to_braille") {
-        focusElement("text_to_braille_text_area");
-        document.title = "小麥注音輸入法 - 中文轉注音點字";
-      } else if (id === "feature_braille_to_text") {
-        focusElement("braille_to_text_text_area");
-        document.title = "小麥注音輸入法 - 注音點字轉中文";
-      } else if (id === "feature_add_bpmf") {
-        focusElement("add_bpmf_text_area");
-        document.title = "小麥注音輸入法 - 國字加注音";
-      } else if (id === "feature_convert_hanyupnyin") {
-        focusElement("convert_hanyupnyin_text_area");
-        document.title = "小麥注音輸入法 - 國字轉拼音";
-      } else if (id === "feature_generate_phrases") {
-        focusElement("phrase_generate_input");
-        document.title = "小麥注音輸入法 - 詞庫產生工具";
+      const config = featureConfig[id];
+      if (config) {
+        const [focusId, title] = config;
+        focusElement(focusId);
+        document.title = title;
       }
     }
 
@@ -935,5 +936,4 @@ let example = (() => {
   example.service = service;
   example.settingsManager = settingsManager;
   window.example = example;
-  return example;
 })();
