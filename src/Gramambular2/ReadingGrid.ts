@@ -7,6 +7,21 @@
 
 import { LanguageModel, Unigram } from "./LanguageModel";
 
+// Defines a state in the DP table. This structure tracks the maximum
+// accumulated score and the back-pointer required for path reconstruction in
+// the Viterbi algorithm.
+class ViterbiState {
+  fromIndex: number = 0;
+  fromNode: Node | undefined = undefined;
+  maxScore: number = -Number.MAX_VALUE;
+
+  reset() {
+    this.fromIndex = 0;
+    this.fromNode = undefined;
+    this.maxScore = -Number.MAX_VALUE;
+  }
+}
+
 /**
  * A grid for deriving the most likely hidden values from a series of
  * observations. For our purpose, the observations are Bopomofo readings, and
@@ -27,7 +42,7 @@ export class ReadingGrid {
   private spans_: Span[] = [];
   private readings_: string[] = [];
 
-  constructor(private lm_: LanguageModel) {}
+  constructor(private lm_: LanguageModel) { }
 
   /**
    * Clears the grid.
@@ -127,6 +142,24 @@ export class ReadingGrid {
   static kMaximumSpanLength: number = 8;
   static kDefaultSeparator: string = "-";
 
+  // static MAX_VITERBI_LEN: number = 256;
+  // static g_viterbi: ViterbiState[] = Array.from(
+  //   { length: ReadingGrid.MAX_VITERBI_LEN },
+  //   () => new ViterbiState()
+  // );
+
+  // 在類別外或作為 static 屬性，維護一個會自動長大的池子
+  private static viterbiPool: ViterbiState[] = [];
+
+  private ensurePoolSize(size: number) {
+    const pool = ReadingGrid.viterbiPool;
+    if (pool.length < size) {
+      for (let i = pool.length; i < size; i++) {
+        pool.push(new ViterbiState());
+      }
+    }
+  }
+
   /**
    * Find the weightiest path in the grid graph. The path represents the most
    * likely hidden chain of events from the observations. We use the Viterbi
@@ -139,25 +172,18 @@ export class ReadingGrid {
    * @returns The result of the walk.
    */
   walk(): WalkResult {
-    if (this.spans_.length === 0) {
+    const readingLen = this.readings_.length;
+    if (readingLen === 0) {
       return new WalkResult([], 0, 0, 0, 0);
     }
-    const start = GetEpochNowInMicroseconds();
-
-    // Defines a state in the DP table. This structure tracks the maximum
-    // accumulated score and the back-pointer required for path reconstruction in
-    // the Viterbi algorithm.
-    class State {
-      fromIndex: number = 0;
-      fromNode: Node | undefined = undefined;
-      maxScore: number = -Number.MAX_VALUE;
+    // 1. 動態增加節點，要多少有多少，不用 fallback
+    this.ensurePoolSize(readingLen + 1);
+    const viterbi = ReadingGrid.viterbiPool;
+    for (let i = 0; i <= readingLen; i++) {
+      viterbi[i].reset();
     }
 
-    const readingLen = this.readings_.length;
-    const viterbi: State[] = Array.from(
-      { length: readingLen + 1 },
-      () => new State()
-    );
+    const start = GetEpochNowInMicroseconds();
     viterbi[0].maxScore = 0.0;
 
     // Iterate through the grid and compute the maximum accumulated score for each
@@ -523,7 +549,7 @@ export class Node {
     public readonly reading: string,
     public readonly spanningLength: number,
     public readonly unigrams: Unigram[]
-  ) {}
+  ) { }
 
   /**
    * The current unigram of the node.
@@ -622,7 +648,7 @@ export class WalkResult {
     public readonly edges: number,
     public readonly elapsedMicroseconds: number,
     public readonly totalReadings: number
-  ) {}
+  ) { }
 
   /**
    * The values of the nodes as a list of strings.
@@ -709,7 +735,7 @@ export class Candidate {
      * have multiple duplicated candidate whose value is "你", but the displayed
      * text could be "你 1", "你 2" and so on. */
     public readonly displayedText: string
-  ) {}
+  ) { }
 }
 
 /**
@@ -797,7 +823,7 @@ export class Span {
  * @implements {LanguageModel}
  */
 export class ScoreRankedLanguageModel implements LanguageModel {
-  constructor(private lm_: LanguageModel) {}
+  constructor(private lm_: LanguageModel) { }
 
   getUnigrams(key: string): Unigram[] {
     throw new Error("Method not implemented.");
@@ -812,7 +838,7 @@ export class ScoreRankedLanguageModel implements LanguageModel {
  * @class
  */
 export class NodeInSpan {
-  constructor(public readonly node: Node, public readonly spanIndex: number) {}
+  constructor(public readonly node: Node, public readonly spanIndex: number) { }
 }
 
 function GetEpochNowInMicroseconds(): number {

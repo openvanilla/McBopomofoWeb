@@ -423,6 +423,7 @@ let example = (() => {
         const obj = JSON.parse(result);
         if (!obj) {
           that.settings = that.defaultSettings;
+          return that.defaultSettings;
         }
 
         for (const key in that.defaultSettings) {
