@@ -215,17 +215,17 @@ describe("ReadingGrid", () => {
     expect(grid.cursor).toBe(1);
   });
 
-  it("should bypass combineReading for single-reading updates", () => {
+  it("should bypass range combining for single-reading updates", () => {
     const mockLM = new MockLanguageModel();
     const grid = new ReadingGrid(mockLM);
-    const combineReadingSpy = jest.spyOn(grid as any, "combineReading");
+    const combineReadingRangeSpy = jest.spyOn(grid as any, "combineReadingRange");
 
     grid.insertReading("testReading");
 
-    expect(combineReadingSpy).not.toHaveBeenCalled();
+    expect(combineReadingRangeSpy).not.toHaveBeenCalled();
 
     grid.insertReading("testReading2");
 
-    expect(combineReadingSpy).toHaveBeenCalled();
+    expect(combineReadingRangeSpy).toHaveBeenCalled();
   });
 });

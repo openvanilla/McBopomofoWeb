@@ -436,6 +436,14 @@ export class ReadingGrid {
     return reading.join(this.separator_);
   }
 
+  private combineReadingRange(pos: number, len: number): string {
+    let combinedReading = this.readings_[pos];
+    for (let i = 1; i < len; i++) {
+      combinedReading += this.separator_ + this.readings_[pos + i];
+    }
+    return combinedReading;
+  }
+
   private hasNodeAt(loc: number, readingLen: number, reading: string): boolean {
     if (loc > this.spans_.length) {
       return false;
@@ -466,7 +474,7 @@ export class ReadingGrid {
         combinedReading =
           len === 1
             ? this.readings_[pos]
-            : this.combineReading(this.readings_.slice(pos, pos + len));
+            : this.combineReadingRange(pos, len);
 
         if (!this.hasNodeAt(pos, len, combinedReading)) {
           const unigrams = this.lm_.getUnigrams(combinedReading);
