@@ -310,6 +310,108 @@ describe("BopomofoKeyboardLayout", () => {
       const syllable = layout.syllableFromKeySequence("l");
       expect(syllable.vowelComponent).toBe(BopomofoSyllable.ERR);
     });
+
+    test("Hanyu Pinyin layout remains empty until mappings are defined", () => {
+      const layout = BopomofoKeyboardLayout.HanyuPinyinLayout;
+
+      expect(layout.keyToComponents("a")).toEqual([]);
+      expect(layout.componentToKey(BopomofoSyllable.B)).toBe("");
+      expect(layout.keySequenceFromSyllable(new BopomofoSyllable(BopomofoSyllable.B))).toBe(
+        ""
+      );
+      expect(layout.syllableFromKeySequence("abc").isEmpty).toBe(true);
+    });
+  });
+
+  describe("Custom ambiguous layouts", () => {
+    test("prefers E when I or UE already appeared before an E/A ambiguous key", () => {
+      const layout = new BopomofoKeyboardLayout(
+        new Map([
+          ["i", [BopomofoSyllable.I]],
+          ["x", [BopomofoSyllable.E, BopomofoSyllable.A]],
+        ]),
+        "Custom-E-Head"
+      );
+
+      const withoutLeadingI = layout.syllableFromKeySequence("x");
+      expect(withoutLeadingI.vowelComponent).toBe(BopomofoSyllable.A);
+
+      const withLeadingI = layout.syllableFromKeySequence("ix");
+      expect(withLeadingI.middleVowelComponent).toBe(BopomofoSyllable.I);
+      expect(withLeadingI.vowelComponent).toBe(BopomofoSyllable.E);
+    });
+
+    test("prefers E from the follow component when I or UE appeared before", () => {
+      const layout = new BopomofoKeyboardLayout(
+        new Map([
+          ["i", [BopomofoSyllable.I]],
+          ["x", [BopomofoSyllable.A, BopomofoSyllable.E]],
+        ]),
+        "Custom-E-Follow"
+      );
+
+      const withoutLeadingI = layout.syllableFromKeySequence("x");
+      expect(withoutLeadingI.vowelComponent).toBe(BopomofoSyllable.A);
+
+      const withLeadingI = layout.syllableFromKeySequence("ix");
+      expect(withLeadingI.middleVowelComponent).toBe(BopomofoSyllable.I);
+      expect(withLeadingI.vowelComponent).toBe(BopomofoSyllable.E);
+    });
+
+    test("resolves JQX-class head keys based on upcoming I or UE and existing syllables", () => {
+      const layout = new BopomofoKeyboardLayout(
+        new Map([
+          ["b", [BopomofoSyllable.B]],
+          ["i", [BopomofoSyllable.I]],
+          ["x", [BopomofoSyllable.J, BopomofoSyllable.A, BopomofoSyllable.Tone2]],
+        ]),
+        "Custom-JQX-Head"
+      );
+
+      const withAheadI = layout.syllableFromKeySequence("xi");
+      expect(withAheadI.consonantComponent).toBe(BopomofoSyllable.J);
+      expect(withAheadI.middleVowelComponent).toBe(BopomofoSyllable.I);
+
+      const withoutAheadI = layout.syllableFromKeySequence("x");
+      expect(withoutAheadI.vowelComponent).toBe(BopomofoSyllable.A);
+
+      const withExistingSyllable = layout.syllableFromKeySequence("bx");
+      expect(withExistingSyllable.consonantComponent).toBe(BopomofoSyllable.B);
+      expect(withExistingSyllable.toneMarkerComponent).toBe(BopomofoSyllable.Tone2);
+    });
+
+    test("resolves JQX-class follow keys based on upcoming I or UE and existing syllables", () => {
+      const layout = new BopomofoKeyboardLayout(
+        new Map([
+          ["b", [BopomofoSyllable.B]],
+          ["i", [BopomofoSyllable.I]],
+          ["x", [BopomofoSyllable.A, BopomofoSyllable.J, BopomofoSyllable.Tone2]],
+        ]),
+        "Custom-JQX-Follow"
+      );
+
+      const withAheadI = layout.syllableFromKeySequence("xi");
+      expect(withAheadI.consonantComponent).toBe(BopomofoSyllable.J);
+      expect(withAheadI.middleVowelComponent).toBe(BopomofoSyllable.I);
+
+      const withoutAheadI = layout.syllableFromKeySequence("x");
+      expect(withoutAheadI.vowelComponent).toBe(BopomofoSyllable.A);
+
+      const withExistingSyllable = layout.syllableFromKeySequence("bx");
+      expect(withExistingSyllable.consonantComponent).toBe(BopomofoSyllable.B);
+      expect(withExistingSyllable.toneMarkerComponent).toBe(BopomofoSyllable.Tone2);
+    });
+
+    test("falls back to ending component for single ambiguous consonant keys", () => {
+      const layout = new BopomofoKeyboardLayout(
+        new Map([["x", [BopomofoSyllable.Q, BopomofoSyllable.CH]]]),
+        "Custom-Single-Consonant"
+      );
+
+      const syllable = layout.syllableFromKeySequence("x");
+
+      expect(syllable.consonantComponent).toBe(BopomofoSyllable.CH);
+    });
   });
 
   describe("Edge cases", () => {

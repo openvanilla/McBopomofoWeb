@@ -167,6 +167,16 @@ describe("CandidateController", () => {
     expect(result.length).toBe(0);
   });
 
+  test("returns undefined for candidate indices outside the list", () => {
+    expect(controller.candidateAtIndex(-1)).toBeUndefined();
+    expect(controller.candidateAtIndex(11)).toBeUndefined();
+  });
+
+  test("returns candidates for valid candidate indices", () => {
+    expect(controller.candidateAtIndex(0)?.value).toBe("一");
+    expect(controller.candidateAtIndex(10)?.value).toBe("貳");
+  });
+
   test("resets selection after updating candidate list", () => {
     const newCandidatesController = new CandidateController();
     newCandidatesController.update([new Candidate("", "A", "A")], ["1"]);
@@ -187,6 +197,20 @@ describe("CandidateController", () => {
 
     result = controller.selectedCandidateWithKey("9");
     expect(result).toBeUndefined();
+  });
+
+  test("uses actual key values instead of displayed labels when matching", () => {
+    const customController = new CandidateController();
+    customController.update(
+      [new Candidate("", "甲", "甲"), new Candidate("", "乙", "乙")],
+      [
+        { displayed: "A", actual: "a" },
+        { displayed: "B", actual: "b" },
+      ]
+    );
+
+    expect(customController.selectedCandidateWithKey("a")?.value).toBe("甲");
+    expect(customController.selectedCandidateWithKey("A")).toBeUndefined();
   });
 
   test("exposes selected candidate value", () => {
@@ -291,6 +315,31 @@ describe("CandidateController", () => {
     controller.goToNextPageButFirstWhenAtEnd();
     expect(controller.currentPageIndex).toBe(0);
     expect(controller.selectedCandidate.value).toBe("一");
+  });
+
+  test("goToLast leaves an empty candidate list unchanged", () => {
+    const emptyController = new CandidateController();
+    emptyController.update([], ["1"]);
+
+    emptyController.goToLast();
+
+    expect(emptyController.selectedIndex).toBe(0);
+    expect(emptyController.candidateAtIndex(emptyController.selectedIndex)).toBe(
+      undefined
+    );
+  });
+
+  test("keeps a single-page candidate list on the first page when cycling", () => {
+    const singlePageController = new CandidateController();
+    singlePageController.update(
+      [new Candidate("", "甲", "甲"), new Candidate("", "乙", "乙")],
+      ["1", "2", "3"]
+    );
+
+    singlePageController.goToNextPageButFirstWhenAtEnd();
+
+    expect(singlePageController.currentPageIndex).toBe(0);
+    expect(singlePageController.selectedCandidate.value).toBe("甲");
   });
 });
 
