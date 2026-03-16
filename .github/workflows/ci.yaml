@@ -50,7 +50,9 @@ jobs:
         if: matrix.node-version == '24.x'
         uses: ArtiomTr/jest-coverage-report-action@v2
       - name: Upload coverage reports to Codecov
-        if: github.ref == 'refs/heads/main'
+        if: >
+          matrix.node-version == '24.x' && 
+          github.ref == 'refs/heads/main'
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
