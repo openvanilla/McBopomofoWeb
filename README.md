@@ -3,8 +3,6 @@
 ![Static Badge](https://img.shields.io/badge/platform-web-green)
 ![ChromeOS](https://img.shields.io/badge/platform-chome_os-yellow) ![Static Badge](https://img.shields.io/badge/platform-windows-blue) [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/openvanilla/McBopomofoWeb) [![codecov](https://codecov.io/github/openvanilla/McBopomofoWeb/branch/main/graph/badge.svg?token=YpF9Z7IPMO)](https://codecov.io/github/openvanilla/McBopomofoWeb)
 
-
-
 本專案嘗試使用 JavaScript/TypeScript 與網頁相關技術，實作小麥注音輸入法，進而延伸出各種文字服務。
 
 小麥注音是一套自動選字的注音輸入法，提供多種常用鍵盤配置，以及各種方便快速輸入的功能。而基於這套輸入法所衍生出的服務，則包括注音與國字的雙向轉換，以及國字與台灣點字的雙向轉換。
