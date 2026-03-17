@@ -1088,6 +1088,10 @@ if (typeof document !== "undefined") {
       toggle_feature(featureId, options);
     }
 
+    function resetInitialScrollPosition() {
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    }
+
     window.addEventListener("hashchange", () => {
       onHashChange();
     });
@@ -1096,6 +1100,9 @@ if (typeof document !== "undefined") {
         window.history.replaceState(null, "", "#feature_input");
       }
       onHashChange({ focus: false });
+      window.requestAnimationFrame(() => {
+        resetInitialScrollPosition();
+      });
     });
 
     $("text_area").addEventListener("input", (event) => {
