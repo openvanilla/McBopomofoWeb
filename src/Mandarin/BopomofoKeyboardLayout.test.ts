@@ -542,14 +542,15 @@ describe("BopomofoKeyboardLayout", () => {
         expect(readable.get("1")).toBe("ㄅ");
         expect(readable.get("q")).toBe("ㄆ");
         expect(readable.get("a")).toBe("ㄇ");
-        expect(readable.get(",")).toBe("ㄜ");
-        expect(readable.get("3")).toBe(""); // Tone3 is mapped to empty string
+        expect(readable.get("k")).toBe("ㄜ");
+        expect(readable.get(",")).toBe("ㄝ");
+        expect(readable.get("3")).toBe("ˇ"); // Tone3
         expect(readable.get("6")).toBe("ˊ"); // Tone2
       });
 
       test("Custom layout readableKeys should join multiple components", () => {
         const ktcm: BopomofoKeyToComponentMap = new Map([
-          ["x", [BopomofoSyllable.I, BopomofoSyllable.E, BopomofoSyllable.A]],
+          ["x", [BopomofoSyllable.I, BopomofoSyllable.ER, BopomofoSyllable.A]],
           ["y", [BopomofoSyllable.O]],
         ]);
         const layout = new BopomofoKeyboardLayout(ktcm, "TestLayout");
@@ -593,14 +594,15 @@ describe("BopomofoKeyboardLayout", () => {
       expect(readable.get("1")).toBe("ㄅ");
       expect(readable.get("q")).toBe("ㄆ");
       expect(readable.get("a")).toBe("ㄇ");
-      expect(readable.get(",")).toBe("ㄜ");
-      expect(readable.get("3")).toBe(""); // Tone3 is mapped to empty string
+      expect(readable.get("k")).toBe("ㄜ");
+      expect(readable.get(",")).toBe("ㄝ");
+      expect(readable.get("3")).toBe("ˇ"); // Tone3
       expect(readable.get("6")).toBe("ˊ"); // Tone2
     });
 
     test("Custom layout readableKeys should join multiple components", () => {
       const ktcm: BopomofoKeyToComponentMap = new Map([
-        ["x", [BopomofoSyllable.I, BopomofoSyllable.E, BopomofoSyllable.A]],
+        ["x", [BopomofoSyllable.I, BopomofoSyllable.ER, BopomofoSyllable.A]],
         ["y", [BopomofoSyllable.O]],
       ]);
       const layout = new BopomofoKeyboardLayout(ktcm, "TestLayout");
