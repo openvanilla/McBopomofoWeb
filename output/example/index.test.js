@@ -75,4 +75,10 @@ describe("initial feature activation", () => {
     expect(js).toMatch(/window\.history\.replaceState\(null, "", "#feature_input"\)/);
     expect(js).not.toMatch(/window\.location\.hash = "feature_input"/);
   });
+
+  it("resets the initial scroll position after bootstrapping even when the page opens with a hash", () => {
+    const js = fs.readFileSync(path.join(__dirname, "index.js"), "utf8");
+
+    expect(js).toMatch(/window\.scrollTo\(\{\s*top:\s*0,\s*left:\s*0,\s*behavior:\s*"auto"\s*\}\)/);
+  });
 });
