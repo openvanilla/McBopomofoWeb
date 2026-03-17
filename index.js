@@ -1043,7 +1043,7 @@ if (typeof document !== "undefined") {
     $("loading").innerText = "載入完畢！";
     setTimeout(() => {
       setDisplay("loading", "none");
-      onHashChange();
+      onHashChange({ focus: false });
     }, 2000);
     ui.reset();
 
@@ -1065,7 +1065,8 @@ if (typeof document !== "undefined") {
       feature_generate_phrases: ["phrase_generate_input", "詞庫產生工具"],
     };
 
-    function toggle_feature(id) {
+    function toggle_feature(id, options = {}) {
+      const { focus = true } = options;
       for (const feature of Object.keys(featureConfig)) {
         setDisplay(feature, "none");
       }
@@ -1074,25 +1075,27 @@ if (typeof document !== "undefined") {
       const config = featureConfig[id];
       if (config) {
         const [focusId, title] = config;
-        focusElement(focusId);
+        if (focus) {
+          focusElement(focusId);
+        }
         document.title = featureTitlePrefix + title;
       }
     }
 
-    function onHashChange() {
+    function onHashChange(options = {}) {
       const hash = window.location.hash;
-      toggle_feature(hash.substring(1));
+      const featureId = hash.length > 1 ? hash.substring(1) : "feature_input";
+      toggle_feature(featureId, options);
     }
 
     window.addEventListener("hashchange", () => {
       onHashChange();
     });
     document.addEventListener("DOMContentLoaded", (event) => {
-      const hash = window.location.hash;
-      if (hash.length === 0) {
-        window.location.hash = "feature_input";
+      if (window.location.hash.length === 0) {
+        window.history.replaceState(null, "", "#feature_input");
       }
-      onHashChange();
+      onHashChange({ focus: false });
     });
 
     $("text_area").addEventListener("input", (event) => {

@@ -85,6 +85,7 @@ hr {
   left: var(--spacing-3);
   display: block;
   margin: 0;
+  max-width: fit-content;
   padding: var(--spacing-2) var(--spacing-3);
   background: var(--surface);
   color: var(--text-primary);
@@ -228,16 +229,15 @@ hr {
 .right select,
 input[type="button"],
 button {
-  min-height: 2.4rem;
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-sm);
   background: var(--surface);
   color: var(--text-primary);
-  padding: 0.35rem 0.7rem;
 }
 
 .right select {
   min-width: 60%;
+  padding: 0.2rem 0.55rem;
 }
 
 input[type="button"],
@@ -335,8 +335,7 @@ textarea#text_area {
   border-radius: var(--radius-sm);
   background: var(--surface);
   color: var(--text-primary);
-  font-family: "Iansui", "Noto Sans TC",
-    "PingFang TC", sans-serif;
+  font-family: "Iansui", "Noto Sans TC", "PingFang TC", sans-serif;
   font-size: 18px;
   line-height: 1.2em;
   ime-mode: disabled;
@@ -509,7 +508,7 @@ blockquote {
 .simple-keyboard {
   min-height: 230px;
   margin-top: var(--spacing-2);
-  padding: var(--spacing-2);
+  padding: 5;
   background: var(--surface-muted);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);

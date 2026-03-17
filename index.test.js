@@ -3,6 +3,8 @@ const {
   INPUT_FONT_SIZE_BPMF,
   INPUT_FONT_SIZE_DEFAULT,
 } = require("./index.js");
+const fs = require("fs");
+const path = require("path");
 
 describe("calculateFunctionPosition", () => {
   it("positions the overlay relative to the edit area instead of the viewport", () => {
@@ -44,5 +46,33 @@ describe("input font sizes", () => {
   it("keeps the main input font sizes compact", () => {
     expect(INPUT_FONT_SIZE_BPMF).toBe(22);
     expect(INPUT_FONT_SIZE_DEFAULT).toBe(18);
+  });
+});
+
+describe("loading banner layout", () => {
+  it("keeps the loading banner absolute on the left without spanning over the top navigation", () => {
+    const css = fs.readFileSync(path.join(__dirname, "index.css"), "utf8");
+    const loadingRuleMatch = css.match(/#loading\s*\{([\s\S]*?)\}/);
+
+    expect(loadingRuleMatch).not.toBeNull();
+    expect(loadingRuleMatch[1]).toMatch(/position:\s*absolute/);
+    expect(loadingRuleMatch[1]).toMatch(/left:\s*var\(--spacing-3\)/);
+    expect(loadingRuleMatch[1]).toMatch(/max-width:\s*fit-content/);
+  });
+});
+
+describe("initial feature activation", () => {
+  it("does not focus the feature input when the page finishes bootstrapping", () => {
+    const js = fs.readFileSync(path.join(__dirname, "index.js"), "utf8");
+
+    expect(js).toMatch(/setTimeout\(\(\) => \{[\s\S]*onHashChange\(\{ focus: false \}\);[\s\S]*\}, 2000\);/);
+    expect(js).toMatch(/document\.addEventListener\("DOMContentLoaded",[\s\S]*onHashChange\(\{ focus: false \}\);[\s\S]*\}\);/);
+  });
+
+  it("adds the default hash with history.replaceState instead of triggering anchor scroll", () => {
+    const js = fs.readFileSync(path.join(__dirname, "index.js"), "utf8");
+
+    expect(js).toMatch(/window\.history\.replaceState\(null, "", "#feature_input"\)/);
+    expect(js).not.toMatch(/window\.location\.hash = "feature_input"/);
   });
 });
