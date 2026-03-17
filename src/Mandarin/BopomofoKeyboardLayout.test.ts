@@ -534,6 +534,31 @@ describe("BopomofoKeyboardLayout", () => {
       expect(ibmSeq).not.toBe(etenSeq);
     });
 
+    describe("readableKeys property", () => {
+      test("StandardLayout readableKeys should map keys to correct symbols", () => {
+        const layout = BopomofoKeyboardLayout.StandardLayout;
+        const readable = layout.readableKeys;
+        // Spot check a few keys
+        expect(readable.get("1")).toBe("ㄅ");
+        expect(readable.get("q")).toBe("ㄆ");
+        expect(readable.get("a")).toBe("ㄇ");
+        expect(readable.get(",")).toBe("ㄜ");
+        expect(readable.get("3")).toBe(""); // Tone3 is mapped to empty string
+        expect(readable.get("6")).toBe("ˊ"); // Tone2
+      });
+
+      test("Custom layout readableKeys should join multiple components", () => {
+        const ktcm: BopomofoKeyToComponentMap = new Map([
+          ["x", [BopomofoSyllable.I, BopomofoSyllable.E, BopomofoSyllable.A]],
+          ["y", [BopomofoSyllable.O]],
+        ]);
+        const layout = new BopomofoKeyboardLayout(ktcm, "TestLayout");
+        const readable = layout.readableKeys;
+        expect(readable.get("x")).toBe("ㄧㄜㄚ");
+        expect(readable.get("y")).toBe("ㄛ");
+      });
+    });
+
     test("Each layout should be able to reconstruct its own syllables", () => {
       const layouts = [
         BopomofoKeyboardLayout.StandardLayout,
@@ -557,6 +582,31 @@ describe("BopomofoKeyboardLayout", () => {
           syllable.toneMarkerComponent
         );
       });
+    });
+  });
+
+  describe("readableKeys property", () => {
+    test("StandardLayout readableKeys should map keys to correct symbols", () => {
+      const layout = BopomofoKeyboardLayout.StandardLayout;
+      const readable = layout.readableKeys;
+      // Spot check a few keys
+      expect(readable.get("1")).toBe("ㄅ");
+      expect(readable.get("q")).toBe("ㄆ");
+      expect(readable.get("a")).toBe("ㄇ");
+      expect(readable.get(",")).toBe("ㄜ");
+      expect(readable.get("3")).toBe(""); // Tone3 is mapped to empty string
+      expect(readable.get("6")).toBe("ˊ"); // Tone2
+    });
+
+    test("Custom layout readableKeys should join multiple components", () => {
+      const ktcm: BopomofoKeyToComponentMap = new Map([
+        ["x", [BopomofoSyllable.I, BopomofoSyllable.E, BopomofoSyllable.A]],
+        ["y", [BopomofoSyllable.O]],
+      ]);
+      const layout = new BopomofoKeyboardLayout(ktcm, "TestLayout");
+      const readable = layout.readableKeys;
+      expect(readable.get("x")).toBe("ㄧㄜㄚ");
+      expect(readable.get("y")).toBe("ㄛ");
     });
   });
 });

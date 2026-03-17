@@ -131,7 +131,7 @@ export class BopomofoKeyboardLayout {
 
     function STKS_COMBINE(
       component: Component,
-      layout: BopomofoKeyboardLayout
+      layout: BopomofoKeyboardLayout,
     ) {
       if ((c = component)) {
         const k: string = layout.componentToKey(c);
@@ -156,12 +156,12 @@ export class BopomofoKeyboardLayout {
       const beforeSeqHasIorUE: boolean = this.sequenceContainsIorUE(
         sequence,
         0,
-        i
+        i,
       );
       const aheadSeqHasIorUE: boolean = this.sequenceContainsIorUE(
         sequence,
         i + 1,
-        sequence.length
+        sequence.length,
       );
 
       const components = this.keyToComponents(sequence.charAt(i));
@@ -239,7 +239,7 @@ export class BopomofoKeyboardLayout {
           this.endAheadOrAheadHasToneMarkKey(
             sequence,
             i + 1,
-            sequence.length
+            sequence.length,
           ) &&
           head.belongsToZCSRClass &&
           syllable.isEmpty
@@ -278,7 +278,7 @@ export class BopomofoKeyboardLayout {
   private endAheadOrAheadHasToneMarkKey(
     seq: string,
     ahead: number,
-    end: number
+    end: number,
   ): boolean {
     if (ahead === end) return true;
 
@@ -520,5 +520,68 @@ export class BopomofoKeyboardLayout {
   private static CreateHanyuPinyinLayout_(): BopomofoKeyboardLayout {
     const ktcm: BopomofoKeyToComponentMap = new Map();
     return new BopomofoKeyboardLayout(ktcm, "HanyuPinyin");
+  }
+
+  private static readableKeyMap_: Map<number, string> = new Map([
+    [BopomofoSyllable.B, "ㄅ"],
+    [BopomofoSyllable.P, "ㄆ"],
+    [BopomofoSyllable.M, "ㄇ"],
+    [BopomofoSyllable.F, "ㄈ"],
+    [BopomofoSyllable.D, "ㄉ"],
+    [BopomofoSyllable.T, "ㄊ"],
+    [BopomofoSyllable.N, "ㄋ"],
+    [BopomofoSyllable.L, "ㄌ"],
+    [BopomofoSyllable.G, "ㄍ"],
+    [BopomofoSyllable.K, "ㄎ"],
+    [BopomofoSyllable.H, "ㄏ"],
+    [BopomofoSyllable.J, "ㄐ"],
+    [BopomofoSyllable.Q, "ㄑ"],
+    [BopomofoSyllable.X, "ㄒ"],
+    [BopomofoSyllable.ZH, "ㄓ"],
+    [BopomofoSyllable.CH, "ㄔ"],
+    [BopomofoSyllable.SH, "ㄕ"],
+    [BopomofoSyllable.R, "ㄖ"],
+    [BopomofoSyllable.Z, "ㄗ"],
+    [BopomofoSyllable.C, "ㄘ"],
+    [BopomofoSyllable.S, "ㄙ"],
+    [BopomofoSyllable.I, "ㄧ"],
+    [BopomofoSyllable.U, "ㄨ"],
+    [BopomofoSyllable.UE, "ㄩ"],
+    [BopomofoSyllable.A, "ㄚ"],
+    [BopomofoSyllable.O, "ㄛ"],
+    [BopomofoSyllable.ER, "ㄜ"],
+    [BopomofoSyllable.E, "ㄝ"],
+    [BopomofoSyllable.AI, "ㄞ"],
+    [BopomofoSyllable.EI, "ㄟ"],
+    [BopomofoSyllable.AO, "ㄠ"],
+    [BopomofoSyllable.OU, "ㄡ"],
+    [BopomofoSyllable.AN, "ㄢ"],
+    [BopomofoSyllable.EN, "ㄣ"],
+    [BopomofoSyllable.ANG, "ㄤ"],
+    [BopomofoSyllable.ENG, "ㄥ"],
+    [BopomofoSyllable.ERR, "ㄦ"],
+    [BopomofoSyllable.Tone1, ""],
+    [BopomofoSyllable.Tone2, "ˊ"],
+    [BopomofoSyllable.Tone3, "ˇ"],
+    [BopomofoSyllable.Tone4, "ˋ"],
+    [BopomofoSyllable.Tone5, "˙"],
+  ]);
+
+  readableKeyMap_: Map<string, string> | undefined;
+
+  get readableKeys(): Map<string, string> {
+    if (this.readableKeyMap_ === undefined) {
+      this.readableKeyMap_ = new Map();
+      for (let key of this.keyToComponent_.keys()) {
+        let component = this.keyToComponent_.get(key);
+        if (component !== undefined) {
+          let joined = component
+            .map((c) => BopomofoKeyboardLayout.readableKeyMap_.get(c))
+            .join("");
+          this.readableKeyMap_.set(key, joined);
+        }
+      }
+    }
+    return this.readableKeyMap_;
   }
 }

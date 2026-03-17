@@ -453,7 +453,11 @@ blockquote {
   color: #000;
 }
 
-.hg-button[data-skbtn='{ctrl}'] {
+.hg-standardBtn {
+  font-size: 12pt;
+}
+
+.hg-button[data-skbtn="{ctrl}"] {
   flex-grow: 1 !important;
   max-width: 80px;
 }

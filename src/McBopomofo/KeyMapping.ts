@@ -1,29 +1,33 @@
-import { Key, KeyName } from './Key';
+import { Key, KeyName } from "./Key";
 
 /**
  * Utility class for mapping keyboard events to internal `Key` representations.
  */
 export class KeyMapping {
-  static keyFromSimpleKeyboardEvent(button: string, isShift: boolean, isCtrl: boolean) {
+  static keyFromSimpleKeyboardEvent(
+    button: string,
+    isShift: boolean,
+    isCtrl: boolean,
+  ) {
     let keyName = KeyName.UNKNOWN;
-    let ascii = '';
+    let ascii = "";
 
     if (button.length === 1) {
       keyName = KeyName.ASCII;
       ascii = button;
     } else {
       switch (button) {
-        case '{bksp}':
+        case "{bksp}":
           keyName = KeyName.BACKSPACE;
           break;
-        case '{enter}':
+        case "{enter}":
           keyName = KeyName.RETURN;
           break;
-        case '{space}':
+        case "{space}":
           keyName = KeyName.SPACE;
-          ascii = ' ';
+          ascii = " ";
           break;
-        case '{tab}':
+        case "{tab}":
           keyName = KeyName.TAB;
           break;
         default:
@@ -43,94 +47,94 @@ export class KeyMapping {
     let isNumpadKey = false;
     let keyName = KeyName.UNKNOWN;
     switch (event.code) {
-      case 'ArrowLeft':
+      case "ArrowLeft":
         keyName = KeyName.LEFT;
         break;
-      case 'ArrowRight':
+      case "ArrowRight":
         keyName = KeyName.RIGHT;
         break;
-      case 'ArrowUp':
+      case "ArrowUp":
         keyName = KeyName.UP;
         break;
-      case 'ArrowDown':
+      case "ArrowDown":
         keyName = KeyName.DOWN;
         break;
-      case 'Home':
+      case "Home":
         keyName = KeyName.HOME;
         break;
-      case 'End':
+      case "End":
         keyName = KeyName.END;
         break;
-      case 'Backspace':
+      case "Backspace":
         keyName = KeyName.BACKSPACE;
         break;
-      case 'Delete':
+      case "Delete":
         keyName = KeyName.DELETE;
         break;
-      case 'NumpadEnter':
-      case 'Enter':
+      case "NumpadEnter":
+      case "Enter":
         keyName = KeyName.RETURN;
         break;
-      case 'Escape':
+      case "Escape":
         keyName = KeyName.ESC;
         break;
-      case 'Space':
+      case "Space":
         keyName = KeyName.SPACE;
         break;
-      case 'Tab':
+      case "Tab":
         keyName = KeyName.TAB;
         break;
-      case 'PageUp':
+      case "PageUp":
         keyName = KeyName.PAGE_UP;
         break;
-      case 'PageDown':
+      case "PageDown":
         keyName = KeyName.PAGE_DOWN;
         break;
-      case 'NumpadAdd':
-      case 'NumpadSubtract':
-      case 'NumpadMultiply':
-      case 'NumpadDivide':
-      case 'NumpadDecimal':
+      case "NumpadAdd":
+      case "NumpadSubtract":
+      case "NumpadMultiply":
+      case "NumpadDivide":
+      case "NumpadDecimal":
         keyName = KeyName.ASCII;
         isNumpadKey = true;
         break;
-      case 'Numpad0':
-      case 'Numpad1':
-      case 'Numpad2':
-      case 'Numpad3':
-      case 'Numpad4':
-      case 'Numpad5':
-      case 'Numpad6':
-      case 'Numpad7':
-      case 'Numpad8':
-      case 'Numpad9':
+      case "Numpad0":
+      case "Numpad1":
+      case "Numpad2":
+      case "Numpad3":
+      case "Numpad4":
+      case "Numpad5":
+      case "Numpad6":
+      case "Numpad7":
+      case "Numpad8":
+      case "Numpad9":
         if (event.key.length === 1) {
           keyName = KeyName.ASCII;
           isNumpadKey = true;
         } else {
           switch (event.key) {
-            case 'ArrowLeft':
+            case "ArrowLeft":
               keyName = KeyName.LEFT;
               break;
-            case 'ArrowRight':
+            case "ArrowRight":
               keyName = KeyName.RIGHT;
               break;
-            case 'ArrowUp':
+            case "ArrowUp":
               keyName = KeyName.UP;
               break;
-            case 'ArrowDown':
+            case "ArrowDown":
               keyName = KeyName.DOWN;
               break;
-            case 'Home':
+            case "Home":
               keyName = KeyName.HOME;
               break;
-            case 'End':
+            case "End":
               keyName = KeyName.END;
               break;
-            case 'PageUp':
+            case "PageUp":
               keyName = KeyName.PAGE_UP;
               break;
-            case 'PageDown':
+            case "PageDown":
               keyName = KeyName.PAGE_DOWN;
               break;
             default:
@@ -140,7 +144,13 @@ export class KeyMapping {
       default:
         break;
     }
-    const key = new Key(event.key, keyName, event.shiftKey, event.ctrlKey, isNumpadKey);
+    const key = new Key(
+      event.key,
+      keyName,
+      event.shiftKey,
+      event.ctrlKey,
+      isNumpadKey,
+    );
     return key;
   }
 }

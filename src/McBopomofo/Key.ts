@@ -5,8 +5,6 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { KeyMapping } from "./KeyMapping";
-
 export enum KeyName {
   ASCII = "ASCII",
   LEFT = "LEFT",
@@ -43,13 +41,13 @@ export class Key {
     /** If the Control modifier is pressed. */
     public readonly ctrlPressed: boolean = false,
     /** If the key is on the Numpad. */
-    public readonly isNumpadKey: boolean = false
+    public readonly isNumpadKey: boolean = false,
   ) {}
 
   static asciiKey(
     c: string,
     shiftPressed: boolean = false,
-    ctrlPressed: boolean = false
+    ctrlPressed: boolean = false,
   ): Key {
     return new Key(c, KeyName.ASCII, shiftPressed, ctrlPressed);
   }
@@ -57,7 +55,7 @@ export class Key {
   static namedKey(
     name: KeyName,
     shiftPressed: boolean = false,
-    ctrlPressed: boolean = false
+    ctrlPressed: boolean = false,
   ): Key {
     return new Key("", name, shiftPressed, ctrlPressed);
   }
@@ -92,15 +90,4 @@ export class Key {
   toString(): string {
     return `Key{ascii: ${this.ascii}, name: ${this.name}, shift: ${this.shiftPressed}, ctrl: ${this.ctrlPressed}}`;
   }
-}
-
-/** Converts a keyboard event in the web browser to a key defined by McTabim. */
-
-export function KeyFromSimpleKeyboardEvent(button: string, isShift: boolean, isCtrl: boolean) {
-  return KeyMapping.keyFromSimpleKeyboardEvent(button, isShift, isCtrl);
-}
-
-/** Converts a keyboard event in the web browser to a key defined by McTabim. */
-export function KeyFromKeyboardEvent(event: KeyboardEvent) {
-  return KeyMapping.keyFromKeyboardEvent(event);
 }
