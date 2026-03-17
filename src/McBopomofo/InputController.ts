@@ -40,6 +40,7 @@ import {
 } from "./InputUI";
 import { Key, KeyFromKeyboardEvent, KeyName } from "./Key";
 import { KeyHandler } from "./KeyHandler";
+import { KeyMapping } from "./KeyMapping";
 import { LocalizedStrings } from "./LocalizedStrings";
 import { webData } from "./WebData";
 import { webDataPlain } from "./WebDataPlain";
@@ -521,7 +522,12 @@ export class InputController {
    * @returns If the key is handled.
    */
   public keyEvent(event: KeyboardEvent): boolean {
-    const key = KeyFromKeyboardEvent(event);
+    const key = KeyMapping.keyFromKeyboardEvent(event);
+    return this.mcbopomofoKeyEvent(key);
+  }
+
+  public simpleKeyboardEvent(button: string, isShift: boolean, isCtrl: boolean): boolean {
+    const key = KeyMapping.keyFromSimpleKeyboardEvent(button, isShift, isCtrl);
     return this.mcbopomofoKeyEvent(key);
   }
 

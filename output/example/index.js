@@ -261,6 +261,24 @@
       functionDiv.style.left = rect.left + relativeLeft - scrollLeft + "px";
     };
 
+    function removeTextBeforeSelection() {
+      const textArea = $("text_area");
+      const selectionStart = textArea.selectionStart;
+      const selectionEnd = textArea.selectionEnd;
+      const currentText = textArea.value;
+      const head = currentText.substring(0, selectionStart);
+      const tail = currentText.substring(selectionEnd);
+
+      textArea.value = head.substring(0, head.length - 1) + tail;
+      const cursorPosition = Math.max(0, head.length - 1);
+      textArea.setSelectionRange(cursorPosition, cursorPosition);
+    }
+
+    that.backspace = () => {
+      removeTextBeforeSelection();
+      composingBuffer = "";
+    };
+
     return that;
   })();
 
@@ -634,12 +652,158 @@
     return that;
   })();
 
+  const screenKeyboard = (() => {
+    const api = {
+      isLock: false,
+      isShift: false,
+      isCtrl: false,
+    };
+
+    const Keyboard = window.SimpleKeyboard.default;
+    const keyboard = new Keyboard({
+      onKeyPress: (button) => handleKeyPress(button),
+    });
+
+    const defaultLayout = [
+      "` 1 2 3 4 5 6 7 8 9 0 - = {bksp}",
+      "{tab} q w e r t y u i o p [ ] \\",
+      "{lock} a s d f g h j k l ; ' {enter}",
+      "{shift} z x c v b n m , . / {shift}",
+      "{ctrl} {space}",
+    ];
+    const shiftLayout = [
+      "~ ! @ # $ % ^ & * ( ) _ + {bksp}",
+      "{tab} Q W E R T Y U I O P { } |",
+      '{lock} A S D F G H J K L : " {enter}',
+      "{shift} Z X C V B N M < > ? {shift}",
+      "{ctrl} {space}",
+    ];
+
+    function handleModifierButton(button) {
+      if (button === "{lock}") {
+        api.isLock = !api.isLock;
+      } else if (button === "{shift}") {
+        api.isShift = !api.isShift;
+      } else if (button === "{ctrl}") {
+        api.isCtrl = !api.isCtrl;
+      } else {
+        return false;
+      }
+      api.loadLayout();
+      return true;
+    }
+
+    function handleFallbackButton(button) {
+      if (button === "{enter}") {
+        ui.commitString("\n");
+      } else if (button === "{space}") {
+        ui.commitString(" ");
+      } else if (button === "{bksp}") {
+        ui.backspace();
+      }
+    }
+
+    function handleKeyPress(button) {
+      if (handleModifierButton(button)) {
+        return;
+      }
+
+      const handled = controller.simpleKeyboardEvent(
+        button,
+        api.isShift || api.isLock,
+        api.isCtrl,
+      );
+      focusElement("text_area");
+
+      if (api.isShift) {
+        api.isShift = false;
+        api.loadLayout();
+      }
+      if (api.isCtrl) {
+        api.isCtrl = false;
+        api.loadLayout();
+      }
+      if (!handled) {
+        handleFallbackButton(button);
+      }
+    }
+
+    function buildKeyboardDisplay() {
+      // const manager = inputMethod.tableManager;
+      // const names = manager.currentTable.table.keynames;
+      const display = {
+        "{tab}": "⇥",
+        "{lock}": "Lock",
+        "{shift}": "⇧ Shift",
+        "{bksp}": "⌫",
+        "{enter}": "↵",
+        "{space}": "Space",
+        "{ctrl}": "⌃",
+      };
+
+      if (!api.isCtrl) {
+        // for (const key in names) {
+        //   if (key !== "`") {
+        //     display[key] = names[key];
+        //   }
+        // }
+      }
+
+      // if (api.isShift || api.isLock) {
+      //   const inputSettings = settings.settings.inputSettings;
+      //   if (inputSettings.shiftPunctuationForSymbolsEnabled) {
+      //     for (const key in manager.shiftPunctuationsSymbols) {
+      //       if (display[key] === undefined) {
+      //         display[key] = manager.shiftPunctuationsSymbols[key];
+      //       }
+      //     }
+      //   }
+      //   if (inputSettings.shiftLetterForSymbolsEnabled) {
+      //     for (const key in manager.shiftLetterSymbols) {
+      //       if (display[key] === undefined) {
+      //         display[key] = manager.shiftLetterSymbols[key];
+      //       }
+      //     }
+      //   }
+      // }
+
+      return display;
+    }
+
+    function buildButtonTheme() {
+      const buttonTheme = [];
+      if (api.isLock) {
+        buttonTheme.push({ class: "hg-button-active", buttons: "{lock}" });
+      }
+      if (api.isShift) {
+        buttonTheme.push({ class: "hg-button-active", buttons: "{shift}" });
+      }
+      if (api.isCtrl) {
+        buttonTheme.push({ class: "hg-button-active", buttons: "{ctrl}" });
+      }
+      return buttonTheme;
+    }
+
+    api.loadLayout = () => {
+      keyboard.setOptions({
+        display: buildKeyboardDisplay(),
+        layout: {
+          default: api.isShift || api.isLock ? shiftLayout : defaultLayout,
+        },
+        buttonTheme: buildButtonTheme(),
+      });
+    };
+
+    return api;
+  })();
+
   (async function () {
     ui.updateByAlphabetMode();
     settingsManager.loadSettings();
     settingsManager.applySettings();
     settingsManager.loadUserPhrases();
     settingsManager.loadExcludedPhrases();
+    screenKeyboard.loadLayout();
 
     let shiftKeyIsPressed = false;
     $("text_area").addEventListener("keyup", (event) => {
@@ -849,9 +1013,9 @@
       return false;
     };
 
-    $("text_area").onblur = () => {
-      controller.reset();
-    };
+    // $("text_area").onblur = () => {
+    //   controller.reset();
+    // };
 
     $("loading").innerText = "載入完畢！";
     setTimeout(() => {
@@ -924,5 +1088,6 @@
   example.controller = controller;
   example.service = service;
   example.settingsManager = settingsManager;
+  example.screenKeyboard = screenKeyboard;
   window.example = example;
 })();

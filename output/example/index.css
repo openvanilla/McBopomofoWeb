@@ -9,7 +9,7 @@ body {
   display: flex;
   flex-direction: column;
   border: 2px dashed #000;
-  height: 98%;
+  height: 100%;
   overflow: auto !important;
 }
 
@@ -58,7 +58,7 @@ textarea#text_area {
   -webkit-ime-mode: disabled;
   -moz-ime-mode: disabled;
   -ms-ime-mode: disabled;
-  min-height: 600px;
+  /* min-height: 600px; */
 }
 
 textarea#text_area {
@@ -442,4 +442,23 @@ blockquote {
     border: 2px solid #fff;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
+}
+
+/* Virtual Keyboard UI */
+.simple-keyboard {
+  min-height: 230px;
+}
+
+.hg-button {
+  color: #000;
+}
+
+.hg-button[data-skbtn='{ctrl}'] {
+  flex-grow: 1 !important;
+  max-width: 80px;
+}
+
+.hg-button-active {
+  background-color: #007bff !important;
+  color: white !important;
 }
