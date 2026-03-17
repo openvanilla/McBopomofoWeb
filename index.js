@@ -1,4 +1,39 @@
-(() => {
+const calculateFunctionPosition = ({
+  caretRect,
+  mirrorRect,
+  textAreaRect,
+  containerRect,
+  lineHeight,
+  scrollTop,
+  scrollLeft,
+}) => {
+  const relativeTop = caretRect.top - mirrorRect.top;
+  const relativeLeft = caretRect.left - mirrorRect.left;
+
+  return {
+    top:
+      textAreaRect.top -
+      containerRect.top +
+      relativeTop +
+      lineHeight -
+      scrollTop,
+    left: textAreaRect.left - containerRect.left + relativeLeft - scrollLeft,
+  };
+};
+
+const INPUT_FONT_SIZE_BPMF = 22;
+const INPUT_FONT_SIZE_DEFAULT = 18;
+
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = {
+    calculateFunctionPosition,
+    INPUT_FONT_SIZE_BPMF,
+    INPUT_FONT_SIZE_DEFAULT,
+  };
+}
+
+if (typeof document !== "undefined") {
+  (() => {
   const $ = (id) => document.getElementById(id);
   const focusElement = (id) => {
     $(id).focus();
@@ -102,12 +137,12 @@
       if (globalUi.bpmvdFontsSupport) {
         // console.log("add");
         textArea.style.fontFamily = "BpmfZihiSerif-Regular";
-        textArea.style.fontSize = 24;
+        textArea.style.fontSize = INPUT_FONT_SIZE_BPMF;
         textArea.style.lineHeight = "1.2em";
       } else {
         // console.log("remove");
         textArea.style.fontFamily = "Helvetica, Arial, sans-serif";
-        textArea.style.fontSize = 20;
+        textArea.style.fontSize = INPUT_FONT_SIZE_DEFAULT;
         textArea.style.lineHeight = "1.2em";
       }
     };
@@ -206,7 +241,8 @@
       $("function").style.visibility = "visible";
       const textArea = $("text_area");
       const functionDiv = $("function");
-      const rect = textArea.getBoundingClientRect();
+      const textAreaRect = textArea.getBoundingClientRect();
+      const containerRect = $("edit_area").getBoundingClientRect();
       const textAreaStyle = window.getComputedStyle(textArea);
       const lineHeight = parseInt(textAreaStyle.lineHeight) || 20;
 
@@ -246,19 +282,24 @@
       const caretRect = caretSpan.getBoundingClientRect();
       const mirrorRect = mirror.getBoundingClientRect();
 
-      const relativeTop = caretRect.top - mirrorRect.top;
-      const relativeLeft = caretRect.left - mirrorRect.left;
-
-      document.body.removeChild(mirror);
-
       // Account for textarea scroll position
       const scrollTop = textArea.scrollTop;
       const scrollLeft = textArea.scrollLeft;
 
+      const { top, left } = calculateFunctionPosition({
+        caretRect,
+        mirrorRect,
+        textAreaRect,
+        containerRect,
+        lineHeight,
+        scrollTop,
+        scrollLeft,
+      });
+      document.body.removeChild(mirror);
+
       functionDiv.style.position = "absolute";
-      functionDiv.style.top =
-        rect.top + relativeTop + lineHeight - scrollTop + "px";
-      functionDiv.style.left = rect.left + relativeLeft - scrollLeft + "px";
+      functionDiv.style.top = top + "px";
+      functionDiv.style.left = left + "px";
     };
 
     function removeTextBeforeSelection() {
@@ -1072,4 +1113,5 @@
   example.settingsManager = settingsManager;
   example.screenKeyboard = screenKeyboard;
   window.example = example;
-})();
+  })();
+}
