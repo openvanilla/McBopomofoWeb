@@ -38,8 +38,9 @@ import {
   InputUI,
   InputUIState,
 } from "./InputUI";
-import { Key, KeyFromKeyboardEvent, KeyName } from "./Key";
+import { Key, KeyName } from "./Key";
 import { KeyHandler } from "./KeyHandler";
+import { KeyMapping } from "./KeyMapping";
 import { LocalizedStrings } from "./LocalizedStrings";
 import { webData } from "./WebData";
 import { webDataPlain } from "./WebDataPlain";
@@ -104,7 +105,7 @@ class InputUIController {
   /** Updates the current candidate page and total page count. */
   setPageIndex(
     candidateCurrentPageIndex: number,
-    candidateTotalPageCount: number
+    candidateTotalPageCount: number,
   ) {
     this.candidateCurrentPageIndex_ = candidateCurrentPageIndex;
     this.candidateTotalPageCount_ = candidateTotalPageCount;
@@ -123,7 +124,7 @@ class InputUIController {
       this.candidates_,
       this.tooltip_,
       this.candidateTotalPageCount_,
-      this.candidateCurrentPageIndex_
+      this.candidateCurrentPageIndex_,
     );
     const json = JSON.stringify(state);
     this.ui.update(json);
@@ -316,6 +317,10 @@ export class InputController {
     }
   }
 
+  get readableLayoutKeys(): Map<string, string> {
+    return this.keyHandler_.keyboardLayout.readableKeys;
+  }
+
   /**
    * Sets if we should select the candidate before the cursor or after the
    * cursor.
@@ -441,13 +446,13 @@ export class InputController {
    * @param callback The callback function.
    */
   public setOnPhraseChange(
-    callback: (map: Map<string, string[]>) => void
+    callback: (map: Map<string, string[]>) => void,
   ): void {
     this.lm_.setOnPhraseChange(callback);
   }
 
   public setOnExcludedPhraseChange(
-    callback: (map: Map<string, string[]>) => void
+    callback: (map: Map<string, string[]>) => void,
   ): void {
     this.lm_.setOnExcludedPhraseChange(callback);
   }
@@ -459,14 +464,14 @@ export class InputController {
         ? (input) => {
             return ChineseConvert.tw2cn(input);
           }
-        : undefined
+        : undefined,
     );
     (this.lm_ as WebLanguageModel).setAddUserPhraseConverter(
       flag
         ? (input) => {
             return ChineseConvert.cn2tw(input);
           }
-        : undefined
+        : undefined,
     );
   }
 
@@ -506,7 +511,7 @@ export class InputController {
       this.handleSelectedCandidate_(
         selected,
         (newState) => this.enterNewState(newState),
-        () => this.onError_?.()
+        () => this.onError_?.(),
       );
     }
   }
@@ -521,7 +526,16 @@ export class InputController {
    * @returns If the key is handled.
    */
   public keyEvent(event: KeyboardEvent): boolean {
-    const key = KeyFromKeyboardEvent(event);
+    const key = KeyMapping.keyFromKeyboardEvent(event);
+    return this.mcbopomofoKeyEvent(key);
+  }
+
+  public simpleKeyboardEvent(
+    button: string,
+    isShift: boolean,
+    isCtrl: boolean,
+  ): boolean {
+    const key = KeyMapping.keyFromSimpleKeyboardEvent(button, isShift, isCtrl);
     return this.mcbopomofoKeyEvent(key);
   }
 
@@ -557,7 +571,7 @@ export class InputController {
         key,
         maybeNumberInput,
         (newState) => this.enterNewState(newState),
-        () => this.onError_?.()
+        () => this.onError_?.(),
       );
       if (result) {
         return true;
@@ -580,7 +594,7 @@ export class InputController {
       this.handleCandidateKeyEvent(
         key,
         (newState) => this.enterNewState(newState),
-        () => this.onError_?.()
+        () => this.onError_?.(),
       );
 
       if (this.state_ instanceof NotEmpty) {
@@ -595,7 +609,7 @@ export class InputController {
       key,
       this.state_,
       (newState) => this.enterNewState(newState),
-      () => this.onError_?.()
+      () => this.onError_?.(),
     );
 
     if (this.state_ instanceof NotEmpty) {
@@ -610,7 +624,7 @@ export class InputController {
   private handleSelectedCandidate_(
     selected: Candidate,
     stateCallback: (state: InputState) => void,
-    errorCallback: () => void
+    errorCallback: () => void,
   ): void {
     if (this.state_ instanceof SelectingFeature) {
       stateCallback(this.state_.features[+selected.value].nextState());
@@ -623,7 +637,7 @@ export class InputController {
         this.state_.selectedPrase,
         index,
         this.state_,
-        stateCallback
+        stateCallback,
       );
       const newState = this.state_.previousState;
       stateCallback(newState);
@@ -636,7 +650,7 @@ export class InputController {
         this.state_.originalCursorIndex,
         (newState) => {
           this.enterNewState(newState);
-        }
+        },
       );
     } else if (this.state_ instanceof CustomMenu) {
       const entry = this.state_.entries[+selected.value];
@@ -650,7 +664,7 @@ export class InputController {
   private handleCandidateKeyEvent(
     key: Key,
     stateCallback: (state: InputState) => void,
-    errorCallback: () => void
+    errorCallback: () => void,
   ) {
     // Ignores single shift tap.
     if (key.ascii === "Shift") {
@@ -744,7 +758,7 @@ export class InputController {
           this.state_,
           phrase,
           this.candidateController_.selectedIndex,
-          this.keyHandler_.dictionaryServices.buildMenu(phrase)
+          this.keyHandler_.dictionaryServices.buildMenu(phrase),
         );
         stateCallback(newState);
         return;
@@ -769,7 +783,7 @@ export class InputController {
           this.state_.originalCursorIndex,
           (newState) => {
             stateCallback(newState);
-          }
+          },
         );
       } else if (this.state_ instanceof CustomMenu) {
         const cursor = this.keyHandler_.cursor;
@@ -811,7 +825,7 @@ export class InputController {
               this.keyHandler_.addUserPhrase(reading, current.value);
               const newState = this.keyHandler_.buildInputtingState();
               stateCallback(newState);
-            }
+            },
           );
           entries.push(entry);
         } else if (isMinusKey) {
@@ -822,7 +836,7 @@ export class InputController {
               this.keyHandler_.addExcludedPhrase(reading, current.value);
               const newState = this.keyHandler_.buildInputtingState();
               stateCallback(newState);
-            }
+            },
           );
           entries.push(entry);
         }
@@ -830,7 +844,7 @@ export class InputController {
           this.localizedStrings_.cancel(),
           () => {
             stateCallback(choosingCandidates);
-          }
+          },
         );
         entries.push(entry);
 
@@ -838,7 +852,7 @@ export class InputController {
           choosingCandidates.composingBuffer,
           choosingCandidates.cursorIndex,
           title,
-          entries
+          entries,
         );
         stateCallback(customMenu);
         return true;
@@ -922,7 +936,7 @@ export class InputController {
         key,
         defaultCandidate.value,
         stateCallback,
-        errorCallback
+        errorCallback,
       );
     }
   }
@@ -968,7 +982,7 @@ export class InputController {
 
   private handleEmptyIgnoringPrevious(
     prev: InputState,
-    state: EmptyIgnoringPrevious
+    state: EmptyIgnoringPrevious,
   ) {
     this.ui_.reset();
   }
@@ -987,8 +1001,8 @@ export class InputController {
       this.ui_.append(
         new ComposingBufferText(
           state.markedText,
-          ComposingBufferTextStyle.Highlighted
-        )
+          ComposingBufferTextStyle.Highlighted,
+        ),
       );
       this.ui_.append(new ComposingBufferText(state.tail));
     } else {

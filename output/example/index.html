@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <title>McBopomofo 小麥注音輸入法線上版本</title>
   <link rel="stylesheet" href="https://oikasu1.github.io/fonts/twfonts.css">
+  <link rel="stylesheet" href="https://unpkg.com/simple-keyboard@latest/build/css/index.css">
   <link rel="stylesheet" href="index.css">
   <link rel="icon" type="image/x-icon" href="icons/icon16.png">
 
@@ -63,6 +64,7 @@
             </div>
             <textarea placeholder="請在此直接使用英數鍵盤打字" id="text_area" rows="10" cols="50" title="輸入區"
               autocapitalize="off"></textarea>
+            <div class="simple-keyboard" id="keyboard"> </div>
             <div class="function" id="function">
               <div class="composing_buffer" id="composing_buffer"></div>
               <div class="tooltip" id="tooltip"></div>
@@ -469,6 +471,9 @@
   </div>
 </bodY>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/simple-keyboard/3.8.84/index.js"
+  integrity="sha512-7yqZlyJktAkpzg+ARxg3IwkgZ4hPzP7MBE5XK1kA5UASQUiI8v9uVJTGyC82k3/SVcyi/uInOtsHGhQrG2fqQQ=="
+  crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script lang="javascript" src="bundle.js"></script>
 <script lang="javascript" src="index.js"></script>
 

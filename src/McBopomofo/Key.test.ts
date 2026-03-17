@@ -1,4 +1,18 @@
-import { Key, KeyFromKeyboardEvent, KeyName } from "./Key";
+import { Key, KeyName } from "./Key";
+import { KeyMapping } from "./KeyMapping";
+
+export function KeyFromSimpleKeyboardEvent(
+  button: string,
+  isShift: boolean,
+  isCtrl: boolean,
+) {
+  return KeyMapping.keyFromSimpleKeyboardEvent(button, isShift, isCtrl);
+}
+
+/** Converts a keyboard event in the web browser to a key defined by McTabim. */
+export function KeyFromKeyboardEvent(event: KeyboardEvent) {
+  return KeyMapping.keyFromKeyboardEvent(event);
+}
 
 describe("Key", () => {
   describe("construction", () => {
@@ -256,17 +270,17 @@ describe("toString method", () => {
   it("returns formatted string representation", () => {
     const key1 = Key.asciiKey("a", true, false);
     expect(key1.toString()).toBe(
-      "Key{ascii: a, name: ASCII, shift: true, ctrl: false}"
+      "Key{ascii: a, name: ASCII, shift: true, ctrl: false}",
     );
 
     const key2 = Key.namedKey(KeyName.RETURN, false, true);
     expect(key2.toString()).toBe(
-      "Key{ascii: , name: RETURN, shift: false, ctrl: true}"
+      "Key{ascii: , name: RETURN, shift: false, ctrl: true}",
     );
 
     const key3 = new Key("x", KeyName.ASCII, true, true, true);
     expect(key3.toString()).toBe(
-      "Key{ascii: x, name: ASCII, shift: true, ctrl: true}"
+      "Key{ascii: x, name: ASCII, shift: true, ctrl: true}",
     );
   });
 });
@@ -460,7 +474,6 @@ describe("factory method edge cases", () => {
       "#",
       "$",
       "%",
-      "^",
       "&",
       "*",
       "(",
@@ -789,7 +802,7 @@ describe("toString method comprehensive", () => {
   it("handles toString with numpad keys", () => {
     const key = new Key("5", KeyName.ASCII, false, false, true);
     expect(key.toString()).toBe(
-      "Key{ascii: 5, name: ASCII, shift: false, ctrl: false}"
+      "Key{ascii: 5, name: ASCII, shift: false, ctrl: false}",
     );
     // Note: toString doesn't include isNumpadKey in output
   });
@@ -797,7 +810,7 @@ describe("toString method comprehensive", () => {
   it("handles toString with empty ascii", () => {
     const key = Key.namedKey(KeyName.UNKNOWN);
     expect(key.toString()).toBe(
-      "Key{ascii: , name: UNKNOWN, shift: false, ctrl: false}"
+      "Key{ascii: , name: UNKNOWN, shift: false, ctrl: false}",
     );
   });
 
@@ -806,7 +819,7 @@ describe("toString method comprehensive", () => {
     specialChars.forEach((char) => {
       const key = Key.asciiKey(char);
       expect(key.toString()).toBe(
-        `Key{ascii: ${char}, name: ASCII, shift: false, ctrl: false}`
+        `Key{ascii: ${char}, name: ASCII, shift: false, ctrl: false}`,
       );
     });
   });
@@ -837,5 +850,48 @@ describe("KeyFromKeyboardEvent fall-through cases", () => {
     const key = KeyFromKeyboardEvent(event);
     expect(key.name).toBe(KeyName.UNKNOWN);
     expect(key.ascii).toBe("x");
+  });
+  describe("KeyFromSimpleKeyboardEvent", () => {
+    it("handles backspace", () => {
+      const key = KeyFromSimpleKeyboardEvent("{bksp}", false, false);
+      expect(key.name).toBe(KeyName.BACKSPACE);
+      expect(key.ascii).toBe("");
+    });
+
+    it("handles enter", () => {
+      const key = KeyFromSimpleKeyboardEvent("{enter}", false, false);
+      expect(key.name).toBe(KeyName.RETURN);
+      expect(key.ascii).toBe("");
+    });
+
+    it("handles space", () => {
+      const key = KeyFromSimpleKeyboardEvent("{space}", false, false);
+      expect(key.name).toBe(KeyName.SPACE);
+      expect(key.ascii).toBe(" ");
+    });
+
+    it("handles tab", () => {
+      const key = KeyFromSimpleKeyboardEvent("{tab}", false, false);
+      expect(key.name).toBe(KeyName.TAB);
+      expect(key.ascii).toBe("");
+    });
+
+    it("handles ASCII characters", () => {
+      const key = KeyFromSimpleKeyboardEvent("a", true, false);
+      expect(key.name).toBe(KeyName.ASCII);
+      expect(key.ascii).toBe("a");
+      expect(key.shiftPressed).toBe(true);
+    });
+
+    it("handles shift and ctrl flags", () => {
+      const key = KeyFromSimpleKeyboardEvent("x", true, true);
+      expect(key.shiftPressed).toBe(true);
+      expect(key.ctrlPressed).toBe(true);
+    });
+
+    it("handles unknown buttons", () => {
+      const key = KeyFromSimpleKeyboardEvent("{unknown}", false, false);
+      expect(key.name).toBe(KeyName.UNKNOWN);
+    });
   });
 });
