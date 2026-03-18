@@ -50,7 +50,7 @@ export class EmptyIgnoringPrevious implements InputState {
 export class Committing implements InputState {
   constructor(
     /** The text to commit. */
-    readonly text: string
+    readonly text: string,
   ) {}
 
   toString(): string {
@@ -76,7 +76,7 @@ export class NotEmpty implements InputState {
      */
     readonly cursorIndex: number,
     /** The tooltip to display for this input state */
-    readonly tooltip: string = ""
+    readonly tooltip: string = "",
   ) {}
 
   toString(): string {
@@ -108,7 +108,7 @@ export class ChoosingCandidate extends NotEmpty {
     /** The candidates to choose from. */
     readonly candidates: Candidate[],
     /** The index of the cursor when the user starts to choose for candidates. */
-    readonly originalCursorIndex: number
+    readonly originalCursorIndex: number,
   ) {
     super(buf, index);
   }
@@ -147,7 +147,7 @@ export class Marking extends NotEmpty {
     /** The Bopomofo reading of the marked text. */
     readonly reading: string,
     /** Whether the marked text could be saved to the user phrases. */
-    readonly acceptable: boolean
+    readonly acceptable: boolean,
   ) {
     super(buf, index, tooltipText);
   }
@@ -168,12 +168,12 @@ export class SelectingDictionary extends NotEmpty {
     /** The index of the selected phrase. */
     readonly selectedIndex: number,
     /** The menu of dictionary services. */
-    readonly menu: string[]
+    readonly menu: string[],
   ) {
     super(
       previousState.composingBuffer,
       previousState.cursorIndex,
-      previousState.tooltip
+      previousState.tooltip,
     );
   }
 }
@@ -196,12 +196,12 @@ export class ShowingCharInfo extends NotEmpty {
    */
   constructor(
     readonly previousState: SelectingDictionary,
-    readonly selectedPhrase: string
+    readonly selectedPhrase: string,
   ) {
     super(
       previousState.composingBuffer,
       previousState.cursorIndex,
-      previousState.tooltip
+      previousState.tooltip,
     );
     this.buildMenu();
   }
@@ -241,7 +241,10 @@ export class NumberInput implements InputState {
    * @param candidates The list of candidate characters or phrases corresponding
    * to the number.
    */
-  constructor(readonly number: string, readonly candidates: Candidate[]) {}
+  constructor(
+    readonly number: string,
+    readonly candidates: Candidate[],
+  ) {}
 
   /**
    * Gets the composition buffer string with "[數字]" prefix and the current
@@ -253,7 +256,7 @@ export class NumberInput implements InputState {
   }
 }
 
-/** Represents that the user is inputting a Big5 code. */
+/** Represents that the user is inputting characters using a Big5 code. */
 export class Big5 implements InputState {
   /**
    * Creates an instance of Big5.
@@ -268,6 +271,42 @@ export class Big5 implements InputState {
    */
   get composingBuffer(): string {
     return "[內碼] " + this.code;
+  }
+}
+
+/** Represents that the user is inputting Japanese Kanas. */
+export class Iroha implements InputState {
+  /**
+   * Creates an instance of Big5.
+   * @param code The user inputted code.
+   */
+  constructor(readonly code: string = "") {}
+
+  /**
+   * Gets the composition buffer string with "[伊呂波]" prefix and the current
+   * input code.
+   * @returns A string that combines "[伊呂波]" and the current input code.
+   */
+  get composingBuffer(): string {
+    return "[伊呂波] " + this.code;
+  }
+}
+
+/** Candidate selecting state with a non-empty composing buffer. */
+/* istanbul ignore next */
+export class IrohaCandidate implements InputState {
+  constructor(
+    readonly code: string,
+    /** The candidates to choose fro  m. */
+    readonly candidates: Candidate[],
+  ) {}
+
+  get composingBuffer(): string {
+    return "[伊呂波] " + this.code;
+  }
+
+  toString(): string {
+    return "IrohaCandidate " + this.code + " " + this.candidates;
   }
 }
 
@@ -326,7 +365,7 @@ export class Feature {
     /** The name of the feature. */
     readonly name: string,
     /** A function that returns the next input state.  */
-    readonly nextState: () => InputState
+    readonly nextState: () => InputState,
   ) {}
 
   toString(): string {
@@ -355,9 +394,10 @@ export class SelectingFeature implements InputState {
       // bypass
     }
     features.push(
-      new Feature("日期與時間", () => new SelectingDateMacro(this.converter))
+      new Feature("日期與時間", () => new SelectingDateMacro(this.converter)),
     );
     features.push(new Feature("數字輸入", () => new NumberInput("", [])));
+    features.push(new Feature("伊呂波假名輸入", () => new Iroha("")));
     return features;
   })();
 
@@ -384,7 +424,10 @@ export class SelectingFeature implements InputState {
  * gets executed when the menu item is selected.
  */
 export class CustomMenuEntry {
-  constructor(readonly title: string, readonly callback: () => void) {}
+  constructor(
+    readonly title: string,
+    readonly callback: () => void,
+  ) {}
 }
 
 /**
@@ -400,7 +443,7 @@ export class CustomMenu extends NotEmpty {
     composingBuffer: string,
     cursorIndex: number,
     title: string,
-    readonly entries: CustomMenuEntry[]
+    readonly entries: CustomMenuEntry[],
   ) {
     super(composingBuffer, cursorIndex, title);
   }

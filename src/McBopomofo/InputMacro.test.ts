@@ -134,11 +134,11 @@ jest.mock("./InputMacroDate", () => {
             return {
               year: () => 113, // 2024 - 1911 for yesterday/tomorrow operations
               format: jest.fn(() =>
-                unit === "day" && amount === 1 ? "1月14日" : "1月16日"
+                unit === "day" && amount === 1 ? "1月14日" : "1月16日",
               ),
               locale: jest.fn(() => ({
                 format: jest.fn(() =>
-                  unit === "day" && amount === 1 ? "1月14日" : "1月16日"
+                  unit === "day" && amount === 1 ? "1月14日" : "1月16日",
                 ),
               })),
             };
@@ -253,7 +253,7 @@ describe("InputMacro", () => {
 
     test("handles THIS_YEAR_PLAIN_WITH_ERA macro", () => {
       const result = inputMacroController.handle(
-        "MACRO@THIS_YEAR_PLAIN_WITH_ERA"
+        "MACRO@THIS_YEAR_PLAIN_WITH_ERA",
       );
       expect(result).toBe("西元2024年");
     });
@@ -275,7 +275,7 @@ describe("InputMacro", () => {
 
     test("handles LAST_YEAR_PLAIN_WITH_ERA macro", () => {
       const result = inputMacroController.handle(
-        "MACRO@LAST_YEAR_PLAIN_WITH_ERA"
+        "MACRO@LAST_YEAR_PLAIN_WITH_ERA",
       );
       expect(result).toBe("西元2023年");
     });
@@ -298,7 +298,7 @@ describe("InputMacro", () => {
 
     test("handles NEXT_YEAR_PLAIN_WITH_ERA macro", () => {
       const result = inputMacroController.handle(
-        "MACRO@NEXT_YEAR_PLAIN_WITH_ERA"
+        "MACRO@NEXT_YEAR_PLAIN_WITH_ERA",
       );
       expect(result).toBe("西元2025年");
     });
@@ -352,42 +352,42 @@ describe("InputMacro", () => {
 
     test("handles DATE_YESTERDAY_MEDIUM_ROC macro", () => {
       const result = inputMacroController.handle(
-        "MACRO@DATE_YESTERDAY_MEDIUM_ROC"
+        "MACRO@DATE_YESTERDAY_MEDIUM_ROC",
       );
       expect(result).toMatch(/民國\d+年\d+月\d+日/);
     });
 
     test("handles DATE_TOMORROW_MEDIUM_ROC macro", () => {
       const result = inputMacroController.handle(
-        "MACRO@DATE_TOMORROW_MEDIUM_ROC"
+        "MACRO@DATE_TOMORROW_MEDIUM_ROC",
       );
       expect(result).toMatch(/民國\d+年\d+月\d+日/);
     });
 
     test("handles unimplemented Chinese date macros", () => {
       expect(
-        inputMacroController.handle("MACRO@DATE_TODAY_MEDIUM_CHINESE")
+        inputMacroController.handle("MACRO@DATE_TODAY_MEDIUM_CHINESE"),
       ).toBe("");
       expect(
-        inputMacroController.handle("MACRO@DATE_YESTERDAY_MEDIUM_CHINESE")
+        inputMacroController.handle("MACRO@DATE_YESTERDAY_MEDIUM_CHINESE"),
       ).toBe("");
       expect(
-        inputMacroController.handle("MACRO@DATE_TOMORROW_MEDIUM_CHINESE")
+        inputMacroController.handle("MACRO@DATE_TOMORROW_MEDIUM_CHINESE"),
       ).toBe("");
     });
 
     test("handles unimplemented Japanese date macros", () => {
       expect(
-        inputMacroController.handle("MACRO@DATE_TODAY_MEDIUM_JAPANESE")
+        inputMacroController.handle("MACRO@DATE_TODAY_MEDIUM_JAPANESE"),
       ).toBe("");
       expect(
-        inputMacroController.handle("MACRO@DATE_YESTERDAY_MEDIUM_JAPANESE")
+        inputMacroController.handle("MACRO@DATE_YESTERDAY_MEDIUM_JAPANESE"),
       ).toBe("");
       expect(
-        inputMacroController.handle("MACRO@DATE_TOMORROW_MEDIUM_JAPANESE")
+        inputMacroController.handle("MACRO@DATE_TOMORROW_MEDIUM_JAPANESE"),
       ).toBe("");
       expect(
-        inputMacroController.handle("MACRO@DATE_TOMORROW_FULL_JAPANESE")
+        inputMacroController.handle("MACRO@DATE_TOMORROW_FULL_JAPANESE"),
       ).toBe("");
     });
   });
@@ -395,7 +395,7 @@ describe("InputMacro", () => {
   describe("Weekday Macros", () => {
     test("handles DATE_TODAY_WEEKDAY_SHORT macro", () => {
       const result = inputMacroController.handle(
-        "MACRO@DATE_TODAY_WEEKDAY_SHORT"
+        "MACRO@DATE_TODAY_WEEKDAY_SHORT",
       );
       expect(result).toBe("週一");
     });
@@ -407,21 +407,21 @@ describe("InputMacro", () => {
 
     test("handles DATE_YESTERDAY_WEEKDAY_SHORT macro", () => {
       const result = inputMacroController.handle(
-        "MACRO@DATE_YESTERDAY_WEEKDAY_SHORT"
+        "MACRO@DATE_YESTERDAY_WEEKDAY_SHORT",
       );
       expect(result).toBe("週日");
     });
 
     test("handles DATE_YESTERDAY_WEEKDAY macro", () => {
       const result = inputMacroController.handle(
-        "MACRO@DATE_YESTERDAY_WEEKDAY"
+        "MACRO@DATE_YESTERDAY_WEEKDAY",
       );
       expect(result).toBe("星期日");
     });
 
     test("handles DATE_TOMORROW_WEEKDAY_SHORT macro", () => {
       const result = inputMacroController.handle(
-        "MACRO@DATE_TOMORROW_WEEKDAY_SHORT"
+        "MACRO@DATE_TOMORROW_WEEKDAY_SHORT",
       );
       expect(result).toBe("週二");
     });
@@ -434,26 +434,26 @@ describe("InputMacro", () => {
     test("handles unimplemented weekday macros", () => {
       expect(inputMacroController.handle("MACRO@DATE_TODAY2_WEEKDAY")).toBe("");
       expect(inputMacroController.handle("MACRO@DATE_YESTERDAY2_WEEKDAY")).toBe(
-        ""
+        "",
       );
       expect(inputMacroController.handle("MACRO@DATE_TOMORROW2_WEEKDAY")).toBe(
-        ""
+        "",
       );
     });
 
     test("handles Japanese weekday macros", () => {
       const todayJp = inputMacroController.handle(
-        "MACRO@DATE_TODAY_WEEKDAY_JAPANESE"
+        "MACRO@DATE_TODAY_WEEKDAY_JAPANESE",
       );
       expect(todayJp).toBeDefined();
-      
+
       const yesterdayJp = inputMacroController.handle(
-        "MACRO@DATE_YESTERDAY_WEEKDAY_JAPANESE"
+        "MACRO@DATE_YESTERDAY_WEEKDAY_JAPANESE",
       );
       expect(yesterdayJp).toBeDefined();
-      
+
       const tomorrowJp = inputMacroController.handle(
-        "MACRO@DATE_TOMORROW_WEEKDAY_JAPANESE"
+        "MACRO@DATE_TOMORROW_WEEKDAY_JAPANESE",
       );
       expect(tomorrowJp).toBeDefined();
     });
@@ -475,7 +475,7 @@ describe("InputMacro", () => {
     test("handles unimplemented timezone macros", () => {
       expect(inputMacroController.handle("MACRO@TIMEZONE_STANDARD")).toBe("");
       expect(inputMacroController.handle("MACRO@TIMEZONE_GENERIC_SHORT")).toBe(
-        ""
+        "",
       );
     });
   });
@@ -487,25 +487,25 @@ describe("InputMacro", () => {
       const nextYear = inputMacroController.handle("MACRO@NEXT_YEAR_GANZHI");
 
       expect(thisYear).toMatch(
-        /^[甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥]年$/
+        /^[甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥]年$/,
       );
       expect(lastYear).toMatch(
-        /^[甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥]年$/
+        /^[甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥]年$/,
       );
       expect(nextYear).toMatch(
-        /^[甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥]年$/
+        /^[甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥]年$/,
       );
     });
 
     test("handles Chinese zodiac macros", () => {
       const thisYear = inputMacroController.handle(
-        "MACRO@THIS_YEAR_CHINESE_ZODIAC"
+        "MACRO@THIS_YEAR_CHINESE_ZODIAC",
       );
       const lastYear = inputMacroController.handle(
-        "MACRO@LAST_YEAR_CHINESE_ZODIAC"
+        "MACRO@LAST_YEAR_CHINESE_ZODIAC",
       );
       const nextYear = inputMacroController.handle(
-        "MACRO@NEXT_YEAR_CHINESE_ZODIAC"
+        "MACRO@NEXT_YEAR_CHINESE_ZODIAC",
       );
 
       expect(thisYear).toMatch(/^[木火土金水][鼠牛虎兔龍蛇馬羊猴雞狗豬]年$/);
