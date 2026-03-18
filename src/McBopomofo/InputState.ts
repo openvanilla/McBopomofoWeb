@@ -274,33 +274,35 @@ export class Big5 implements InputState {
   }
 }
 
-/** Represents that the user is inputting Japanese Kanas. */
+/** Represents that the user is entering an Iroha-style kana code. */
 export class Iroha implements InputState {
   /**
-   * Creates an instance of Big5.
-   * @param code The user inputted code.
+   * Creates an instance of Iroha.
+   * @param code The romanized kana code entered by the user.
    */
   constructor(readonly code: string = "") {}
 
   /**
-   * Gets the composition buffer string with "[伊呂波]" prefix and the current
-   * input code.
-   * @returns A string that combines "[伊呂波]" and the current input code.
+   * Gets the composition buffer string with an "[伊呂波]" prefix and the
+   * current kana code.
+   * @returns A string that combines "[伊呂波]" and the current kana code.
    */
   get composingBuffer(): string {
     return "[伊呂波] " + this.code;
   }
 }
 
-/** Candidate selecting state with a non-empty composing buffer. */
+/** Represents a candidate list for the current Iroha kana code. */
 /* istanbul ignore next */
 export class IrohaCandidate implements InputState {
   constructor(
+    /** The romanized kana code used to look up candidates. */
     readonly code: string,
-    /** The candidates to choose fro  m. */
+    /** The kana candidates produced from the current code. */
     readonly candidates: Candidate[],
   ) {}
 
+  /** Gets the composition buffer string shown while selecting kana candidates. */
   get composingBuffer(): string {
     return "[伊呂波] " + this.code;
   }

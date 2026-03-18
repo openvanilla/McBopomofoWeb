@@ -14,6 +14,8 @@ import {
   EmptyIgnoringPrevious,
   InputState,
   Inputting,
+  Iroha,
+  IrohaCandidate,
   Marking,
   NumberInput,
   SelectingFeature,
@@ -1772,6 +1774,114 @@ describe("KeyHandler", () => {
         );
       }
       expect(commit).toBeUndefined();
+    });
+  });
+
+  describe("Iroha state handling", () => {
+    test("appends lowercase letters and normalizes uppercase input", () => {
+      let currentState: InputState = new Iroha();
+      const keys = [
+        Key.asciiKey("K"),
+        Key.asciiKey("y"),
+        Key.asciiKey("A"),
+      ];
+
+      for (const key of keys) {
+        keyHandler.handle(
+          key,
+          currentState,
+          (state) => {
+            currentState = state;
+          },
+          () => {}
+        );
+      }
+
+      expect(currentState).toBeInstanceOf(Iroha);
+      expect((currentState as Iroha).code).toBe("kya");
+    });
+
+    test("commits when the Iroha code has a single candidate", () => {
+      let currentState: InputState = new Iroha();
+      let commit: Committing | undefined;
+      const states: InputState[] = [];
+      const keys = asciiKey(["b", "y", "o", "u"]);
+      keys.push(Key.namedKey(KeyName.RETURN));
+
+      for (const key of keys) {
+        keyHandler.handle(
+          key,
+          currentState,
+          (state) => {
+            states.push(state);
+            if (state instanceof Committing) {
+              commit = state;
+            }
+            currentState = state;
+          },
+          () => {}
+        );
+      }
+
+      expect(commit).toBeDefined();
+      expect(commit?.text).toBe("びょう");
+      const finalState = states[states.length - 1];
+      expect(finalState).toBeInstanceOf(Iroha);
+      expect((finalState as Iroha).code).toBe("");
+    });
+
+    test("opens candidate list when the Iroha code has multiple candidates", () => {
+      let currentState: InputState = new Iroha();
+      const keys = [Key.asciiKey("a"), Key.namedKey(KeyName.SPACE)];
+
+      for (const key of keys) {
+        keyHandler.handle(
+          key,
+          currentState,
+          (state) => {
+            currentState = state;
+          },
+          () => {}
+        );
+      }
+
+      expect(currentState).toBeInstanceOf(IrohaCandidate);
+      const irohaCandidate = currentState as IrohaCandidate;
+      expect(irohaCandidate.code).toBe("a");
+      expect(irohaCandidate.candidates.map((candidate) => candidate.value)).toEqual(
+        ["あ", "ア"]
+      );
+    });
+
+    test("removes the last Iroha letter with backspace", () => {
+      let currentState: InputState = new Iroha("kya");
+
+      keyHandler.handle(
+        Key.namedKey(KeyName.BACKSPACE),
+        currentState,
+        (state) => {
+          currentState = state;
+        },
+        () => {}
+      );
+
+      expect(currentState).toBeInstanceOf(Iroha);
+      expect((currentState as Iroha).code).toBe("ky");
+    });
+
+    test("clears Iroha mode with ESC", () => {
+      let currentState: InputState = new Iroha("a");
+
+      keyHandler.handle(
+        Key.namedKey(KeyName.ESC),
+        currentState,
+        (state) => {
+          currentState = state;
+        },
+        () => {}
+      );
+
+      expect(currentState).toBeInstanceOf(Empty);
     });
   });
 

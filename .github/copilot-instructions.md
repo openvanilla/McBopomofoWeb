@@ -24,7 +24,7 @@ McBopomofoWeb is a TypeScript implementation of the McBopomofo (小麥注音) in
 - **KeyMapping.ts**: Converts DOM or simplified keyboard events into `Key` instances
 - **CandidateController.ts**: Manages candidate selection and display
 - **InputHelperNumber.ts**: A helper class for handling number inputs.
-- **InputState.ts**: Input state machine and mode management. It defines various states like `Inputting`, `ChoosingCandidate`, and a unified `NumberInput` state.
+- **InputState.ts**: Input state machine and mode management. It defines various states like `Inputting`, `ChoosingCandidate`, the feature-driven `Big5` / `Iroha` custom input states, the `IrohaCandidate` candidate-selection state, and a unified `NumberInput` state.
 - **Service.ts**: Core input method service interface
 - **DictionaryServices.ts**: Dictionary and character-information lookup helpers used by candidate detail flows
 - **WebLanguageModel.ts**: Language model for character prediction
@@ -89,6 +89,7 @@ McBopomofoWeb is a TypeScript implementation of the McBopomofo (小麥注音) in
 
 - **Bopomofo phonetics**: Use `BopomofoSyllable` and `BopomofoReadingBuffer` for phonetic processing
 - **Character selection**: Leverage `CandidateController` for managing selection UI
+- **Feature-driven modes**: `SelectingFeature` can route into `Big5`, `NumberInput`, `SelectingDateMacro`, and `Iroha`; `IrohaCandidate` is handled through the same candidate window flow as other selection states.
 - **Keyboard layouts**: Extend `BopomofoKeyboardLayout` for different input schemes
 - **Platform integration**: Implement platform-specific adapters in respective output directories
 
@@ -161,7 +162,7 @@ npm run eslint             # Code linting
 ### Key Interfaces
 
 - **`Key`**: Represents keyboard input with platform abstraction
-- **`InputState`**: Manages input method state and mode transitions
+- **`InputState`**: Manages input method state and mode transitions, including feature-menu flows such as `Big5`, `NumberInput`, `Iroha`, and `IrohaCandidate`
 - **`BopomofoSyllable`**: Core phonetic representation
 - **`CandidateController`**: Manages candidate selection and ranking (including user overrides via `+`/`-` keys)
 
@@ -170,6 +171,7 @@ npm run eslint             # Code linting
 ### Adding New Features
 
 1. **Input processing**: Extend `KeyHandler` or `InputController`
+   Feature-triggered custom input modes should usually add both a dedicated state in `InputState.ts` and matching `InputController` candidate/preedit handling.
 2. **Phonetic support**: Work with `Mandarin/` module components
 3. **UI components**: Update `InputUI` interfaces
 4. **Platform support**: Add platform-specific implementations in output directories

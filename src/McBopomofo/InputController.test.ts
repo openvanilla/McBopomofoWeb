@@ -9,6 +9,8 @@ import {
   EmptyIgnoringPrevious,
   InputState,
   Inputting,
+  Iroha,
+  IrohaCandidate,
   Marking,
   NumberInput,
   SelectingDateMacro,
@@ -992,6 +994,50 @@ describe("InputController", () => {
       controller.mcbopomofoKeyEvent(key);
       state = controller.state;
       expect(state).toBeInstanceOf(Committing);
+    });
+  });
+
+  describe("Iroha Input", () => {
+    it("enters Iroha mode from feature selection", () => {
+      let key = new Key("\\", KeyName.UNKNOWN, false, true);
+      controller.mcbopomofoKeyEvent(key);
+
+      const state = controller.state as SelectingFeature;
+      expect(state).toBeInstanceOf(SelectingFeature);
+
+      const irohaIndex = state.features.findIndex(
+        (feature) => feature.name === "伊呂波假名輸入"
+      );
+      expect(irohaIndex).toBeGreaterThanOrEqual(0);
+
+      key = new Key(String(irohaIndex + 1), KeyName.UNKNOWN);
+      controller.mcbopomofoKeyEvent(key);
+      expect(controller.state).toBeInstanceOf(Iroha);
+    });
+
+    it("commits a selected Iroha candidate", () => {
+      let key = new Key("\\", KeyName.UNKNOWN, false, true);
+      controller.mcbopomofoKeyEvent(key);
+
+      const featureState = controller.state as SelectingFeature;
+      const irohaIndex = featureState.features.findIndex(
+        (feature) => feature.name === "伊呂波假名輸入"
+      );
+      key = new Key(String(irohaIndex + 1), KeyName.UNKNOWN);
+      controller.mcbopomofoKeyEvent(key);
+
+      inputCStr(controller, "a");
+      expect(controller.state).toBeInstanceOf(Iroha);
+
+      key = new Key("", KeyName.SPACE);
+      controller.mcbopomofoKeyEvent(key);
+      expect(controller.state).toBeInstanceOf(IrohaCandidate);
+
+      key = new Key("2", KeyName.UNKNOWN);
+      controller.mcbopomofoKeyEvent(key);
+
+      expect(controller.state).toBeInstanceOf(Committing);
+      expect(mockUI.commitString).toHaveBeenCalledWith("ア");
     });
   });
 });

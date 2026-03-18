@@ -36,9 +36,17 @@ stateDiagram
     SelectingFeature --> Big5: Select "Big5"
     SelectingFeature --> SelectingDateMacro: Select "Date/Time"
     SelectingFeature --> NumberInput: Select "Number Input"
+    SelectingFeature --> Iroha: Select "Iroha Kana Input"
 
     Big5 --> Empty: Enter or Esc Key
     Big5 --> Big5: Number or A-F Key
+
+    Iroha --> Empty: Esc Key
+    Iroha --> Iroha: Letter or Backspace Key
+    Iroha --> Empty: Enter or Space Key (Single Candidate Commit)
+    Iroha --> IrohaCandidate: Enter or Space Key (Multiple Candidates)
+
+    IrohaCandidate --> Committing: Select Candidate
     
     SelectingDateMacro --> EmptyIgnoringPrevious: Esc Key
     SelectingDateMacro --> Empty: Select Date/Time (Commit)
@@ -59,6 +67,8 @@ stateDiagram
     NumberInput --> Committing
     SelectingDateMacro --> Committing
     Big5 --> Committing
+    Iroha --> Committing
+    IrohaCandidate --> Committing
 ```
 
 ## State Descriptions
@@ -70,8 +80,10 @@ stateDiagram
 -   **Committing**: The selected candidate or composed text is being committed to the application. This is a transient state that quickly transitions back to `Empty`.
 -   **SelectingDictionary**: The user has pressed '?' on a candidate and is presented with dictionary lookup options.
 -   **ShowingCharInfo**: Displays detailed information about the selected character.
--   **SelectingFeature**: The user has pressed `Ctrl + \` and is presented with a menu of special input features.
+-   **SelectingFeature**: The user has pressed `Ctrl + \` and is presented with a menu of special input features such as Big5, date/time macros, number input, and Iroha kana input.
 -   **Big5**: The user is inputting a Big5 code to enter a character.
+-   **Iroha**: The user is entering a romanized kana code for Iroha kana lookup. The composing buffer is shown with an `[伊呂波]` prefix.
+-   **IrohaCandidate**: The user has requested kana candidates for the current Iroha code and is selecting from the candidate list.
 -   **SelectingDateMacro**: The user is selecting a date or time macro to insert.
 -   **NumberInput**: A unified state for handling various types of numerical input, including Chinese numbers, Roman numerals, and enclosing numbers.
 -   **CustomMenu**: A menu is displayed for actions like boosting or excluding a phrase.

@@ -16,6 +16,8 @@ import {
   EmptyIgnoringPrevious,
   Feature,
   Inputting,
+  Iroha,
+  IrohaCandidate,
   Marking,
   NotEmpty,
   NumberInput,
@@ -297,6 +299,39 @@ describe("InputState classes", () => {
     });
   });
 
+  describe("Iroha", () => {
+    it("creates Iroha state with default empty code", () => {
+      const iroha = new Iroha();
+      expect(iroha).toBeInstanceOf(Iroha);
+      expect(iroha.code).toBe("");
+    });
+
+    it("has correct composing buffer", () => {
+      const iroha = new Iroha("kya");
+      expect(iroha.composingBuffer).toBe("[伊呂波] kya");
+    });
+  });
+
+  describe("IrohaCandidate", () => {
+    it("creates Iroha candidate state", () => {
+      const candidates = [
+        new Candidate("a", "あ", "あ"),
+        new Candidate("a", "ア", "ア"),
+      ];
+      const irohaCandidate = new IrohaCandidate("a", candidates);
+
+      expect(irohaCandidate).toBeInstanceOf(IrohaCandidate);
+      expect(irohaCandidate.code).toBe("a");
+      expect(irohaCandidate.candidates).toBe(candidates);
+      expect(irohaCandidate.composingBuffer).toBe("[伊呂波] a");
+    });
+
+    it("has correct toString", () => {
+      const irohaCandidate = new IrohaCandidate("a", []);
+      expect(irohaCandidate.toString()).toContain("IrohaCandidate a");
+    });
+  });
+
   describe("SelectingDateMacro", () => {
     const mockConverter = jest.fn((input: string) => {
       const conversions: { [key: string]: string } = {
@@ -380,6 +415,7 @@ describe("InputState classes", () => {
       const featureNames = selecting.features.map((f) => f.name);
       expect(featureNames).toContain("日期與時間");
       expect(featureNames).toContain("數字輸入");
+      expect(featureNames).toContain("伊呂波假名輸入");
     });
 
     it("creates correct next states for features", () => {
@@ -392,9 +428,13 @@ describe("InputState classes", () => {
       const numberFeature = selecting.features.find(
         (f) => f.name === "數字輸入"
       );
+      const irohaFeature = selecting.features.find(
+        (f) => f.name === "伊呂波假名輸入"
+      );
 
       expect(dateFeature?.nextState()).toBeInstanceOf(SelectingDateMacro);
       expect(numberFeature?.nextState()).toBeInstanceOf(NumberInput);
+      expect(irohaFeature?.nextState()).toBeInstanceOf(Iroha);
     });
 
     it("includes Big5 feature when TextDecoder supports it", () => {
