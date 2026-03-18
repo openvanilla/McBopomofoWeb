@@ -129,6 +129,7 @@ hr {
   flex-direction: column;
   justify-content: space-between;
   gap: var(--spacing-3);
+  min-height: 0;
 }
 
 .left,
@@ -202,6 +203,7 @@ hr {
   list-style: none;
   color: var(--text-primary);
   font-weight: 600;
+  margin-bottom: var(--spacing-1);
 }
 
 .right summary::-webkit-details-marker {
@@ -588,7 +590,8 @@ blockquote {
 
   .feature {
     flex-direction: row;
-    min-height: 0;
+    flex-wrap: nowrap;
+    min-height: 80%;
     height: 100%;
   }
 
