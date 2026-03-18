@@ -1,3 +1,4 @@
+@echo off
 @REM Run as administrator
 net session >nul 2>&1
 if %errorLevel% neq 0 (

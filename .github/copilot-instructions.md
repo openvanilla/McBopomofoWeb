@@ -20,12 +20,16 @@ McBopomofoWeb is a TypeScript implementation of the McBopomofo (小麥注音) in
 
 - **InputController.ts**: Main input handling logic and state management
 - **KeyHandler.ts**: Keyboard event processing and key mapping
+- **Key.ts**: Platform-neutral key representation used across the engine and tests
+- **KeyMapping.ts**: Converts DOM or simplified keyboard events into `Key` instances
 - **CandidateController.ts**: Manages candidate selection and display
 - **InputHelperNumber.ts**: A helper class for handling number inputs.
 - **InputState.ts**: Input state machine and mode management. It defines various states like `Inputting`, `ChoosingCandidate`, and a unified `NumberInput` state.
 - **Service.ts**: Core input method service interface
+- **DictionaryServices.ts**: Dictionary and character-information lookup helpers used by candidate detail flows
 - **WebLanguageModel.ts**: Language model for character prediction
 - **UserOverrideModel.ts**: User customization and learning
+- **CtrlEnterOption.ts**: Enumerates Ctrl+Enter conversion behaviors such as Bopomofo readings, HTML Ruby, braille, and pinyin
 - **VariantAnnotator.ts**: Handles Bopomofo font support by annotating characters with Unicode IVS (Ideographic Variation Selectors) or PUA (Private Use Area) code points.
 - **WebBpmfvsVariants.ts**, **WebBpmfvsPua.ts**: Data files for IVS and PUA mappings.
 - **LocalizedStrings.ts**: Internationalization support
@@ -35,14 +39,16 @@ McBopomofoWeb is a TypeScript implementation of the McBopomofo (小麥注音) in
 - **`/src/Mandarin/`**: Bopomofo phonetic processing, keyboard layouts, syllable parsing
 - **`/src/BopomofoBraille/`**: Chinese to Braille conversion utilities
 - **`/src/ChineseNumbers/`**: Chinese numeral processing (including Suzhou numerals)
+- **`/src/RomanNumbers/`**: Roman numeral conversion utilities used by number-input workflows
 - **`/src/Gramambular2/`**: Advanced text processing and reading grids (using the Viterbi algorithm for path selection)
 - **`/src/LargeSync/`**: Chrome storage utilities for large data synchronization
 - **`mcp.ts`**: MCP (Model Context Protocol) server exposing text and braille conversion tools to LLMs via `stdio`
 
 ### Build System
 
-- **Primary builds**: `npm run build` (web), `npm run build:chromeos` (Chrome OS), `npm run build:pime` (Windows)
-- **Webpack configurations**: Separate configs for each platform target
+- **Primary builds**: `npm run build` (web), `npm run build:chromeos` (Chrome OS), `npm run build:pime` (Windows), `npm run build:mcp` (MCP server)
+- **Type-checking**: `npm run ts-build`
+- **Webpack configurations**: `webpack.config.js`, `webpack.config.chromeext.js`, `webpack.config.pime.js`, and `webpack.config.mcp.js`
 - **TypeScript compilation**: ES6 target with CommonJS modules
 
 ### Output Structure (`/output/`)
@@ -62,8 +68,8 @@ McBopomofoWeb is a TypeScript implementation of the McBopomofo (小麥注音) in
 ### Code Style
 
 - **Language**: TypeScript with strict mode enabled
-- **Testing**: Jest with comprehensive test coverage (20+ test suites, 777+ tests)
-- **Linting**: ESLint with TypeScript parser
+- **Testing**: Jest with `ts-jest`, `jest-junit`, and checked-in coverage artifacts during local development
+- **Linting**: ESLint flat config in `eslint.config.js`
 - **File naming**: PascalCase for classes, camelCase for files
 
 ## Coding Conventions
@@ -103,7 +109,7 @@ The input method supports rendering Bopomofo alongside Chinese characters using 
 
 - **Building**: Run `npm run build:mcp` to compile the MCP server to `output/mcp/index.js`.
 - **Running**: The server communicates via standard input/output (`stdio`). It can be started using `node output/mcp/index.js` or the wrapper `output/mcp/run.sh`.
-- **Tools**: It exposes LLM tools for text, Bopomofo, Pinyin, Bopomofo annotation font, and Braille conversion (e.g., `convertBrailleToText`, `convertTextToBraille`, `convertTextToPinyin`, `convertTextToBpmfAnnotatedText`).
+- **Tools**: It exposes LLM tools for text, Bopomofo, Pinyin, Bopomofo annotation font, and Braille conversion (e.g., `convertBrailleToText`, `convertTextToBraille`, `convertBpmfToBraille`, `convertBrailleToBpmf`, `convertTextToPinyin`, `convertTextToBpmfReadings`, `convertTextToBpmfAnnotatedText`, `annotateSingleCharacter`).
 
 ### Testing Guidelines
 
@@ -145,7 +151,7 @@ npm run eslint             # Code linting
 - **`tsconfig.json`**: TypeScript configuration (ES6 target, strict mode)
 - **`jest.config.js`**: Testing configuration with ts-jest
 - **`webpack.config.*.js`**: Platform-specific build configurations
-- **`.eslintrc.js`**: Code style and linting rules
+- **`eslint.config.js`**: Flat ESLint configuration and ignore rules
 
 ### Data Files
 
@@ -191,8 +197,10 @@ npm run eslint             # Code linting
 ## Additional Resources
 
 - **Main documentation**: `/README.md` (in Chinese)
-- **Platform-specific guides**: Check `/output/*/README.md` files
-- **Word Add-in**: See `/others/WordAddin/` for Microsoft Word integration
+- **English documentation**: `/README.en.md`
+- **Architecture docs**: `/README.COMPONENTS.md` and `/README.STATES.md`
+- **Platform-specific guides**: `/output/pime/README.md` is currently the only platform README checked into `output/`
+- **Word Add-in**: See `/others/word_addin/` for Microsoft Word integration
 - **Community**: Follow Code of Conduct in `CODE_OF_CONDUCT.md`
 
 ## AI Coding and Test-Driven Development (TDD)
@@ -236,5 +244,7 @@ AI agents may call a subagent to run `npm run test:coverage` to find code that i
 - **DO NOT** modify any files under the `node_modules` directory.
 - Before merging, run `npm run test` and ensure Chrome OS build still compiles via `npm run build:chromeos`.
 - CI now runs `npm run build:mcp` across Node 18-24; run this build locally when changing MCP-related code to mirror CI.
-- Codecov uploads in GitHub Actions use `codecov/codecov-action@v5` with OIDC (`id-token: write`) and currently run from the Node 24.x coverage job instead of repository tokens.
+- CI also runs `npm run build`, `npm run test:coverage`, `npm run build:chromeos`, and `npm run build:pime` across Node 18-24.
+- Codecov uploads in GitHub Actions use `codecov/codecov-action@v5` from the Node 24.x coverage job and currently still pass `secrets.CODECOV_TOKEN`.
 - New language model data must include a short note in `README.md` summarizing changes for translators.
+- `AGENTS.md` is a symlink to this file, so edits here also update agent-facing instructions.
