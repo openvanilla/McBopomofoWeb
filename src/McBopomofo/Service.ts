@@ -18,12 +18,22 @@ const ChineseConvert = require("chinese_convert");
  *
  * The service provides the following functions:
  *  - Convert Taiwanese Braille to text
+ *  - Convert ASCII Braille to text
  *  - Convert text to Bopomofo readings
  *  - Convert text to Hanyu Pinyin
  *  - Convert text to HTML Ruby
  *  - Convert text to Taiwanese Braille
+ *  - Convert text to ASCII Braille
  *  - Convert text to Bopomofo annotated text (for Bopomofo annotation fonts)
  *  - Annotate a single character with its Bopomofo reading
+ *
+ * @example
+ * ``` typescript
+ * const service = new Service();
+ * const braille = service.convertTextToBraille("小麥注音");
+ * const pinyin = service.convertTextToPinyin("中文");
+ * const ruby = service.convertTextToHtmlRuby("注音");
+ * ```
  */
 export class Service {
   private lm_: WebLanguageModel;
@@ -207,13 +217,14 @@ export class Service {
   }
 
   /**
-   * Convert Taiwanese Braille to text
-   * @param input The Braille input
+   * Converts Taiwanese Braille to text.
+   * @param input The Unicode Braille input.
    * @returns The text output
+   * @example
    * ``` typescript
-   * let service = new Service();
-   * let input = "⠑⠪⠈⠍⠺⠐⠁⠌⠐⠹⠄⠊⠌⠄⠛⠌⠐⠟⠜⠈";
-   * let output = service.convertTextToBraille(input);
+   * const service = new Service();
+   * const input = "⠑⠪⠈⠍⠺⠐⠁⠌⠐⠹⠄⠊⠌⠄⠛⠌⠐⠟⠜⠈";
+   * const output = service.convertBrailleToText(input);
    * ```
    */
   public convertBrailleToText(input: string): string {
@@ -225,13 +236,14 @@ export class Service {
   }
 
   /**
-   * Convert Taiwanese Braille to text
-   * @param input The Braille input
+   * Converts ASCII Braille to text.
+   * @param input The ASCII Braille input.
    * @returns The text output
+   * @example
    * ``` typescript
-   * let service = new Service();
-   * let input = "⠑⠪⠈⠍⠺⠐⠁⠌⠐⠹⠄⠊⠌⠄⠛⠌⠐⠟⠜⠈";
-   * let output = service.convertTextToBraille(input);
+   * const service = new Service();
+   * const input = "e{`mw\"a/\"?'i/'g/\"q>`";
+   * const output = service.convertAsciiBrailleToText(input);
    * ```
    */
   public convertAsciiBrailleToText(input: string): string {
@@ -242,7 +254,7 @@ export class Service {
     return convertedLines.join("\n");
   }
 
-  public convertTextToBrailleInternal(
+  private convertTextToBrailleInternal(
     input: string,
     type: BrailleType
   ): string {
@@ -259,13 +271,14 @@ export class Service {
   }
 
   /**
-   * Converts text to Taiwanese Braille
+   * Converts text to Taiwanese Braille.
    * @param input The text input
    * @returns The Braille output
+   * @example
    * ``` typescript
-   * let service = new Service();
-   * let input = "小麥注音輸入法";
-   * let output = service.convertTextToBraille(input);
+   * const service = new Service();
+   * const input = "小麥注音輸入法";
+   * const output = service.convertTextToBraille(input);
    * ```
    */
   public convertTextToBraille(input: string): string {
@@ -273,13 +286,14 @@ export class Service {
   }
 
   /**
-   * Converts text to Taiwanese Braille
+   * Converts text to ASCII Braille.
    * @param input The text input
    * @returns The Braille output
+   * @example
    * ``` typescript
-   * let service = new Service();
-   * let input = "小麥注音輸入法";
-   * let output = service.convertTextToBraille(input);
+   * const service = new Service();
+   * const input = "小麥注音輸入法";
+   * const output = service.convertTextToAsciiBraille(input);
    * ```
    */
   public convertTextToAsciiBraille(input: string): string {
