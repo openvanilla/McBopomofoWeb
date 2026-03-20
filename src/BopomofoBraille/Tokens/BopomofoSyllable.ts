@@ -5,7 +5,6 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { types } from "util";
 import { BrailleType } from "./BrailleType";
 
 const kMinimalBopomofoLength = 1;
@@ -603,11 +602,20 @@ export class BopomofoSyllable {
         const combination = MiddleVowel.buildCombination(middleVowel, vowel);
         if (combination !== undefined) {
           if (ㄧ_Combination.allBpmf.includes(combination)) {
-            output += ㄧ_Combination.toBraille(combination as ㄧ_Combination);
+            output += ㄧ_Combination.toBraille(
+              combination as ㄧ_Combination,
+              type
+            );
           } else if (ㄨ_Combination.allBpmf.includes(combination)) {
-            output += ㄨ_Combination.toBraille(combination as ㄨ_Combination);
+            output += ㄨ_Combination.toBraille(
+              combination as ㄨ_Combination,
+              type
+            );
           } else if (ㄩ_Combination.allBpmf.includes(combination)) {
-            output += ㄩ_Combination.toBraille(combination as ㄩ_Combination);
+            output += ㄩ_Combination.toBraille(
+              combination as ㄩ_Combination,
+              type
+            );
           }
         }
       } else {

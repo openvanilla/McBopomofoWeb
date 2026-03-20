@@ -5,6 +5,8 @@
  * SPDX-License-Identifier: MIT
  */
 
+import { BrailleType } from "..";
+
 /**
  * Represents the letters.
  * @enum {string}
@@ -75,7 +77,14 @@ export namespace Letter {
     }
     return undefined;
   }
-  export function fromBraille(b: string): Letter | undefined {
+  export function fromBraille(
+    b: string,
+    type: BrailleType = BrailleType.UNICODE
+  ): Letter | undefined {
+    if (type === BrailleType.ASCII) {
+      return fromLetter(b);
+    }
+
     for (const [key, value] of map) {
       if (value[0] === b) {
         return key;
@@ -94,11 +103,16 @@ export namespace Letter {
   export function toLetter(c: Letter): string {
     return c;
   }
-  export function toBraille(c: Letter): string {
+  export function toBraille(
+    c: Letter,
+    type: BrailleType = BrailleType.UNICODE
+  ): string {
+    if (type === BrailleType.ASCII) {
+      return c;
+    }
     return (map.get(c) as string[])[0];
   }
   export function toBrailleCode(c: Letter): string {
     return (map.get(c) as string[])[1];
   }
 }
-

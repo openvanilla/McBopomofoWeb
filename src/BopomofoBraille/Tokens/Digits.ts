@@ -5,6 +5,8 @@
  * SPDX-License-Identifier: MIT
  */
 
+import { BrailleType } from "./BrailleType";
+
 /**
  * Represents the digits.
  * @enum {string}
@@ -45,7 +47,13 @@ export namespace Digit {
     }
     return undefined;
   }
-  export function fromBraille(b: string): Digit | undefined {
+  export function fromBraille(
+    b: string,
+    type: BrailleType = BrailleType.UNICODE
+  ): Digit | undefined {
+    if (type === BrailleType.ASCII) {
+      return fromDigit(b);
+    }
     for (const [key, value] of map) {
       if (value === b) {
         return key;
@@ -56,7 +64,13 @@ export namespace Digit {
   export function toDigit(c: Digit): string {
     return c;
   }
-  export function toBraille(c: Digit): string {
+  export function toBraille(
+    c: Digit,
+    type: BrailleType = BrailleType.UNICODE
+  ): string {
+    if (type === BrailleType.ASCII) {
+      return toDigit(c);
+    }
     return map.get(c) as string;
   }
 }
@@ -72,14 +86,17 @@ export enum DigitRelated {
 }
 
 export namespace DigitRelated {
-  const map = new Map<DigitRelated, string>([
-    [DigitRelated.point, "⠨"],
-    [DigitRelated.percent, "⠈⠴"],
-    [DigitRelated.celsius, "⠘⠨⠡ ⠰⠠⠉"],
+  const map = new Map<DigitRelated, string[]>([
+    [DigitRelated.point, ["⠨", "."]],
+    [DigitRelated.percent, ["⠈⠴", "`0"]],
+    [DigitRelated.celsius, ["⠘⠨⠡ ⠰⠠⠉", "~.* ;,c"]],
   ]);
 
   export const allDigits: string[] = Array.from(map.keys());
-  export const allBraille: string[] = Array.from(map.values());
+  export const allBraille: string[][] = [
+    Array.from(map.values()).map((v) => v[0]),
+    Array.from(map.values()).map((v) => v[1]),
+  ];
 
   export function fromPunctuation(b: string): DigitRelated | undefined {
     if (map.has(b as DigitRelated)) {
@@ -87,9 +104,12 @@ export namespace DigitRelated {
     }
     return undefined;
   }
-  export function fromBraille(b: string): DigitRelated | undefined {
+  export function fromBraille(
+    b: string,
+    type: BrailleType = BrailleType.UNICODE
+  ): DigitRelated | undefined {
     for (const [key, value] of map) {
-      if (value === b) {
+      if (value[type] === b) {
         return key;
       }
     }
@@ -98,7 +118,10 @@ export namespace DigitRelated {
   export function toPunctuation(c: DigitRelated): string {
     return c;
   }
-  export function toBraille(c: DigitRelated): string {
-    return map.get(c) as string;
+  export function toBraille(
+    c: DigitRelated,
+    type: BrailleType = BrailleType.UNICODE
+  ): string {
+    return (map.get(c) as string[])[type];
   }
 }

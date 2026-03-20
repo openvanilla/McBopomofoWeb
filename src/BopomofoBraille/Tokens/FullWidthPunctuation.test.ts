@@ -1,3 +1,4 @@
+import { BrailleType } from "./BrailleType";
 import { FullWidthPunctuation } from "./FullWidthPunctuation";
 
 describe("Test Punctuation", () => {
@@ -21,8 +22,18 @@ describe("Test Punctuation", () => {
     expect(p).toBe(FullWidthPunctuation.period);
   });
 
+  test("Test fromBraille() with valid ASCII braille", () => {
+    const p = FullWidthPunctuation.fromBraille("-", BrailleType.ASCII);
+    expect(p).toBe(FullWidthPunctuation.period);
+  });
+
   test("Test fromBraille() with invalid braille", () => {
     const p = FullWidthPunctuation.fromBraille("invalid");
+    expect(p).toBe(undefined);
+  });
+
+  test("Test fromBraille() with invalid ASCII braille", () => {
+    const p = FullWidthPunctuation.fromBraille("invalid", BrailleType.ASCII);
     expect(p).toBe(undefined);
   });
 
@@ -34,6 +45,14 @@ describe("Test Punctuation", () => {
   test("Test toBraille()", () => {
     const result = FullWidthPunctuation.toBraille(FullWidthPunctuation.period);
     expect(result).toBe("⠤");
+  });
+
+  test("Test toBraille() with ASCII output", () => {
+    const result = FullWidthPunctuation.toBraille(
+      FullWidthPunctuation.period,
+      BrailleType.ASCII
+    );
+    expect(result).toBe("-");
   });
 
   test("Test supposedToBeAtStart() with left quotation mark", () => {
@@ -65,8 +84,11 @@ describe("Test Punctuation", () => {
   });
 
   test("Test allBraille array", () => {
-    expect(FullWidthPunctuation.allBraille.length).toBeGreaterThan(0);
-    expect(FullWidthPunctuation.allBraille).toContain("⠤");
+    expect(FullWidthPunctuation.allBraille.length).toBe(2);
+    expect(FullWidthPunctuation.allBraille[BrailleType.UNICODE]).toContain(
+      "⠤"
+    );
+    expect(FullWidthPunctuation.allBraille[BrailleType.ASCII]).toContain("-");
   });
 
   test("Test referenceMark", () => {
@@ -79,5 +101,34 @@ describe("Test Punctuation", () => {
       FullWidthPunctuation.referenceMark
     );
     expect(result).toBe("⠈⠼");
+  });
+
+  test("Test toBraille() with referenceMark ASCII output", () => {
+    const result = FullWidthPunctuation.toBraille(
+      FullWidthPunctuation.referenceMark,
+      BrailleType.ASCII
+    );
+    expect(result).toBe("`#");
+  });
+
+  test("Test ASCII punctuation mappings", () => {
+    expect(
+      FullWidthPunctuation.toBraille(
+        FullWidthPunctuation.parenthesesLeft,
+        BrailleType.ASCII
+      )
+    ).toBe("{");
+    expect(
+      FullWidthPunctuation.toBraille(
+        FullWidthPunctuation.doubleQuotationMarkRight,
+        BrailleType.ASCII
+      )
+    ).toBe("00");
+    expect(
+      FullWidthPunctuation.fromBraille("{", BrailleType.ASCII)
+    ).toBe(FullWidthPunctuation.parenthesesLeft);
+    expect(
+      FullWidthPunctuation.fromBraille("00", BrailleType.ASCII)
+    ).toBe(FullWidthPunctuation.doubleQuotationMarkRight);
   });
 });
