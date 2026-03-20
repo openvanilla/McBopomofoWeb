@@ -146,8 +146,11 @@
   "ctrl_enter_html_ruby": {
     "message": "輸入 HTML Ruby"
   },
-  "ctrl_enter_taiwanese_braille": {
-    "message": "輸入台灣點字"
+  "ctrl_enter_taiwanese_braille_unicode": {
+    "message": "輸入台灣點字 - Unicode"
+  },
+  "ctrl_enter_taiwanese_braille_ascii": {
+    "message": "輸入台灣點字 - ASCII"
   },
   "ctrl_enter_hanyu_pinyin": {
     "message": "輸入漢語拼音"

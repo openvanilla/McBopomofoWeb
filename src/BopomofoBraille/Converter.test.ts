@@ -1,6 +1,6 @@
 import { BopomofoBrailleConverter } from "./Converter";
-import { BrailleType } from "./Tokens/BrailleType";
 import { BopomofoSyllable } from "./Tokens/BopomofoSyllable";
+import { BrailleType } from "./Tokens/BrailleType";
 
 const convertBpmfToBraille = (
   input: string,
@@ -217,6 +217,34 @@ describe("Test BopomofoBrailleConverter", () => {
     expect(r1).toBe("⠑⠪⠈⠍⠺⠐⠁⠌⠐⠹⠄ ⠼⠆⠢⠘⠨⠡ ⠰⠠⠉");
     const r2 = convertBrailleToBpmf(r1);
     expect(r2).toBe("ㄒㄧㄠˇㄇㄞˋㄓㄨˋㄧㄣ 25°C");
+  });
+
+  describe("ASCII type support", () => {
+    test("converts Bopomofo syllables to ASCII Braille", () => {
+      const input = "ㄊㄞˊ";
+      const r1 = convertBpmfToBraille(input, BrailleType.ASCII);
+
+      expect(r1).toBe("fw1");
+      expect(convertBrailleToBpmf(r1, BrailleType.ASCII)).toBe(input);
+    });
+
+    test("converts mixed ASCII content", () => {
+      const input = "Ab3";
+      const r1 = convertBpmfToBraille(input, BrailleType.ASCII);
+
+      expect(r1).toBe(",ab #3");
+      expect(convertBrailleToBpmf(r1, BrailleType.ASCII)).toBe("Ab 3");
+    });
+
+    test("tokenizes ASCII Braille into Bopomofo syllable objects", () => {
+      const tokens = convertBrailleToTokens("fw1", BrailleType.ASCII);
+
+      expect(tokens).toHaveLength(1);
+      expect(tokens[0]).toBeInstanceOf(BopomofoSyllable);
+      if (tokens[0] instanceof BopomofoSyllable) {
+        expect(tokens[0].bpmf).toBe("ㄊㄞˊ");
+      }
+    });
   });
 
   describe("convertBrailleToTokens method", () => {

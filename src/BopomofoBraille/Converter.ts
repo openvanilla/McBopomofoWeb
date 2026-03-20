@@ -118,7 +118,7 @@ export class BopomofoBrailleConverter {
       }
 
       /// Try to convert Bopomofo syllables to Braille. If it fails, reset the state.
-      const bpmfResult = this.bpmf2br_ProcessBopomofo(cursor);
+      const bpmfResult = this.bpmf2br_ProcessBopomofo(cursor, type);
       if (bpmfResult) {
         output += bpmfResult;
         state = ConverterState.bpmf;
@@ -234,12 +234,15 @@ export class BopomofoBrailleConverter {
     return null;
   }
 
-  private static bpmf2br_ProcessBopomofo(cursor: StringCursor): string | null {
+  private static bpmf2br_ProcessBopomofo(
+    cursor: StringCursor,
+    type: BrailleType
+  ): string | null {
     const target = Math.min(4, cursor.remaining);
     for (let i = target; i >= 1; i--) {
       const substring = cursor.substring(i);
       try {
-        const b = BopomofoSyllable.fromBpmf(substring);
+        const b = BopomofoSyllable.fromBpmf(substring, type);
         cursor.advance(i);
         return b.braille;
       } catch (e) {}

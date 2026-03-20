@@ -7,7 +7,7 @@
 
 import * as _ from "lodash";
 
-import { BopomofoBrailleConverter } from "../BopomofoBraille";
+import { BopomofoBrailleConverter, BrailleType } from "../BopomofoBraille";
 import {
   Candidate,
   LanguageModel,
@@ -54,7 +54,7 @@ export class ComposedString {
   constructor(
     public readonly head: string,
     public readonly tail: string,
-    public readonly tooltip: string,
+    public readonly tooltip: string
   ) {}
 }
 
@@ -96,7 +96,7 @@ function getTimestamp(): number {
 export class KeyHandler {
   private variantAnnotator_ = new VariantAnnotator(
     webBpmfvsPua,
-    webBpmfvsVariants,
+    webBpmfvsVariants
   );
 
   private localizedStrings_: LocalizedStrings = new LocalizedStrings();
@@ -194,7 +194,7 @@ export class KeyHandler {
 
   /** The dictionary services. */
   readonly dictionaryServices: DictionaryServices = new DictionaryServices(
-    this.localizedStrings_,
+    this.localizedStrings_
   );
   public get onOpenUrl(): ((input: string) => void) | undefined {
     return this.dictionaryServices.onOpenUrl;
@@ -205,13 +205,13 @@ export class KeyHandler {
 
   private userOverrideModel_: UserOverrideModel = new UserOverrideModel(
     kUserOverrideModelCapacity,
-    kObservedOverrideHalfLife,
+    kObservedOverrideHalfLife
   );
 
   constructor(languageModel: LanguageModel) {
     this.languageModel_ = languageModel;
     this.reading_ = new BopomofoReadingBuffer(
-      BopomofoKeyboardLayout.StandardLayout,
+      BopomofoKeyboardLayout.StandardLayout
     );
     this.grid_ = new ReadingGrid(this.languageModel_);
     this.grid_.readingSeparator = kJoinSeparator;
@@ -221,7 +221,7 @@ export class KeyHandler {
     key: Key,
     state: NumberInput,
     stateCallback: (state: InputState) => void,
-    errorCallback: () => void,
+    errorCallback: () => void
   ): boolean {
     if (key.name === KeyName.ESC) {
       stateCallback(new Empty());
@@ -237,7 +237,7 @@ export class KeyHandler {
       }
       const candidates = NumberInputHelper.fillCandidates(
         number,
-        this.languageModel_,
+        this.languageModel_
       );
       const newState = new NumberInput(number, candidates);
       stateCallback(newState);
@@ -251,7 +251,7 @@ export class KeyHandler {
       const number = state.number + key.ascii;
       const candidates = NumberInputHelper.fillCandidates(
         number,
-        this.languageModel_,
+        this.languageModel_
       );
       const newState = new NumberInput(number, candidates);
       stateCallback(newState);
@@ -269,7 +269,7 @@ export class KeyHandler {
       const number = state.number + key.ascii;
       const candidates = NumberInputHelper.fillCandidates(
         number,
-        this.languageModel_,
+        this.languageModel_
       );
       const newState = new NumberInput(number, candidates);
       stateCallback(newState);
@@ -282,7 +282,7 @@ export class KeyHandler {
     key: Key,
     state: InputState,
     stateCallback: (state: InputState) => void,
-    errorCallback: () => void,
+    errorCallback: () => void
   ): boolean {
     // From Key's definition, if shiftPressed is true, it can't be a simple key
     // that can be represented by ASCII.
@@ -299,7 +299,7 @@ export class KeyHandler {
             return lm.convertMacro(input);
           }
           return input;
-        }),
+        })
       );
       return true;
     }
@@ -327,7 +327,7 @@ export class KeyHandler {
       const inputtingState = this.buildInputtingState();
       // Steal the composingBuffer built by the inputting state.
       const committingState = new Committing(
-        inputtingState.composingBuffer + simpleAscii,
+        inputtingState.composingBuffer + simpleAscii
       );
       stateCallback(committingState);
       this.reset();
@@ -357,7 +357,7 @@ export class KeyHandler {
       const reading = this.grid_.readings[cursor];
       if (reading.length > 0 && reading[0] !== "_") {
         const tmpBuffer = new BopomofoReadingBuffer(
-          this.reading_.keyboardLayout,
+          this.reading_.keyboardLayout
         );
         const syllable = BopomofoSyllable.FromComposedString(reading);
         const keys =
@@ -406,7 +406,7 @@ export class KeyHandler {
           const suggestion = this.userOverrideModel_?.suggest(
             this.latestWalk_,
             this.actualCandidateCursorIndex,
-            getTimestamp(),
+            getTimestamp()
           );
 
           if (suggestion) {
@@ -416,7 +416,7 @@ export class KeyHandler {
             this.grid_.overrideCandidateWithString(
               this.actualCandidateCursorIndex,
               suggestion.candidate,
-              type,
+              type
             );
             this.walk();
           }
@@ -530,7 +530,7 @@ export class KeyHandler {
         key.shiftPressed,
         state,
         stateCallback,
-        errorCallback,
+        errorCallback
       );
     }
 
@@ -584,7 +584,14 @@ export class KeyHandler {
           stateCallback(committing);
           this.reset();
           return true;
-        } else if (this.ctrlEnterOption_ === CtrlEnterOption.BopomofoBraille) {
+        } else if (
+          this.ctrlEnterOption_ === CtrlEnterOption.BopomofoBrailleUnicode ||
+          this.ctrlEnterOption_ === CtrlEnterOption.BopomofoBrailleASCII
+        ) {
+          let type =
+            this.ctrlEnterOption_ === CtrlEnterOption.BopomofoBrailleASCII
+              ? BrailleType.ASCII
+              : BrailleType.UNICODE;
           let composed = "";
 
           for (const node of this.latestWalk_?.nodes ?? []) {
@@ -596,8 +603,10 @@ export class KeyHandler {
             } else {
               const components = reading.split(kJoinSeparator);
               for (const component of components) {
-                composed +=
-                  BopomofoBrailleConverter.convertBpmfToBraille(component);
+                composed += BopomofoBrailleConverter.convertBpmfToBraille(
+                  component,
+                  type
+                );
               }
             }
           }
@@ -637,14 +646,14 @@ export class KeyHandler {
           if (this.languageModel_ instanceof WebLanguageModel) {
             (this.languageModel_ as WebLanguageModel).addUserPhrase(
               marking.reading,
-              marking.markedText,
+              marking.markedText
             );
           }
           stateCallback(this.buildInputtingState());
         } else {
           errorCallback();
           stateCallback(
-            this.buildMarkingState(marking.markStartGridCursorIndex),
+            this.buildMarkingState(marking.markStartGridCursorIndex)
           );
         }
         return true;
@@ -664,7 +673,7 @@ export class KeyHandler {
         state,
         phrase,
         0,
-        this.dictionaryServices.buildMenu(phrase),
+        this.dictionaryServices.buildMenu(phrase)
       );
       stateCallback(newState);
       return true;
@@ -715,7 +724,7 @@ export class KeyHandler {
           key,
           state,
           stateCallback,
-          errorCallback,
+          errorCallback
         )
       ) {
         return true;
@@ -729,7 +738,7 @@ export class KeyHandler {
           key,
           state,
           stateCallback,
-          errorCallback,
+          errorCallback
         )
       ) {
         return true;
@@ -750,7 +759,7 @@ export class KeyHandler {
             key,
             state,
             stateCallback,
-            errorCallback,
+            errorCallback
           );
         } else {
           // If current state is *not* NonEmpty, it must be Empty.
@@ -763,7 +772,7 @@ export class KeyHandler {
           const inputtingState = this.buildInputtingState();
           // Steal the composingBuffer built by the inputting state.
           const committingState = new Committing(
-            inputtingState.composingBuffer + simpleAscii,
+            inputtingState.composingBuffer + simpleAscii
           );
           stateCallback(committingState);
           this.reset();
@@ -804,7 +813,7 @@ export class KeyHandler {
   candidateSelected(
     candidate: Candidate,
     originalCursorIndex: number,
-    stateCallback: (state: InputState) => void,
+    stateCallback: (state: InputState) => void
   ): void {
     if (this.traditionalMode_) {
       this.reset();
@@ -818,7 +827,7 @@ export class KeyHandler {
 
   public candidatePanelCancelled(
     originalCursorIndex: number,
-    stateCallback: (state: InputState) => void,
+    stateCallback: (state: InputState) => void
   ): void {
     if (this.traditionalMode_) {
       this.reset();
@@ -833,7 +842,7 @@ export class KeyHandler {
     key: Key,
     defaultCandidate: string,
     stateCallback: (state: InputState) => void,
-    errorCallback: () => void,
+    errorCallback: () => void
   ): boolean {
     const chrStr: string = key.ascii;
     const customPunctuation =
@@ -916,7 +925,7 @@ export class KeyHandler {
         "",
         [],
         false,
-        false,
+        false
       );
 
       if (!this.bopomofoFontAnnotationSupportEnabled || this.traditionalMode_) {
@@ -933,7 +942,7 @@ export class KeyHandler {
           } else {
             nodeAnnotationResult = this.variantAnnotator_.annotate(
               characters,
-              readings,
+              readings
             );
             nodeHasBopomofoAnnotation = true;
             bopomofoAnnotationUsed = true;
@@ -989,7 +998,7 @@ export class KeyHandler {
         const nextReading = this.grid_.readings[builderCursor];
         tooltip = this.localizedStrings_.cursorIsBetweenSyllables(
           prevReading,
-          nextReading,
+          nextReading
         );
       }
     }
@@ -1023,7 +1032,7 @@ export class KeyHandler {
     shiftPressed: boolean,
     state: InputState,
     stateCallback: (state: InputState) => void,
-    errorCallback: () => void,
+    errorCallback: () => void
   ): boolean {
     if (this.reading_.isEmpty && (this.latestWalk_?.nodes ?? []).length === 0) {
       return false;
@@ -1107,7 +1116,7 @@ export class KeyHandler {
     this.pinNode(
       candidates[currentIndex],
       this.grid_.cursor,
-      /*useMoveCursorAfterSelectionSetting=*/ false,
+      /*useMoveCursorAfterSelectionSetting=*/ false
     );
     stateCallback(this.buildInputtingState());
     return true;
@@ -1117,7 +1126,7 @@ export class KeyHandler {
     key: Key,
     state: InputState,
     stateCallback: (state: InputState) => void,
-    errorCallback: () => void,
+    errorCallback: () => void
   ): boolean {
     if (
       state instanceof Inputting === false &&
@@ -1180,7 +1189,7 @@ export class KeyHandler {
     key: Key,
     state: InputState,
     stateCallback: (state: InputState) => void,
-    errorCallback: () => void,
+    errorCallback: () => void
   ): boolean {
     if (state instanceof NotEmpty === false) {
       return false;
@@ -1233,7 +1242,7 @@ export class KeyHandler {
     key: Key,
     state: InputState,
     stateCallback: (state: InputState) => void,
-    errorCallback: () => void,
+    errorCallback: () => void
   ): boolean {
     if (!this.languageModel_.hasUnigrams(punctuationUnigramKey)) {
       return false;
@@ -1286,7 +1295,7 @@ export class KeyHandler {
   }
 
   public buildChoosingCandidateState(
-    originalCursorIndex: number,
+    originalCursorIndex: number
   ): ChoosingCandidate {
     const candidates = this.grid_.candidatesAt(this.actualCandidateCursorIndex);
     const inputting = this.buildInputtingState();
@@ -1295,7 +1304,7 @@ export class KeyHandler {
       inputting.composingBuffer,
       inputting.cursorIndex,
       candidates,
-      originalCursorIndex,
+      originalCursorIndex
     );
   }
 
@@ -1303,7 +1312,7 @@ export class KeyHandler {
     key: Key,
     state: Big5,
     stateCallback: (state: InputState) => void,
-    errorCallback: () => void,
+    errorCallback: () => void
   ): boolean {
     if (key.name === KeyName.ESC) {
       stateCallback(new Empty());
@@ -1364,7 +1373,7 @@ export class KeyHandler {
     key: Key,
     state: Iroha,
     stateCallback: (state: InputState) => void,
-    errorCallback: () => void,
+    errorCallback: () => void
   ): boolean {
     if (key.name === KeyName.ESC) {
       stateCallback(new Empty());
@@ -1388,7 +1397,7 @@ export class KeyHandler {
           stateCallback(new Iroha(""));
         } else {
           const candidates: Candidate[] = unigrams.map(
-            (u) => new Candidate(code, u.value, u.value),
+            (u) => new Candidate(code, u.value, u.value)
           );
           stateCallback(new IrohaCandidate(code, candidates));
         }
@@ -1470,11 +1479,11 @@ export class KeyHandler {
     // Validate the marking.
     if (readings.length < kMinValidMarkingReadingCount) {
       status = this.localizedStrings_.syllablesRequired(
-        kMinValidMarkingReadingCount,
+        kMinValidMarkingReadingCount
       );
     } else if (readings.length > kMaxValidMarkingReadingCount) {
       status = this.localizedStrings_.syllableMaximum(
-        kMaxValidMarkingReadingCount,
+        kMaxValidMarkingReadingCount
       );
     } else if (MarkedPhraseExists(this.languageModel_, readingValue, marked)) {
       status = this.localizedStrings_.phraseAlreadyExists();
@@ -1486,7 +1495,7 @@ export class KeyHandler {
     const tooltip = this.localizedStrings_.markedWithSyllablesAndStatus(
       marked,
       readingUiText,
-      status,
+      status
     );
 
     return new Marking(
@@ -1498,7 +1507,7 @@ export class KeyHandler {
       marked,
       tail,
       readingValue,
-      isValid,
+      isValid
     );
   }
 
@@ -1526,13 +1535,13 @@ export class KeyHandler {
   private pinNode(
     candidate: Candidate,
     originalCursorIndex: number,
-    useMoveCursorAfterSelectionSetting: boolean = true,
+    useMoveCursorAfterSelectionSetting: boolean = true
   ): void {
     const actualCursor = this.actualCandidateCursorIndex;
     const gridCandidate = new Candidate(
       candidate.reading,
       candidate.value,
-      candidate.displayedText,
+      candidate.displayedText
     );
     if (!this.grid_.overrideCandidate(actualCursor, gridCandidate)) {
       return;
@@ -1559,7 +1568,7 @@ export class KeyHandler {
         prevWalk,
         this.latestWalk_,
         actualCursor,
-        getTimestamp(),
+        getTimestamp()
       );
     }
 
@@ -1584,13 +1593,13 @@ export class KeyHandler {
     if (this.languageModel_ instanceof WebLanguageModel) {
       (this.languageModel_ as WebLanguageModel).addExcludedPhrase(
         reading,
-        phrase,
+        phrase
       );
     }
   }
 
   inputtingStateWithMarkingStateUnsupportedTooltip(
-    state: Inputting,
+    state: Inputting
   ): Inputting {
     const tooltip =
       this.localizedStrings_.canNotAddNewPhraseWhenBopomoroAnnotationIs();
@@ -1601,7 +1610,7 @@ export class KeyHandler {
 function MarkedPhraseExists(
   languageModel_: LanguageModel,
   readingValue: string,
-  marked: string,
+  marked: string
 ) {
   const phrases = languageModel_.getUnigrams(readingValue);
   for (const unigram of phrases) {

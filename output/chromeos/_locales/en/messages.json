@@ -146,8 +146,11 @@
   "ctrl_enter_html_ruby": {
     "message": "Input HTML Ruby"
   },
-  "ctrl_enter_taiwanese_braille": {
-    "message": "Input Taiwanese Braille"
+  "ctrl_enter_taiwanese_braille_unicode": {
+    "message": "Input Taiwanese Braille - Unicode"
+  },
+  "ctrl_enter_taiwanese_braille_ascii": {
+    "message": "Input Taiwanese Braille - ASCII"
   },
   "ctrl_enter_hanyu_pinyin": {
     "message": "Hanyu Pinyin"

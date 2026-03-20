@@ -1,13 +1,13 @@
+import { BopomofoCharacterMap as DirectCharacterMap } from "./BopomofoCharacterMap";
+import { BopomofoKeyboardLayout as DirectKeyboardLayout } from "./BopomofoKeyboardLayout";
+import { BopomofoReadingBuffer as DirectReadingBuffer } from "./BopomofoReadingBuffer";
+import { BopomofoSyllable as DirectSyllable } from "./BopomofoSyllable";
 import {
   BopomofoCharacterMap,
   BopomofoKeyboardLayout,
   BopomofoReadingBuffer,
   BopomofoSyllable,
 } from "./index";
-import { BopomofoCharacterMap as DirectCharacterMap } from "./BopomofoCharacterMap";
-import { BopomofoKeyboardLayout as DirectKeyboardLayout } from "./BopomofoKeyboardLayout";
-import { BopomofoReadingBuffer as DirectReadingBuffer } from "./BopomofoReadingBuffer";
-import { BopomofoSyllable as DirectSyllable } from "./BopomofoSyllable";
 
 describe("Mandarin index exports", () => {
   test("re-exports BopomofoCharacterMap", () => {

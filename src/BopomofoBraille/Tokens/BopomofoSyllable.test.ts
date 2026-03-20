@@ -1,5 +1,5 @@
-import { BrailleType } from "./BrailleType";
 import { BopomofoSyllable } from "./BopomofoSyllable";
+import { BrailleType } from "./BrailleType";
 
 describe("BopomofoSyllable input validation", () => {
   test("throws when Bopomofo string is empty", () => {
