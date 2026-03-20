@@ -19,3 +19,4 @@
 
 export { BopomofoBrailleConverter } from "./Converter";
 export { BopomofoSyllable } from "./Tokens/BopomofoSyllable";
+export { BrailleType } from "./Tokens/BrailleType";
