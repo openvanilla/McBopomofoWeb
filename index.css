@@ -1,3 +1,9 @@
+@font-face {
+  font-family: "SimBraille";
+  src: url("https://hurthuang.github.io/vi.note/brl/Mix-Trans/SIMBRL.TTF")
+    format("truetype");
+}
+
 :root {
   color-scheme: light dark;
   --page-background: #f5f3ee;
