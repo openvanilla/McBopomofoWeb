@@ -1,8 +1,4 @@
-import {
-  RomanNumbers,
-  RomanNumbersError,
-  RomanNumbersStyle,
-} from "./index";
+import { RomanNumbers, RomanNumbersError, RomanNumbersStyle } from "./index";
 import {
   RomanNumbers as DirectRomanNumbers,
   RomanNumbersError as DirectRomanNumbersError,

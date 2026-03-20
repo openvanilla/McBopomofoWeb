@@ -2,8 +2,71 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 
-import { BopomofoBrailleConverter } from "./BopomofoBraille";
+import { BopomofoBrailleConverter, BrailleType } from "./BopomofoBraille";
 import { Service } from "./McBopomofo/Service";
+
+const brailleFormatSchema = z
+  .enum(["unicode", "ascii"])
+  .default("unicode")
+  .describe(
+    "點字格式，支援 unicode 或 ascii (Braille format: unicode or ascii)"
+  );
+
+type BrailleFormat = z.infer<typeof brailleFormatSchema>;
+
+const toBrailleType = (format: BrailleFormat): BrailleType =>
+  format === "ascii" ? BrailleType.ASCII : BrailleType.UNICODE;
+
+export const convertBrailleToTextWithFormat = (
+  service: Service,
+  braille: string,
+  format: BrailleFormat = "unicode"
+): string =>
+  format === "ascii"
+    ? service.convertAsciiBrailleToText(braille)
+    : service.convertBrailleToText(braille);
+
+export const convertTextToBrailleWithFormat = (
+  service: Service,
+  text: string,
+  format: BrailleFormat = "unicode"
+): string =>
+  format === "ascii"
+    ? service.convertTextToAsciiBraille(text)
+    : service.convertTextToBraille(text);
+
+export const convertBpmfToBrailleWithFormat = (
+  bpmf: string,
+  format: BrailleFormat = "unicode"
+): string =>
+  BopomofoBrailleConverter.convertBpmfToBraille(bpmf, toBrailleType(format));
+
+export const convertBrailleToBpmfWithFormat = (
+  braille: string,
+  format: BrailleFormat = "unicode"
+): string =>
+  BopomofoBrailleConverter.convertBrailleToBpmf(braille, toBrailleType(format));
+
+export const convertTextToBpmfReadingsForMcp = (
+  service: Service,
+  text: string
+): string => service.convertTextToBpmfReadings(text);
+
+export const convertTextToPinyinForMcp = (
+  service: Service,
+  text: string
+): string => service.convertTextToPinyin(text);
+
+export const convertTextToBpmfAnnotatedTextForMcp = (
+  service: Service,
+  text: string
+): string => service.convertTextToBpmfAnnotatedText(text);
+
+export const annotateSingleCharacterForMcp = (
+  service: Service,
+  text: string,
+  reading: string
+): string => service.annotateSingleCharacter(text, reading);
 
 async function runServerTransport() {
   const service = new Service();
@@ -23,10 +86,11 @@ async function runServerTransport() {
         braille: z
           .string()
           .describe("點字 Unicode 字串 (Braille Unicode String), 例如: ⠓⠩⠈⠅⠎⠐"),
+        format: brailleFormatSchema,
       },
     },
-    async ({ braille }) => {
-      const result = service.convertBrailleToText(braille);
+    async ({ braille, format }) => {
+      const result = convertBrailleToTextWithFormat(service, braille, format);
       return {
         content: [
           {
@@ -45,10 +109,11 @@ async function runServerTransport() {
         "將國字、數字或英文字母轉換為台灣點字 (Convert Chinese text to Taiwanese Braille) 。請注意，這個工具會先將國字轉換成注音，再用這個工具，將注音轉換成點字，轉換過程不見得精確，如果 LLM 自己有更好的轉換能力，可以考慮使用 LLM 的能力，然後呼叫 convertBpmfToBraille 工具。 (If LLM needs precise braille conversion, LLM can first convert Chinese characters to bopomofo, then use this tool to convert bopomofo to braille)",
       inputSchema: {
         text: z.string().describe("中英文混合的字串，像是 'Hi 你好'"),
+        format: brailleFormatSchema,
       },
     },
-    async ({ text }) => {
-      const result = service.convertTextToBraille(text);
+    async ({ text, format }) => {
+      const result = convertTextToBrailleWithFormat(service, text, format);
       return {
         content: [
           {
@@ -70,11 +135,12 @@ async function runServerTransport() {
           .describe(
             "包含注音 、數字或英文的字串 (Text content), 例如: ㄗㄠˇㄐㄧㄡˋ"
           ),
+        format: brailleFormatSchema,
       },
     },
-    async (args: { bpmf: string }) => {
-      const { bpmf } = args;
-      const result = BopomofoBrailleConverter.convertBpmfToBraille(bpmf);
+    async (args: { bpmf: string; format: BrailleFormat }) => {
+      const { bpmf, format } = args;
+      const result = convertBpmfToBrailleWithFormat(bpmf, format);
       return {
         content: [
           {
@@ -94,10 +160,11 @@ async function runServerTransport() {
         braille: z
           .string()
           .describe("點字 Unicode 字串 (Braille Unicode String), 例如: ⠓⠩⠈⠅⠎⠐"),
+        format: brailleFormatSchema,
       },
     },
-    async ({ braille }) => {
-      const result = BopomofoBrailleConverter.convertBrailleToBpmf(braille);
+    async ({ braille, format }) => {
+      const result = convertBrailleToBpmfWithFormat(braille, format);
       return {
         content: [
           {
@@ -120,7 +187,7 @@ async function runServerTransport() {
       },
     },
     async ({ text }) => {
-      const result = service.convertTextToBpmfReadings(text);
+      const result = convertTextToBpmfReadingsForMcp(service, text);
       return {
         content: [
           {
@@ -143,7 +210,7 @@ async function runServerTransport() {
       },
     },
     async ({ text }) => {
-      const result = service.convertTextToPinyin(text);
+      const result = convertTextToPinyinForMcp(service, text);
       return {
         content: [
           {
@@ -167,7 +234,7 @@ async function runServerTransport() {
       annotations: {},
     },
     async ({ text }) => {
-      const result = service.convertTextToBpmfAnnotatedText(text);
+      const result = convertTextToBpmfAnnotatedTextForMcp(service, text);
       return {
         content: [
           {
@@ -190,7 +257,7 @@ async function runServerTransport() {
       annotations: {},
     },
     async ({ text, reading }) => {
-      const result = service.annotateSingleCharacter(text, reading);
+      const result = annotateSingleCharacterForMcp(service, text, reading);
       return {
         content: [
           {
@@ -206,10 +273,12 @@ async function runServerTransport() {
 }
 
 async function run() {
-  runServerTransport();
+  await runServerTransport();
 }
 
-run().catch((error) => {
-  console.error("Fatal error running server:", error);
-  process.exit(1);
-});
+if (require.main === module) {
+  run().catch((error) => {
+    console.error("Fatal error running server:", error);
+    process.exit(1);
+  });
+}
