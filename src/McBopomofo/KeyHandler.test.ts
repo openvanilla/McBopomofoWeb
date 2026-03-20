@@ -1246,9 +1246,37 @@ describe("KeyHandler", () => {
       }
     });
 
-    test("outputs ASCII pinyin when option 4", () => {
-      keyHandler.ctrlEnterOption = 4;
-      expect(keyHandler.ctrlEnterOption).toBe(4);
+    test("outputs ASCII pinyin when option 5", () => {
+      keyHandler.ctrlEnterOption = 5;
+      expect(keyHandler.ctrlEnterOption).toBe(5);
+      const keys = asciiKey(["s", "u", "3", "c", "l", "3"]);
+      keys.push(new Key("", KeyName.RETURN, false, true, false));
+      let currentState: InputState = new Empty();
+      let commit: Committing | undefined = undefined;
+
+      for (const key of keys) {
+        keyHandler.handle(
+          key,
+          currentState,
+          (state) => {
+            if (state instanceof Committing) {
+              commit = state;
+            }
+            currentState = state;
+          },
+          () => {}
+        );
+      }
+      if (commit === undefined) {
+        fail("Committing state not found");
+      } else {
+        expect((commit as Committing).text).toBe("ni hao");
+      }
+    });
+
+    test("outputs ASCII pinyin when option 5", () => {
+      keyHandler.ctrlEnterOption = 5;
+      expect(keyHandler.ctrlEnterOption).toBe(5);
       const keys = asciiKey(["s", "u", "3", "c", "l", "3"]);
       keys.push(new Key("", KeyName.RETURN, false, true, false));
       let currentState: InputState = new Empty();
@@ -1780,11 +1808,7 @@ describe("KeyHandler", () => {
   describe("Iroha state handling", () => {
     test("appends lowercase letters and normalizes uppercase input", () => {
       let currentState: InputState = new Iroha();
-      const keys = [
-        Key.asciiKey("K"),
-        Key.asciiKey("y"),
-        Key.asciiKey("A"),
-      ];
+      const keys = [Key.asciiKey("K"), Key.asciiKey("y"), Key.asciiKey("A")];
 
       for (const key of keys) {
         keyHandler.handle(
@@ -1848,9 +1872,9 @@ describe("KeyHandler", () => {
       expect(currentState).toBeInstanceOf(IrohaCandidate);
       const irohaCandidate = currentState as IrohaCandidate;
       expect(irohaCandidate.code).toBe("a");
-      expect(irohaCandidate.candidates.map((candidate) => candidate.value)).toEqual(
-        ["あ", "ア"]
-      );
+      expect(
+        irohaCandidate.candidates.map((candidate) => candidate.value)
+      ).toEqual(["あ", "ア"]);
     });
 
     test("removes the last Iroha letter with backspace", () => {

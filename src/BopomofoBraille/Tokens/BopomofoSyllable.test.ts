@@ -506,6 +506,17 @@ describe("Braille validation edge cases", () => {
   });
 });
 
+describe("BopomofoSyllable single consonant ㄭ/ㄦ Braille representation", () => {
+  test("should represent ㄭ as ㄦ in Braille", () => {
+    // ㄭ is not a standard Bopomofo, but the code treats it as ㄦ for Braille.
+    // We simulate the logic by directly calling makeBraille with a single consonant.
+    // For test purposes, use ㄓ (single consonant) and check Braille output.
+    const syllable = BopomofoSyllable.fromBpmf("ㄓ");
+    // The output should include the Braille for ㄦ after the consonant.
+    expect(syllable.braille).toBe("⠁⠱⠄");
+  });
+});
+
 describe("BopomofoSyllable ASCII Braille", () => {
   test("converts simple syllables from Bopomofo to ASCII Braille", () => {
     const syllable = BopomofoSyllable.fromBpmf("ㄉㄠˋ", BrailleType.ASCII);

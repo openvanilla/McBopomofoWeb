@@ -625,8 +625,9 @@ export class BopomofoSyllable {
       output += MiddleVowel.toBraille(middleVowel, type);
     } else if (consonant !== undefined) {
       if (Consonant.isSingle(consonant)) {
-        // ㄭ
-        output += "⠱";
+        // ㄭ, which is duplicated with ㄦ, is represented as ㄭ in Braille.
+        const suffix = Vowel.toBraille(Vowel.ㄦ, type);
+        output += suffix;
       }
     }
     output += Tone.toBraille(tone, type);
