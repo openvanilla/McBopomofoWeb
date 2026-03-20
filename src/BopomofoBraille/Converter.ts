@@ -83,11 +83,13 @@ export class BopomofoBrailleConverter {
     let state: ConverterState = ConverterState.initial;
     let output = "";
     const cursor = new StringCursor(bopomofo);
+    console.log("Input:", bopomofo);
 
     while (!cursor.isAtEnd) {
       /// Prevent duplicate spaces
       if (cursor.current === " ") {
         if (output.charAt(output.length - 1) !== " ") {
+          console.log("space 1.");
           output += " ";
         }
         cursor.advance();
@@ -103,6 +105,7 @@ export class BopomofoBrailleConverter {
           continue;
         }
         state = ConverterState.initial;
+        console.log("space 2.");
         output += " ";
       }
 
@@ -114,6 +117,7 @@ export class BopomofoBrailleConverter {
           continue;
         }
         state = ConverterState.initial;
+        console.log("space 3.");
         output += " ";
       }
 
@@ -140,6 +144,7 @@ export class BopomofoBrailleConverter {
       const digitResult = this.bpmf2br_ProcessDigits(cursor, type);
       if (digitResult) {
         if (state !== ConverterState.initial) {
+          console.log("space 4.");
           output += " ";
         }
         output += digitResult;
@@ -151,6 +156,7 @@ export class BopomofoBrailleConverter {
       const letterResult = this.bpmf2br_ProcessLetters(cursor, type);
       if (letterResult) {
         if (state !== ConverterState.initial) {
+          console.log("space 5.");
           output += " ";
         }
         output += letterResult;
@@ -165,6 +171,7 @@ export class BopomofoBrailleConverter {
       );
       if (hwPunctResult) {
         if (state === ConverterState.initial) {
+          console.log("space 6.");
           output += " ";
         }
         output += hwPunctResult;
@@ -178,6 +185,7 @@ export class BopomofoBrailleConverter {
 
       /// If the state is not `initial`, add a space.
       if (state !== ConverterState.initial) {
+        console.log("space 7.");
         output += " ";
       }
       state = ConverterState.initial;
@@ -351,7 +359,7 @@ export class BopomofoBrailleConverter {
    * BopomofoBrailleConverter.convertBrailleToTokens("⠑⠪⠈⠍⠺⠐⠁⠌⠐⠹⠄");
    * ```
    */
-  static convertBrailleToTokens(
+  public static convertBrailleToTokens(
     braille: string,
     type: BrailleType = BrailleType.UNICODE
   ): (BopomofoSyllable | string)[] {

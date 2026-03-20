@@ -377,6 +377,12 @@
       <div class="left">
         <textarea placeholder="請在此輸入國字" id="text_to_braille_text_area" rows="10" cols="50" title="輸入區"
           autocapitalize="off"></textarea>
+        <p>
+          點字格式：
+          <label><input type="radio" name="to_braille_format" value="unicode" id="to_braille_format_unicode"
+              checked="checked"> Unicode</label>
+          <label><input type="radio" name="to_braille_format" value="ascii" id="to_braille_format_ascii">ASCII</label>
+        </p>
         <p><input type="button" value="轉換" onclick="example.service.textToBraille();">
           <button id="text_to_braille_output_copy_button"
             onclick="navigator.clipboard.writeText(document.getElementById('text_to_braille_output').innerText); alert('已複製到剪貼簿');">複製結果</button>
@@ -396,6 +402,13 @@
       <div class="left">
         <textarea placeholder="請在此輸入六點注音" id="braille_to_text_text_area" rows="10" cols="50" title="輸入區"
           autocapitalize="off"></textarea>
+        <p>
+          點字格式：
+          <label><input type="radio" name="from_braille_format" value="unicode" id="from_braille_format_unicode"
+              checked="checked"> Unicode</label>
+          <label><input type="radio" name="from_braille_format" value="ascii"
+              id="from_braille_format_ascii">ASCII</label>
+        </p>
         <p> <input type="button" value="轉換" onclick="example.service.brailleToText();">
           <button id="braille_to_text_output_copy_button"
             onclick="navigator.clipboard.writeText(document.getElementById('braille_to_text_output').innerText); alert('已複製到剪貼簿');">複製結果</button>

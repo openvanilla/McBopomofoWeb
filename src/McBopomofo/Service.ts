@@ -1,6 +1,7 @@
 import {
   BopomofoBrailleConverter,
   BopomofoSyllable as BrailleBopomofoSyllable,
+  BrailleType,
 } from "../BopomofoBraille";
 import { ReadingGrid } from "../Gramambular2";
 import { BopomofoSyllable as MandarinBopomofoSyllable } from "../Mandarin";
@@ -52,7 +53,7 @@ export class Service {
     this.lm_.setExcludedPhrases(input);
   }
 
-  private convertText(
+  private convertTextInternal(
     input: string,
     readingCallback: (reading: string, value: string) => string,
     nonReadingCallback: (input: string) => string,
@@ -157,19 +158,32 @@ export class Service {
     return output;
   }
 
-  /**
-   * Convert Taiwanese Braille to text
-   * @param input The Braille input
-   * @returns The text output
-   * ``` typescript
-   * let service = new Service();
-   * let input = "⠑⠪⠈⠍⠺⠐⠁⠌⠐⠹⠄⠊⠌⠄⠛⠌⠐⠟⠜⠈";
-   * let output = service.convertTextToBraille(input);
-   * ```
-   */
-  public convertBrailleToText(input: string): string {
+  private convertText(
+    input: string,
+    readingCallback: (reading: string, value: string) => string,
+    nonReadingCallback: (input: string) => string,
+    addingSpaceBetweenChineseAndOtherTypes = false, // Braille needs additional space between Chinese characters, letters and digits.
+    addingSpaceBetweenChinese = false
+  ): string {
+    const lines = input.split("\n");
+    const convertedLines = lines.map((line) =>
+      this.convertTextInternal(
+        line,
+        readingCallback,
+        nonReadingCallback,
+        addingSpaceBetweenChineseAndOtherTypes,
+        addingSpaceBetweenChinese
+      )
+    );
+    return convertedLines.join("\n");
+  }
+
+  private convertBrailleToTextInternal(
+    input: string,
+    type: BrailleType
+  ): string {
     let output: string = "";
-    const tokens = BopomofoBrailleConverter.convertBrailleToTokens(input);
+    const tokens = BopomofoBrailleConverter.convertBrailleToTokens(input, type);
     // console.log(tokens);
     for (const token of tokens) {
       if (token instanceof BrailleBopomofoSyllable) {
@@ -193,6 +207,50 @@ export class Service {
   }
 
   /**
+   * Convert Taiwanese Braille to text
+   * @param input The Braille input
+   * @returns The text output
+   * ``` typescript
+   * let service = new Service();
+   * let input = "⠑⠪⠈⠍⠺⠐⠁⠌⠐⠹⠄⠊⠌⠄⠛⠌⠐⠟⠜⠈";
+   * let output = service.convertTextToBraille(input);
+   * ```
+   */
+  public convertBrailleToText(input: string): string {
+    return this.convertBrailleToTextInternal(input, BrailleType.UNICODE);
+  }
+
+  /**
+   * Convert Taiwanese Braille to text
+   * @param input The Braille input
+   * @returns The text output
+   * ``` typescript
+   * let service = new Service();
+   * let input = "⠑⠪⠈⠍⠺⠐⠁⠌⠐⠹⠄⠊⠌⠄⠛⠌⠐⠟⠜⠈";
+   * let output = service.convertTextToBraille(input);
+   * ```
+   */
+  public convertAsciiBrailleToText(input: string): string {
+    return this.convertBrailleToTextInternal(input, BrailleType.ASCII);
+  }
+
+  public convertTextToBrailleInternal(
+    input: string,
+    type: BrailleType
+  ): string {
+    return this.convertText(
+      input,
+      (reading: string, _: string) => {
+        return BopomofoBrailleConverter.convertBpmfToBraille(reading, type);
+      },
+      (input: string) => {
+        return BopomofoBrailleConverter.convertBpmfToBraille(input, type);
+      },
+      true
+    );
+  }
+
+  /**
    * Converts text to Taiwanese Braille
    * @param input The text input
    * @returns The Braille output
@@ -203,16 +261,21 @@ export class Service {
    * ```
    */
   public convertTextToBraille(input: string): string {
-    return this.convertText(
-      input,
-      (reading: string, _: string) => {
-        return BopomofoBrailleConverter.convertBpmfToBraille(reading);
-      },
-      (input: string) => {
-        return BopomofoBrailleConverter.convertBpmfToBraille(input);
-      },
-      true
-    );
+    return this.convertTextToBrailleInternal(input, BrailleType.UNICODE);
+  }
+
+  /**
+   * Converts text to Taiwanese Braille
+   * @param input The text input
+   * @returns The Braille output
+   * ``` typescript
+   * let service = new Service();
+   * let input = "小麥注音輸入法";
+   * let output = service.convertTextToBraille(input);
+   * ```
+   */
+  public convertTextToAsciiBraille(input: string): string {
+    return this.convertTextToBrailleInternal(input, BrailleType.ASCII);
   }
 
   /**
