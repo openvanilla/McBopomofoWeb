@@ -217,7 +217,11 @@ export class Service {
    * ```
    */
   public convertBrailleToText(input: string): string {
-    return this.convertBrailleToTextInternal(input, BrailleType.UNICODE);
+    const lines = input.split("\n");
+    const convertedLines = lines.map((line) =>
+      this.convertBrailleToTextInternal(line, BrailleType.UNICODE)
+    );
+    return convertedLines.join("\n");
   }
 
   /**
@@ -231,7 +235,11 @@ export class Service {
    * ```
    */
   public convertAsciiBrailleToText(input: string): string {
-    return this.convertBrailleToTextInternal(input, BrailleType.ASCII);
+    const lines = input.split("\n");
+    const convertedLines = lines.map((line) =>
+      this.convertBrailleToTextInternal(line, BrailleType.ASCII)
+    );
+    return convertedLines.join("\n");
   }
 
   public convertTextToBrailleInternal(

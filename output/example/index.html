@@ -385,7 +385,7 @@
         </p>
         <p><input type="button" value="轉換" onclick="example.service.textToBraille();">
           <button id="text_to_braille_output_copy_button"
-            onclick="navigator.clipboard.writeText(document.getElementById('text_to_braille_output').innerText); alert('已複製到剪貼簿');">複製結果</button>
+            onclick="copy_text('text_to_braille_output_textarea'); return false;">複製結果</button>
         </p>
         <div id="text_to_braille_output">
           尚未有轉換結果
@@ -411,7 +411,7 @@
         </p>
         <p> <input type="button" value="轉換" onclick="example.service.brailleToText();">
           <button id="braille_to_text_output_copy_button"
-            onclick="navigator.clipboard.writeText(document.getElementById('braille_to_text_output').innerText); alert('已複製到剪貼簿');">複製結果</button>
+            onclick="copy_text('braille_to_text_output_textarea'); return false;">複製結果</button>
         </p>
         <div id="braille_to_text_output">
           尚未有轉換結果
@@ -429,8 +429,8 @@
         <textarea placeholder="請在此輸入國字" id="add_bpmf_text_area" rows="10" cols="50" title="輸入區"
           autocapitalize="off"></textarea>
         <p><input type="button" value="轉換" onclick="example.service.addBpmf();">
-          <button id="add_bpmf_outputt_copy_button"
-            onclick="navigator.clipboard.writeText(document.getElementById('add_bpmf_output').innerText); alert('已複製到剪貼簿');">複製結果</button>
+          <button id="add_bpmf_output_copy_button"
+            onclick="copy_text('add_bpmf_output_textarea'); return false;">複製結果</button>
         </p>
         <div id="add_bpmf_output">
           尚未有轉換結果
@@ -466,7 +466,7 @@
         <p>
           <input type="button" value="轉換" onclick="example.service.convertHanyuPinyin();">
           <button id="convert_hanyupnyin_output_copy_button"
-            onclick="navigator.clipboard.writeText(document.getElementById('convert_hanyupnyin_output').innerText); alert('已複製到剪貼簿');">複製結果</button>
+            onclick="copy_text('convert_hanyupnyin_output_textarea'); return false;">複製結果</button>
         </p>
         <div id="convert_hanyupnyin_output">
           尚未有轉換結果

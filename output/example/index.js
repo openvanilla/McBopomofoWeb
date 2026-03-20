@@ -435,14 +435,15 @@ if (typeof document !== "undefined") {
           inputId: "add_bpmf_text_area",
           outputId: "add_bpmf_output",
           converter: (text) => {
-            if (getElement("convert_to_reading").checked) {
+            if ($("convert_to_reading").checked) {
               return that.service.convertTextToBpmfReadings(text);
             }
-            if (getElement("add_reading").checked) {
+            if ($("add_reading").checked) {
               return that.service.appendBpmfReadingsToText(text);
             }
             return that.service.convertTextToHtmlRuby(text);
           },
+          textareaId: "add_bpmf_output_textarea",
         });
       };
 
@@ -451,6 +452,7 @@ if (typeof document !== "undefined") {
           inputId: "convert_hanyupnyin_text_area",
           outputId: "convert_hanyupnyin_output",
           converter: (text) => that.service.convertTextToPinyin(text),
+          textareaId: "convert_hanyupnyin_output_textarea",
         });
       };
 
@@ -1165,4 +1167,14 @@ if (typeof document !== "undefined") {
     example.screenKeyboard = screenKeyboard;
     window.example = example;
   })();
+}
+
+function copy_text(area_id) {
+  const area = document.getElementById(area_id);
+  if (area == undefined) {
+    alert("找不到輸出區域，無法複製");
+    return;
+  }
+  navigator.clipboard.writeText(area.value);
+  alert("已複製到剪貼簿");
 }
