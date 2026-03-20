@@ -9,6 +9,9 @@ import { BrailleType } from "./BrailleType";
 
 /**
  * Represents the half-width punctuations.
+ *
+ * Note: see https://en.wikipedia.org/wiki/Braille_ASCII
+ *
  * @enum {string}
  */
 export enum HalfWidthPunctuation {

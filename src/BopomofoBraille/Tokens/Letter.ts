@@ -9,6 +9,9 @@ import { BrailleType } from "..";
 
 /**
  * Represents the letters.
+ *
+ * Note: see https://en.wikipedia.org/wiki/Braille_ASCII
+ *
  * @enum {string}
  */
 export enum Letter {
