@@ -23,10 +23,26 @@ const calculateFunctionPosition = ({
 
 const INPUT_FONT_SIZE_BPMF = 22;
 const INPUT_FONT_SIZE_DEFAULT = 18;
+const copyTextFromTextArea = async ({
+  areaId,
+  document,
+  clipboard,
+  alert,
+}) => {
+  const area = document.getElementById(areaId);
+  if (area == undefined) {
+    alert("找不到輸出區域，無法複製");
+    return false;
+  }
+  await clipboard.writeText(area.value);
+  alert("已複製到剪貼簿");
+  return true;
+};
 
 if (typeof module !== "undefined" && module.exports) {
   module.exports = {
     calculateFunctionPosition,
+    copyTextFromTextArea,
     INPUT_FONT_SIZE_BPMF,
     INPUT_FONT_SIZE_DEFAULT,
   };
@@ -34,6 +50,14 @@ if (typeof module !== "undefined" && module.exports) {
 
 if (typeof document !== "undefined") {
   (() => {
+    window.copy_text = (areaId) =>
+      copyTextFromTextArea({
+        areaId,
+        document,
+        clipboard: navigator.clipboard,
+        alert: window.alert.bind(window),
+      });
+
     const $ = (id) => document.getElementById(id);
     const focusElement = (id) => {
       $(id).focus();
@@ -1167,14 +1191,4 @@ if (typeof document !== "undefined") {
     example.screenKeyboard = screenKeyboard;
     window.example = example;
   })();
-}
-
-function copy_text(area_id) {
-  const area = document.getElementById(area_id);
-  if (area == undefined) {
-    alert("找不到輸出區域，無法複製");
-    return;
-  }
-  navigator.clipboard.writeText(area.value);
-  alert("已複製到剪貼簿");
 }

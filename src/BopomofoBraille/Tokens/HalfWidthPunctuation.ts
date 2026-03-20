@@ -53,8 +53,8 @@ export namespace HalfWidthPunctuation {
     [HalfWidthPunctuation.doubleQuotationMarkRight, ["⠴", "0"]],
     [HalfWidthPunctuation.parenthesesLeft, ["⠶", "("]],
     [HalfWidthPunctuation.parenthesesRight, ["⠶", ")"]],
-    [HalfWidthPunctuation.bracketLeft, ["⠠⠶", "⡪"]],
-    [HalfWidthPunctuation.bracketRight, ["⠶⠄", "⡻"]],
+    [HalfWidthPunctuation.bracketLeft, ["⠠⠶", "["]],
+    [HalfWidthPunctuation.bracketRight, ["⠶⠄", "]"]],
   ]);
 
   export const allPunctuation: string[] = Array.from(map.keys());

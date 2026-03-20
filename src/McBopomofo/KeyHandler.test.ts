@@ -1246,6 +1246,34 @@ describe("KeyHandler", () => {
       }
     });
 
+    test("outputs ASCII Braille conversion when option 4", () => {
+      keyHandler.ctrlEnterOption = 4;
+      expect(keyHandler.ctrlEnterOption).toBe(4);
+      const keys = asciiKey(["s", "u", "3", "c", "l", "3"]);
+      keys.push(new Key("", KeyName.RETURN, false, true, false));
+      let currentState: InputState = new Empty();
+      let commit: Committing | undefined = undefined;
+
+      for (const key of keys) {
+        keyHandler.handle(
+          key,
+          currentState,
+          (state) => {
+            if (state instanceof Committing) {
+              commit = state;
+            }
+            currentState = state;
+          },
+          () => {}
+        );
+      }
+      if (commit === undefined) {
+        fail("Committing state not found");
+      } else {
+        expect((commit as Committing).text).toBe("n*`r%`");
+      }
+    });
+
     test("outputs ASCII pinyin when option 5", () => {
       keyHandler.ctrlEnterOption = 5;
       expect(keyHandler.ctrlEnterOption).toBe(5);
