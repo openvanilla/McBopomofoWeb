@@ -92,7 +92,6 @@ class CharacterInfoService implements DictionaryService {
     serviceIndex: number,
     stateCallback: (state: InputState) => void
   ): boolean {
-    console.log("CharacterInfoService: lookUp called with phrase:", phrase);
     if (state instanceof SelectingDictionary) {
       const newState = new ShowingCharInfo(state, phrase);
       stateCallback(newState);

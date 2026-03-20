@@ -1,5 +1,5 @@
-import { BopomofoBrailleConverter, BopomofoSyllable } from "./index";
 import { BopomofoBrailleConverter as DirectConverter } from "./Converter";
+import { BopomofoBrailleConverter, BopomofoSyllable } from "./index";
 import { BopomofoSyllable as DirectSyllable } from "./Tokens/BopomofoSyllable";
 
 describe("BopomofoBraille index exports", () => {

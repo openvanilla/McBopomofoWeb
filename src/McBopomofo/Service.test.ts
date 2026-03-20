@@ -96,6 +96,27 @@ describe("Service", () => {
     const result = service.convertTextToBraille("天氣好");
     expect(result).toBe("⠋⠞⠄⠚⠡⠐⠗⠩⠈");
   });
+
+  test("converts sentence to ASCII Braille glyphs", () => {
+    const service = new Service();
+    const result = service.convertTextToAsciiBraille("天氣好");
+    expect(result).toBe("ft'j*\"r%`");
+  });
+
+  test("converts ASCII Braille sentence back to text", () => {
+    const service = new Service();
+    const result = service.convertAsciiBrailleToText("ft'j*\"r%`");
+    expect(result).toBe("天氣好");
+  });
+
+  test("preserves line breaks in ASCII Braille round trip", () => {
+    const service = new Service();
+    const input = "天氣好\n天氣好";
+    const braille = service.convertTextToAsciiBraille(input);
+    expect(braille).toBe("ft'j*\"r%`\nft'j*\"r%`");
+    expect(service.convertAsciiBrailleToText(braille)).toBe(input);
+  });
+
   test("converts longer sentence to Braille glyphs", () => {
     const service = new Service();
     const result = service.convertTextToBraille("天氣真的很好");

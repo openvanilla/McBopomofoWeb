@@ -235,6 +235,7 @@ AI agents may call a subagent to run `npm run test:coverage` to find code that i
 
 - Update this file when introducing new subsystems so Copilot understands how to wire things together.
 - Prefer concise prose and actionable bullet points that tell Copilot _what to favor or avoid_ rather than lengthy narratives.
+- Public exports and integrator-facing methods should carry TSDoc comments; when adding or editing them, keep `src/publicApiDocumentation.test.ts` updated so missing API docs fail tests.
 
 ## Commit expectations
 

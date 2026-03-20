@@ -1,3 +1,4 @@
+import { BrailleType } from "./BrailleType";
 import { Letter } from "./Letter";
 
 describe("Test Letter", () => {
@@ -16,6 +17,11 @@ describe("Test Letter", () => {
     expect(result).toBe(Letter.a);
   });
 
+  test("Test fromBraille() with valid ASCII braille", () => {
+    const result = Letter.fromBraille("a", BrailleType.ASCII);
+    expect(result).toBe(Letter.a);
+  });
+
   test("Test fromBraille() with valid braille for z", () => {
     const result = Letter.fromBraille("⠵");
     expect(result).toBe(Letter.z);
@@ -23,6 +29,11 @@ describe("Test Letter", () => {
 
   test("Test fromBraille() with invalid input", () => {
     const result = Letter.fromBraille("invalid");
+    expect(result).toBe(undefined);
+  });
+
+  test("Test fromBraille() with invalid ASCII input", () => {
+    const result = Letter.fromBraille("1", BrailleType.ASCII);
     expect(result).toBe(undefined);
   });
 
@@ -51,9 +62,19 @@ describe("Test Letter", () => {
     expect(result).toBe("⠁");
   });
 
+  test("Test toBraille() with ASCII output", () => {
+    const result = Letter.toBraille(Letter.a, BrailleType.ASCII);
+    expect(result).toBe("a");
+  });
+
   test("Test toBraille() for z", () => {
     const result = Letter.toBraille(Letter.z);
     expect(result).toBe("⠵");
+  });
+
+  test("Test toBraille() for z with ASCII output", () => {
+    const result = Letter.toBraille(Letter.z, BrailleType.ASCII);
+    expect(result).toBe("z");
   });
 
   test("Test toBrailleCode()", () => {

@@ -1,4 +1,5 @@
 import { BopomofoSyllable } from "./BopomofoSyllable";
+import { BrailleType } from "./BrailleType";
 
 describe("BopomofoSyllable input validation", () => {
   test("throws when Bopomofo string is empty", () => {
@@ -501,6 +502,52 @@ describe("Braille validation edge cases", () => {
   test("throws for duplicated tone markers", () => {
     expect(() => BopomofoSyllable.fromBraille("⠁⠱⠄⠄")).toThrow(
       "Invalid Braille: multiple tones"
+    );
+  });
+});
+
+describe("BopomofoSyllable single consonant ㄭ/ㄦ Braille representation", () => {
+  test("should represent ㄭ as ㄦ in Braille", () => {
+    // ㄭ is not a standard Bopomofo, but the code treats it as ㄦ for Braille.
+    // We simulate the logic by directly calling makeBraille with a single consonant.
+    // For test purposes, use ㄓ (single consonant) and check Braille output.
+    const syllable = BopomofoSyllable.fromBpmf("ㄓ");
+    // The output should include the Braille for ㄦ after the consonant.
+    expect(syllable.braille).toBe("⠁⠱⠄");
+  });
+});
+
+describe("BopomofoSyllable ASCII Braille", () => {
+  test("converts simple syllables from Bopomofo to ASCII Braille", () => {
+    const syllable = BopomofoSyllable.fromBpmf("ㄉㄠˋ", BrailleType.ASCII);
+
+    expect(syllable.bpmf).toBe("ㄉㄠˋ");
+    expect(syllable.braille).toBe('d%"');
+    expect(syllable.type).toBe(BrailleType.ASCII);
+  });
+
+  test("converts combined syllables from Bopomofo to ASCII Braille", () => {
+    const syllable = BopomofoSyllable.fromBpmf("ㄒㄧㄢˊ", BrailleType.ASCII);
+
+    expect(syllable.bpmf).toBe("ㄒㄧㄢˊ");
+    expect(syllable.braille).toBe("et1");
+    expect(syllable.type).toBe(BrailleType.ASCII);
+  });
+
+  test("converts ASCII Braille back to Bopomofo", () => {
+    const syllable = BopomofoSyllable.fromBraille("et1", BrailleType.ASCII);
+
+    expect(syllable.bpmf).toBe("ㄒㄧㄢˊ");
+    expect(syllable.braille).toBe("et1");
+    expect(syllable.type).toBe(BrailleType.ASCII);
+  });
+
+  test("disambiguates ASCII consonants using yi and yu connections", () => {
+    expect(BopomofoSyllable.fromBraille("k)'", BrailleType.ASCII).bpmf).toBe(
+      "ㄐㄧㄚ"
+    );
+    expect(BopomofoSyllable.fromBraille("k>'", BrailleType.ASCII).bpmf).toBe(
+      "ㄍㄚ"
     );
   });
 });

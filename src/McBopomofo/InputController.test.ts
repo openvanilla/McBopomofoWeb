@@ -337,7 +337,8 @@ describe("InputController", () => {
       controller.setCtrlEnterOption(CtrlEnterOption.None);
       controller.setCtrlEnterOption(CtrlEnterOption.BpmfReadings);
       controller.setCtrlEnterOption(CtrlEnterOption.HtmlRuby);
-      controller.setCtrlEnterOption(CtrlEnterOption.BopomofoBraille);
+      controller.setCtrlEnterOption(CtrlEnterOption.BopomofoBrailleUnicode);
+      controller.setCtrlEnterOption(CtrlEnterOption.BopomofoBrailleASCII);
       controller.setCtrlEnterOption(CtrlEnterOption.HanyuPinyin);
       // No exception should be thrown
     });

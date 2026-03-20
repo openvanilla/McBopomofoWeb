@@ -1,6 +1,7 @@
 import {
   BopomofoBrailleConverter,
   BopomofoSyllable as BrailleBopomofoSyllable,
+  BrailleType,
 } from "../BopomofoBraille";
 import { ReadingGrid } from "../Gramambular2";
 import { BopomofoSyllable as MandarinBopomofoSyllable } from "../Mandarin";
@@ -17,12 +18,22 @@ const ChineseConvert = require("chinese_convert");
  *
  * The service provides the following functions:
  *  - Convert Taiwanese Braille to text
+ *  - Convert ASCII Braille to text
  *  - Convert text to Bopomofo readings
  *  - Convert text to Hanyu Pinyin
  *  - Convert text to HTML Ruby
  *  - Convert text to Taiwanese Braille
+ *  - Convert text to ASCII Braille
  *  - Convert text to Bopomofo annotated text (for Bopomofo annotation fonts)
  *  - Annotate a single character with its Bopomofo reading
+ *
+ * @example
+ * ``` typescript
+ * const service = new Service();
+ * const braille = service.convertTextToBraille("小麥注音");
+ * const pinyin = service.convertTextToPinyin("中文");
+ * const ruby = service.convertTextToHtmlRuby("注音");
+ * ```
  */
 export class Service {
   private lm_: WebLanguageModel;
@@ -52,7 +63,7 @@ export class Service {
     this.lm_.setExcludedPhrases(input);
   }
 
-  private convertText(
+  private convertTextInternal(
     input: string,
     readingCallback: (reading: string, value: string) => string,
     nonReadingCallback: (input: string) => string,
@@ -157,19 +168,32 @@ export class Service {
     return output;
   }
 
-  /**
-   * Convert Taiwanese Braille to text
-   * @param input The Braille input
-   * @returns The text output
-   * ``` typescript
-   * let service = new Service();
-   * let input = "⠑⠪⠈⠍⠺⠐⠁⠌⠐⠹⠄⠊⠌⠄⠛⠌⠐⠟⠜⠈";
-   * let output = service.convertTextToBraille(input);
-   * ```
-   */
-  public convertBrailleToText(input: string): string {
+  private convertText(
+    input: string,
+    readingCallback: (reading: string, value: string) => string,
+    nonReadingCallback: (input: string) => string,
+    addingSpaceBetweenChineseAndOtherTypes = false, // Braille needs additional space between Chinese characters, letters and digits.
+    addingSpaceBetweenChinese = false
+  ): string {
+    const lines = input.split("\n");
+    const convertedLines = lines.map((line) =>
+      this.convertTextInternal(
+        line,
+        readingCallback,
+        nonReadingCallback,
+        addingSpaceBetweenChineseAndOtherTypes,
+        addingSpaceBetweenChinese
+      )
+    );
+    return convertedLines.join("\n");
+  }
+
+  private convertBrailleToTextInternal(
+    input: string,
+    type: BrailleType
+  ): string {
     let output: string = "";
-    const tokens = BopomofoBrailleConverter.convertBrailleToTokens(input);
+    const tokens = BopomofoBrailleConverter.convertBrailleToTokens(input, type);
     // console.log(tokens);
     for (const token of tokens) {
       if (token instanceof BrailleBopomofoSyllable) {
@@ -193,26 +217,87 @@ export class Service {
   }
 
   /**
-   * Converts text to Taiwanese Braille
-   * @param input The text input
-   * @returns The Braille output
+   * Converts Taiwanese Braille to text.
+   * @param input The Unicode Braille input.
+   * @returns The text output
+   * @example
    * ``` typescript
-   * let service = new Service();
-   * let input = "小麥注音輸入法";
-   * let output = service.convertTextToBraille(input);
+   * const service = new Service();
+   * const input = "⠑⠪⠈⠍⠺⠐⠁⠌⠐⠹⠄⠊⠌⠄⠛⠌⠐⠟⠜⠈";
+   * const output = service.convertBrailleToText(input);
    * ```
    */
-  public convertTextToBraille(input: string): string {
+  public convertBrailleToText(input: string): string {
+    const lines = input.split("\n");
+    const convertedLines = lines.map((line) =>
+      this.convertBrailleToTextInternal(line, BrailleType.UNICODE)
+    );
+    return convertedLines.join("\n");
+  }
+
+  /**
+   * Converts ASCII Braille to text.
+   * @param input The ASCII Braille input.
+   * @returns The text output
+   * @example
+   * ``` typescript
+   * const service = new Service();
+   * const input = "e{`mw\"a/\"?'i/'g/\"q>`";
+   * const output = service.convertAsciiBrailleToText(input);
+   * ```
+   */
+  public convertAsciiBrailleToText(input: string): string {
+    const lines = input.split("\n");
+    const convertedLines = lines.map((line) =>
+      this.convertBrailleToTextInternal(line, BrailleType.ASCII)
+    );
+    return convertedLines.join("\n");
+  }
+
+  private convertTextToBrailleInternal(
+    input: string,
+    type: BrailleType
+  ): string {
     return this.convertText(
       input,
       (reading: string, _: string) => {
-        return BopomofoBrailleConverter.convertBpmfToBraille(reading);
+        return BopomofoBrailleConverter.convertBpmfToBraille(reading, type);
       },
       (input: string) => {
-        return BopomofoBrailleConverter.convertBpmfToBraille(input);
+        return BopomofoBrailleConverter.convertBpmfToBraille(input, type);
       },
       true
     );
+  }
+
+  /**
+   * Converts text to Taiwanese Braille.
+   * @param input The text input
+   * @returns The Braille output
+   * @example
+   * ``` typescript
+   * const service = new Service();
+   * const input = "小麥注音輸入法";
+   * const output = service.convertTextToBraille(input);
+   * ```
+   */
+  public convertTextToBraille(input: string): string {
+    return this.convertTextToBrailleInternal(input, BrailleType.UNICODE);
+  }
+
+  /**
+   * Converts text to ASCII Braille.
+   * @param input The text input
+   * @returns The Braille output
+   * @example
+   * ``` typescript
+   * const service = new Service();
+   * const input = "小麥注音輸入法";
+   * const output = service.convertTextToAsciiBraille(input);
+   * ```
+   */
+  public convertTextToAsciiBraille(input: string): string {
+    return this.convertTextToBrailleInternal(input, BrailleType.ASCII);
   }
 
   /**

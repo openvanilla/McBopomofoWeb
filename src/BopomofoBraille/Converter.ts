@@ -6,6 +6,7 @@
  */
 
 import { BopomofoSyllable } from "./Tokens/BopomofoSyllable";
+import { BrailleType } from "./Tokens/BrailleType";
 import { Digit, DigitRelated } from "./Tokens/Digits";
 import { FullWidthPunctuation } from "./Tokens/FullWidthPunctuation";
 import { HalfWidthPunctuation } from "./Tokens/HalfWidthPunctuation";
@@ -75,7 +76,10 @@ export class BopomofoBrailleConverter {
    * ```
    * It should return converted Taiwanese Braille in Unicode.
    */
-  public static convertBpmfToBraille(bopomofo: string): string {
+  public static convertBpmfToBraille(
+    bopomofo: string,
+    type: BrailleType = BrailleType.UNICODE
+  ): string {
     let state: ConverterState = ConverterState.initial;
     let output = "";
     const cursor = new StringCursor(bopomofo);
@@ -93,7 +97,7 @@ export class BopomofoBrailleConverter {
 
       /// If the state is `digits`, try to convert digits to Braille. If it fails, reset the state.œ
       if (state === ConverterState.digits) {
-        const result = this.bpmf2br_HandleDigitsState(cursor);
+        const result = this.bpmf2br_HandleDigitsState(cursor, type);
         if (result) {
           output += result;
           continue;
@@ -104,7 +108,7 @@ export class BopomofoBrailleConverter {
 
       /// If the state is `letters`, try to convert letters to Braille. If it fails, reset the state.
       if (state === ConverterState.letters) {
-        const result = this.bpmf2br_HandleLettersState(cursor);
+        const result = this.bpmf2br_HandleLettersState(cursor, type);
         if (result) {
           output += result;
           continue;
@@ -114,7 +118,7 @@ export class BopomofoBrailleConverter {
       }
 
       /// Try to convert Bopomofo syllables to Braille. If it fails, reset the state.
-      const bpmfResult = this.bpmf2br_ProcessBopomofo(cursor);
+      const bpmfResult = this.bpmf2br_ProcessBopomofo(cursor, type);
       if (bpmfResult) {
         output += bpmfResult;
         state = ConverterState.bpmf;
@@ -122,7 +126,10 @@ export class BopomofoBrailleConverter {
       }
 
       /// Try to convert FullWidthPunctuation to Braille. If it fails, reset the state.
-      const fwPunctResult = this.bpmf2br_ProcessFullWidthPunctuation(cursor);
+      const fwPunctResult = this.bpmf2br_ProcessFullWidthPunctuation(
+        cursor,
+        type
+      );
       if (fwPunctResult) {
         output += fwPunctResult;
         state = ConverterState.bpmf;
@@ -130,7 +137,7 @@ export class BopomofoBrailleConverter {
       }
 
       /// Try to convert Digits to Braille. If it fails, reset the state.
-      const digitResult = this.bpmf2br_ProcessDigits(cursor);
+      const digitResult = this.bpmf2br_ProcessDigits(cursor, type);
       if (digitResult) {
         if (state !== ConverterState.initial) {
           output += " ";
@@ -141,7 +148,7 @@ export class BopomofoBrailleConverter {
       }
 
       /// Try to convert Letters to Braille. If it fails, reset the state.
-      const letterResult = this.bpmf2br_ProcessLetters(cursor);
+      const letterResult = this.bpmf2br_ProcessLetters(cursor, type);
       if (letterResult) {
         if (state !== ConverterState.initial) {
           output += " ";
@@ -152,7 +159,10 @@ export class BopomofoBrailleConverter {
       }
 
       /// Try to convert HalfWidthPunctuation to Braille. If it fails, reset the state.
-      const hwPunctResult = this.bpmf2br_ProcessHalfWidthPunctuation(cursor);
+      const hwPunctResult = this.bpmf2br_ProcessHalfWidthPunctuation(
+        cursor,
+        type
+      );
       if (hwPunctResult) {
         if (state === ConverterState.initial) {
           output += " ";
@@ -178,12 +188,13 @@ export class BopomofoBrailleConverter {
   }
 
   private static bpmf2br_HandleDigitsState(
-    cursor: StringCursor
+    cursor: StringCursor,
+    type: BrailleType
   ): string | null {
     const substring = cursor.current;
     if (Digit.allDigits.includes(substring)) {
       cursor.advance();
-      return Digit.toBraille(Digit.fromDigit(substring) as Digit);
+      return Digit.toBraille(Digit.fromDigit(substring) as Digit, type);
     }
     const target = Math.min(2, cursor.remaining);
     for (let i = target; i >= 1; i--) {
@@ -191,41 +202,47 @@ export class BopomofoBrailleConverter {
       const punctuation = DigitRelated.fromPunctuation(substring);
       if (punctuation !== undefined) {
         cursor.advance(i);
-        return DigitRelated.toBraille(punctuation);
+        return DigitRelated.toBraille(punctuation, type);
       }
     }
     return null;
   }
 
   private static bpmf2br_HandleLettersState(
-    cursor: StringCursor
+    cursor: StringCursor,
+    type: BrailleType
   ): string | null {
     const substring = cursor.current;
     const lowered = substring.toLowerCase();
     if (lowered >= "a" && lowered <= "z") {
       let output = "";
       if (substring >= "A" && substring <= "Z") {
-        output += "⠠";
+        const prefix = type === BrailleType.ASCII ? "," : "⠠";
+        output += prefix;
       }
-      output += Letter.toBraille(Letter.fromLetter(lowered) as Letter);
+      output += Letter.toBraille(Letter.fromLetter(lowered) as Letter, type);
       cursor.advance();
       return output;
     }
     if (HalfWidthPunctuation.allPunctuation.includes(substring)) {
       cursor.advance();
       return HalfWidthPunctuation.toBraille(
-        HalfWidthPunctuation.fromPunctuation(substring) as HalfWidthPunctuation
+        HalfWidthPunctuation.fromPunctuation(substring) as HalfWidthPunctuation,
+        type
       );
     }
     return null;
   }
 
-  private static bpmf2br_ProcessBopomofo(cursor: StringCursor): string | null {
+  private static bpmf2br_ProcessBopomofo(
+    cursor: StringCursor,
+    type: BrailleType
+  ): string | null {
     const target = Math.min(4, cursor.remaining);
     for (let i = target; i >= 1; i--) {
       const substring = cursor.substring(i);
       try {
-        const b = BopomofoSyllable.fromBpmf(substring);
+        const b = BopomofoSyllable.fromBpmf(substring, type);
         cursor.advance(i);
         return b.braille;
       } catch (e) {}
@@ -234,35 +251,47 @@ export class BopomofoBrailleConverter {
   }
 
   private static bpmf2br_ProcessFullWidthPunctuation(
-    cursor: StringCursor
+    cursor: StringCursor,
+    type: BrailleType
   ): string | null {
     const substring = cursor.current;
     const punctuation = FullWidthPunctuation.fromBpmf(substring);
     if (punctuation !== undefined) {
       cursor.advance();
-      return FullWidthPunctuation.toBraille(punctuation);
+      return FullWidthPunctuation.toBraille(punctuation, type);
     }
     return null;
   }
 
-  private static bpmf2br_ProcessDigits(cursor: StringCursor): string | null {
+  private static bpmf2br_ProcessDigits(
+    cursor: StringCursor,
+    type: BrailleType
+  ): string | null {
     const substring = cursor.current;
     if (substring >= "0" && substring <= "9") {
       cursor.advance();
-      return "⠼" + Digit.toBraille(Digit.fromDigit(substring) as Digit);
+      const body = Digit.toBraille(Digit.fromDigit(substring) as Digit, type);
+      if (type === BrailleType.ASCII) {
+        return "#" + body;
+      }
+      return "⠼" + body;
     }
     return null;
   }
 
-  private static bpmf2br_ProcessLetters(cursor: StringCursor): string | null {
+  private static bpmf2br_ProcessLetters(
+    cursor: StringCursor,
+    type: BrailleType
+  ): string | null {
     const substring = cursor.current;
     const lowered = substring.toLowerCase();
     if (lowered >= "a" && lowered <= "z") {
       let output = "";
       if (substring >= "A" && substring <= "Z") {
-        output += "⠠";
+        const prefix = type === BrailleType.ASCII ? "," : "⠠";
+        output += prefix;
       }
-      output += Letter.toBraille(Letter.fromLetter(lowered) as Letter);
+      output += Letter.toBraille(Letter.fromLetter(lowered) as Letter, type);
       cursor.advance();
       return output;
     }
@@ -270,13 +299,15 @@ export class BopomofoBrailleConverter {
   }
 
   private static bpmf2br_ProcessHalfWidthPunctuation(
-    cursor: StringCursor
+    cursor: StringCursor,
+    type: BrailleType
   ): string | null {
     const substring = cursor.current;
     if (HalfWidthPunctuation.allPunctuation.includes(substring)) {
       cursor.advance();
       return HalfWidthPunctuation.toBraille(
-        HalfWidthPunctuation.fromPunctuation(substring) as HalfWidthPunctuation
+        HalfWidthPunctuation.fromPunctuation(substring) as HalfWidthPunctuation,
+        type
       );
     }
     return null;
@@ -320,8 +351,9 @@ export class BopomofoBrailleConverter {
    * BopomofoBrailleConverter.convertBrailleToTokens("⠑⠪⠈⠍⠺⠐⠁⠌⠐⠹⠄");
    * ```
    */
-  static convertBrailleToTokens(
-    braille: string
+  public static convertBrailleToTokens(
+    braille: string,
+    type: BrailleType = BrailleType.UNICODE
   ): (BopomofoSyllable | string)[] {
     let state: ConverterState = ConverterState.initial;
     var output: any[] = [];
@@ -342,7 +374,7 @@ export class BopomofoBrailleConverter {
 
       /// If the state is `digits`, try to convert digits to Bopomofo. If it fails, reset the state.
       if (state === ConverterState.digits) {
-        const result = this.br2t_HandleDigitsState(cursor);
+        const result = this.br2t_HandleDigitsState(cursor, type);
         if (result) {
           nonBpmfText += result;
           continue;
@@ -352,7 +384,7 @@ export class BopomofoBrailleConverter {
 
       /// If the state is `letters`, try to convert letters to Bopomofo. If it fails, reset the state.
       if (state === ConverterState.letters) {
-        const result = this.br2t_HandleLettersState(cursor);
+        const result = this.br2t_HandleLettersState(cursor, type);
         if (result) {
           nonBpmfText += result;
           continue;
@@ -361,7 +393,7 @@ export class BopomofoBrailleConverter {
       }
 
       /// Try to convert Braille to Bopomofo. If it fails, reset the state.
-      const bpmfResult = this.br2t_ProcessBopomofo(cursor);
+      const bpmfResult = this.br2t_ProcessBopomofo(cursor, type);
       if (bpmfResult) {
         if (nonBpmfText.length > 0) {
           output.push(nonBpmfText);
@@ -375,7 +407,8 @@ export class BopomofoBrailleConverter {
       /// Try to convert FullWidthPunctuation to Bopomofo. If it fails, reset the state.
       const fwPunctResult = this.br2t_ProcessFullWidthPunctuation(
         cursor,
-        state
+        state,
+        type
       );
       if (fwPunctResult) {
         nonBpmfText += fwPunctResult;
@@ -383,21 +416,21 @@ export class BopomofoBrailleConverter {
         continue;
       }
 
-      const digitResult = this.br2t_ProcessDigits(cursor);
+      const digitResult = this.br2t_ProcessDigits(cursor, type);
       if (digitResult) {
         nonBpmfText += digitResult;
         state = ConverterState.digits;
         continue;
       }
 
-      const letterResult = this.br2t_ProcessLetters(cursor);
+      const letterResult = this.br2t_ProcessLetters(cursor, type);
       if (letterResult) {
         nonBpmfText += letterResult;
         state = ConverterState.letters;
         continue;
       }
 
-      const hwPunctResult = this.br2t_ProcessHalfWidthPunctuation(cursor);
+      const hwPunctResult = this.br2t_ProcessHalfWidthPunctuation(cursor, type);
       if (hwPunctResult) {
         nonBpmfText += hwPunctResult;
         state = ConverterState.letters;
@@ -420,9 +453,12 @@ export class BopomofoBrailleConverter {
     return output;
   }
 
-  private static br2t_HandleDigitsState(cursor: StringCursor): string | null {
+  private static br2t_HandleDigitsState(
+    cursor: StringCursor,
+    type: BrailleType
+  ): string | null {
     const substring = cursor.current;
-    const digit = Digit.fromBraille(substring);
+    const digit = Digit.fromBraille(substring, type);
     if (digit !== undefined) {
       cursor.advance();
       return digit;
@@ -431,7 +467,7 @@ export class BopomofoBrailleConverter {
     const target = Math.min(7, cursor.remaining);
     for (let i = target; i >= 1; i--) {
       const substring = cursor.substring(i);
-      const punctuation = DigitRelated.fromBraille(substring);
+      const punctuation = DigitRelated.fromBraille(substring, type);
       if (punctuation !== undefined) {
         cursor.advance(i);
         return DigitRelated.toPunctuation(punctuation);
@@ -440,16 +476,20 @@ export class BopomofoBrailleConverter {
     return null;
   }
 
-  private static br2t_HandleLettersState(cursor: StringCursor): string | null {
+  private static br2t_HandleLettersState(
+    cursor: StringCursor,
+    type: BrailleType
+  ): string | null {
     let substring = cursor.current;
     let isUppercase = false;
     let consumed = 1;
-    if (substring === "⠠") {
+    const prefix = type === BrailleType.ASCII ? "," : "⠠";
+    if (substring === prefix) {
       isUppercase = true;
       substring = cursor.peek(1);
       consumed = 2;
     }
-    const letter = Letter.fromBraille(substring);
+    const letter = Letter.fromBraille(substring, type);
     if (letter !== undefined) {
       cursor.advance(consumed);
       return isUppercase ? letter.toUpperCase() : letter;
@@ -458,7 +498,7 @@ export class BopomofoBrailleConverter {
     const target = Math.min(3, cursor.remaining);
     for (let i = target; i >= 1; i--) {
       const substring = cursor.substring(i);
-      const punctuation = HalfWidthPunctuation.fromBraille(substring);
+      const punctuation = HalfWidthPunctuation.fromBraille(substring, type);
       if (punctuation !== undefined) {
         cursor.advance(i);
         return HalfWidthPunctuation.toBpmf(punctuation);
@@ -468,7 +508,8 @@ export class BopomofoBrailleConverter {
   }
 
   private static br2t_ProcessBopomofo(
-    cursor: StringCursor
+    cursor: StringCursor,
+    type: BrailleType
   ): BopomofoSyllable | null {
     const target = Math.min(3, cursor.remaining);
     if (target > 0) {
@@ -479,7 +520,7 @@ export class BopomofoBrailleConverter {
         }
 
         try {
-          const b = BopomofoSyllable.fromBraille(substring);
+          const b = BopomofoSyllable.fromBraille(substring, type);
           if (b !== undefined) {
             cursor.advance(i);
             return b;
@@ -492,7 +533,8 @@ export class BopomofoBrailleConverter {
 
   private static br2t_ProcessFullWidthPunctuation(
     cursor: StringCursor,
-    state: ConverterState
+    state: ConverterState,
+    type: BrailleType
   ): string | null {
     const target = Math.min(4, cursor.remaining);
     for (let i = target; i >= 0; i--) {
@@ -501,7 +543,7 @@ export class BopomofoBrailleConverter {
         continue;
       }
 
-      const punctuation = FullWidthPunctuation.fromBraille(substring);
+      const punctuation = FullWidthPunctuation.fromBraille(substring, type);
       if (punctuation !== undefined) {
         if (state === ConverterState.initial) {
           if (!FullWidthPunctuation.supposedToBeAtStart(punctuation)) {
@@ -515,10 +557,14 @@ export class BopomofoBrailleConverter {
     return null;
   }
 
-  private static br2t_ProcessDigits(cursor: StringCursor): string | null {
+  private static br2t_ProcessDigits(
+    cursor: StringCursor,
+    type: BrailleType
+  ): string | null {
     const substring = cursor.current;
-    if (substring === "⠼") {
-      const digit = Digit.fromBraille(cursor.peek(1));
+    const prefix = type === BrailleType.ASCII ? "#" : "⠼";
+    if (substring === prefix) {
+      const digit = Digit.fromBraille(cursor.peek(1), type);
       if (digit !== undefined) {
         cursor.advance(2);
         return digit;
@@ -527,17 +573,21 @@ export class BopomofoBrailleConverter {
     return null;
   }
 
-  private static br2t_ProcessLetters(cursor: StringCursor): string | null {
+  private static br2t_ProcessLetters(
+    cursor: StringCursor,
+    type: BrailleType
+  ): string | null {
     const substring = cursor.current;
-    if (substring === "⠠" && cursor.remaining > 1) {
-      const letter = Letter.fromBraille(cursor.peek(1));
+    const prefix = type === BrailleType.ASCII ? "," : "⠠";
+    if (substring === prefix && cursor.remaining > 1) {
+      const letter = Letter.fromBraille(cursor.peek(1), type);
       if (letter !== undefined) {
         cursor.advance(2);
         return letter.toUpperCase();
       }
     }
 
-    const letter = Letter.fromBraille(cursor.current);
+    const letter = Letter.fromBraille(cursor.current, type);
     if (letter !== undefined) {
       cursor.advance();
       return letter;
@@ -546,12 +596,13 @@ export class BopomofoBrailleConverter {
   }
 
   private static br2t_ProcessHalfWidthPunctuation(
-    cursor: StringCursor
+    cursor: StringCursor,
+    type: BrailleType
   ): string | null {
     const target = Math.min(3, cursor.remaining);
     for (let i = target; i >= 1; i--) {
       const substring = cursor.substring(i);
-      const punctuation = HalfWidthPunctuation.fromBraille(substring);
+      const punctuation = HalfWidthPunctuation.fromBraille(substring, type);
       if (punctuation !== undefined) {
         cursor.advance(i);
         return HalfWidthPunctuation.toBpmf(punctuation);
@@ -574,8 +625,11 @@ export class BopomofoBrailleConverter {
    * BopomofoBrailleConverter.convertBrailleToBpmf("⠑⠪⠈⠍⠺⠐⠁⠌⠐⠹⠄");
    * ```
    */
-  static convertBrailleToBpmf(braille: string): string {
-    const tokens = this.convertBrailleToTokens(braille);
+  static convertBrailleToBpmf(
+    braille: string,
+    type: BrailleType = BrailleType.UNICODE
+  ): string {
+    const tokens = this.convertBrailleToTokens(braille, type);
     let output = "";
     for (const token of tokens) {
       if (token instanceof BopomofoSyllable) {

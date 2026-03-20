@@ -314,8 +314,10 @@ window.onload = () => {
   document.getElementById("ctrl_enter_option_2").innerText =
     chrome.i18n.getMessage("ctrl_enter_html_ruby");
   document.getElementById("ctrl_enter_option_3").innerText =
-    chrome.i18n.getMessage("ctrl_enter_taiwanese_braille");
+    chrome.i18n.getMessage("ctrl_enter_taiwanese_braille_unicode");
   document.getElementById("ctrl_enter_option_4").innerText =
+    chrome.i18n.getMessage("ctrl_enter_taiwanese_braille_ascii");
+  document.getElementById("ctrl_enter_option_5").innerText =
     chrome.i18n.getMessage("ctrl_enter_hanyu_pinyin");
 
   document.getElementById("others_title").innerText =
