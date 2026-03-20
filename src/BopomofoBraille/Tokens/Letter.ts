@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { BrailleType } from "..";
+import { BrailleType } from "./BrailleType";
 
 /**
  * Represents the letters.

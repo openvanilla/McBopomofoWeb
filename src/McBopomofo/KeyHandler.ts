@@ -599,7 +599,10 @@ export class KeyHandler {
             reading = reading.replace(kJoinSeparator, " ");
             const value = node.value;
             if (reading[0] === "_") {
-              composed += BopomofoBrailleConverter.convertBpmfToBraille(value);
+              composed += BopomofoBrailleConverter.convertBpmfToBraille(
+                value,
+                type
+              );
             } else {
               const components = reading.split(kJoinSeparator);
               for (const component of components) {
