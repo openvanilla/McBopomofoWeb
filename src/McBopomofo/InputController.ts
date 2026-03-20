@@ -319,6 +319,12 @@ export class InputController {
     }
   }
 
+  /**
+   * Human-readable labels for the currently selected keyboard layout.
+   *
+   * Integrators can use this to render on-screen key hints that match the
+   * active layout.
+   */
   get readableLayoutKeys(): Map<string, string> {
     return this.keyHandler_.keyboardLayout.readableKeys;
   }
@@ -438,6 +444,10 @@ export class InputController {
     this.lm_.setUserPhrases(input);
   }
 
+  /**
+   * Sets phrases that should be hidden from candidate suggestions.
+   * @param input A serialized phrase table or a map keyed by reading.
+   */
   public setExcludedPhrases(input: Map<string, string[]> | string): void {
     // If the input is a string or a map, we send it to the language model.
     this.lm_.setExcludedPhrases(input);
@@ -453,6 +463,10 @@ export class InputController {
     this.lm_.setOnPhraseChange(callback);
   }
 
+  /**
+   * Registers a callback fired whenever the excluded phrase table changes.
+   * @param callback Receives the latest excluded phrase map.
+   */
   public setOnExcludedPhraseChange(
     callback: (map: Map<string, string[]>) => void,
   ): void {
@@ -485,6 +499,9 @@ export class InputController {
     this.onError_ = onError;
   }
 
+  /**
+   * Returns the currently registered error callback, if any.
+   */
   public getOnError(): Function | undefined {
     return this.onError_;
   }
@@ -494,6 +511,9 @@ export class InputController {
     this.keyHandler_.onOpenUrl = input;
   }
 
+  /**
+   * Returns the URL-opening callback used by dictionary and help flows.
+   */
   public getOnOpenUrl(): ((input: string) => void) | undefined {
     return this.keyHandler_.onOpenUrl;
   }
@@ -503,10 +523,17 @@ export class InputController {
     this.keyHandler_.ctrlEnterOption = option;
   }
 
+  /**
+   * Returns the conversion action triggered by `Ctrl+Enter`.
+   */
   public getCtrlEnterOption(): CtrlEnterOption {
     return this.keyHandler_.ctrlEnterOption;
   }
 
+  /**
+   * Selects a candidate by its index on the current candidate page.
+   * @param candidateID Zero-based index within the visible page.
+   */
   public selectCandidateAtIndex(candidateID: number): void {
     const selected = this.candidateController_.candidateAtIndex(candidateID);
     if (selected !== undefined) {
@@ -518,6 +545,10 @@ export class InputController {
     }
   }
 
+  /**
+   * Enables or disables IVS/PUA annotation output for supported Bopomofo fonts.
+   * @param flag Whether committed text should include annotation selectors.
+   */
   public setBopomofoFontAnnotationSupportEnabled(flag: boolean) {
     this.keyHandler_.bopomofoFontAnnotationSupportEnabled = flag;
   }
@@ -532,6 +563,12 @@ export class InputController {
     return this.mcbopomofoKeyEvent(key);
   }
 
+  /**
+   * Handles a simplified keyboard event payload without a DOM `KeyboardEvent`.
+   *
+   * This is useful in tests or host environments that normalize key presses
+   * before forwarding them to the controller.
+   */
   public simpleKeyboardEvent(
     button: string,
     isShift: boolean,

@@ -7,6 +7,12 @@
 
 import { BopomofoCharacterMap } from "./BopomofoCharacterMap";
 
+/**
+ * Bitmask-backed numeric identifier for one Bopomofo syllable component.
+ *
+ * A component may represent a consonant, medial, vowel, or tone marker and is
+ * combined inside {@link BopomofoSyllable}.
+ */
 export type Component = number;
 
 class PinyinWrapper {

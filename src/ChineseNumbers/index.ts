@@ -17,5 +17,7 @@
  * @packageDocumentation
  */
 
+/** Spoken-style Chinese numeral conversion and case selection helpers. */
 export { Case, ChineseNumbers } from "./ChineseNumbers";
+/** Suzhou numeral formatting utilities for traditional merchant notation. */
 export { SuzhouNumbers } from "./SuzhouNumbers";

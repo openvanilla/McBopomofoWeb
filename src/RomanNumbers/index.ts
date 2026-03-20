@@ -12,6 +12,7 @@
  * @packageDocumentation
  */
 
+/** Roman numeral conversion utilities and related output styles. */
 export {
   RomanNumbers,
   RomanNumbersError,

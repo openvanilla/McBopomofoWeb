@@ -17,6 +17,9 @@
  * @packageDocumentation
  */
 
+/** Stateless conversion helpers for Taiwanese braille text. */
 export { BopomofoBrailleConverter } from "./Converter";
+/** Token model for a single Bopomofo syllable in braille conversion flows. */
 export { BopomofoSyllable } from "./Tokens/BopomofoSyllable";
+/** Encoding options supported by the braille converters. */
 export { BrailleType } from "./Tokens/BrailleType";
