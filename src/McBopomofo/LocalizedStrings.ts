@@ -95,7 +95,7 @@ export class LocalizedStrings {
 
   excludeTitle(phrase: string) {
     if (this.languageCode === "zh-TW") {
-      return "您想要排除「" + phrase + "」這個詞彙嗎？？";
+      return "您想要排除「" + phrase + "」這個詞彙嗎？";
     }
     return 'Do you wan to exclude the phrase "' + phrase + '"?';
   }
@@ -121,7 +121,7 @@ export class LocalizedStrings {
     return "Cancel";
   }
 
-  canNotAddNewPhraseWhenBopomoroAnnotationIs() {
+  canNotAddNewPhraseWhenBopomofoAnnotationIs() {
     if (this.languageCode === "zh-TW") {
       return "注音字型破音字標記模式開啟時，不能增加新詞";
     }

@@ -1,7 +1,7 @@
 # McBopomofoWeb - 使用網頁技術打造的小麥注音輸入法
 
 ![Static Badge](https://img.shields.io/badge/platform-web-green)
-![ChromeOS](https://img.shields.io/badge/platform-chome_os-yellow) ![Static Badge](https://img.shields.io/badge/platform-windows-blue) [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/openvanilla/McBopomofoWeb) [![codecov](https://codecov.io/github/openvanilla/McBopomofoWeb/branch/main/graph/badge.svg?token=YpF9Z7IPMO)](https://codecov.io/github/openvanilla/McBopomofoWeb)
+![ChromeOS](https://img.shields.io/badge/platform-chrome_os-yellow) ![Static Badge](https://img.shields.io/badge/platform-windows-blue) [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/openvanilla/McBopomofoWeb) [![codecov](https://codecov.io/github/openvanilla/McBopomofoWeb/branch/main/graph/badge.svg?token=YpF9Z7IPMO)](https://codecov.io/github/openvanilla/McBopomofoWeb)
 
 本專案嘗試使用 JavaScript/TypeScript 與網頁相關技術，實作小麥注音輸入法，進而延伸出各種文字服務。
 
@@ -54,7 +54,7 @@
 
 ```sh
 npm install
-npm run build # 編譯翻譯網頁版本
+npm run build # 編譯網頁版本
 npm run build:chromeos # 編譯 Chrome OS 版本
 npm run build:pime # 編譯 Windows PIME 版本
 npm run build:mcp # 編譯 MCP Server 版本
@@ -154,7 +154,7 @@ args = ["/PATH/TO/output/mcp/index.js"]
 在 others 目錄中，我們提供了一個 Word Add-in，方便在 Microsoft Word 中使用國字轉換點字的相關功能。使用方式如下：
 
 ```sh
-cd others/WordAddin
+cd others/word_addin
 npm install
 npm run start:desktop
 ```

@@ -1,7 +1,7 @@
 # McBopomofoWeb - McBopomofo Input Method Built with Web Technologies
 
 ![Static Badge](https://img.shields.io/badge/platform-web-green)
-![ChromeOS](https://img.shields.io/badge/platform-chome_os-yellow) ![Static Badge](https://img.shields.io/badge/platform-windows-blue) [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/openvanilla/McBopomofoWeb) [![codecov](https://codecov.io/github/openvanilla/McBopomofoWeb/branch/main/graph/badge.svg?token=YpF9Z7IPMO)](https://codecov.io/github/openvanilla/McBopomofoWeb)
+![ChromeOS](https://img.shields.io/badge/platform-chrome_os-yellow) ![Static Badge](https://img.shields.io/badge/platform-windows-blue) [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/openvanilla/McBopomofoWeb) [![codecov](https://codecov.io/github/openvanilla/McBopomofoWeb/branch/main/graph/badge.svg?token=YpF9Z7IPMO)](https://codecov.io/github/openvanilla/McBopomofoWeb)
 
 This project attempts to implement the McBopomofo input method using JavaScript/TypeScript and web-related technologies. McBopomofo is an automatic character selection Bopomofo input method that provides multiple common keyboard layouts and various convenient features for fast input.
 
@@ -152,7 +152,7 @@ You can also deploy it to other AI services that support MCP, such as Gemini CLI
 In the others directory, we provide a Word Add-in that facilitates the use of Chinese character to Braille conversion functions in Microsoft Word. Usage is as follows:
 
 ```sh
-cd others/WordAddin
+cd others/word_addin
 npm install
 npm run start:desktop
 ```

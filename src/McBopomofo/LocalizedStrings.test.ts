@@ -179,7 +179,7 @@ describe("LocalizedStrings", () => {
     it("asks in zh-TW whether to exclude a phrase", () => {
       localizedStrings.languageCode = "zh-TW";
       const result = localizedStrings.excludeTitle("測試詞彙");
-      expect(result).toBe("您想要排除「測試詞彙」這個詞彙嗎？？");
+      expect(result).toBe("您想要排除「測試詞彙」這個詞彙嗎？");
     });
 
     it("asks in English whether to exclude a phrase", () => {
@@ -240,14 +240,14 @@ describe("LocalizedStrings", () => {
   describe("annotation notices", () => {
     it("returns zh-TW text when adding phrases is blocked by annotation mode", () => {
       localizedStrings.languageCode = "zh-TW";
-      expect(localizedStrings.canNotAddNewPhraseWhenBopomoroAnnotationIs()).toBe(
+      expect(localizedStrings.canNotAddNewPhraseWhenBopomofoAnnotationIs()).toBe(
         "注音字型破音字標記模式開啟時，不能增加新詞"
       );
     });
 
     it("returns English text when adding phrases is blocked by annotation mode", () => {
       localizedStrings.languageCode = "en";
-      expect(localizedStrings.canNotAddNewPhraseWhenBopomoroAnnotationIs()).toBe(
+      expect(localizedStrings.canNotAddNewPhraseWhenBopomofoAnnotationIs()).toBe(
         "Cannot add new phrases when Bopomofo annotation is on."
       );
     });

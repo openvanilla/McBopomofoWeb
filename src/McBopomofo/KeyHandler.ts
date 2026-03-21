@@ -1672,7 +1672,7 @@ export class KeyHandler {
     state: Inputting
   ): Inputting {
     const tooltip =
-      this.localizedStrings_.canNotAddNewPhraseWhenBopomoroAnnotationIs();
+      this.localizedStrings_.canNotAddNewPhraseWhenBopomofoAnnotationIs();
     return new Inputting(state.composingBuffer, state.cursorIndex, tooltip);
   }
 }
