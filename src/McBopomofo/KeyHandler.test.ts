@@ -2176,6 +2176,40 @@ describe("KeyHandler", () => {
       );
       expect((state as NumberInput).number.length).toBe(20);
     });
+
+    test("calls errorCallback when deleting from empty number", () => {
+      let state: InputState = new NumberInput("", []);
+      let errorCalled = false;
+      const backspace = Key.namedKey(KeyName.BACKSPACE);
+      keyHandler.handleNumberInput(
+        backspace,
+        state as NumberInput,
+        (newState) => {
+          state = newState;
+        },
+        () => {
+          errorCalled = true;
+        }
+      );
+      expect(errorCalled).toBe(true);
+    });
+
+    test("calls errorCallback when adding decimal point to empty number", () => {
+      let state: InputState = new NumberInput("", []);
+      let errorCalled = false;
+      const dot = Key.asciiKey(".");
+      keyHandler.handleNumberInput(
+        dot,
+        state as NumberInput,
+        (newState) => {
+          state = newState;
+        },
+        () => {
+          errorCalled = true;
+        }
+      );
+      expect(errorCalled).toBe(true);
+    });
   });
 });
 
