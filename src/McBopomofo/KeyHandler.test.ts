@@ -18,6 +18,7 @@ import {
   IrohaCandidate,
   Marking,
   NumberInput,
+  SelectingDictionary,
   SelectingFeature,
 } from "./InputState";
 import { Key, KeyName } from "./Key";
@@ -989,6 +990,67 @@ describe("KeyHandler", () => {
     });
   });
 
+  describe("Shift+Space with partial reading", () => {
+    test("calls errorCallback when reading is not empty", () => {
+      // Type "su" which is partial Bopomofo (ㄋㄧ without tone) then add text to grid
+      // First type a complete word to get grid length > 0
+      const setupKeys = asciiKey(["s", "u", "3"]);
+      let currentState: InputState = new Empty();
+      for (const key of setupKeys) {
+        keyHandler.handle(key, currentState, (s) => (currentState = s), () => {});
+      }
+      // Now type partial reading "su" (ㄋㄧ without tone)
+      const partialKeys = asciiKey(["s", "u"]);
+      for (const key of partialKeys) {
+        keyHandler.handle(key, currentState, (s) => (currentState = s), () => {});
+      }
+      expect(currentState).toBeInstanceOf(Inputting);
+
+      // Press Shift+Space: reading is non-empty → errorCallback
+      const errors: number[] = [];
+      const shiftSpace = new Key(" ", KeyName.SPACE, true, false, false);
+      const result = keyHandler.handle(
+        shiftSpace,
+        currentState,
+        (s) => (currentState = s),
+        () => errors.push(1)
+      );
+      expect(result).toBe(true);
+      expect(errors.length).toBeGreaterThan(0);
+    });
+  });
+
+  describe("Enter with partial reading", () => {
+    test("calls errorCallback when reading is not empty", () => {
+      // Type a complete word to ensure grid is non-empty
+      const setupKeys = asciiKey(["s", "u", "3"]);
+      let currentState: InputState = new Empty();
+      for (const key of setupKeys) {
+        keyHandler.handle(key, currentState, (s) => (currentState = s), () => {});
+      }
+      // Now type partial reading "su" (ㄋㄧ without tone)
+      const partialKeys = asciiKey(["s", "u"]);
+      for (const key of partialKeys) {
+        keyHandler.handle(key, currentState, (s) => (currentState = s), () => {});
+      }
+      expect(currentState).toBeInstanceOf(Inputting);
+
+      // Press Enter: reading is non-empty → errorCallback + buildInputtingState
+      const errors: number[] = [];
+      const states: InputState[] = [];
+      const enterKey = Key.namedKey(KeyName.RETURN);
+      const result = keyHandler.handle(
+        enterKey,
+        currentState,
+        (s) => { states.push(s); currentState = s; },
+        () => errors.push(1)
+      );
+      expect(result).toBe(true);
+      expect(errors.length).toBeGreaterThan(0);
+      expect(states.some((s) => s instanceof Inputting)).toBe(true);
+    });
+  });
+
   describe("State transitions", () => {
     test("enters marking state with shift selection", () => {
       let keys = asciiKey(["s", "u", "3", "c", "l", "3"]);
@@ -1067,6 +1129,56 @@ describe("KeyHandler", () => {
       expect(marking.composingBuffer).toBe("你好你好你好你好你好");
       expect(marking.cursorIndex).toBe(0);
       expect(marking.acceptable).toBe(false);
+    });
+
+    test("calls errorCallback when Enter is pressed in unacceptable Marking state", () => {
+      // Build 5*你好 to get a marking that exceeds acceptable limit
+      const keys = asciiKey([
+        "s", "u", "3", "c", "l", "3",
+        "s", "u", "3", "c", "l", "3",
+        "s", "u", "3", "c", "l", "3",
+        "s", "u", "3", "c", "l", "3",
+        "s", "u", "3", "c", "l", "3",
+      ]);
+      const shiftLeft = Key.namedKey(KeyName.LEFT, true, false);
+      for (let i = 0; i < 10; i++) keys.push(shiftLeft);
+      let markingState: InputState = handleKeySequence(keyHandler, keys);
+      expect(markingState).toBeInstanceOf(Marking);
+      expect((markingState as Marking).acceptable).toBe(false);
+
+      const errors: number[] = [];
+      const states: InputState[] = [];
+      const enterKey = Key.namedKey(KeyName.RETURN);
+      const result = keyHandler.handle(
+        enterKey,
+        markingState,
+        (s) => { states.push(s); markingState = s; },
+        () => errors.push(1)
+      );
+      expect(result).toBe(true);
+      expect(errors.length).toBeGreaterThan(0);
+      // Should stay in Marking state
+      expect(states.some((s) => s instanceof Marking)).toBe(true);
+    });
+
+    test("opens SelectingDictionary when ? is pressed in Marking state", () => {
+      const keys = asciiKey(["s", "u", "3", "c", "l", "3"]);
+      const shiftLeft = Key.namedKey(KeyName.LEFT, true, false);
+      keys.push(shiftLeft);
+      keys.push(shiftLeft);
+      let currentState: InputState = handleKeySequence(keyHandler, keys);
+      expect(currentState).toBeInstanceOf(Marking);
+
+      const questionKey = Key.asciiKey("?");
+      const states: InputState[] = [];
+      const result = keyHandler.handle(
+        questionKey,
+        currentState,
+        (s) => { states.push(s); currentState = s; },
+        () => {}
+      );
+      expect(result).toBe(true);
+      expect(currentState).toBeInstanceOf(SelectingDictionary);
     });
   });
 
@@ -1498,6 +1610,27 @@ describe("KeyHandler", () => {
       } else {
         expect(errorCalled).toBe(true);
       }
+    });
+
+    test("calls errorCallback when Tab is pressed in non-Inputting state (Marking)", () => {
+      // Build a Marking state
+      const keys = asciiKey(["s", "u", "3", "c", "l", "3"]);
+      const shiftLeft = Key.namedKey(KeyName.LEFT, true, false);
+      keys.push(shiftLeft);
+      keys.push(shiftLeft);
+      let currentState: InputState = handleKeySequence(keyHandler, keys);
+      expect(currentState).toBeInstanceOf(Marking);
+
+      const errors: number[] = [];
+      const tab = Key.namedKey(KeyName.TAB);
+      const result = keyHandler.handle(
+        tab,
+        currentState,
+        (s) => (currentState = s),
+        () => errors.push(1)
+      );
+      expect(result).toBe(true);
+      expect(errors.length).toBeGreaterThan(0);
     });
   });
 
