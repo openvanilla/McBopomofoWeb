@@ -888,7 +888,29 @@ if (typeof document !== "undefined") {
       screenKeyboard.loadLayout();
 
       let shiftKeyIsPressed = false;
+      let isComposing = false;
+
+      $("text_area").addEventListener("compositionstart", (event) => {
+        isComposing = true;
+        const warning = $("ime_warning");
+        if (warning) {
+          warning.style.display = "block";
+        }
+      });
+
+      $("text_area").addEventListener("compositionend", (event) => {
+        isComposing = false;
+        const warning = $("ime_warning");
+        if (warning) {
+          warning.style.display = "none";
+        }
+      });
+
       $("text_area").addEventListener("keyup", (event) => {
+        if (isComposing || event.isComposing) {
+          return;
+        }
+
         if (event.key === "Shift" && shiftKeyIsPressed) {
           globalUi.alphabetMode = !globalUi.alphabetMode;
           controller.reset();
@@ -897,6 +919,10 @@ if (typeof document !== "undefined") {
       });
 
       $("text_area").addEventListener("keydown", (event) => {
+        if (isComposing || event.isComposing || event.keyCode === 229) {
+          return;
+        }
+
         if (event.metaKey || event.altKey) {
           controller.reset();
           return;
