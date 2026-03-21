@@ -2182,6 +2182,7 @@ describe("KeyHandler", () => {
 describe("Changing reading using tone key", () => {
   function checkChangingReadingUsingToneKey(input: string, expected: string) {
     let keyHandler: KeyHandler = new KeyHandler(new WebLanguageModel(webData));
+    keyHandler.allowChangingPriorTone = true;
     let currentState: InputState = new Empty();
     const keys = input.split("");
 

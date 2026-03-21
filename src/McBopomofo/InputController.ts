@@ -533,7 +533,6 @@ export class InputController {
    * @param flag Whether changing the prior tone is allowed.
    */
   public setAllowChangingPriorTone(flag: boolean) {
-    console.log("Setting allowChangingPriorTone to", flag);
     this.keyHandler_.allowChangingPriorTone = flag;
   }
 

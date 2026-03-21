@@ -414,8 +414,6 @@ export class KeyHandler {
       }
     }
 
-    console.log("this.allowChangingPriorTone", this.allowChangingPriorTone);
-
     if (
       this.reading_.hasToneMarkerOnly &&
       this.grid_.length > 0 &&
