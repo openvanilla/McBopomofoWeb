@@ -95,7 +95,7 @@
                   id="bopomofo_font_annotation_support_enabled"><label
                   for="bopomofo_font_annotation_support_enabled">使用</label><br />
                 <small>這項功能支援<a href="https://github.com/ButTaiwan/bpmfvs/"
-                    target="blank">「字嗨注音字型」</a>，直接將輸入法使用的注音字根，套到對應的注音字體上。請參考 <a
+                    target="blank">「字嗨注音字型」</a>，直接將輸入法使用的注音符號，套到對應的注音字體上，啟用之後，會需要一段時間載入字體。請參考 <a
                     href="https://blog.justfont.com/2024/05/bpmf-font/" target="blank"> justfont 上的說明</a>。</small>
               </td>
             </tr>
@@ -214,6 +214,14 @@
                   <option value="5">輸入漢語拼音</option>
                 </select>
                 <p>在輸入一些內容後，按下 Ctrl 與 Enter 可以輸出特殊內容。</p>
+              </td>
+            </tr>
+            <tr>
+              <td class="option_title" id="tone_keys_title">聲調鍵：</td>
+              <td>
+                <input type="checkbox" name="allow_change_prior_tone" id="allow_change_prior_tone"><label
+                  for="allow_change_prior_tone" id="allow_change_prior_tone_label">允許在輸入聲調之後改變聲調（類似 macOS
+                  內建輸入法。僅適用於標準鍵盤佈局）。</label>
               </td>
             </tr>
             <tr>
