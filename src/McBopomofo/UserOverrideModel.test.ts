@@ -179,6 +179,46 @@ describe("UserOverrideModel", () => {
       expect(smallModel.m_lruList.length).toBe(2);
       expect(Object.keys(smallModel.m_lruMap).length).toBe(2);
     });
+
+    test("handles cursor out of bounds (cursor > totalReadings)", () => {
+      const node = createMockNode("ㄊㄞˊ", "台");
+      const walkBefore = createMockWalkResult([node], 1);
+      const walkAfter = createMockWalkResult([node], 1);
+
+      // cursor 5 is beyond totalReadings 1, findNodeAt returns undefined
+      model.observe(walkBefore, walkAfter, 5, 1000);
+
+      expect(model.m_lruList.length).toBe(0);
+    });
+
+    test("handles punctuation as anterior node in 3-node context", () => {
+      // nodes[0]=punctuation, nodes[1]=regular, nodes[2]=regular
+      // cursor=2 points to nodes[2]; FormObservationKey walks back:
+      // head node=nodes[2], prev=nodes[1] (not punct), anterior=nodes[0]
+      // (punctuation) → covers line 85-86 in UserOverrideModel.ts
+      const punctuationNode = createMockNode("_punctuation_comma", "，");
+      const regularNode1 = createMockNode("ㄊㄞˊ", "台");
+      const regularNode2 = createMockNode("ㄊㄞˊ", "臺");
+
+      const walkBefore = new WalkResult(
+        [punctuationNode, regularNode1, regularNode2],
+        0,
+        0,
+        0,
+        3
+      );
+      const walkAfter = new WalkResult(
+        [punctuationNode, regularNode1, regularNode2],
+        0,
+        0,
+        0,
+        3
+      );
+
+      model.observe(walkBefore, walkAfter, 2, 1000);
+
+      expect(model.m_lruList.length).toBe(1);
+    });
   });
 
   describe("suggest method", () => {

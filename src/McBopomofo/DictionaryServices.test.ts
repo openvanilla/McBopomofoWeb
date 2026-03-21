@@ -124,6 +124,19 @@ describe("DictionaryServices", () => {
     expect(result).toBe(false);
   });
 
+  test("speak service returns false when speech synthesis is unavailable", () => {
+    const windowLike = globalThis as any;
+    // Remove speech synthesis to simulate unsupported environment
+    delete windowLike.window.speechSynthesis;
+    delete windowLike.window.SpeechSynthesisUtterance;
+    delete windowLike.speechSynthesis;
+    delete windowLike.SpeechSynthesisUtterance;
+
+    const speakService = dictionaryServices.services[0];
+    const result = speakService.lookUp("注音", new Empty(), 0, jest.fn());
+    expect(result).toBe(false);
+  });
+
   test("http dictionary service opens encoded url and resets state", () => {
     const stateCallback = jest.fn();
     const openUrl = jest.fn();

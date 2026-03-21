@@ -363,4 +363,19 @@ describe("CandidateWrapper", () => {
     expect(wrapper.reading).toBe(candidate.reading);
     expect(wrapper.value).toBe(candidate.value);
   });
+
+  test("creates CandidateWrapper with default values", () => {
+    const wrapper = new CandidateWrapper();
+    expect(wrapper.keyCap).toBe("");
+    expect(wrapper.candidate).toBeInstanceOf(Candidate);
+    expect(wrapper.selected).toBe(false);
+  });
+});
+
+describe("CandidateController currentPageIndex with no keyCaps", () => {
+  test("returns 0 for currentPageIndex when no keyCaps configured", () => {
+    const emptyCapController = new CandidateController();
+    emptyCapController.update([new Candidate("", "甲", "甲")], []);
+    expect(emptyCapController.currentPageIndex).toBe(0);
+  });
 });

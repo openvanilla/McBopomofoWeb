@@ -1,5 +1,11 @@
 import { LanguageModel, Unigram } from "./LanguageModel";
-import { ReadingGrid } from "./ReadingGrid";
+import {
+  ReadingGrid,
+  Node,
+  Span,
+  OverrideType,
+  ScoreRankedLanguageModel,
+} from "./ReadingGrid";
 
 class MockLanguageModel implements LanguageModel {
   getUnigrams(key: string): Unigram[] {
@@ -227,5 +233,83 @@ describe("ReadingGrid", () => {
     grid.insertReading("testReading2");
 
     expect(combineReadingRangeSpy).toHaveBeenCalled();
+  });
+
+  it("should insert reading in the middle of existing readings", () => {
+    const mockLM = new MockLanguageModel();
+    const grid = new ReadingGrid(mockLM);
+    grid.insertReading("testReading");
+    grid.insertReading("testReading2");
+    // cursor is now at position 2; move it to position 1 (middle)
+    grid.cursor = 1;
+    grid.insertReading("testReading");
+    // expandGridAt(1): loc=1, !loc=false, loc===spans_.length? 1!==2 → else branch (lines 377-378)
+    expect(grid.readings.length).toBe(3);
+    expect(grid.readings[0]).toBe("testReading");
+    expect(grid.readings[1]).toBe("testReading");
+    expect(grid.readings[2]).toBe("testReading2");
+  });
+
+  it("Node.value returns empty string when unigrams is empty", () => {
+    const node = new Node("reading", 1, []);
+    expect(node.value).toBe("");
+  });
+
+  it("Node.score returns 0 when unigrams is empty", () => {
+    const node = new Node("reading", 1, []);
+    expect(node.score).toBe(0);
+  });
+
+  it("should use top unigram score when kOverrideValueWithScoreFromTopUnigram override is applied", () => {
+    const mockLM = new MockLanguageModel();
+    const grid = new ReadingGrid(mockLM);
+    grid.insertReading("testReading");
+    grid.insertReading("testReading2");
+    // Override at cursor position 2 using kOverrideValueWithScoreFromTopUnigram
+    const result = grid.overrideCandidateWithString(
+      2,
+      "testValue2",
+      OverrideType.kOverrideValueWithScoreFromTopUnigram
+    );
+    expect(result).toBe(true);
+    // Walk the grid – the overridden node should use the top-unigram score (line 594)
+    const walk = grid.walk();
+    expect(walk.nodes.length).toBeGreaterThan(0);
+  });
+
+  it("should clear a span's nodes", () => {
+    const span = new Span();
+    const node = new Node("reading", 1, [new Unigram("value", -1)]);
+    span.add(node);
+    expect(span.maxLength).toBe(1);
+    expect(span.nodeOf(1)).toBeDefined();
+    // Span.clear() covers lines 774-775
+    span.clear();
+    expect(span.maxLength).toBe(0);
+    expect(span.nodeOf(1)).toBeUndefined();
+  });
+
+  it("should handle removeNodesOfOrLongerThan reaching index 0", () => {
+    const span = new Span();
+    // Add only a node of spanningLength 2 (no node at length 1)
+    const node2 = new Node("reading2", 2, [new Unigram("value2", -1)]);
+    span.add(node2);
+    expect(span.maxLength).toBe(2);
+    // Remove nodes of length >= 2; while loop starts at i=0, finds nothing, hits i===0 (lines 811-815)
+    span.removeNodesOfOrLongerThan(2);
+    expect(span.maxLength).toBe(0);
+    expect(span.nodeOf(1)).toBeUndefined();
+    expect(span.nodeOf(2)).toBeUndefined();
+  });
+
+  it("ScoreRankedLanguageModel.getUnigrams and hasUnigrams throw NotImplemented", () => {
+    const innerLm: LanguageModel = {
+      getUnigrams: () => [],
+      hasUnigrams: () => false,
+    };
+    // Lines 836, 839, 842
+    const slm = new ScoreRankedLanguageModel(innerLm);
+    expect(() => slm.getUnigrams("key")).toThrow();
+    expect(() => slm.hasUnigrams("key")).toThrow();
   });
 });
