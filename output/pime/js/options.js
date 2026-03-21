@@ -17,20 +17,22 @@ window.onload = () => {
     by_default_deactivated: false,
     beep_on_error: true,
     repeated_punctuation_choose_candidate: false,
+    allow_changing_prior_tone: false,
   };
 
   let settings = {};
+  const $ = (id) => document.getElementById(id);
 
   function applySettings(settings) {
     {
       if (settings.input_mode === "use_plainbopomofo") {
-        document.getElementById("use_plainbopomofo").checked = true;
+        $("use_plainbopomofo").checked = true;
       } else {
-        document.getElementById("use_mcbopomofo").checked = true;
+        $("use_mcbopomofo").checked = true;
       }
     }
     {
-      const select = document.getElementById("font_size");
+      const select = $("font_size");
       const options = select.getElementsByTagName("option");
       if (settings.candidate_font_size == undefined) {
         settings.candidate_font_size = 16;
@@ -43,7 +45,7 @@ window.onload = () => {
       }
     }
     {
-      const select = document.getElementById("layout");
+      const select = $("layout");
       const options = select.getElementsByTagName("option");
       for (const option of options) {
         if (option.value === settings.layout) {
@@ -53,7 +55,7 @@ window.onload = () => {
       }
     }
     {
-      const select = document.getElementById("keys");
+      const select = $("keys");
       const options = select.getElementsByTagName("option");
       for (const option of options) {
         if (option.value === settings.candidate_keys) {
@@ -63,7 +65,7 @@ window.onload = () => {
       }
     }
     {
-      const select = document.getElementById("keys_count");
+      const select = $("keys_count");
       const options = select.getElementsByTagName("option");
       for (const option of options) {
         if (option.value == settings.candidate_keys_count) {
@@ -74,38 +76,45 @@ window.onload = () => {
     }
     {
       if (settings.select_phrase === "before_cursor") {
-        document.getElementById("before_cursor").checked = true;
-        document.getElementById("after_cursor").checked = false;
+        $("before_cursor").checked = true;
+        $("after_cursor").checked = false;
       } else if (settings.select_phrase === "after_cursor") {
-        document.getElementById("before_cursor").checked = false;
-        document.getElementById("after_cursor").checked = true;
+        $("before_cursor").checked = false;
+        $("after_cursor").checked = true;
       }
     }
     {
-      document.getElementById("esc_key").checked =
-        settings.esc_key_clear_entire_buffer;
+      $("esc_key").checked = settings.esc_key_clear_entire_buffer;
     }
     {
-      const enabled = settings.shift_key_toggle_alphabet_mode === undefined ? true : settings.shift_key_toggle_alphabet_mode;
-      document.getElementById("shift_key").checked = enabled;
+      const enabled =
+        settings.shift_key_toggle_alphabet_mode === undefined
+          ? true
+          : settings.shift_key_toggle_alphabet_mode;
+      $("shift_key").checked = enabled;
     }
     {
-      document.getElementById("move_cursor").checked = settings.move_cursor;
+      $("move_cursor").checked = settings.move_cursor;
     }
 
     {
-      document.getElementById("ctrl_enter_option").onchange = function (event) {
-        const value = +document.getElementById("ctrl_enter_option").value;
+      $("ctrl_enter_option").onchange = function (event) {
+        const value = +$("ctrl_enter_option").value;
         settings.ctrl_enter_option = value;
         saveSettings(settings);
       };
     }
+
     {
-      document.getElementById("repeated_punctuation_choose_candidate").checked =
+      $("allow_change_prior_tone").checked = settings.allow_changing_prior_tone;
+    }
+
+    {
+      $("repeated_punctuation_choose_candidate").checked =
         settings.repeated_punctuation_choose_candidate;
     }
     {
-      const select = document.getElementById("moving_cursor_option");
+      const select = $("moving_cursor_option");
       const options = select.getElementsByTagName("option");
       for (const option of options) {
         if (option.value === settings.moving_cursor_option) {
@@ -116,16 +125,16 @@ window.onload = () => {
     }
     {
       if (settings.letter_mode === "upper") {
-        document.getElementById("uppercase_letters").checked = true;
-        document.getElementById("lowercase_letters").checked = false;
+        $("uppercase_letters").checked = true;
+        $("lowercase_letters").checked = false;
       } else if (settings.letter_mode === "lower") {
-        document.getElementById("uppercase_letters").checked = false;
-        document.getElementById("lowercase_letters").checked = true;
+        $("uppercase_letters").checked = false;
+        $("lowercase_letters").checked = true;
       }
     }
 
     {
-      const select = document.getElementById("ctrl_enter_option");
+      const select = $("ctrl_enter_option");
       const options = select.getElementsByTagName("option");
       for (const option of options) {
         if (option.value == settings.ctrl_enter_option) {
@@ -136,11 +145,10 @@ window.onload = () => {
     }
 
     {
-      document.getElementById("by_default_deactivated").checked =
-        settings.by_default_deactivated;
+      $("by_default_deactivated").checked = settings.by_default_deactivated;
     }
     {
-      document.getElementById("beep_on_error").checked = settings.beep_on_error;
+      $("beep_on_error").checked = settings.beep_on_error;
     }
   }
 
@@ -183,107 +191,109 @@ window.onload = () => {
     xhttp.send("");
   })();
 
-  document.getElementById("use_mcbopomofo").onchange = (event) => {
+  $("use_mcbopomofo").onchange = (event) => {
     settings.input_mode = "use_mcbopomofo";
     saveSettings(settings);
   };
 
-  document.getElementById("use_plainbopomofo").onchange = (event) => {
+  $("use_plainbopomofo").onchange = (event) => {
     settings.input_mode = "use_plainbopomofo";
     saveSettings(settings);
   };
 
-  document.getElementById("font_size").onchange = (event) => {
-    const value = +document.getElementById("font_size").value;
+  $("font_size").onchange = (event) => {
+    const value = +$("font_size").value;
     settings.candidate_font_size = value;
     saveSettings(settings);
   };
 
-  document.getElementById("layout").onchange = (event) => {
-    const value = document.getElementById("layout").value;
+  $("layout").onchange = (event) => {
+    const value = $("layout").value;
     settings.layout = value;
     saveSettings(settings);
   };
 
-  document.getElementById("keys").onchange = (event) => {
-    const value = document.getElementById("keys").value;
+  $("keys").onchange = (event) => {
+    const value = $("keys").value;
     settings.candidate_keys = value;
     saveSettings(settings);
   };
 
-  document.getElementById("keys_count").onchange = function (event) {
-    const value = +document.getElementById("keys_count").value;
+  $("keys_count").onchange = function (event) {
+    const value = +$("keys_count").value;
     settings.candidate_keys_count = value;
     saveSettings(settings);
   };
 
-  document.getElementById("moving_cursor_option").onchange = function (event) {
-    const value = +document.getElementById("moving_cursor_option").value;
+  $("moving_cursor_option").onchange = function (event) {
+    const value = +$("moving_cursor_option").value;
     settings.moving_cursor_option = value;
     saveSettings(settings);
   };
 
-  document.getElementById("before_cursor").onchange = (event) => {
+  $("before_cursor").onchange = (event) => {
     settings.select_phrase = "before_cursor";
     saveSettings(settings);
   };
 
-  document.getElementById("after_cursor").onchange = (event) => {
+  $("after_cursor").onchange = (event) => {
     settings.select_phrase = "after_cursor";
     saveSettings(settings);
   };
 
-  document.getElementById("esc_key").onchange = (event) => {
-    const checked = document.getElementById("esc_key").checked;
+  $("esc_key").onchange = (event) => {
+    const checked = $("esc_key").checked;
     settings.esc_key_clear_entire_buffer = checked;
     saveSettings(settings);
   };
 
-  document.getElementById("shift_key").onchange = (event) => {
-    const checked = document.getElementById("shift_key").checked;
+  $("shift_key").onchange = (event) => {
+    const checked = $("shift_key").checked;
     settings.shift_key_toggle_alphabet_mode = checked;
     saveSettings(settings);
   };
 
-  document.getElementById("uppercase_letters").onchange = (event) => {
+  $("uppercase_letters").onchange = (event) => {
     settings.letter_mode = "upper";
     saveSettings(settings);
   };
 
-  document.getElementById("lowercase_letters").onchange = (event) => {
+  $("lowercase_letters").onchange = (event) => {
     settings.letter_mode = "lower";
     saveSettings(settings);
   };
 
-  document.getElementById("move_cursor").onchange = (event) => {
-    const checked = document.getElementById("move_cursor").checked;
+  $("move_cursor").onchange = (event) => {
+    const checked = $("move_cursor").checked;
     settings.move_cursor = checked;
     saveSettings(settings);
   };
 
-  document.getElementById("by_default_deactivated").onchange = (event) => {
-    const checked = document.getElementById("by_default_deactivated").checked;
+  $("by_default_deactivated").onchange = (event) => {
+    const checked = $("by_default_deactivated").checked;
     settings.by_default_deactivated = checked;
     saveSettings(settings);
   };
 
-  document.getElementById("beep_on_error").onchange = (event) => {
-    const checked = document.getElementById("beep_on_error").checked;
+  $("beep_on_error").onchange = (event) => {
+    const checked = $("beep_on_error").checked;
     settings.by_default_deactivated = checked;
     saveSettings(settings);
   };
 
-  document.getElementById("repeated_punctuation_choose_candidate").onchange = (
-    event
-  ) => {
-    const checked = document.getElementById(
-      "repeated_punctuation_choose_candidate"
-    ).checked;
+  $("allow_change_prior_tone").onchange = (event) => {
+    const checked = $("allow_change_prior_tone").checked;
+    settings.allow_changing_prior_tone = checked;
+    saveSettings(settings);
+  };
+
+  $("repeated_punctuation_choose_candidate").onchange = (event) => {
+    const checked = $("repeated_punctuation_choose_candidate").checked;
     settings.repeated_punctuation_choose_candidate = checked;
     saveSettings(settings);
   };
 
-  document.getElementById("open_data_folder").onclick = () => {
+  $("open_data_folder").onclick = () => {
     openUserDataFolder();
     return false;
   };

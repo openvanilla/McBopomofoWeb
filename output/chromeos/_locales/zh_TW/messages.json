@@ -253,5 +253,11 @@
   },
   "bpmf_annotation_support_off": {
     "message": "不支援注音符號字體"
+  },
+  "tone_keys_title": {
+    "message": "聲調鍵："
+  },
+  "allow_change_prior_tone_label": {
+    "message": "允許在輸入聲調之後改變聲調（類似 macOS 內建輸入法。僅適用於標準鍵盤佈局）。"
   }
 }

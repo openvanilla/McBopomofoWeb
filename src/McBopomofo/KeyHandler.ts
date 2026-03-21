@@ -93,11 +93,69 @@ function getTimestamp(): number {
   return new Date().getTime() / 1000;
 }
 
+export class KeyHandlerSettings {
+  constructor(
+    public readonly languageCode: string,
+    public readonly selectPhraseAfterCursorAsCandidate: boolean = false,
+    public readonly moveCursorAfterSelection: boolean = false,
+    public readonly putLowercaseLettersToComposingBuffer: boolean = false,
+    public readonly escKeyClearsEntireComposingBuffer: boolean = false,
+    public readonly keyboardLayout: BopomofoKeyboardLayout = BopomofoKeyboardLayout.StandardLayout,
+    public readonly halfWidthPunctuation: boolean = false,
+    public readonly repeatedPunctuationToSelectCandidateEnabled: boolean = false,
+    public readonly onOpenUrl:
+      | ((input: string) => void)
+      | undefined = undefined,
+    public readonly ctrlEnterOption: CtrlEnterOption = CtrlEnterOption.None,
+    public readonly bopomofoFontAnnotationSupportEnabled: boolean = false,
+    public readonly allowChangingPriorTone: boolean = false
+  ) {}
+}
+
 export class KeyHandler {
   private variantAnnotator_ = new VariantAnnotator(
     webBpmfvsPua,
     webBpmfvsVariants
   );
+
+  /// Export current settings to a KeyHandlerSettings object.
+  public exportSettings(): KeyHandlerSettings {
+    return new KeyHandlerSettings(
+      this.languageCode,
+      this.selectPhraseAfterCursorAsCandidate,
+      this.moveCursorAfterSelection,
+      this.putLowercaseLettersToComposingBuffer,
+      this.escKeyClearsEntireComposingBuffer,
+      this.keyboardLayout,
+      this.halfWidthPunctuation,
+      this.repeatedPunctuationToSelectCandidateEnabled,
+      this.onOpenUrl,
+      this.ctrlEnterOption_,
+      this.bopomofoFontAnnotationSupportEnabled,
+      this.allowChangingPriorTone
+    );
+  }
+
+  /// Restore settings from a KeyHandlerSettings object.
+  public restoreSettings(settings: KeyHandlerSettings): void {
+    this.languageCode = settings.languageCode;
+    this.selectPhraseAfterCursorAsCandidate_ =
+      settings.selectPhraseAfterCursorAsCandidate;
+    this.moveCursorAfterSelection_ = settings.moveCursorAfterSelection;
+    this.putLowercaseLettersToComposingBuffer_ =
+      settings.putLowercaseLettersToComposingBuffer;
+    this.escKeyClearsEntireComposingBuffer_ =
+      settings.escKeyClearsEntireComposingBuffer;
+    this.keyboardLayout = settings.keyboardLayout;
+    this.halfWidthPunctuation = settings.halfWidthPunctuation;
+    this.repeatedPunctuationToSelectCandidateEnabled =
+      settings.repeatedPunctuationToSelectCandidateEnabled;
+    this.onOpenUrl = settings.onOpenUrl;
+    this.ctrlEnterOption_ = settings.ctrlEnterOption;
+    this.bopomofoFontAnnotationSupportEnabled =
+      settings.bopomofoFontAnnotationSupportEnabled;
+    this.allowChangingPriorTone = settings.allowChangingPriorTone;
+  }
 
   private localizedStrings_: LocalizedStrings = new LocalizedStrings();
 
@@ -185,6 +243,14 @@ export class KeyHandler {
   }
   public set bopomofoFontAnnotationSupportEnabled(flag: boolean) {
     this.bopomofoFontAnnotationSupportEnabled_ = flag;
+  }
+
+  private allowChangingPriorTone_: boolean = false;
+  public get allowChangingPriorTone(): boolean {
+    return this.allowChangingPriorTone_;
+  }
+  public set allowChangingPriorTone(flag: boolean) {
+    this.allowChangingPriorTone_ = flag;
   }
 
   private languageModel_: LanguageModel;
@@ -348,10 +414,13 @@ export class KeyHandler {
       }
     }
 
+    console.log("this.allowChangingPriorTone", this.allowChangingPriorTone);
+
     if (
       this.reading_.hasToneMarkerOnly &&
       this.grid_.length > 0 &&
-      this.grid_.cursor > 0
+      this.grid_.cursor > 0 &&
+      this.allowChangingPriorTone
     ) {
       const cursor = this.grid_.cursor - 1;
       const reading = this.grid_.readings[cursor];

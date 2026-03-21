@@ -52,6 +52,8 @@ type ChromeMcBopomofoSettings = {
   repeated_punctuation_choose_candidate: boolean;
   /** Whether BPMF font annotation support is enabled. */
   bopomofo_font_annotation_support_enabled: boolean;
+  /** Whether changing the prior tone is allowed. */
+  allow_changing_prior_tone: boolean;
 };
 ``;
 /**
@@ -82,6 +84,7 @@ class ChromeMcBopomofo {
     use_notification: true,
     repeated_punctuation_choose_candidate: false,
     bopomofo_font_annotation_support_enabled: false,
+    allow_changing_prior_tone: false,
   };
 
   // The current settings.
@@ -102,6 +105,7 @@ class ChromeMcBopomofo {
     use_notification: true,
     repeated_punctuation_choose_candidate: false,
     bopomofo_font_annotation_support_enabled: false,
+    allow_changing_prior_tone: false,
   };
   lang = "en";
   isShiftHold = false;
@@ -189,6 +193,9 @@ class ChromeMcBopomofo {
       );
       this.inputController.setBopomofoFontAnnotationSupportEnabled(
         this.settings.bopomofo_font_annotation_support_enabled
+      );
+      this.inputController.setAllowChangingPriorTone(
+        this.settings.allow_changing_prior_tone
       );
     });
   }

@@ -23,12 +23,7 @@ const calculateFunctionPosition = ({
 
 const INPUT_FONT_SIZE_BPMF = 22;
 const INPUT_FONT_SIZE_DEFAULT = 18;
-const copyTextFromTextArea = async ({
-  areaId,
-  document,
-  clipboard,
-  alert,
-}) => {
+const copyTextFromTextArea = async ({ areaId, document, clipboard, alert }) => {
   const area = document.getElementById(areaId);
   if (area == undefined) {
     alert("找不到輸出區域，無法複製");
@@ -39,14 +34,14 @@ const copyTextFromTextArea = async ({
   return true;
 };
 
-if (typeof module !== "undefined" && module.exports) {
-  module.exports = {
-    calculateFunctionPosition,
-    copyTextFromTextArea,
-    INPUT_FONT_SIZE_BPMF,
-    INPUT_FONT_SIZE_DEFAULT,
-  };
-}
+// if (typeof module !== "undefined" && module.exports) {
+//   module.exports = {
+//     calculateFunctionPosition,
+//     copyTextFromTextArea,
+//     INPUT_FONT_SIZE_BPMF,
+//     INPUT_FONT_SIZE_DEFAULT,
+//   };
+// }
 
 if (typeof document !== "undefined") {
   (() => {
@@ -524,6 +519,7 @@ if (typeof document !== "undefined") {
         beep_on_error: true,
         repeated_punctuation_choose_candidate: false,
         bopomofo_font_annotation_support_enabled: false,
+        allow_changing_prior_tone: false,
       };
 
       that.settings = that.defaultSettings;
@@ -630,6 +626,11 @@ if (typeof document !== "undefined") {
           "esc_key",
           settings.esc_key_clear_entire_buffer,
           (checked) => controller.setEscClearEntireBuffer(checked)
+        );
+        applyCheckboxSetting(
+          "allow_change_prior_tone",
+          settings.allow_changing_prior_tone,
+          (checked) => controller.setAllowChangingPriorTone(checked)
         );
         applyCheckboxSetting(
           "repeated_punctuation_choose_candidate",
@@ -1017,6 +1018,14 @@ if (typeof document !== "undefined") {
         const checked = getChecked("esc_key");
         controller.setEscClearEntireBuffer(checked);
         settingsManager.settings.esc_key_clear_entire_buffer = checked;
+        settingsManager.saveSettings();
+        focusElement("text_area");
+      };
+
+      $("allow_change_prior_tone").onchange = (event) => {
+        const checked = getChecked("allow_change_prior_tone");
+        controller.setAllowChangingPriorTone(checked);
+        settingsManager.settings.allow_changing_prior_tone = checked;
         settingsManager.saveSettings();
         focusElement("text_area");
       };

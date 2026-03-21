@@ -107,7 +107,7 @@ class InputUIController {
   /** Updates the current candidate page and total page count. */
   setPageIndex(
     candidateCurrentPageIndex: number,
-    candidateTotalPageCount: number,
+    candidateTotalPageCount: number
   ) {
     this.candidateCurrentPageIndex_ = candidateCurrentPageIndex;
     this.candidateTotalPageCount_ = candidateTotalPageCount;
@@ -126,7 +126,7 @@ class InputUIController {
       this.candidates_,
       this.tooltip_,
       this.candidateTotalPageCount_,
-      this.candidateCurrentPageIndex_,
+      this.candidateCurrentPageIndex_
     );
     const json = JSON.stringify(state);
     this.ui.update(json);
@@ -218,23 +218,8 @@ export class InputController {
 
   /** Sets if the input controller should use traditional mode or not. */
   public setTraditionalMode(flag: boolean): void {
-    const languageCode = this.keyHandler_.languageCode;
-    const selectPhraseAfterCursorAsCandidate =
-      this.keyHandler_.selectPhraseAfterCursorAsCandidate;
-    const moveCursorAfterSelection = this.keyHandler_.moveCursorAfterSelection;
-    const putLowercaseLettersToComposingBuffer =
-      this.keyHandler_.putLowercaseLettersToComposingBuffer;
-    const escKeyClearsEntireComposingBuffer_ =
-      this.keyHandler_.escKeyClearsEntireComposingBuffer;
-    const keyboardLayout = this.keyHandler_.keyboardLayout;
-    const halfWidthPunctuation = this.keyHandler_.halfWidthPunctuation;
-    const repeatedPunctuationToSelectCandidateEnabled =
-      this.keyHandler_.repeatedPunctuationToSelectCandidateEnabled;
     const onError = this.onError_;
-    const onOpenUrl = this.keyHandler_.onOpenUrl;
-    const ctrlEnterOption = this.keyHandler_.ctrlEnterOption;
-    const bopomofoFontAnnotationSupportEnabled =
-      this.keyHandler_.bopomofoFontAnnotationSupportEnabled;
+    const settings = this.keyHandler_.exportSettings();
 
     const macroConverter = this.lm_.getMacroConverter();
     const converter = this.lm_.getConverter();
@@ -258,23 +243,8 @@ export class InputController {
 
     this.keyHandler_ = new KeyHandler(this.lm_);
     this.keyHandler_.traditionalMode = flag;
-    this.keyHandler_.languageCode = languageCode;
-    this.keyHandler_.selectPhraseAfterCursorAsCandidate =
-      selectPhraseAfterCursorAsCandidate;
-    this.keyHandler_.moveCursorAfterSelection = moveCursorAfterSelection;
-    this.keyHandler_.putLowercaseLettersToComposingBuffer =
-      putLowercaseLettersToComposingBuffer;
-    this.keyHandler_.escKeyClearsEntireComposingBuffer =
-      escKeyClearsEntireComposingBuffer_;
-    this.keyHandler_.keyboardLayout = keyboardLayout;
-    this.keyHandler_.halfWidthPunctuation = halfWidthPunctuation;
-    this.keyHandler_.repeatedPunctuationToSelectCandidateEnabled =
-      repeatedPunctuationToSelectCandidateEnabled;
+    this.keyHandler_.restoreSettings(settings);
     this.onError_ = onError;
-    this.keyHandler_.onOpenUrl = onOpenUrl;
-    this.keyHandler_.ctrlEnterOption = ctrlEnterOption;
-    this.keyHandler_.bopomofoFontAnnotationSupportEnabled =
-      bopomofoFontAnnotationSupportEnabled;
   }
 
   /**
@@ -287,6 +257,9 @@ export class InputController {
 
   /**
    * Sets keyboard layout.
+   *
+   * Note: if the layout is not recognized, it will be set to "Standard" layout.
+   *
    * @param layout Keyboard layout. It could be:
    * - "Standard"
    * - "ETen"
@@ -458,7 +431,7 @@ export class InputController {
    * @param callback The callback function.
    */
   public setOnPhraseChange(
-    callback: (map: Map<string, string[]>) => void,
+    callback: (map: Map<string, string[]>) => void
   ): void {
     this.lm_.setOnPhraseChange(callback);
   }
@@ -468,7 +441,7 @@ export class InputController {
    * @param callback Receives the latest excluded phrase map.
    */
   public setOnExcludedPhraseChange(
-    callback: (map: Map<string, string[]>) => void,
+    callback: (map: Map<string, string[]>) => void
   ): void {
     this.lm_.setOnExcludedPhraseChange(callback);
   }
@@ -480,14 +453,14 @@ export class InputController {
         ? (input) => {
             return ChineseConvert.tw2cn(input);
           }
-        : undefined,
+        : undefined
     );
     (this.lm_ as WebLanguageModel).setAddUserPhraseConverter(
       flag
         ? (input) => {
             return ChineseConvert.cn2tw(input);
           }
-        : undefined,
+        : undefined
     );
   }
 
@@ -540,7 +513,7 @@ export class InputController {
       this.handleSelectedCandidate_(
         selected,
         (newState) => this.enterNewState(newState),
-        () => this.onError_?.(),
+        () => this.onError_?.()
       );
     }
   }
@@ -551,6 +524,17 @@ export class InputController {
    */
   public setBopomofoFontAnnotationSupportEnabled(flag: boolean) {
     this.keyHandler_.bopomofoFontAnnotationSupportEnabled = flag;
+  }
+
+  /**
+   * Sets whether users are allowed to change the tone of the prior character by
+   * typing a tone key after it.
+   *
+   * @param flag Whether changing the prior tone is allowed.
+   */
+  public setAllowChangingPriorTone(flag: boolean) {
+    console.log("Setting allowChangingPriorTone to", flag);
+    this.keyHandler_.allowChangingPriorTone = flag;
   }
 
   /**
@@ -572,7 +556,7 @@ export class InputController {
   public simpleKeyboardEvent(
     button: string,
     isShift: boolean,
-    isCtrl: boolean,
+    isCtrl: boolean
   ): boolean {
     const key = KeyMapping.keyFromSimpleKeyboardEvent(button, isShift, isCtrl);
     return this.mcbopomofoKeyEvent(key);
@@ -610,7 +594,7 @@ export class InputController {
         key,
         maybeNumberInput,
         (newState) => this.enterNewState(newState),
-        () => this.onError_?.(),
+        () => this.onError_?.()
       );
       if (result) {
         return true;
@@ -634,7 +618,7 @@ export class InputController {
       this.handleCandidateKeyEvent(
         key,
         (newState) => this.enterNewState(newState),
-        () => this.onError_?.(),
+        () => this.onError_?.()
       );
 
       if (this.state_ instanceof NotEmpty) {
@@ -649,7 +633,7 @@ export class InputController {
       key,
       this.state_,
       (newState) => this.enterNewState(newState),
-      () => this.onError_?.(),
+      () => this.onError_?.()
     );
 
     if (this.state_ instanceof NotEmpty) {
@@ -664,7 +648,7 @@ export class InputController {
   private handleSelectedCandidate_(
     selected: Candidate,
     stateCallback: (state: InputState) => void,
-    errorCallback: () => void,
+    errorCallback: () => void
   ): void {
     if (this.state_ instanceof SelectingFeature) {
       stateCallback(this.state_.features[+selected.value].nextState());
@@ -677,7 +661,7 @@ export class InputController {
         this.state_.selectedPrase,
         index,
         this.state_,
-        stateCallback,
+        stateCallback
       );
     } else if (this.state_ instanceof NumberInput) {
       const newState = new Committing(selected.value);
@@ -688,7 +672,7 @@ export class InputController {
         this.state_.originalCursorIndex,
         (newState) => {
           this.enterNewState(newState);
-        },
+        }
       );
     } else if (this.state_ instanceof CustomMenu) {
       const entry = this.state_.entries[+selected.value];
@@ -705,7 +689,7 @@ export class InputController {
   private handleCandidateKeyEvent(
     key: Key,
     stateCallback: (state: InputState) => void,
-    errorCallback: () => void,
+    errorCallback: () => void
   ) {
     // Ignores single shift tap.
     if (key.ascii === "Shift") {
@@ -799,7 +783,7 @@ export class InputController {
           this.state_,
           phrase,
           this.candidateController_.selectedIndex,
-          this.keyHandler_.dictionaryServices.buildMenu(phrase),
+          this.keyHandler_.dictionaryServices.buildMenu(phrase)
         );
         stateCallback(newState);
         return;
@@ -824,7 +808,7 @@ export class InputController {
           this.state_.originalCursorIndex,
           (newState) => {
             stateCallback(newState);
-          },
+          }
         );
       } else if (this.state_ instanceof CustomMenu) {
         const cursor = this.keyHandler_.cursor;
@@ -866,7 +850,7 @@ export class InputController {
               this.keyHandler_.addUserPhrase(reading, current.value);
               const newState = this.keyHandler_.buildInputtingState();
               stateCallback(newState);
-            },
+            }
           );
           entries.push(entry);
         } else if (isMinusKey) {
@@ -877,7 +861,7 @@ export class InputController {
               this.keyHandler_.addExcludedPhrase(reading, current.value);
               const newState = this.keyHandler_.buildInputtingState();
               stateCallback(newState);
-            },
+            }
           );
           entries.push(entry);
         }
@@ -885,7 +869,7 @@ export class InputController {
           this.localizedStrings_.cancel(),
           () => {
             stateCallback(choosingCandidates);
-          },
+          }
         );
         entries.push(entry);
 
@@ -893,7 +877,7 @@ export class InputController {
           choosingCandidates.composingBuffer,
           choosingCandidates.cursorIndex,
           title,
-          entries,
+          entries
         );
         stateCallback(customMenu);
         return true;
@@ -977,7 +961,7 @@ export class InputController {
         key,
         defaultCandidate.value,
         stateCallback,
-        errorCallback,
+        errorCallback
       );
     }
   }
@@ -1027,7 +1011,7 @@ export class InputController {
 
   private handleEmptyIgnoringPrevious(
     prev: InputState,
-    state: EmptyIgnoringPrevious,
+    state: EmptyIgnoringPrevious
   ) {
     this.ui_.reset();
   }
@@ -1046,8 +1030,8 @@ export class InputController {
       this.ui_.append(
         new ComposingBufferText(
           state.markedText,
-          ComposingBufferTextStyle.Highlighted,
-        ),
+          ComposingBufferTextStyle.Highlighted
+        )
       );
       this.ui_.append(new ComposingBufferText(state.tail));
     } else {

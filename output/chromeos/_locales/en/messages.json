@@ -250,5 +250,11 @@
   },
   "bpmf_annotation_support_off": {
     "message": "Bopomofo Font Annotation Support Off"
+  },
+  "tone_keys_title": {
+    "message": "Tone Keys:"
+  },
+  "allow_change_prior_tone_label": {
+    "message": "Allow changing prior tone (Like macOS' built-in IME. Only works with the standard layout)."
   }
 }
