@@ -165,13 +165,13 @@ describe("LocalizedStrings", () => {
     it("asks in English whether to boost a phrase", () => {
       localizedStrings.languageCode = "en";
       const result = localizedStrings.boostTitle("test phrase");
-      expect(result).toBe('Do you wan to boost the phrase "test phrase"?');
+      expect(result).toBe('Do you want to boost the phrase "test phrase"?');
     });
 
     it("handles empty phrase when asking to boost", () => {
       localizedStrings.languageCode = "en";
       const result = localizedStrings.boostTitle("");
-      expect(result).toBe('Do you wan to boost the phrase ""?');
+      expect(result).toBe('Do you want to boost the phrase ""?');
     });
   });
 
@@ -185,13 +185,13 @@ describe("LocalizedStrings", () => {
     it("asks in English whether to exclude a phrase", () => {
       localizedStrings.languageCode = "en";
       const result = localizedStrings.excludeTitle("test phrase");
-      expect(result).toBe('Do you wan to exclude the phrase "test phrase"?');
+      expect(result).toBe('Do you want to exclude the phrase "test phrase"?');
     });
 
     it("handles empty phrase when asking to exclude", () => {
       localizedStrings.languageCode = "en";
       const result = localizedStrings.excludeTitle("");
-      expect(result).toBe('Do you wan to exclude the phrase ""?');
+      expect(result).toBe('Do you want to exclude the phrase ""?');
     });
   });
 

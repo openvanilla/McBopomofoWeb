@@ -90,14 +90,14 @@ export class LocalizedStrings {
     if (this.languageCode === "zh-TW") {
       return "您想要增加「" + phrase + "」這個詞彙的權重嗎？";
     }
-    return 'Do you wan to boost the phrase "' + phrase + '"?';
+    return 'Do you want to boost the phrase "' + phrase + '"?';
   }
 
   excludeTitle(phrase: string) {
     if (this.languageCode === "zh-TW") {
       return "您想要排除「" + phrase + "」這個詞彙嗎？";
     }
-    return 'Do you wan to exclude the phrase "' + phrase + '"?';
+    return 'Do you want to exclude the phrase "' + phrase + '"?';
   }
 
   boost() {
