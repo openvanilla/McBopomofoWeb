@@ -792,7 +792,8 @@ export class InputController {
     if (isCancelKey) {
       if (
         this.state_ instanceof SelectingFeature ||
-        this.state_ instanceof SelectingDateMacro
+        this.state_ instanceof SelectingDateMacro ||
+        this.state_ instanceof IrohaCandidate
       ) {
         stateCallback(new EmptyIgnoringPrevious());
       } else if (this.state_ instanceof SelectingDictionary) {
