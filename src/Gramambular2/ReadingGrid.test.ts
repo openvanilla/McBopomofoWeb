@@ -1,10 +1,10 @@
 import { LanguageModel, Unigram } from "./LanguageModel";
 import {
-  ReadingGrid,
   Node,
-  Span,
   OverrideType,
+  ReadingGrid,
   ScoreRankedLanguageModel,
+  Span,
 } from "./ReadingGrid";
 
 class MockLanguageModel implements LanguageModel {
