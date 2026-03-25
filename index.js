@@ -476,7 +476,7 @@ if (typeof document !== "undefined") {
       };
 
       that.generatePhrases = () => {
-        const text = getElement("phrase_generate_input");
+        const text = $("phrase_generate_input");
         const lines = text.value.trim().split("\n");
         if (lines.length === 0) {
           renderEmptyInput(
@@ -493,7 +493,7 @@ if (typeof document !== "undefined") {
           output.push(perline);
         }
         let finalOutput = output.join("\n");
-        let outputTextArea = getElement("phrase_generate_output");
+        let outputTextArea = $("phrase_generate_output");
         outputTextArea.value = finalOutput;
         outputTextArea.focus();
       };
