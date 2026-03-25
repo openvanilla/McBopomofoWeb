@@ -66,6 +66,14 @@ These commands will create corresponding files in the output directory, usually 
 
 After compiling with `npm run build`, directly open output/example/index.html with a browser to see the web version McBopomofo input method functionality demonstration.
 
+The web version also provides the following tools and conversion features:
+
+- Dictionary generation tool: Enter a batch of words and generate their Bopomofo readings at once, making it easier to build your own dictionary.
+- Chinese to Braille: Enter a passage of Chinese text and generate the corresponding Taiwan Braille in one step.
+- Braille to Chinese: Enter a passage of Taiwan Braille and convert it back to Chinese text in one step.
+- Chinese with Bopomofo annotations: Enter a passage of Chinese text and generate an HTML page that includes Bopomofo annotations in HTML Ruby format.
+- Chinese to Pinyin: Enter a passage of Chinese text and generate the corresponding Hanyu Pinyin.
+
 ### Building and Testing Chrome OS Version
 
 To test the Chrome OS version, you can follow these steps:
