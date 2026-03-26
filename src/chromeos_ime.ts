@@ -918,7 +918,7 @@ chrome.contextMenus.onClicked.addListener((event, tab) => {
       }
       converted = convertedLines.join("\n");
       isHtml = true;
-    } else if (menuItemId === "append_taiwanese_braille") {
+    } else if (menuItemId === "append_taiwanese_braille_unicode") {
       const lines = selectionText.split("\n");
       const convertedLines = [];
       for (const line of lines) {
@@ -930,21 +930,51 @@ chrome.contextMenus.onClicked.addListener((event, tab) => {
         convertedLines.push(convertedLine);
       }
       converted = convertedLines.join("\n");
-    } else if (menuItemId === "convert_text_to_taiwanese_braille") {
+    } else if (menuItemId === "append_taiwanese_braille_ascii") {
       const lines = selectionText.split("\n");
       const convertedLines = [];
       for (const line of lines) {
         let convertedLine = ChineseConvert.cn2tw(line);
-        convertedLine = chromeMcBopomofo.service.convertTextToBraille(line);
+        convertedLine =
+          line +
+          "\n\n" +
+          chromeMcBopomofo.service.convertTextToAsciiBraille(convertedLine);
         convertedLines.push(convertedLine);
       }
       converted = convertedLines.join("\n");
-    } else if (menuItemId === "convert_taiwanese_braille_to_text") {
+    } else if (menuItemId === "convert_text_to_taiwanese_braille_unicode") {
+      const lines = selectionText.split("\n");
+      const convertedLines = [];
+      for (const line of lines) {
+        let convertedLine = ChineseConvert.cn2tw(line);
+        convertedLine = chromeMcBopomofo.service.convertTextToBraille(convertedLine);
+        convertedLines.push(convertedLine);
+      }
+      converted = convertedLines.join("\n");
+    } else if (menuItemId === "convert_text_to_taiwanese_braille_ascii") {
+      const lines = selectionText.split("\n");
+      const convertedLines = [];
+      for (const line of lines) {
+        let convertedLine = ChineseConvert.cn2tw(line);
+        convertedLine = chromeMcBopomofo.service.convertTextToAsciiBraille(convertedLine);
+        convertedLines.push(convertedLine);
+      }
+      converted = convertedLines.join("\n");
+    } else if (menuItemId === "convert_taiwanese_braille_to_text_unicode") {
       const lines = selectionText.split("\n");
       const convertedLines = [];
       for (const line of lines) {
         const convertedLine =
           chromeMcBopomofo.service.convertBrailleToText(line);
+        convertedLines.push(convertedLine);
+      }
+      converted = convertedLines.join("\n");
+    } else if (menuItemId === "convert_taiwanese_braille_to_text_ascii") {
+      const lines = selectionText.split("\n");
+      const convertedLines = [];
+      for (const line of lines) {
+        const convertedLine =
+          chromeMcBopomofo.service.convertAsciiBrailleToText(line);
         convertedLines.push(convertedLine);
       }
       converted = convertedLines.join("\n");
@@ -1016,20 +1046,38 @@ chrome.contextMenus.create({
 });
 
 chrome.contextMenus.create({
-  id: "append_taiwanese_braille",
-  title: chrome.i18n.getMessage("append_taiwanese_braille"),
+  id: "append_taiwanese_braille_unicode",
+  title: chrome.i18n.getMessage("append_taiwanese_braille_unicode"),
   contexts: ["selection", "editable"],
 });
 
 chrome.contextMenus.create({
-  id: "convert_text_to_taiwanese_braille",
-  title: chrome.i18n.getMessage("convert_text_to_taiwanese_braille"),
+  id: "append_taiwanese_braille_ascii",
+  title: chrome.i18n.getMessage("append_taiwanese_braille_ascii"),
   contexts: ["selection", "editable"],
 });
 
 chrome.contextMenus.create({
-  id: "convert_taiwanese_braille_to_text",
-  title: chrome.i18n.getMessage("convert_taiwanese_braille_to_text"),
+  id: "convert_text_to_taiwanese_braille_unicode",
+  title: chrome.i18n.getMessage("convert_text_to_taiwanese_braille_unicode"),
+  contexts: ["selection", "editable"],
+});
+
+chrome.contextMenus.create({
+  id: "convert_text_to_taiwanese_braille_ascii",
+  title: chrome.i18n.getMessage("convert_text_to_taiwanese_braille_ascii"),
+  contexts: ["selection", "editable"],
+});
+
+chrome.contextMenus.create({
+  id: "convert_taiwanese_braille_to_text_unicode",
+  title: chrome.i18n.getMessage("convert_taiwanese_braille_to_text_unicode"),
+  contexts: ["selection", "editable"],
+});
+
+chrome.contextMenus.create({
+  id: "convert_taiwanese_braille_to_text_ascii",
+  title: chrome.i18n.getMessage("convert_taiwanese_braille_to_text_ascii"),
   contexts: ["selection", "editable"],
 });
 

@@ -194,14 +194,23 @@
   "convert_text_to_html_ruby": {
     "message": "以 HTML Ruby 將國字加上注音符號"
   },
-  "append_taiwanese_braille": {
-    "message": "將國字加上台灣點字"
+  "append_taiwanese_braille_unicode": {
+    "message": "將國字加上台灣點字 (Unicode)"
   },
-  "convert_text_to_taiwanese_braille": {
-    "message": "將國字轉為台灣點字"
+  "append_taiwanese_braille_ascii": {
+    "message": "將國字加上台灣點字 (ASCII)"
   },
-  "convert_taiwanese_braille_to_text": {
-    "message": "將台灣點字轉為國字"
+  "convert_text_to_taiwanese_braille_unicode": {
+    "message": "將國字轉為台灣點字 (Unicode)"
+  },
+  "convert_text_to_taiwanese_braille_ascii": {
+    "message": "將國字轉為台灣點字 (ASCII)"
+  },
+  "convert_taiwanese_braille_to_text_unicode": {
+    "message": "將台灣點字 (Unicode) 轉為國字"
+  },
+  "convert_taiwanese_braille_to_text_ascii": {
+    "message": "將台灣點字 (ASCII) 轉為國字"
   },
   "convert_text_to_hanyu_pinyin": {
     "message": "將國字轉換為漢語拼音"

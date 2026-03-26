@@ -191,14 +191,23 @@
   "convert_text_to_html_ruby": {
     "message": "Convert to HTML Ruby"
   },
-  "append_taiwanese_braille": {
-    "message": "Append Taiwanese Braille"
+  "append_taiwanese_braille_unicode": {
+    "message": "Append Taiwanese Braille (Unicode)"
   },
-  "convert_text_to_taiwanese_braille": {
-    "message": "Convert to Taiwanese Braille"
+  "append_taiwanese_braille_ascii": {
+    "message": "Append Taiwanese Braille (ASCII)"
   },
-  "convert_taiwanese_braille_to_text": {
-    "message": "Convert Taiwanese Braille to text"
+  "convert_text_to_taiwanese_braille_unicode": {
+    "message": "Convert to Taiwanese Braille (Unicode)"
+  },
+  "convert_text_to_taiwanese_braille_ascii": {
+    "message": "Convert to Taiwanese Braille (ASCII)"
+  },
+  "convert_taiwanese_braille_to_text_unicode": {
+    "message": "Convert Taiwanese Braille (Unicode) to text"
+  },
+  "convert_taiwanese_braille_to_text_ascii": {
+    "message": "Convert Taiwanese Braille (ASCII) to text"
   },
   "convert_text_to_hanyu_pinyin": {
     "message": "Convert to Hanyu Pinyin"
