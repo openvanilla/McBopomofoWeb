@@ -118,7 +118,7 @@ describe("Test DigitRelated", () => {
       DigitRelated.percent,
       BrailleType.ASCII
     );
-    expect(result).toBe("`0");
+    expect(result).toBe("`%");
   });
 
   test("Test toBraille() for celsius", () => {

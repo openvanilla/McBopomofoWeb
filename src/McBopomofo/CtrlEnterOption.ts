@@ -12,6 +12,6 @@ export enum CtrlEnterOption {
   BpmfReadings = 1,
   HtmlRuby = 2,
   BopomofoBrailleUnicode = 3,
-  BopomofoBrailleASCII = 4,
-  HanyuPinyin = 5,
+  BopomofoBrailleASCII = 5,
+  HanyuPinyin = 4,
 }

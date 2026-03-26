@@ -88,7 +88,7 @@ export enum DigitRelated {
 export namespace DigitRelated {
   const map = new Map<DigitRelated, string[]>([
     [DigitRelated.point, ["⠨", "."]],
-    [DigitRelated.percent, ["⠈⠴", "`0"]],
+    [DigitRelated.percent, ["⠈⠴", "`%"]],
     [DigitRelated.celsius, ["⠘⠨⠡ ⠰⠠⠉", "~.* ;,c"]],
   ]);
 

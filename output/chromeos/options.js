@@ -295,8 +295,8 @@ window.onload = () => {
   $("ctrl_enter_option_3").innerText = L(
     "ctrl_enter_taiwanese_braille_unicode"
   );
-  $("ctrl_enter_option_4").innerText = L("ctrl_enter_taiwanese_braille_ascii");
-  $("ctrl_enter_option_5").innerText = L("ctrl_enter_hanyu_pinyin");
+  $("ctrl_enter_option_5").innerText = L("ctrl_enter_taiwanese_braille_ascii");
+  $("ctrl_enter_option_4").innerText = L("ctrl_enter_hanyu_pinyin");
 
   $("others_title").innerText = L("optionOthersTitle");
   $("others_manage_user_phrases").innerText = L("optionOtherManageUserPhrases");
