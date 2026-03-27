@@ -49,7 +49,7 @@ export namespace FullWidthPunctuation {
     [FullWidthPunctuation.exclamationMark, ["⠇", "l"]],
     [FullWidthPunctuation.colon, ["⠒⠒", "33"]],
     [FullWidthPunctuation.personNameMark, ["⠰⠰", "|"]],
-    [FullWidthPunctuation.slash, ["⠐⠂", "-"]],
+    [FullWidthPunctuation.slash, ["⠐⠂", "---"]],
     [FullWidthPunctuation.bookNameMark, ["⠠⠤", "~"]],
     [FullWidthPunctuation.ellipsis, ["⠐⠐⠐", "'''"]],
     [FullWidthPunctuation.referenceMark, ["⠈⠼", "`#"]],
