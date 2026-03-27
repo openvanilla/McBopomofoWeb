@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <title>McBopomofo 小麥注音輸入法線上版本</title>
+
   <link rel="stylesheet" href="https://oikasu1.github.io/fonts/twfonts.css">
   <link rel="stylesheet" href="https://unpkg.com/simple-keyboard@latest/build/css/index.css">
   <link rel="stylesheet" href="index.css">
@@ -306,10 +307,9 @@
       </div>
       <div class="right">
         <p>
-          <input type="button" value="重新載入"
-            onclick="example.settingsManager.loadUserPhrases();alert('已重新載入之前儲存的詞庫');return false; ">
-          <input type="button" value="更新詞庫"
-            onclick="example.settingsManager.saveUserPhrases(document.getElementById('feature_user_phrases_text_area').value); alert('已經儲存更新的詞庫，並更新到輸入法與轉換功能中'); return false;">
+          <button onclick="example.settingsManager.loadUserPhrases();alert('已重新載入之前儲存的詞庫');return false;">重新載入</button>
+          <button
+            onclick="example.settingsManager.saveUserPhrases(document.getElementById('feature_user_phrases_text_area').value); alert('已經儲存更新的詞庫，並更新到輸入法與轉換功能中'); return false;">更新詞庫</button>
         </p>
 
         <h2>自訂詞管理</h2>
@@ -330,10 +330,10 @@
       </div>
       <div class="right">
         <p>
-          <input type="button" value="重新載入"
-            onclick="example.settingsManager. loadExcludedPhrases();alert('已重新載入之前儲存的詞庫');return false; ">
-          <input type="button" value="更新詞庫"
-            onclick="example.settingsManager.saveExcludedPhrases(document.getElementById('feature_excluded_phrases_text_area').value); alert('已經儲存更新的詞庫，並更新到輸入法與轉換功能中'); return false;">
+          <button
+            onclick="example.settingsManager. loadExcludedPhrases();alert('已重新載入之前儲存的詞庫');return false;">重新載入</button>
+          <button
+            onclick="example.settingsManager.saveExcludedPhrases(document.getElementById('feature_excluded_phrases_text_area').value); alert('已經儲存更新的詞庫，並更新到輸入法與轉換功能中'); return false;">更新詞庫</button>
         </p>
 
         <h2>管理已經排除的詞彙</h2>
@@ -362,7 +362,7 @@
       </div>
       <div class="right">
         <h2>詞庫產生工具</h2>
-
+        <p>在輸入想要產生的詞條之後，按下下方的「轉換」按鈕。</p>
         <p>
           <button onclick="example.service.generatePhrases(); return false;">轉換</button>
         </p>
@@ -398,7 +398,7 @@
               checked="checked"> Unicode</label>
           <label><input type="radio" name="to_braille_format" value="ascii" id="to_braille_format_ascii">ASCII</label>
         </p>
-        <p><input type="button" value="轉換" onclick="example.service.textToBraille();">
+        <p><button onclick="example.service.textToBraille();">轉換</button>
           <button id="text_to_braille_output_copy_button"
             onclick="copy_text('text_to_braille_output_textarea'); return false;">複製結果</button>
         </p>
@@ -410,7 +410,12 @@
         <h2>國字轉點字</h2>
         <p>請在輸入框中輸入中文，按下「轉換」即可轉換成台灣六點點字。</p>
         <p>範例：「小麥注音輸入法」可以轉換成「⠑⠪⠈⠍⠺⠐⠁⠌⠐⠹⠄⠊⠌⠄⠛⠌⠐⠟⠜⠈」</p>
+        <h3>Unicode 與 ASCII 點字</h3>
+        <p>在現在的電腦上，大概都可以直接看到 Unicode 點字，但對於老舊的點字顯示器（Braille Display）或點字印表機（Braille Embosser）來說，這些硬體往往只認得標準的 128 個 ASCII
+          字元，因此我們提供兩種轉換格式。</p>
+        <p>在一般電腦上看 ASCII 點字會像是亂碼，可以搭配特定的點字字體顯示。</p>
       </div>
+
     </div>
 
     <div id="feature_braille_to_text" class="feature">
@@ -424,7 +429,7 @@
           <label><input type="radio" name="from_braille_format" value="ascii"
               id="from_braille_format_ascii">ASCII</label>
         </p>
-        <p> <input type="button" value="轉換" onclick="example.service.brailleToText();">
+        <p> <button onclick="example.service.brailleToText();">轉換</button>
           <button id="braille_to_text_output_copy_button"
             onclick="copy_text('braille_to_text_output_textarea'); return false;">複製結果</button>
         </p>
@@ -436,6 +441,10 @@
         <h2>點字轉國字</h2>
         <p>請在輸入框中輸入六點注音點字（Unicode），按下「轉換」即可轉換成中文。</p>
         <p>範例：「⠑⠪⠈⠍⠺⠐⠁⠌⠐⠹⠄⠊⠌⠄⠛⠌⠐⠟⠜⠈」可以轉換成「小麥注音輸入法」</p>
+        <h3>Unicode 與 ASCII 點字</h3>
+        <p>在現在的電腦上，大概都可以直接看到 Unicode 點字，但對於老舊的點字顯示器（Braille Display）或點字印表機（Braille Embosser）來說，這些硬體往往只認得標準的 128 個 ASCII
+          字元，因此我們提供兩種轉換格式。</p>
+        <p>在一般電腦上看 ASCII 點字會像是亂碼，可以搭配特定的點字字體顯示。</p>
       </div>
     </div>
 
@@ -443,7 +452,7 @@
       <div class="left">
         <textarea placeholder="請在此輸入國字" id="add_bpmf_text_area" rows="10" cols="50" title="輸入區"
           autocapitalize="off"></textarea>
-        <p><input type="button" value="轉換" onclick="example.service.addBpmf();">
+        <p><button onclick=" example.service.addBpmf();">轉換</button>
           <button id="add_bpmf_output_copy_button"
             onclick="copy_text('add_bpmf_output_textarea'); return false;">複製結果</button>
         </p>
@@ -479,7 +488,7 @@
         <textarea placeholder="請在此輸入國字" id="convert_hanyupnyin_text_area" rows="10" cols="50" title="輸入區"
           autocapitalize="off"></textarea>
         <p>
-          <input type="button" value="轉換" onclick="example.service.convertHanyuPinyin();">
+          <button onclick="example.service.convertHanyuPinyin();">轉換</button>
           <button id="convert_hanyupnyin_output_copy_button"
             onclick="copy_text('convert_hanyupnyin_output_textarea'); return false;">複製結果</button>
         </p>
