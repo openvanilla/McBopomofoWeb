@@ -35,6 +35,7 @@
     - [編譯 MCP 服務](#編譯-mcp-服務)
   - [其他](#其他)
     - [Microsoft Word Add-in](#microsoft-word-add-in)
+  - [開發](#開發)
   - [第三方套件](#第三方套件)
   - [社群公約](#社群公約)
   - [軟體授權](#軟體授權)
@@ -89,8 +90,10 @@ npm run build:mcp # 編譯 MCP Server 版本
 
 - 請先在您的 Windows PC 上安裝 [PIME](https://github.com/EasyIME/PIME/releases)，安裝過程中，請注意需要勾選安裝 Node 相關的輸入法。PIME 支援 Python 與 Node 兩種輸入法架構，Node 相關的輸入法不在預設安裝選項中，但小麥注音是基於 Node 的版本。
 - 您可以在自己的 PC 上，安裝 Node.js 環境，然後執行 `npm run build:pime`。
+- 另外，如果您用的不是中文版的 Windows，也需要先在 Windows 的語言設定中，加入繁體中文語系，小麥注音輸入法必須在安裝了繁體中文語系才會出現。
 - 將 output\pime 目錄下的檔案，複製到 PIME 的安裝目錄下，例如 `C:\Program Files (x86)\PIME\node\input_methods\mcbopomofo`。您可能需要系統管理員權限。
 - 使用系統管理員權限執行 `regsvr32 "C:\Program Files (X86)\PIME\x86\PIMETextService.dll"`，將小麥注音輸入法註冊到系統中。
+- 如果前一步不成功，通常是因為並沒有使用系統管理員權限。另外，就是可能用了沒有 code sign 的 DLL，請確定是否安裝了官方有簽名的 PIME 版本。
 - 每次重新編譯之後，都要進行相同的步驟，然後記得重新啟動 PIME 服務。您可以在系統列上的 PIME Launcher 圖示上按右鍵，然後選擇「重新啟動」。
 - 您也可以參考 build_pime.bat 的內容。
 
@@ -168,6 +171,10 @@ npm run start:desktop
 ```
 
 如果您的電腦（Windows 或 macOS）上裝了 Microsoft Word，那麼就會自動開啟 Word，並且在 Word 中啟用這個 Add-in。如果您想在網頁版本的 Word 當中測試，請參考微軟的文件 [Sideload Office Add-ins to Office on the web](https://learn.microsoft.com/en-us/office/dev/add-ins/testing/sideload-office-add-ins-for-testing)。
+
+## 開發
+
+由於專案使用 TypeScript 等網頁技術開發，因此除了必須安裝 Node.js 之外，其餘可以使用各種順手的網頁開發工具，像是 Visual Studio Code 等等。
 
 ## 第三方套件
 
