@@ -1180,7 +1180,7 @@ module.exports = {
         },
         {},
         {
-          text: "小麥注音輸入法 for PIME 2.0.1",
+          text: "小麥注音輸入法 for PIME 2.0.2",
         },
       ];
       const response = Object.assign({}, responseTemplate, { return: menu });
