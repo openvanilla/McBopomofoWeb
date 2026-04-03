@@ -1,4 +1,26 @@
-(function () {
+const BOPOMOFO_FONT_FAMILY = '"BpmfZihiSans-Regular", sans-serif';
+
+function setBpmfFont(target) {
+  if (!target || !target.style || !target.style.setProperty) {
+    return;
+  }
+  target.style.setProperty("font-family", BOPOMOFO_FONT_FAMILY, "important");
+}
+
+function applyBpmfFont(root) {
+  if (!root || root.nodeType !== 1) {
+    return;
+  }
+  setBpmfFont(root);
+  if (!root.querySelectorAll) {
+    return;
+  }
+  for (const element of root.querySelectorAll("*")) {
+    setBpmfFont(element);
+  }
+}
+
+function initContentScript() {
   // Note: Add BPMT font.
   const fontLink = document.createElement("link");
   fontLink.rel = "stylesheet";
@@ -42,7 +64,7 @@
               const div = document.createElement("div");
               div.innerHTML = replacementText;
               if (useBpmfFont) {
-                div.style.fontFamily = "BpmfZihiSans-Regular";
+                applyBpmfFont(div);
               }
               range.insertNode(div);
             } else {
@@ -56,7 +78,7 @@
                   let node = document.createTextNode(line);
                   p.appendChild(node);
                   if (useBpmfFont) {
-                    p.style.fontFamily = "BpmfZihiSans-Regular";
+                    applyBpmfFont(p);
                   }
                   range.insertNode(p);
                 }
@@ -66,7 +88,7 @@
                   const p = document.createElement("p");
                   p.appendChild(node);
                   node = p;
-                  node.style.fontFamily = "BpmfZihiSans-Regular";
+                  applyBpmfFont(node);
                 }
                 range.insertNode(node);
               }
@@ -99,4 +121,20 @@
       replaceSelectedText(text, isHtml, useBpmfFont);
     }
   });
-})();
+}
+
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = {
+    BOPOMOFO_FONT_FAMILY,
+    applyBpmfFont,
+    setBpmfFont,
+  };
+}
+
+if (
+  typeof chrome !== "undefined" &&
+  chrome.runtime &&
+  chrome.runtime.onMessage
+) {
+  initContentScript();
+}
