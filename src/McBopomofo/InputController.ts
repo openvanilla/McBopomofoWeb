@@ -17,6 +17,7 @@ import { inputMacroController } from "./InputMacro";
 import {
   Big5,
   ChoosingCandidate,
+  ChoosingPunctuationList,
   Committing,
   CustomMenu,
   CustomMenuEntry,
@@ -614,7 +615,8 @@ export class InputController {
       this.state_ instanceof NumberInput ||
       this.state_ instanceof IrohaCandidate
     ) {
-      this.handleCandidateKeyEvent(
+      this.handleCandidateKeyEvent_(
+        this.state_,
         key,
         (newState) => this.enterNewState(newState),
         () => this.onError_?.()
@@ -666,6 +668,8 @@ export class InputController {
       const newState = new Committing(selected.value);
       stateCallback(newState);
     } else if (this.state_ instanceof ChoosingCandidate) {
+      // Note: ChoosingPunctuationList extends ChoosingCandidate, so it should
+      // be before ChoosingPunctuationList.
       this.keyHandler_.candidateSelected(
         selected,
         this.state_.originalCursorIndex,
@@ -685,7 +689,8 @@ export class InputController {
     }
   }
 
-  private handleCandidateKeyEvent(
+  private handleCandidateKeyEvent_(
+    state: InputState,
     key: Key,
     stateCallback: (state: InputState) => void,
     errorCallback: () => void
@@ -695,12 +700,14 @@ export class InputController {
       return;
     }
 
+    // Note: not allowed to move cursor when choosing punctuation list.
     const isMovingToLeft =
-      (key.name === KeyName.LEFT && key.shiftPressed) ||
-      (this.movingCursorOption_ === MovingCursorOption.UseJK &&
-        key.ascii === "j") ||
-      (this.movingCursorOption_ === MovingCursorOption.UseHL &&
-        key.ascii === "h");
+      !(state instanceof ChoosingPunctuationList) &&
+      ((key.name === KeyName.LEFT && key.shiftPressed) ||
+        (this.movingCursorOption_ === MovingCursorOption.UseJK &&
+          key.ascii === "j") ||
+        (this.movingCursorOption_ === MovingCursorOption.UseHL &&
+          key.ascii === "h"));
     if (isMovingToLeft) {
       const cursor = this.keyHandler_.cursor;
       if (cursor === 0) {
@@ -713,12 +720,15 @@ export class InputController {
       stateCallback(state);
       return;
     }
+
+    // Note: not allowed to move cursor when choosing punctuation list.
     const isMovingToRight =
-      (key.name === KeyName.RIGHT && key.shiftPressed) ||
-      (this.movingCursorOption_ === MovingCursorOption.UseJK &&
-        key.ascii === "k") ||
-      (this.movingCursorOption_ === MovingCursorOption.UseHL &&
-        key.ascii === "l");
+      !(state instanceof ChoosingPunctuationList) &&
+      ((key.name === KeyName.RIGHT && key.shiftPressed) ||
+        (this.movingCursorOption_ === MovingCursorOption.UseJK &&
+          key.ascii === "k") ||
+        (this.movingCursorOption_ === MovingCursorOption.UseHL &&
+          key.ascii === "l"));
     if (isMovingToRight) {
       const cursor = this.keyHandler_.cursor;
       const max = this.keyHandler_.gridLength;
@@ -756,6 +766,20 @@ export class InputController {
     let isCancelKey =
       key.name === KeyName.ESC || key.name === KeyName.BACKSPACE;
 
+    // Note: Double "`" to enter the feature menu.
+    if (key.ascii === "`" && this.state_ instanceof ChoosingPunctuationList) {
+      stateCallback(
+        new SelectingFeature((input) => {
+          const lm = this.lm_;
+          if (lm instanceof WebLanguageModel) {
+            return lm.convertMacro(input);
+          }
+          return input;
+        })
+      );
+      return true;
+    }
+
     const invalidPrefixArray = [
       "_half_punctuation_",
       "_ctrl_punctuation_",
@@ -766,9 +790,11 @@ export class InputController {
     ];
 
     if (key.ascii === "?") {
-      if (this.state_ instanceof SelectingDictionary) {
+      if (state instanceof SelectingDictionary) {
         isCancelKey = true;
-      } else if (this.state_ instanceof ChoosingCandidate) {
+      } else if (state instanceof ChoosingPunctuationList) {
+        // Bypass this and use ? to map to full-width question mark later.
+      } else if (state instanceof ChoosingCandidate) {
         const current = this.candidateController_.selectedCandidate;
         const phrase = current.value;
         const readings = current.reading;
@@ -779,7 +805,7 @@ export class InputController {
         }
 
         const newState = new SelectingDictionary(
-          this.state_,
+          state,
           phrase,
           this.candidateController_.selectedIndex,
           this.keyHandler_.dictionaryServices.buildMenu(phrase)
@@ -791,45 +817,62 @@ export class InputController {
 
     if (isCancelKey) {
       if (
-        this.state_ instanceof SelectingFeature ||
-        this.state_ instanceof SelectingDateMacro ||
-        this.state_ instanceof IrohaCandidate
+        state instanceof SelectingFeature ||
+        state instanceof SelectingDateMacro ||
+        state instanceof IrohaCandidate
       ) {
         stateCallback(new EmptyIgnoringPrevious());
-      } else if (this.state_ instanceof SelectingDictionary) {
-        const current = this.state_;
-        const previous = this.state_.previousState;
+      } else if (state instanceof SelectingDictionary) {
+        const current = state;
+        const previous = state.previousState;
         stateCallback(previous);
         if (previous instanceof ChoosingCandidate) {
           this.candidateController_.selectedIndex = current.selectedIndex;
         }
-      } else if (this.state_ instanceof ChoosingCandidate) {
-        this.keyHandler_.candidatePanelCancelled(
-          this.state_.originalCursorIndex,
+      } else if (state instanceof ChoosingPunctuationList) {
+        this.keyHandler_.candidatePanelPunctuationListCancelled(
+          state.originalCursorIndex,
           (newState) => {
             stateCallback(newState);
           }
         );
-      } else if (this.state_ instanceof CustomMenu) {
+      } else if (state instanceof ChoosingCandidate) {
+        this.keyHandler_.candidatePanelCancelled(
+          state.originalCursorIndex,
+          (newState) => {
+            stateCallback(newState);
+          }
+        );
+      } else if (state instanceof CustomMenu) {
         const cursor = this.keyHandler_.cursor;
         const choosing = this.keyHandler_.buildChoosingCandidateState(cursor);
         stateCallback(choosing);
-      } else if (this.state_ instanceof ShowingCharInfo) {
-        const previous = this.state_.previousState;
+      } else if (state instanceof ShowingCharInfo) {
+        const previous = state.previousState;
         stateCallback(previous);
       }
       // number input is already handled.
       return;
     }
 
+    if (state instanceof ChoosingPunctuationList) {
+      const result = this.keyHandler_.candidatePanelPunctuationListSelected(
+        key.ascii,
+        state.originalCursorIndex,
+        (newState) => {
+          this.enterNewState(newState);
+        }
+      );
+      if (result) {
+        return true;
+      }
+    }
+
     if (!this.keyHandler_.traditionalMode) {
       const isPlusKey = key.ascii === "+" || key.ascii === "=";
       const isMinusKey = key.ascii === "_" || key.ascii === "-";
-      if (
-        this.state_ instanceof ChoosingCandidate &&
-        (isPlusKey || isMinusKey)
-      ) {
-        const choosingCandidates = this.state_;
+      if (state instanceof ChoosingCandidate && (isPlusKey || isMinusKey)) {
+        const choosingCandidates = state;
         const current = this.candidateController_.selectedCandidate;
         if (!current) {
           return true;
@@ -950,7 +993,7 @@ export class InputController {
     const pageIndex = this.candidateController_.currentPageIndex;
     this.ui_.setPageIndex(pageIndex + 1, totalPageCount);
 
-    if (!(this.state_ instanceof ChoosingCandidate)) {
+    if (!(state instanceof ChoosingCandidate)) {
       return;
     }
 

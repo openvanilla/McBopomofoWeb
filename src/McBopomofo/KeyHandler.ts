@@ -26,6 +26,7 @@ import { NumberInputHelper } from "./InputHelperNumber";
 import {
   Big5,
   ChoosingCandidate,
+  ChoosingPunctuationList,
   Committing,
   Empty,
   EmptyIgnoringPrevious,
@@ -49,6 +50,7 @@ import {
 import { webBpmfvsPua } from "./WebBpmfvsPua";
 import { webBpmfvsVariants } from "./WebBpmfvsVariants";
 import { WebLanguageModel } from "./WebLanguageModel";
+import { tr } from "zod/locales";
 
 export class ComposedString {
   constructor(
@@ -763,7 +765,9 @@ export class KeyHandler {
         }
         const choosingCandidateState =
           this.buildChoosingCandidateState(originalCursorIndex);
-        stateCallback(choosingCandidateState);
+        const choosingPunctuationListState =
+          ChoosingPunctuationList.fromChoosingCandidate(choosingCandidateState);
+        stateCallback(choosingPunctuationListState);
       } else {
         // Punctuation ignored if a bopomofo reading is active..
         errorCallback();
@@ -893,6 +897,50 @@ export class KeyHandler {
 
     this.pinNode(candidate, originalCursorIndex);
     stateCallback(this.buildInputtingState());
+  }
+
+  public candidatePanelPunctuationListCancelled(
+    originalCursorIndex: number,
+    stateCallback: (state: InputState) => void
+  ) {
+    if (this.traditionalMode_) {
+      this.reset();
+      stateCallback(new EmptyIgnoringPrevious());
+      return;
+    }
+    this.grid_.deleteReadingAfterCursor();
+    this.grid_.cursor = originalCursorIndex - 1;
+    stateCallback(this.buildInputtingState());
+  }
+
+  candidatePanelPunctuationListSelected(
+    punctuationKey: string,
+    originalCursorIndex: number,
+    stateCallback: (newState: any) => void
+  ): boolean {
+    const key = kPunctuationListUnigramKey + "_" + punctuationKey;
+    const unigrams = this.languageModel_.getUnigrams(key);
+    if (unigrams.length === 0) {
+      return false;
+    }
+    this.grid_.deleteReadingAfterCursor();
+    this.grid_.insertReading(key);
+    this.walk();
+
+    if (this.traditionalMode_) {
+      const choosingCandidates =
+        this.buildChoosingCandidateState(originalCursorIndex);
+      if (choosingCandidates.candidates.length === 1) {
+        const text = choosingCandidates.candidates[0].value;
+        const committing = new Committing(text);
+        stateCallback(committing);
+      } else {
+        stateCallback(choosingCandidates);
+      }
+    } else {
+      stateCallback(this.buildInputtingState());
+    }
+    return true;
   }
 
   public candidatePanelCancelled(
