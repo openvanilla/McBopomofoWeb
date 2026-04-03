@@ -100,6 +100,11 @@ hr {
   box-shadow: var(--shadow-flat);
 }
 
+.navi h1 {
+  font-size: 11pt;
+  display: inline;
+}
+
 .navi {
   margin: 0;
   padding: var(--spacing-2) var(--spacing-3);
