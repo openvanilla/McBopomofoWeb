@@ -825,6 +825,17 @@ describe("KeyHandler", () => {
       ).toBe(true);
     });
 
+    test("keeps punctuation list state when backtick is pressed twice in KeyHandler", () => {
+      const state = handleKeySequence(keyHandler, asciiKey(["`", "`"]));
+
+      expect(state).toBeInstanceOf(ChoosingPunctuationList);
+      const punctuationList = state as ChoosingPunctuationList;
+      expect(punctuationList.composingBuffer).toBe("　　");
+      expect(punctuationList.originalCursorIndex).toBe(2);
+      expect(keyHandler.gridLength).toBe(2);
+      expect(keyHandler.cursor).toBe(2);
+    });
+
     test("selects punctuation directly from the punctuation list helper", () => {
       const state = handleKeySequence(keyHandler, asciiKey(["`"]));
       expect(state).toBeInstanceOf(ChoosingPunctuationList);

@@ -768,7 +768,7 @@ export class InputController {
 
     // Note: Double "`" to enter the feature menu.
     if (key.ascii === "`" && this.state_ instanceof ChoosingPunctuationList) {
-      stateCallback(new Empty());
+      stateCallback(new EmptyIgnoringPrevious());
       this.keyHandler_.reset();
       stateCallback(
         new SelectingFeature((input) => {
