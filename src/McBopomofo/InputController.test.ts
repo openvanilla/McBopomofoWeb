@@ -3,6 +3,7 @@ import { InputController, MovingCursorOption } from "./InputController";
 import {
   Big5,
   ChoosingCandidate,
+  ChoosingPunctuationList,
   Committing,
   CustomMenu,
   Empty,
@@ -552,6 +553,53 @@ describe("InputController", () => {
   });
 
   describe("Special Keys and Features", () => {
+    it("enters punctuation list state with backtick", () => {
+      const result = inputChar(controller, "`");
+
+      expect(result).toBe(true);
+      expect(controller.state).toBeInstanceOf(ChoosingPunctuationList);
+
+      const state = controller.state as ChoosingPunctuationList;
+      expect(state.composingBuffer).toBe("　");
+      expect(state.candidates[0].value).toBe("　");
+    });
+
+    it("opens the feature menu when backtick is pressed twice", () => {
+      inputChar(controller, "`");
+      expect(controller.state).toBeInstanceOf(ChoosingPunctuationList);
+
+      const result = inputChar(controller, "`");
+
+      expect(result).toBe(true);
+      expect(controller.state).toBeInstanceOf(SelectingFeature);
+    });
+
+    it("commits punctuation list selections", () => {
+      inputChar(controller, "`");
+      expect(controller.state).toBeInstanceOf(ChoosingPunctuationList);
+
+      const result = inputChar(controller, ",");
+
+      expect(result).toBe(true);
+      expect(controller.state).toBeInstanceOf(Inputting);
+
+      const state = controller.state as Inputting;
+      expect(state.composingBuffer).toBe("　，");
+    });
+
+    it("cancels punctuation list selection with backspace", () => {
+      inputChar(controller, "`");
+      expect(controller.state).toBeInstanceOf(ChoosingPunctuationList);
+
+      const result = inputKey(controller, KeyName.BACKSPACE);
+
+      expect(result).toBe(true);
+      expect(controller.state).toBeInstanceOf(Inputting);
+
+      const state = controller.state as Inputting;
+      expect(state.composingBuffer).toBe("　");
+    });
+
     it("handles question mark for dictionary", () => {
       inputCStr(controller, "5j/");
       inputKey(controller, KeyName.SPACE);

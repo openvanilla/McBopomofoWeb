@@ -50,7 +50,6 @@ import {
 import { webBpmfvsPua } from "./WebBpmfvsPua";
 import { webBpmfvsVariants } from "./WebBpmfvsVariants";
 import { WebLanguageModel } from "./WebLanguageModel";
-import { tr } from "zod/locales";
 
 export class ComposedString {
   constructor(
@@ -908,9 +907,18 @@ export class KeyHandler {
       stateCallback(new EmptyIgnoringPrevious());
       return;
     }
-    this.grid_.deleteReadingAfterCursor();
+    if (this.selectPhraseAfterCursorAsCandidate_) {
+      this.grid_.deleteReadingAfterCursor();
+    } else {
+      this.grid_.deleteReadingBeforeCursor();
+    }
+    this.walk();
     this.grid_.cursor = originalCursorIndex - 1;
-    stateCallback(this.buildInputtingState());
+    if (this.grid_.length === 0) {
+      stateCallback(new Empty());
+    } else {
+      stateCallback(this.buildInputtingState());
+    }
   }
 
   candidatePanelPunctuationListSelected(
@@ -923,7 +931,12 @@ export class KeyHandler {
     if (unigrams.length === 0) {
       return false;
     }
-    this.grid_.deleteReadingAfterCursor();
+    if (this.selectPhraseAfterCursorAsCandidate_) {
+      this.grid_.deleteReadingAfterCursor();
+    } else {
+      this.grid_.deleteReadingBeforeCursor();
+    }
+
     this.grid_.insertReading(key);
     this.walk();
 

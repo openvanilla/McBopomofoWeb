@@ -9,6 +9,7 @@ import { BopomofoKeyboardLayout } from "../Mandarin";
 import {
   Big5,
   ChoosingCandidate,
+  ChoosingPunctuationList,
   Committing,
   Empty,
   EmptyIgnoringPrevious,
@@ -743,9 +744,12 @@ describe("KeyHandler", () => {
     test("opens punctuation candidate list with backtick", () => {
       const keys = asciiKey(["`"]);
       const state = handleKeySequence(keyHandler, keys);
-      expect(state).toBeInstanceOf(ChoosingCandidate);
-      const inputting = state as ChoosingCandidate;
-      expect(inputting.composingBuffer).toBe("　");
+      expect(state).toBeInstanceOf(ChoosingPunctuationList);
+      const punctuationList = state as ChoosingPunctuationList;
+      expect(punctuationList.composingBuffer).toBe("　");
+      expect(punctuationList.originalCursorIndex).toBe(1);
+      expect(punctuationList.candidates[0].value).toBe("　");
+      expect(punctuationList.candidates.some((candidate) => candidate.value === "，")).toBe(true);
     });
 
     test("cycles candidates backward with Shift+Tab", () => {
