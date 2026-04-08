@@ -860,7 +860,7 @@ module.exports = {
       pimeMcBopomofo.isWindows8Above = isWindows8Above;
       const customUi = pimeMcBopomofo.customUiResponse();
       const response = Object.assign({}, responseTemplate, customUi, {
-        removeButton: ["windows-mode-icon", "switch-lang", "settings"],
+        // removeButton: ["windows-mode-icon", "switch-lang", "settings"],
       });
       return response;
     }
