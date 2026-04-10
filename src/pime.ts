@@ -316,7 +316,7 @@ class PimeMcBopomofo {
         continue;
       }
       for (const phrase of phrases) {
-        string += key + " " + phrase + "\n";
+        string += phrase + " " + key + "\n";
       }
     }
 
@@ -345,7 +345,7 @@ class PimeMcBopomofo {
         continue;
       }
       for (const phrase of phrases) {
-        string += key + " " + phrase + "\n";
+        string += phrase + " " + key + "\n";
       }
     }
 
@@ -369,7 +369,6 @@ class PimeMcBopomofo {
   public applySettings(): void {
     const useTraditionalMode = this.settings.input_mode === "use_plainbopomofo";
     this.inputController.setTraditionalMode(useTraditionalMode);
-
     this.inputController.setKeyboardLayout(this.settings.layout);
     this.inputController.setSelectPhrase(this.settings.select_phrase);
     this.inputController.setCandidateKeys(this.settings.candidate_keys);
