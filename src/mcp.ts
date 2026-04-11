@@ -74,7 +74,7 @@ async function runServerTransport() {
   const server = new McpServer({
     name: "mcp-mcbopomofo",
     title: "McBopomofo",
-    version: "2.0.2",
+    version: "2.0.3",
   });
 
   server.registerTool(
