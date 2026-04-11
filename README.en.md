@@ -3,7 +3,9 @@
 ![Static Badge](https://img.shields.io/badge/platform-web-green)
 ![ChromeOS](https://img.shields.io/badge/platform-chrome_os-yellow) ![Static Badge](https://img.shields.io/badge/platform-windows-blue) [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/openvanilla/McBopomofoWeb) [![codecov](https://codecov.io/github/openvanilla/McBopomofoWeb/branch/main/graph/badge.svg?token=YpF9Z7IPMO)](https://codecov.io/github/openvanilla/McBopomofoWeb)
 
-This project attempts to implement the McBopomofo input method using JavaScript/TypeScript and web-related technologies. McBopomofo is an automatic character selection Bopomofo input method that provides multiple common keyboard layouts and various convenient features for fast input.
+This project implements the McBopomofo input method using JavaScript/TypeScript and web-related technologies, and extends it into various text services.
+
+McBopomofo is an automatic character selection Bopomofo input method that provides multiple common keyboard layouts and various convenient features for fast input. The derived services include two-way conversion between Bopomofo and Chinese characters, adding Bopomofo annotations to Chinese characters, and two-way conversion between Chinese characters and Taiwan Braille, etc.
 
 The project directory provides:
 
@@ -26,19 +28,19 @@ These text conversion services can be used not only in the Chrome browser's righ
 <!-- TOC -->
 
 - [McBopomofoWeb - McBopomofo Input Method Built with Web Technologies](#mcbopomofoweb---mcbopomofo-input-method-built-with-web-technologies)
-    - [Table of Contents](#table-of-contents)
-    - [Usage](#usage)
-    - [Build Instructions](#build-instructions)
-        - [Building Example Web Page](#building-example-web-page)
-        - [Building and Testing Chrome OS Version](#building-and-testing-chrome-os-version)
-        - [Building and Testing Windows PIME Version](#building-and-testing-windows-pime-version)
-        - [Building MCP Service](#building-mcp-service)
-    - [Others](#others)
-        - [Microsoft Word Add-in](#microsoft-word-add-in)
-    - [Third-party Packages](#third-party-packages)
-    - [Community Guidelines](#community-guidelines)
-    - [Software License](#software-license)
-    - [Acknowledgments](#acknowledgments)
+  - [Table of Contents](#table-of-contents)
+  - [Usage](#usage)
+  - [Build Instructions](#build-instructions)
+    - [Building Example Web Page](#building-example-web-page)
+    - [Building and Testing Chrome OS Version](#building-and-testing-chrome-os-version)
+    - [Building and Testing Windows PIME Version](#building-and-testing-windows-pime-version)
+    - [Building MCP Service](#building-mcp-service)
+  - [Others](#others)
+    - [Microsoft Word Add-in](#microsoft-word-add-in)
+  - [Third-party Packages](#third-party-packages)
+  - [Community Guidelines](#community-guidelines)
+  - [Software License](#software-license)
+  - [Acknowledgments](#acknowledgments)
 
 <!-- /TOC -->
 
@@ -94,7 +96,7 @@ To test the Chrome OS version, you can follow these steps:
 
 Debugging: During the development of the PIME version, you can debug through PIME's own Debug Log. You can right-click on the PIME Launcher icon in the Windows system tray to open the right-click menu, where you can see options to open and view logs. Additionally, you can use the following PowerShell command to view real-time logs:
 
-```
+```powershell
 set LOG_FILE="%localappdata%\\PIME\Log\\PIMELauncher.log"
 set COMMAND="powershell Get-Content -Tail 10 -Wait %LOG_FILE%"
 powershell -noexit %COMMAND%
@@ -152,6 +154,25 @@ Note that the McBopomofo MCP supports generating the codes required for Bopomofo
 > Please add the CSS stylesheet `https://oikasu1.github.io/fonts/twfonts.css` to the HTML, and then apply the `BpmfZihiSerif-Regular`, `BpmfZihiSans-Regular`, or `BpmfZihiKaiStd-Regular` font to the corresponding elements.
 
 You can also deploy it to other AI services that support MCP, such as Gemini CLI, according to your own needs.
+
+## Bopomofo Font Related Instructions
+
+### PIME
+
+If you use the PIME version of the McBopomofo input method, you can pair it with [ButTaiwan's Bopomofo fonts](https://github.com/ButTaiwan/bpmfvs/releases) on Windows to produce Bopomofo fonts corresponding to the correct polyphonic characters. If you use Google Docs, these Bopomofo fonts (Bpmf Zihi Serif, Bpmf Zihi Sans, etc.) are already included.
+
+ButTaiwan's Bopomofo fonts utilize Unicode IVS technology, allowing the same Chinese character to be followed by a "Variation Selector" to choose different pronunciations. However, inserting the corresponding "Variation Selector" manually can be quite troublesome. McBopomofo maps the input roots to "Variation Selectors", so when you type, the corresponding "Variation Selector" is selected at the same time.
+
+The workflow to use this feature is:
+
+- Download the fonts and install them on Windows, or select them in Google Docs.
+- While typing, choose the "Turn on Bopomofo font support" feature.
+
+It is generally not recommended to enable this feature all the time because it basically inserts extra characters after each character, which may cause issues in some word processing applications.
+
+### Chrome OS
+
+Although the McBopomofo input method and Google Docs' Bopomofo fonts can be used on Chrome OS, currently (Chrome OS 145) Bopomofo fonts still cannot be displayed correctly. We are waiting for an update from Google.
 
 ## Others
 

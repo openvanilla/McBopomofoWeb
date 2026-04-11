@@ -3,9 +3,9 @@
 ![Static Badge](https://img.shields.io/badge/platform-web-green)
 ![ChromeOS](https://img.shields.io/badge/platform-chrome_os-yellow) ![Static Badge](https://img.shields.io/badge/platform-windows-blue) [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/openvanilla/McBopomofoWeb) [![codecov](https://codecov.io/github/openvanilla/McBopomofoWeb/branch/main/graph/badge.svg?token=YpF9Z7IPMO)](https://codecov.io/github/openvanilla/McBopomofoWeb)
 
-本專案嘗試使用 JavaScript/TypeScript 與網頁相關技術，實作小麥注音輸入法，進而延伸出各種文字服務。
+本專案使用 JavaScript/TypeScript 與網頁相關技術，實作小麥注音輸入法，並延伸出各種文字服務。
 
-小麥注音是一套自動選字的注音輸入法，提供多種常用鍵盤配置，以及各種方便快速輸入的功能。而基於這套輸入法所衍生出的服務，則包括注音與國字的雙向轉換，以及國字與台灣點字的雙向轉換。
+小麥注音是一套自動選字的注音輸入法，提供多種常用鍵盤配置，以及各種方便快速輸入的功能。而衍生出的服務，包括注音與國字的雙向轉換，國字加上注音標示，以及國字與台灣點字的雙向轉換等。
 
 在專案目錄下提供：
 
@@ -99,7 +99,7 @@ npm run build:mcp # 編譯 MCP Server 版本
 
 除錯：在開發 PIME 版本的過程中，可以透過 PIME 本身的 Debug Log 除錯。您可以從 Windows 系統列上的 PIME Launcher 圖示上按下右鍵，點開右鍵選單，當中就可以看到開啟以及查看 Log 的選項。另外，您也可以使用以下 PowerShell 命令查看即時的 Log：
 
-```
+``` powershell
 set LOG_FILE="%localappdata%\\PIME\Log\\PIMELauncher.log"
 set COMMAND="powershell Get-Content -Tail 10 -Wait %LOG_FILE%"
 powershell -noexit %COMMAND%
@@ -157,6 +157,25 @@ args = ["/PATH/TO/output/mcp/index.js"]
 > 請在 HTML 中加上 CSS stylesheet `https://oikasu1.github.io/fonts/twfonts.css`，然後在對應的元素套用 `BpmfZihiSerif-Regular`、`BpmfZihiSans-Regular` 或 `BpmfZihiKaiStd-Regular` 字體。
 
 您也可以按照自己的需求，部署在其他支援 MCP 的 AI 服務上，像是 Gemini CLI 等。
+
+## 注音字體相關說明
+
+### PIME
+
+如果使用 PIME 版本的小麥注音輸入法，可以在 Windows 上搭配[字嗨的注音字體](https://github.com/ButTaiwan/bpmfvs/releases)，產生對應到正確破音字的注音字體。如果您使用 Google Docs，Google Docs 中也已經包含這些注音字體（注音粉圓、注音芫荽等）。
+
+字嗨的注音字體使用了 Unicode IVS 技術，讓同一個中文字，後面加上「異體字選擇子」，選擇不同的破音，但如何插入對應的「異體字選擇子」，會是比較麻煩的工作，而小麥做了輸入字根與「異體字選擇子」的對應，在打字輸入的時候，就同時選擇對應的「異體字選擇子」。
+
+使用這項功能的流程是
+
+- 下載字體，並且安裝到 Windows 中，或是在 Google Docs 中選擇
+- 在打字的時候，選擇「打開注音字體支援」功能
+
+平時不建議打開這項功能，因為相當於在每個字後面，額外插入了一些字元，在一些文書軟體中可能會有問題。
+
+### Chrome OS
+
+雖然 Chrome OS 上也可以使用小麥輸入法與 Google Docs 的注音字體，但目前（Chrome OS 145）還無法正確顯示注音字體，我們靜待 Google 更新。
 
 ## 其他
 

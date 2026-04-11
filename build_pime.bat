@@ -9,15 +9,17 @@ if %errorLevel% neq 0 (
     exit /b 1
 )
 
-echo * Build McBopomopfo for PIME
+set IME_NAME=mcbopomofo
+
+echo * Build %IME_NAME% for PIME
 call npm run build:pime
 echo * Delete old files
-rmdir /S /Q "C:\Program Files (x86)\PIME\node\input_methods\mcbopomofo"
+rmdir /S /Q "C:\Program Files (x86)\PIME\node\input_methods\%IME_NAME%"
 echo * Copy new files
-xcopy /E /I ".\output\pime" "C:\Program Files (x86)\PIME\node\input_methods\mcbopomofo"
+xcopy /E /I ".\output\pime" "C:\Program Files (x86)\PIME\node\input_methods\%IME_NAME%"
 
-@REM echo * Register McBopomofo
-@REM "C:\Program Files (x86)\PIME\node\input_methods\mcbopomofo\run_register_ime.bat"
+@REM echo * Register %IME_NAME%
+@REM "C:\Program Files (x86)\PIME\node\input_methods\%IME_NAME%\run_register_ime.bat"
 
 
 echo "Please restart PIME Launcher to see the changes."
