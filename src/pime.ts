@@ -462,9 +462,7 @@ class PimeMcBopomofo {
         };
       },
       commitString(text: string) {
-        // console.log("commitString: " + text);
         const joinedCommitString = instance.uiState.compositionString + text;
-        // console.log("joinedCommitString: " + joinedCommitString);
         instance.uiState = {
           commitString: joinedCommitString,
           compositionString: "",
@@ -902,7 +900,6 @@ module.exports = {
       }
 
       // Single Shift to toggle alphabet mode.
-      // let commitString = "";
       let uiState = {
         commitString: "",
         compositionString: "",
@@ -920,7 +917,6 @@ module.exports = {
         // update the icons here.
         const customUi = pimeMcBopomofo.customUiResponse();
         const buttonUi = pimeMcBopomofo.buttonUiResponse();
-        handled = false;
         let response = Object.assign(
           {},
           responseTemplate,
@@ -1032,20 +1028,9 @@ module.exports = {
       // we will toggle Alphabet/Chinese.
       if (shouldHandleShift && isPressingShiftOnly) {
         pimeMcBopomofo.isShiftHold = true;
-        const state = pimeMcBopomofo.inputController.state;
-        const handled = state instanceof Empty === false;
-        pimeMcBopomofo.isLastFilterKeyDownHandled = handled;
-        const customUi = pimeMcBopomofo.customUiResponse();
-        const buttonUi = pimeMcBopomofo.buttonUiResponse();
-        const response = Object.assign(
-          {},
-          responseTemplate,
-          customUi,
-          buttonUi,
-          {
-            return: handled,
-          }
-        );
+        const response = Object.assign({}, responseTemplate, {
+          return: false,
+        });
         return response;
       } else {
         pimeMcBopomofo.isShiftHold = false;
