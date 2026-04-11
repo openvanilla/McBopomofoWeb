@@ -1105,12 +1105,6 @@ module.exports = {
       let response = Object.assign({}, responseTemplate, uiState, {
         return: pimeMcBopomofo.isLastFilterKeyDownHandled,
       });
-      // if (pimeMcBopomofo.isScheduledToUpdateUi) {
-      //   pimeMcBopomofo.isScheduledToUpdateUi = false;
-      //   const customUi = pimeMcBopomofo.customUiResponse();
-      //   const buttonUi = pimeMcBopomofo.buttonUiResponse();
-      //   response = Object.assign({}, response, customUi, buttonUi);
-      // }
       return response;
     }
 
