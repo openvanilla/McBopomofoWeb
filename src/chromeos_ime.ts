@@ -229,7 +229,7 @@ class ChromeMcBopomofo {
     largeSync.get(["excluded_phrase"], (value) => {
       // On ChromeOS, we store the user phrases in JSON format, but
       // the editor convert the JSON to phrases per line.
-      const jsonString = value.user_phrase;
+      const jsonString = value.excluded_phrase;
       if (jsonString !== undefined) {
         try {
           const obj = JSON.parse(jsonString);
@@ -653,6 +653,7 @@ chrome.input?.ime.onActivate.addListener((engineID) => {
   chromeMcBopomofo.loadSettings();
   chromeMcBopomofo.updateMenu();
   chromeMcBopomofo.loadUserPhrases();
+  chromeMcBopomofo.loadExcludedPhrases();
   chromeMcBopomofo.inputController.setOnPhraseChange((userPhrases) => {
     const obj = Object.fromEntries(userPhrases);
     const jsonString = JSON.stringify(obj);
