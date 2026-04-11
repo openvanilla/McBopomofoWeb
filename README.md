@@ -33,6 +33,9 @@
     - [編譯與測試 Chrome OS 版本](#編譯與測試-chrome-os-版本)
     - [編譯與測試 Windows 上的 PIME 版本](#編譯與測試-windows-上的-pime-版本)
     - [編譯 MCP 服務](#編譯-mcp-服務)
+  - [注音字體相關說明](#注音字體相關說明)
+    - [PIME](#pime)
+    - [Chrome OS](#chrome-os)
   - [其他](#其他)
     - [Microsoft Word Add-in](#microsoft-word-add-in)
   - [開發](#開發)
@@ -99,7 +102,7 @@ npm run build:mcp # 編譯 MCP Server 版本
 
 除錯：在開發 PIME 版本的過程中，可以透過 PIME 本身的 Debug Log 除錯。您可以從 Windows 系統列上的 PIME Launcher 圖示上按下右鍵，點開右鍵選單，當中就可以看到開啟以及查看 Log 的選項。另外，您也可以使用以下 PowerShell 命令查看即時的 Log：
 
-``` powershell
+```powershell
 set LOG_FILE="%localappdata%\\PIME\Log\\PIMELauncher.log"
 set COMMAND="powershell Get-Content -Tail 10 -Wait %LOG_FILE%"
 powershell -noexit %COMMAND%

@@ -16,7 +16,7 @@ import {
   InputController,
   MovingCursorOption,
 } from "./McBopomofo/InputController";
-import { Empty } from "./McBopomofo/InputState";
+import { Empty, Inputting, NotEmpty } from "./McBopomofo/InputState";
 import { InputUI } from "./McBopomofo/InputUI";
 import { KeyFromKeyboardEvent, VK_Keys } from "./pime_keys";
 
@@ -183,12 +183,6 @@ class PimeMcBopomofo {
    * would be reset on key on.
    */
   isCapsLockHold: boolean = false;
-  /**
-   * If the user presses a shortcut key, such as the key to toggle
-   * Traditional/Simplifies Chinese, the flag should be set to true and then
-   * update the input UI.
-   */
-  isScheduledToUpdateUi = false;
 
   constructor() {
     this.inputController = new InputController(this.makeUI(this));
@@ -468,9 +462,9 @@ class PimeMcBopomofo {
         };
       },
       commitString(text: string) {
-        console.log("commitString: " + text);
+        // console.log("commitString: " + text);
         const joinedCommitString = instance.uiState.compositionString + text;
-        console.log("joinedCommitString: " + joinedCommitString);
+        // console.log("joinedCommitString: " + joinedCommitString);
         instance.uiState = {
           commitString: joinedCommitString,
           compositionString: "",
@@ -569,12 +563,6 @@ class PimeMcBopomofo {
     const windowsModeIconPath = path.join(__dirname, "icons", windowsModeIcon);
     const settingsIconPath = path.join(__dirname, "icons", "config.ico");
     const object: any = {};
-    const changeButton: any[] = [];
-    if (this.isWindows8Above) {
-      changeButton.push({ icon: windowsModeIconPath, id: "windows-mode-icon" });
-    }
-    changeButton.push({ icon: windowsModeIconPath, id: "switch-lang" });
-    object.changeButton = changeButton;
 
     if (!this.alreadyAddButton) {
       const addButton: any[] = [];
@@ -600,7 +588,16 @@ class PimeMcBopomofo {
         tooltip: "設定",
       });
       object.addButton = addButton;
-      this.alreadyAddButton = true;
+    } else {
+      const changeButton: any[] = [];
+      if (this.isWindows8Above) {
+        changeButton.push({
+          icon: windowsModeIconPath,
+          id: "windows-mode-icon",
+        });
+      }
+      changeButton.push({ icon: windowsModeIconPath, id: "switch-lang" });
+      object.changeButton = changeButton;
     }
     return object;
   }
@@ -857,23 +854,19 @@ module.exports = {
     if (request.method === "init") {
       const { isWindows8Above } = request;
       pimeMcBopomofo.isWindows8Above = isWindows8Above;
-      const customUi = pimeMcBopomofo.customUiResponse();
-      const response = Object.assign({}, responseTemplate, customUi, {
-        // removeButton: ["windows-mode-icon", "switch-lang", "settings"],
-      });
+      const response = Object.assign({}, responseTemplate);
       return response;
     }
     if (request.method === "close") {
-      const response = Object.assign({}, responseTemplate, {
-        removeButton: ["windows-mode-icon", "switch-lang", "settings"],
-      });
-      pimeMcBopomofo.alreadyAddButton = false;
+      const response = Object.assign({}, responseTemplate, {});
       return response;
     }
 
     if (request.method === "onActivate") {
+      pimeMcBopomofo.alreadyAddButton = false;
       const customUi = pimeMcBopomofo.customUiResponse();
       const buttonUi = pimeMcBopomofo.buttonUiResponse();
+      pimeMcBopomofo.alreadyAddButton = true;
       const response = Object.assign({}, responseTemplate, customUi, buttonUi);
       return response;
     }
@@ -907,32 +900,53 @@ module.exports = {
         });
         return response;
       }
+
       // Single Shift to toggle alphabet mode.
+      // let commitString = "";
+      let uiState = {
+        commitString: "",
+        compositionString: "",
+        compositionCursor: 0,
+        showCandidates: false,
+        candidateList: [],
+        candidateCursor: 0,
+        showMessage: {},
+        hideMessage: true,
+      };
+
       if (pimeMcBopomofo.isShiftHold) {
-        pimeMcBopomofo.isScheduledToUpdateUi = true;
         pimeMcBopomofo.toggleAlphabetMode();
-        handled = true;
+        // Note: Since we are toggling alphabet mode on key up event, we should
+        // update the icons here.
+        const customUi = pimeMcBopomofo.customUiResponse();
+        const buttonUi = pimeMcBopomofo.buttonUiResponse();
+        handled = false;
+        let response = Object.assign(
+          {},
+          responseTemplate,
+          customUi,
+          buttonUi,
+          uiState,
+          {
+            return: false,
+          }
+        );
+        // Note: We return false here so we can let the shift key event to be
+        // passeds to IntelliJ and then IntelliJ can trigger the action menu by
+        // the double shift key event.
+        return response;
       }
-      const response = Object.assign({}, responseTemplate, { return: handled });
+      let response = Object.assign({}, responseTemplate, {
+        return: handled,
+      });
       return response;
     }
 
     if (request.method === "onKeyUp") {
-      if (pimeMcBopomofo.isScheduledToUpdateUi) {
-        pimeMcBopomofo.isScheduledToUpdateUi = false;
-        const state = pimeMcBopomofo.inputController.state;
-        const handled = state instanceof Empty === false;
-
-        const uiState = pimeMcBopomofo.uiState;
-        const customUi = pimeMcBopomofo.customUiResponse();
-        const buttonUi = pimeMcBopomofo.buttonUiResponse();
-        const response = Object.assign(
-          responseTemplate,
-          uiState,
-          customUi,
-          buttonUi,
-          { return: handled }
-        );
+      if (pimeMcBopomofo.isShiftHold) {
+        let response = Object.assign({}, responseTemplate, {
+          return: false,
+        });
         return response;
       }
     }
@@ -981,15 +995,30 @@ module.exports = {
         pimeMcBopomofo.writeSettings();
         pimeMcBopomofo.resetController();
         pimeMcBopomofo.isLastFilterKeyDownHandled = true;
-        pimeMcBopomofo.isScheduledToUpdateUi = true;
-        const response = Object.assign({}, responseTemplate, {
-          return: true,
-        });
+
+        const customUi = pimeMcBopomofo.customUiResponse();
+        const buttonUi = pimeMcBopomofo.buttonUiResponse();
+
+        const response = Object.assign(
+          {},
+          responseTemplate,
+          customUi,
+          buttonUi,
+          {
+            return: true,
+          }
+        );
         return response;
       }
 
-      const shouldHandleShift =
+      // Note: We only allow Shift key to toggle Alphabet/Chinese mode when the
+      // state is Empty.
+      let shouldHandleShift =
         pimeMcBopomofo.settings.shift_key_toggle_alphabet_mode === true;
+      const state = pimeMcBopomofo.inputController.state;
+      if (state instanceof Empty === false) {
+        shouldHandleShift = false;
+      }
 
       const isPressingShiftOnly = key.ascii === "Shift";
 
@@ -1001,18 +1030,22 @@ module.exports = {
       // key only. Then, if there is any other key coming, we will reset
       // isShiftHold. Finally, if isShiftHold is still true in the key up event,
       // we will toggle Alphabet/Chinese.
-      if (shouldHandleShift) {
-        pimeMcBopomofo.isShiftHold = isPressingShiftOnly;
-      }
-      if (isPressingShiftOnly) {
+      if (shouldHandleShift && isPressingShiftOnly) {
+        pimeMcBopomofo.isShiftHold = true;
         const state = pimeMcBopomofo.inputController.state;
         const handled = state instanceof Empty === false;
         pimeMcBopomofo.isLastFilterKeyDownHandled = handled;
-        console.log("single shift key");
-        const response = Object.assign({}, responseTemplate, {
-          return: handled,
-        });
-        console.log(response);
+        const customUi = pimeMcBopomofo.customUiResponse();
+        const buttonUi = pimeMcBopomofo.buttonUiResponse();
+        const response = Object.assign(
+          {},
+          responseTemplate,
+          customUi,
+          buttonUi,
+          {
+            return: handled,
+          }
+        );
         return response;
       } else {
         pimeMcBopomofo.isShiftHold = false;
@@ -1072,12 +1105,12 @@ module.exports = {
       let response = Object.assign({}, responseTemplate, uiState, {
         return: pimeMcBopomofo.isLastFilterKeyDownHandled,
       });
-      if (pimeMcBopomofo.isScheduledToUpdateUi) {
-        pimeMcBopomofo.isScheduledToUpdateUi = false;
-        const customUi = pimeMcBopomofo.customUiResponse();
-        const buttonUi = pimeMcBopomofo.buttonUiResponse();
-        response = Object.assign({}, response, customUi, buttonUi);
-      }
+      // if (pimeMcBopomofo.isScheduledToUpdateUi) {
+      //   pimeMcBopomofo.isScheduledToUpdateUi = false;
+      //   const customUi = pimeMcBopomofo.customUiResponse();
+      //   const buttonUi = pimeMcBopomofo.buttonUiResponse();
+      //   response = Object.assign({}, response, customUi, buttonUi);
+      // }
       return response;
     }
 
