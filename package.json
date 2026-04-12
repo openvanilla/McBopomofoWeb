@@ -30,6 +30,7 @@
     "prepublishOnly": "npm run test && npm run eslint",
     "test": "./node_modules/jest/bin/jest.js",
     "test:coverage": "./node_modules/jest/bin/jest.js --coverage",
+    "test:e2e": "playwright test",
     "eslint": "eslint"
   },
   "repository": {
@@ -53,6 +54,7 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@playwright/test": "^1.59.1",
     "@types/chrome": "^0.1.38",
     "@types/jest": "^30.0.0",
     "@types/lodash": "^4.17.24",

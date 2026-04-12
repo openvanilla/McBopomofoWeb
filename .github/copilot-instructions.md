@@ -229,6 +229,7 @@ AI agents may call a subagent to run `npm run test:coverage` to find code that i
 - Unit tests are required for all new or modified code. Place tests beside implementation files as `*.test.ts`.
 - When code is modified, also update this copilot-instructions.md file if relevant.
 - Jest with `ts-jest` is configured; high-signal tests already exist beside the implementation files (`*.test.ts`).
+- Playwright E2E coverage for the local web demo lives under `e2e/`, serves `output/example/` via a local static server, and runs with `npm run test:e2e`.
 - Use `npm run ts-build` for type-checking and `npm run eslint` to enforce the TypeScript ESLint ruleset. Keep CI-friendly scripts free of watch flags.
 - AI agents may call `test:coverage` (via agent) to find code not covered by tests and should address coverage gaps.
 
