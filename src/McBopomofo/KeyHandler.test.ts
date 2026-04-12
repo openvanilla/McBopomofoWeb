@@ -843,7 +843,7 @@ describe("KeyHandler", () => {
       const punctuationList = state as ChoosingPunctuationList;
       let nextState: InputState = punctuationList;
 
-      const handled = keyHandler.candidatePanelPunctuationListSelected(
+      const handled = keyHandler.candidatePanelPunctuationMaybeEntered(
         ",",
         punctuationList.originalCursorIndex,
         (state) => {
@@ -873,7 +873,37 @@ describe("KeyHandler", () => {
       expect(state).toBeInstanceOf(ChoosingPunctuationList);
       const punctuationList = state as ChoosingPunctuationList;
 
-      const handled = keyHandler.candidatePanelPunctuationListSelected(
+      const handled = keyHandler.candidatePanelPunctuationMaybeEntered(
+        ",",
+        punctuationList.originalCursorIndex,
+        (newState) => {
+          state = newState;
+        }
+      );
+
+      expect(handled).toBe(true);
+      expect(state).toBeInstanceOf(Inputting);
+      expect((state as Inputting).composingBuffer).toBe("你，");
+    });
+
+    test("enters punctuation from the punctuation list helper after existing composition", () => {
+      let state = handleKeySequence(keyHandler, asciiKey(["s", "u", "3"]));
+      expect(state).toBeInstanceOf(Inputting);
+      expect((state as Inputting).composingBuffer).toBe("你");
+
+      keyHandler.handle(
+        Key.asciiKey("`"),
+        state,
+        (newState) => {
+          state = newState;
+        },
+        () => {}
+      );
+
+      expect(state).toBeInstanceOf(ChoosingPunctuationList);
+      const punctuationList = state as ChoosingPunctuationList;
+
+      const handled = keyHandler.candidatePanelPunctuationMaybeEntered(
         ",",
         punctuationList.originalCursorIndex,
         (newState) => {
@@ -893,7 +923,26 @@ describe("KeyHandler", () => {
       const punctuationList = state as ChoosingPunctuationList;
       let callbackCalled = false;
 
-      const handled = keyHandler.candidatePanelPunctuationListSelected(
+      const handled = keyHandler.candidatePanelPunctuationMaybeEntered(
+        "not-a-punctuation-key",
+        punctuationList.originalCursorIndex,
+        () => {
+          callbackCalled = true;
+        }
+      );
+
+      expect(handled).toBe(false);
+      expect(callbackCalled).toBe(false);
+    });
+
+    test("returns false when punctuation list typing helper receives an unknown key", () => {
+      const state = handleKeySequence(keyHandler, asciiKey(["`"]));
+      expect(state).toBeInstanceOf(ChoosingPunctuationList);
+
+      const punctuationList = state as ChoosingPunctuationList;
+      let callbackCalled = false;
+
+      const handled = keyHandler.candidatePanelPunctuationMaybeEntered(
         "not-a-punctuation-key",
         punctuationList.originalCursorIndex,
         () => {
@@ -919,7 +968,7 @@ describe("KeyHandler", () => {
         }
       );
 
-      expect(nextState).toBeInstanceOf(Empty);
+      expect(nextState).toBeInstanceOf(EmptyIgnoringPrevious);
       expect(keyHandler.gridLength).toBe(0);
       expect(keyHandler.cursor).toBe(0);
     });
@@ -963,7 +1012,29 @@ describe("KeyHandler", () => {
       const punctuationList = state as ChoosingPunctuationList;
       let nextState: InputState = punctuationList;
 
-      const handled = keyHandler.candidatePanelPunctuationListSelected(
+      const handled = keyHandler.candidatePanelPunctuationMaybeEntered(
+        ",",
+        punctuationList.originalCursorIndex,
+        (state) => {
+          nextState = state;
+        }
+      );
+
+      expect(handled).toBe(true);
+      expect(nextState).toBeInstanceOf(Committing);
+      expect((nextState as Committing).text).toBe("，");
+    });
+
+    test("commits typed punctuation from the punctuation list helper in traditional mode", () => {
+      keyHandler.traditionalMode = true;
+
+      const state = handleKeySequence(keyHandler, asciiKey(["`"]));
+      expect(state).toBeInstanceOf(ChoosingPunctuationList);
+
+      const punctuationList = state as ChoosingPunctuationList;
+      let nextState: InputState = punctuationList;
+
+      const handled = keyHandler.candidatePanelPunctuationMaybeEntered(
         ",",
         punctuationList.originalCursorIndex,
         (state) => {

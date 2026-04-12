@@ -700,47 +700,66 @@ export class InputController {
       return;
     }
 
-    // Note: not allowed to move cursor when choosing punctuation list.
-    const isMovingToLeft =
-      !(state instanceof ChoosingPunctuationList) &&
-      ((key.name === KeyName.LEFT && key.shiftPressed) ||
+    if (this.state_ instanceof ChoosingPunctuationList) {
+      // Note: Double "`" to enter the feature menu.
+      if (key.ascii === "`") {
+        stateCallback(new EmptyIgnoringPrevious());
+        this.keyHandler_.reset();
+        stateCallback(
+          new SelectingFeature((input) => {
+            const lm = this.lm_;
+            if (lm instanceof WebLanguageModel) {
+              return lm.convertMacro(input);
+            }
+            return input;
+          })
+        );
+        return true;
+      }
+    } else {
+      // Note:
+      // - We do not allow moving cursor in punctuation list.
+      // - Shift + Left/Right is the default keybinding for moving cursor in
+      //   candidate list. When movingCursorOption is enabled, we also allow using
+      //   H/J/K/L or Left/Right without modifiers
+      const isCursorMovingToLeft =
+        (key.name === KeyName.LEFT && key.shiftPressed) ||
         (this.movingCursorOption_ === MovingCursorOption.UseJK &&
           key.ascii === "j") ||
         (this.movingCursorOption_ === MovingCursorOption.UseHL &&
-          key.ascii === "h"));
-    if (isMovingToLeft) {
-      const cursor = this.keyHandler_.cursor;
-      if (cursor === 0) {
-        errorCallback();
+          key.ascii === "h");
+      if (isCursorMovingToLeft) {
+        const cursor = this.keyHandler_.cursor;
+        if (cursor === 0) {
+          errorCallback();
+          return;
+        }
+        const newIndex = cursor - 1;
+        this.keyHandler_.cursor = newIndex;
+        const state = this.keyHandler_.buildChoosingCandidateState(newIndex);
+        stateCallback(state);
         return;
       }
-      const newIndex = cursor - 1;
-      this.keyHandler_.cursor = newIndex;
-      const state = this.keyHandler_.buildChoosingCandidateState(newIndex);
-      stateCallback(state);
-      return;
-    }
 
-    // Note: not allowed to move cursor when choosing punctuation list.
-    const isMovingToRight =
-      !(state instanceof ChoosingPunctuationList) &&
-      ((key.name === KeyName.RIGHT && key.shiftPressed) ||
+      const isCursorMovingToRight =
+        (key.name === KeyName.RIGHT && key.shiftPressed) ||
         (this.movingCursorOption_ === MovingCursorOption.UseJK &&
           key.ascii === "k") ||
         (this.movingCursorOption_ === MovingCursorOption.UseHL &&
-          key.ascii === "l"));
-    if (isMovingToRight) {
-      const cursor = this.keyHandler_.cursor;
-      const max = this.keyHandler_.gridLength;
-      if (cursor >= max) {
-        errorCallback();
+          key.ascii === "l");
+      if (isCursorMovingToRight) {
+        const cursor = this.keyHandler_.cursor;
+        const max = this.keyHandler_.gridLength;
+        if (cursor >= max) {
+          errorCallback();
+          return;
+        }
+        const newIndex = cursor + 1;
+        this.keyHandler_.cursor = newIndex;
+        const state = this.keyHandler_.buildChoosingCandidateState(newIndex);
+        stateCallback(state);
         return;
       }
-      const newIndex = cursor + 1;
-      this.keyHandler_.cursor = newIndex;
-      const state = this.keyHandler_.buildChoosingCandidateState(newIndex);
-      stateCallback(state);
-      return;
     }
 
     let keyToTest = key.ascii;
@@ -763,24 +782,8 @@ export class InputController {
       return;
     }
 
-    let isCancelKey =
+    let keyIsCancel =
       key.name === KeyName.ESC || key.name === KeyName.BACKSPACE;
-
-    // Note: Double "`" to enter the feature menu.
-    if (key.ascii === "`" && this.state_ instanceof ChoosingPunctuationList) {
-      stateCallback(new EmptyIgnoringPrevious());
-      this.keyHandler_.reset();
-      stateCallback(
-        new SelectingFeature((input) => {
-          const lm = this.lm_;
-          if (lm instanceof WebLanguageModel) {
-            return lm.convertMacro(input);
-          }
-          return input;
-        })
-      );
-      return true;
-    }
 
     const invalidPrefixArray = [
       "_half_punctuation_",
@@ -793,7 +796,7 @@ export class InputController {
 
     if (key.ascii === "?") {
       if (state instanceof SelectingDictionary) {
-        isCancelKey = true;
+        keyIsCancel = true;
       } else if (state instanceof ChoosingPunctuationList) {
         // Bypass this and use ? to map to full-width question mark later.
       } else if (state instanceof ChoosingCandidate) {
@@ -817,7 +820,7 @@ export class InputController {
       }
     }
 
-    if (isCancelKey) {
+    if (keyIsCancel) {
       if (
         state instanceof SelectingFeature ||
         state instanceof SelectingDateMacro ||
@@ -858,7 +861,7 @@ export class InputController {
     }
 
     if (state instanceof ChoosingPunctuationList) {
-      const result = this.keyHandler_.candidatePanelPunctuationListSelected(
+      const result = this.keyHandler_.candidatePanelPunctuationMaybeEntered(
         key.ascii,
         state.originalCursorIndex,
         (newState) => {

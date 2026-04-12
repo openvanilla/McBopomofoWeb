@@ -372,11 +372,11 @@ export class KeyHandler {
     }
 
     if (state instanceof Big5) {
-      return this.handleBig5(key, state, stateCallback, errorCallback);
+      return this.handleBig5Input(key, state, stateCallback, errorCallback);
     }
 
     if (state instanceof Iroha) {
-      return this.handleIroha(key, state, stateCallback, errorCallback);
+      return this.handleIrohaInput(key, state, stateCallback, errorCallback);
     }
 
     // Numpad
@@ -915,18 +915,19 @@ export class KeyHandler {
     this.walk();
     this.grid_.cursor = originalCursorIndex - 1;
     if (this.grid_.length === 0) {
-      stateCallback(new Empty());
+      this.reset();
+      stateCallback(new EmptyIgnoringPrevious());
     } else {
       stateCallback(this.buildInputtingState());
     }
   }
 
-  candidatePanelPunctuationListSelected(
-    punctuationKey: string,
+  candidatePanelPunctuationMaybeEntered(
+    maybePunctuation: string,
     originalCursorIndex: number,
     stateCallback: (newState: any) => void
   ): boolean {
-    const key = kPunctuationListUnigramKey + "_" + punctuationKey;
+    const key = kPunctuationListUnigramKey + "_" + maybePunctuation;
     const unigrams = this.languageModel_.getUnigrams(key);
     if (unigrams.length === 0) {
       return false;
@@ -1439,7 +1440,7 @@ export class KeyHandler {
     );
   }
 
-  private handleBig5(
+  private handleBig5Input(
     key: Key,
     state: Big5,
     stateCallback: (state: InputState) => void,
@@ -1500,7 +1501,7 @@ export class KeyHandler {
     return true;
   }
 
-  private handleIroha(
+  private handleIrohaInput(
     key: Key,
     state: Iroha,
     stateCallback: (state: InputState) => void,
