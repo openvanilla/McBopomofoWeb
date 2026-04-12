@@ -119,10 +119,17 @@ export class KeyHandler {
     webBpmfvsVariants
   );
 
+  public get languageCode(): string {
+    return this.localizedStrings_.languageCode;
+  }
+  public set languageCode(value: string) {
+    this.localizedStrings_.languageCode = value;
+  }
+
   /// Export current settings to a KeyHandlerSettings object.
   public exportSettings(): KeyHandlerSettings {
     return new KeyHandlerSettings(
-      this.languageCode,
+      this.localizedStrings_.languageCode,
       this.selectPhraseAfterCursorAsCandidate,
       this.moveCursorAfterSelection,
       this.putLowercaseLettersToComposingBuffer,
@@ -139,7 +146,7 @@ export class KeyHandler {
 
   /// Restore settings from a KeyHandlerSettings object.
   public restoreSettings(settings: KeyHandlerSettings): void {
-    this.languageCode = settings.languageCode;
+    this.localizedStrings_.languageCode = settings.languageCode;
     this.selectPhraseAfterCursorAsCandidate_ =
       settings.selectPhraseAfterCursorAsCandidate;
     this.moveCursorAfterSelection_ = settings.moveCursorAfterSelection;
@@ -156,15 +163,6 @@ export class KeyHandler {
     this.bopomofoFontAnnotationSupportEnabled =
       settings.bopomofoFontAnnotationSupportEnabled;
     this.allowChangingPriorTone = settings.allowChangingPriorTone;
-  }
-
-  private localizedStrings_: LocalizedStrings = new LocalizedStrings();
-
-  public get languageCode(): string {
-    return this.localizedStrings_.languageCode;
-  }
-  public set languageCode(value: string) {
-    this.localizedStrings_.languageCode = value;
   }
 
   private selectPhraseAfterCursorAsCandidate_: boolean = false;
@@ -254,7 +252,6 @@ export class KeyHandler {
     this.allowChangingPriorTone_ = flag;
   }
 
-  private languageModel_: LanguageModel;
   private grid_: ReadingGrid;
   private reading_: BopomofoReadingBuffer;
   private latestWalk_: WalkResult | undefined;
@@ -275,8 +272,11 @@ export class KeyHandler {
     kObservedOverrideHalfLife
   );
 
-  constructor(languageModel: LanguageModel) {
-    this.languageModel_ = languageModel;
+  constructor(
+    private languageModel_: LanguageModel,
+    protected localizedStrings_: LocalizedStrings
+  ) {
+    // this.languageModel_ = languageModel;
     this.reading_ = new BopomofoReadingBuffer(
       BopomofoKeyboardLayout.StandardLayout
     );

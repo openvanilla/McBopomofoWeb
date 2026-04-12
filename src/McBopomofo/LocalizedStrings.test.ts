@@ -199,7 +199,7 @@ describe("LocalizedStrings", () => {
     it("returns zh-TW boost button label when languageCode is zh-TW", () => {
       localizedStrings.languageCode = "zh-TW";
       const result = localizedStrings.boost();
-      expect(result).toBe("增加權重");
+      expect(result).toBe("增加詞彙權重");
     });
 
     it("returns English boost button label when languageCode is not zh-TW", () => {
@@ -213,7 +213,7 @@ describe("LocalizedStrings", () => {
     it("returns zh-TW exclude button label when languageCode is zh-TW", () => {
       localizedStrings.languageCode = "zh-TW";
       const result = localizedStrings.exclude();
-      expect(result).toBe("排除");
+      expect(result).toBe("排除這個詞彙");
     });
 
     it("returns English exclude button label when languageCode is not zh-TW", () => {
@@ -240,16 +240,16 @@ describe("LocalizedStrings", () => {
   describe("annotation notices", () => {
     it("returns zh-TW text when adding phrases is blocked by annotation mode", () => {
       localizedStrings.languageCode = "zh-TW";
-      expect(localizedStrings.canNotAddNewPhraseWhenBopomofoAnnotationIs()).toBe(
-        "注音字型破音字標記模式開啟時，不能增加新詞"
-      );
+      expect(
+        localizedStrings.canNotAddNewPhraseWhenBopomofoAnnotationIs()
+      ).toBe("注音字型破音字標記模式開啟時，不能增加新詞");
     });
 
     it("returns English text when adding phrases is blocked by annotation mode", () => {
       localizedStrings.languageCode = "en";
-      expect(localizedStrings.canNotAddNewPhraseWhenBopomofoAnnotationIs()).toBe(
-        "Cannot add new phrases when Bopomofo annotation is on."
-      );
+      expect(
+        localizedStrings.canNotAddNewPhraseWhenBopomofoAnnotationIs()
+      ).toBe("Cannot add new phrases when Bopomofo annotation is on.");
     });
 
     it("returns zh-TW text for annotation mode enabled", () => {

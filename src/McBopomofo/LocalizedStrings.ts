@@ -6,6 +6,8 @@
  */
 
 export class LocalizedStrings {
+  languageCode: string = "";
+
   speak(selectedString: string): string {
     if (this.languageCode === "zh-TW") {
       return `朗讀「${selectedString}」`;
@@ -26,7 +28,6 @@ export class LocalizedStrings {
     }
     return `Look up "${selectedString}" in ${name}`;
   }
-  languageCode: string = "";
 
   /* istanbul ignore next */
   cursorIsBetweenSyllables(prevReading: string, nextReading: string): string {
@@ -102,14 +103,14 @@ export class LocalizedStrings {
 
   boost() {
     if (this.languageCode === "zh-TW") {
-      return "增加權重";
+      return "增加詞彙權重";
     }
     return "Boost";
   }
 
   exclude(): string {
     if (this.languageCode === "zh-TW") {
-      return "排除";
+      return "排除這個詞彙";
     }
     return "Exclude";
   }

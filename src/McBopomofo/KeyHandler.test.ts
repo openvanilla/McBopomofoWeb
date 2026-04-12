@@ -25,6 +25,7 @@ import {
 } from "./InputState";
 import { Key, KeyName } from "./Key";
 import { KeyHandler, KeyHandlerSettings } from "./KeyHandler";
+import { LocalizedStrings } from "./LocalizedStrings";
 import { webData } from "./WebData";
 import { WebLanguageModel } from "./WebLanguageModel";
 
@@ -51,10 +52,13 @@ function handleKeySequence(keyHandler: KeyHandler, keys: Key[]): InputState {
 }
 
 describe("KeyHandler", () => {
-  let keyHandler: KeyHandler = new KeyHandler(new WebLanguageModel(webData));
+  let keyHandler: KeyHandler = new KeyHandler(
+    new WebLanguageModel(webData),
+    new LocalizedStrings()
+  );
   beforeEach(() => {
     const lm = new WebLanguageModel(webData);
-    keyHandler = new KeyHandler(lm);
+    keyHandler = new KeyHandler(lm, new LocalizedStrings());
   });
 
   afterEach(() => {});

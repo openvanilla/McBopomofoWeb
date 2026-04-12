@@ -201,7 +201,7 @@ export class InputController {
     this.mcBopomofoLm_ = new WebLanguageModel(webData);
     this.plainBopomofoLm_ = new WebLanguageModel(webDataPlain);
     this.lm_ = this.mcBopomofoLm_;
-    this.keyHandler_ = new KeyHandler(this.lm_);
+    this.keyHandler_ = new KeyHandler(this.lm_, this.localizedStrings_);
     this.lm_.setMacroConverter((input) => inputMacroController.handle(input));
   }
 
@@ -242,7 +242,7 @@ export class InputController {
     this.lm_.setUserPhrases(userPhrases);
     this.lm_.setExcludedPhrases(excludedPhrases);
 
-    this.keyHandler_ = new KeyHandler(this.lm_);
+    this.keyHandler_ = new KeyHandler(this.lm_, this.localizedStrings_);
     this.keyHandler_.traditionalMode = flag;
     this.keyHandler_.restoreSettings(settings);
     this.onError_ = onError;
@@ -253,7 +253,7 @@ export class InputController {
    * @param languageCode The language code.
    */
   public setLanguageCode(languageCode: string): void {
-    this.keyHandler_.languageCode = languageCode;
+    this.localizedStrings_.languageCode = languageCode;
   }
 
   /**
@@ -892,33 +892,27 @@ export class InputController {
         let title = "";
         if (isPlusKey) {
           title = this.localizedStrings_.boostTitle(current.value);
-          const entry = new CustomMenuEntry(
-            this.localizedStrings_.boost(),
-            () => {
-              this.keyHandler_.addUserPhrase(reading, current.value);
-              const newState = this.keyHandler_.buildInputtingState();
-              stateCallback(newState);
-            }
-          );
+          let entryTitle = this.localizedStrings_.boost();
+          const entry = new CustomMenuEntry(entryTitle, () => {
+            this.keyHandler_.addUserPhrase(reading, current.value);
+            const newState = this.keyHandler_.buildInputtingState();
+            stateCallback(newState);
+          });
           entries.push(entry);
         } else if (isMinusKey) {
           title = this.localizedStrings_.excludeTitle(current.value);
-          const entry = new CustomMenuEntry(
-            this.localizedStrings_.exclude(),
-            () => {
-              this.keyHandler_.addExcludedPhrase(reading, current.value);
-              const newState = this.keyHandler_.buildInputtingState();
-              stateCallback(newState);
-            }
-          );
+          let entryTitle = this.localizedStrings_.exclude();
+          const entry = new CustomMenuEntry(entryTitle, () => {
+            this.keyHandler_.addExcludedPhrase(reading, current.value);
+            const newState = this.keyHandler_.buildInputtingState();
+            stateCallback(newState);
+          });
           entries.push(entry);
         }
-        const entry = new CustomMenuEntry(
-          this.localizedStrings_.cancel(),
-          () => {
-            stateCallback(choosingCandidates);
-          }
-        );
+        const entryTitle = this.localizedStrings_.cancel();
+        const entry = new CustomMenuEntry(entryTitle, () => {
+          stateCallback(choosingCandidates);
+        });
         entries.push(entry);
 
         const customMenu = new CustomMenu(
