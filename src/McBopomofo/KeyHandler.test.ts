@@ -113,7 +113,10 @@ describe("KeyHandler", () => {
       expect(exported.bopomofoFontAnnotationSupportEnabled).toBe(true);
       expect(exported.allowChangingPriorTone).toBe(true);
 
-      const restoredHandler = new KeyHandler(new WebLanguageModel(webData));
+      const restoredHandler = new KeyHandler(
+        new WebLanguageModel(webData),
+        new LocalizedStrings()
+      );
       restoredHandler.restoreSettings(exported);
 
       expect(restoredHandler.languageCode).toBe("ja");
@@ -3073,7 +3076,10 @@ describe("KeyHandler", () => {
 
 describe("Changing reading using tone key", () => {
   function checkChangingReadingUsingToneKey(input: string, expected: string) {
-    let keyHandler: KeyHandler = new KeyHandler(new WebLanguageModel(webData));
+    let keyHandler: KeyHandler = new KeyHandler(
+      new WebLanguageModel(webData),
+      new LocalizedStrings()
+    );
     keyHandler.allowChangingPriorTone = true;
     let currentState: InputState = new Empty();
     const keys = input.split("");
