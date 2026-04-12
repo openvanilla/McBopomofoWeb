@@ -392,7 +392,7 @@ if (typeof document !== "undefined") {
       });
       controller.setOnExcludedPhraseChange((userPhrases) => {
         console.log("excludedPhrases changed");
-        saveExcludedPhrases(serializePhraseMap(userPhrases));
+        settingsManager.saveExcludedPhrases(serializePhraseMap(userPhrases));
       });
       controller.setOnOpenUrl((url) => {
         window.open(url, "_blank", "noopener,noreferrer");
@@ -928,7 +928,12 @@ if (typeof document !== "undefined") {
           return;
         }
 
-        shiftKeyIsPressed = event.key === "Shift";
+        // This is a workaround to prevent toggling Alphabet/Chinese mode when
+        // Shift key is used for selecting candidates.
+        if ($("candidates").style.visibility == "hidden") {
+          shiftKeyIsPressed = event.key === "Shift";
+        }
+
         if (globalUi.alphabetMode) {
           return;
         }
