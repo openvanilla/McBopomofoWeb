@@ -888,6 +888,10 @@ export class InputController {
             return true;
           }
         }
+        const components = reading.split("-");
+        if (components.length < 2) {
+          return true;
+        }
         const entries: CustomMenuEntry[] = [];
         let title = "";
         if (isPlusKey) {

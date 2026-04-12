@@ -1270,8 +1270,17 @@ describe("InputController", () => {
       expect(controller.state).not.toBeInstanceOf(ChoosingCandidate);
     });
 
+    it("Should not enter custom menu", () => {
+      inputCStr(controller, "w96");
+      controller.mcbopomofoKeyEvent(new Key(" ", KeyName.SPACE, false, false));
+      expect(controller.state).toBeInstanceOf(ChoosingCandidate);
+
+      controller.mcbopomofoKeyEvent(Key.asciiKey("+", false, false));
+      expect(controller.state).toBeInstanceOf(ChoosingCandidate);
+    });
+
     it("custom menu cancel entry restores ChoosingCandidate state", () => {
-      inputCStr(controller, "5j/ ");
+      inputCStr(controller, "w96j0 ");
       controller.mcbopomofoKeyEvent(new Key(" ", KeyName.SPACE, false, false));
       expect(controller.state).toBeInstanceOf(ChoosingCandidate);
 
