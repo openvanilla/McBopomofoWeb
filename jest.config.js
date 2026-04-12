@@ -5,4 +5,5 @@ module.exports = {
   reporters: ["default", "jest-junit"],
   coverageReporters: ["json", "html", "clover", "json-summary"],
   coveragePathIgnorePatterns: ["mcp.ts", "pime.ts", "chromeos_ime.ts"],
+  testPathIgnorePatterns: ["e2e/"],
 };
