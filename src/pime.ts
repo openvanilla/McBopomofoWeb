@@ -813,7 +813,7 @@ try {
 
   fs.watch(pimeMcBopomofo.userSettingsPath, (event, filename) => {
     if (filename) {
-      pimeMcBopomofo.loadSettings(() => {});
+      pimeMcBopomofo.loadSettings(() => { });
     }
   });
 
@@ -1191,7 +1191,7 @@ module.exports = {
         },
         {},
         {
-          text: "小麥注音輸入法 for PIME 2.0.3",
+          text: "小麥注音輸入法 for PIME 2.0.4",
         },
       ];
       const response = Object.assign({}, responseTemplate, { return: menu });
