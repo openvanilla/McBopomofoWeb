@@ -128,7 +128,7 @@ class ChromeMcBopomofo {
     this.inputController.setOnOpenUrl((input: string) => {
       this.tryOpen(input);
     });
-    this.inputController.setOnError(() => {});
+    this.inputController.setOnError(() => { });
 
     // The horizontal candidate windows on ChromeOS is actually broken so we
     // use the vertical one only.
@@ -473,7 +473,7 @@ class ChromeMcBopomofo {
             .clearComposition({
               contextID: this.context.contextID,
             })
-            .catch(() => {});
+            .catch(() => { });
           chrome.input.ime
             .setCandidateWindowProperties({
               engineID: this.engineID,
@@ -483,8 +483,8 @@ class ChromeMcBopomofo {
                 visible: false,
               },
             })
-            .catch(() => {});
-        } catch (e) {}
+            .catch(() => { });
+        } catch (e) { }
       },
 
       commitString: (text: string) => {
@@ -494,7 +494,7 @@ class ChromeMcBopomofo {
             contextID: this.context.contextID,
             text: text,
           })
-          .catch(() => {});
+          .catch(() => { });
       },
 
       update: (stateString: string) => {
@@ -657,12 +657,12 @@ chrome.input?.ime.onActivate.addListener((engineID) => {
   chromeMcBopomofo.inputController.setOnPhraseChange((userPhrases) => {
     const obj = Object.fromEntries(userPhrases);
     const jsonString = JSON.stringify(obj);
-    largeSync.set({ user_phrase: jsonString }, () => {});
+    largeSync.set({ user_phrase: jsonString }, () => { });
   });
   chromeMcBopomofo.inputController.setOnExcludedPhraseChange((userPhrases) => {
     const obj = Object.fromEntries(userPhrases);
     const jsonString = JSON.stringify(obj);
-    largeSync.set({ excluded_phrase: jsonString }, () => {});
+    largeSync.set({ excluded_phrase: jsonString }, () => { });
   });
 });
 
@@ -821,6 +821,9 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   // Reloads the user phrases by the message sent from "user_phrase.html".
   if (request.command === "reload_user_phrase") {
     chromeMcBopomofo.loadUserPhrases();
+    sendResponse({ status: "ok" });
+  }
+  if (request.command === "reload_excluded_phrase") {
     chromeMcBopomofo.loadExcludedPhrases();
     sendResponse({ status: "ok" });
   }
@@ -860,7 +863,7 @@ async function keepAlive() {
       await chrome.scripting.executeScript(args);
       chrome.tabs.onUpdated.removeListener(retryOnTabUpdate);
       return;
-    } catch (e) {}
+    } catch (e) { }
   }
   chrome.tabs.onUpdated.addListener(retryOnTabUpdate);
 }

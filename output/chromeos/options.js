@@ -323,4 +323,6 @@ window.onload = () => {
   $("allow_change_prior_tone_label").innerText = L(
     "allow_change_prior_tone_label"
   );
+  $("user_phrases_link").innerText = L("user_phrases_link");
+  $("excluded_phrases_link").innerText = L("excluded_phrases_link");
 };

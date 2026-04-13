@@ -55,14 +55,14 @@ window.onload = () => {
 
   function load_excluded_phrases() {
     chrome.storage.largeSync.get(["excluded_phrase"], (value) => {
-      const jsonString = value.user_phrase;
+      const jsonString = value.excluded_phrase;
 
       if (jsonString !== undefined) {
         try {
           const obj = JSON.parse(jsonString);
           if (obj) {
             const s = mapToText(obj);
-            document.getElementById("text_area_excluded_phrase").value = s;
+            document.getElementById("text_area_excluded_phrases").value = s;
           }
         } catch (e) {
           console.log("failed to parse user_phrase:" + e);
@@ -119,10 +119,9 @@ window.onload = () => {
     const map = textToMap(text);
     const jsonString = JSON.stringify(map);
     chrome.storage.largeSync.set({ excluded_phrase: jsonString });
-    console.log("write user_phrase done");
 
     chrome.runtime.sendMessage(
-      { command: "reload_user_phrase" },
+      { command: "reload_excluded_phrase" },
       function (response) {
         document.getElementById("text_area_excluded_phrases").focus();
       }
@@ -148,9 +147,9 @@ window.onload = () => {
   document.getElementById("text_area_excluded_phrases").placeholder =
     chrome.i18n.getMessage("placeholder");
 
-  document.getElementById("user_phrases_link").placeholder =
+  document.getElementById("user_phrases_link").innerText =
     chrome.i18n.getMessage("user_phrases_link");
-  document.getElementById("excluded_phrases_link").placeholder =
+  document.getElementById("excluded_phrases_link").innerText =
     chrome.i18n.getMessage("excluded_phrases_link");
 
   load_user_phrases();
