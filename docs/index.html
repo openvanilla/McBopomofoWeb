@@ -67,7 +67,7 @@
 <h3 id="編譯範例網頁" class="tsd-anchor-link">編譯範例網頁<a href="#編譯範例網頁" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <p>小麥注音輸入法提供 Web 版本，適合在連接網路與實體鍵盤，但是不方便安裝輸入法的環境下使用。例如公共電腦、學校教室、iPad 平板，以及各種有鍵盤的電子紙裝置等。由於不需要額外安裝輸入法，也適合用在教學場合。網頁版本採用簡單的色彩，避免額外的漸層、動畫，以及其他可能會對閱讀造成干擾的元素，讓使用者可以專注在輸入法的使用上，而且特地配合電子紙裝置。</p>
 <p>用 <code>npm run build</code> 編譯後，直接用瀏覽器打開 output/example/index.html ，就可以看到網頁版本的小麥輸入法功能展示。</p>
-<p>在網頁版本上，也提供以下功能</p>
+<p>在網頁版本上，以及 Chrome OS 版本在 Chrome 瀏覽器的右鍵選單中，也提供以下功能：</p>
 <ul>
 <li>詞庫產生工具：您可以一次輸入批詞彙，然後一次產生對應的注音，方便您建立自己的詞庫</li>
 <li>國字轉點字：您可以輸入一段國字，然後一次產生對應的台灣點字</li>
@@ -136,7 +136,7 @@ args = ["/PATH/TO/output/mcp/index.js"]
 <p>您也可以按照自己的需求，部署在其他支援 MCP 的 AI 服務上，像是 Gemini CLI 等。</p>
 <h2 id="注音字體相關說明" class="tsd-anchor-link">注音字體相關說明<a href="#注音字體相關說明" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
 <h3 id="pime" class="tsd-anchor-link">PIME<a href="#pime" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3>
-<p>如果使用 PIME 版本的小麥注音輸入法，可以在 Windows 上搭配<a href="https://github.com/ButTaiwan/bpmfvs/releases">字嗨的注音字體</a>，產生對應到正確破音字的注音字體。如果您使用 Google Docs，Google Docs 中也已經包含這些注音字體（注音粉圓、注音芫荽等）。</p>
+<p>如果使用 PIME 版本的小麥注音輸入法，可以在 Windows 上搭配<a href="https://github.com/ButTaiwan/bpmfvs/releases">字嗨的注音字體</a>，產生對應到正確破音字的注音字體—像是樂在「快樂」、「音樂」中的念法不同，就需要標成不同的注音。如果您使用 Google Docs，Google Docs 中也已經包含這些注音字體（注音粉圓、注音芫荽等）。</p>
 <p>字嗨的注音字體使用了 Unicode IVS 技術，讓同一個中文字，後面加上「異體字選擇子」，選擇不同的破音，但如何插入對應的「異體字選擇子」，會是比較麻煩的工作，而小麥做了輸入字根與「異體字選擇子」的對應，在打字輸入的時候，就同時選擇對應的「異體字選擇子」。</p>
 <p>使用這項功能的流程是</p>
 <ul>
@@ -145,7 +145,7 @@ args = ["/PATH/TO/output/mcp/index.js"]
 </ul>
 <p>平時不建議打開這項功能，因為相當於在每個字後面，額外插入了一些字元，在一些文書軟體中可能會有問題。</p>
 <h3 id="chrome-os" class="tsd-anchor-link">Chrome OS<a href="#chrome-os" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3>
-<p>雖然 Chrome OS 上也可以使用小麥輸入法與 Google Docs 的注音字體，但目前（Chrome OS 145）還無法正確顯示注音字體，我們靜待 Google 更新。</p>
+<p>雖然 Chrome OS 上也可以使用小麥輸入法與 Google Docs 的注音字體，但需要使用 Chrome OS 146 之後的版本，才會在 Google Docs 中正確看到顯示成不同注音的字體。</p>
 <h2 id="其他" class="tsd-anchor-link">其他<a href="#其他" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
 <h3 id="microsoft-word-add-in" class="tsd-anchor-link">Microsoft Word Add-in<a href="#microsoft-word-add-in" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <p>在 others 目錄中，我們提供了一個 Word Add-in，方便在 Microsoft Word 中使用國字轉換點字的相關功能。使用方式如下：</p>
