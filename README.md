@@ -72,7 +72,7 @@ npm run build:mcp # 編譯 MCP Server 版本
 
 用 `npm run build` 編譯後，直接用瀏覽器打開 output/example/index.html ，就可以看到網頁版本的小麥輸入法功能展示。
 
-在網頁版本上，也提供以下功能
+在網頁版本上，以及 Chrome OS 版本在 Chrome 瀏覽器的右鍵選單中，也提供以下功能：
 
 - 詞庫產生工具：您可以一次輸入批詞彙，然後一次產生對應的注音，方便您建立自己的詞庫
 - 國字轉點字：您可以輸入一段國字，然後一次產生對應的台灣點字
@@ -165,7 +165,7 @@ args = ["/PATH/TO/output/mcp/index.js"]
 
 ### PIME
 
-如果使用 PIME 版本的小麥注音輸入法，可以在 Windows 上搭配[字嗨的注音字體](https://github.com/ButTaiwan/bpmfvs/releases)，產生對應到正確破音字的注音字體。如果您使用 Google Docs，Google Docs 中也已經包含這些注音字體（注音粉圓、注音芫荽等）。
+如果使用 PIME 版本的小麥注音輸入法，可以在 Windows 上搭配[字嗨的注音字體](https://github.com/ButTaiwan/bpmfvs/releases)，產生對應到正確破音字的注音字體—像是樂在「快樂」、「音樂」中的念法不同，就需要標成不同的注音。如果您使用 Google Docs，Google Docs 中也已經包含這些注音字體（注音粉圓、注音芫荽等）。
 
 字嗨的注音字體使用了 Unicode IVS 技術，讓同一個中文字，後面加上「異體字選擇子」，選擇不同的破音，但如何插入對應的「異體字選擇子」，會是比較麻煩的工作，而小麥做了輸入字根與「異體字選擇子」的對應，在打字輸入的時候，就同時選擇對應的「異體字選擇子」。
 
@@ -178,7 +178,7 @@ args = ["/PATH/TO/output/mcp/index.js"]
 
 ### Chrome OS
 
-雖然 Chrome OS 上也可以使用小麥輸入法與 Google Docs 的注音字體，但目前（Chrome OS 145）還無法正確顯示注音字體，我們靜待 Google 更新。
+雖然 Chrome OS 上也可以使用小麥輸入法與 Google Docs 的注音字體，但需要使用 Chrome OS 146 之後的版本，才會在 Google Docs 中正確看到顯示成不同注音的字體。
 
 ## 其他
 

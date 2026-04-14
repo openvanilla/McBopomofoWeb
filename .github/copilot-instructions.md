@@ -96,6 +96,8 @@ McBopomofoWeb is a TypeScript implementation of the McBopomofo (小麥注音) in
 ### Platform Quirks & Workarounds
 
 - **Google Docs (Chrome OS)**: Google Docs repeatedly sends `onReset` events. Workarounds are implemented (e.g., in `chromeos_ime.ts`) to prevent aggressive IME state resets by conditionally rejecting `onReset`.
+- **Bopomofo fonts on Chrome OS**: Pronunciation-specific Bopomofo font rendering in Google Docs requires Chrome OS 146 or later; do not assume older Chrome OS builds can display these IVS-backed variants correctly.
+- **PIME availability on Windows**: On non-Traditional-Chinese Windows installs, McBopomofo will not appear until the Traditional Chinese language pack is added in Windows language settings.
 - **Candidate manipulation**: Users can boost (`+`) or exclude (`-`) specific candidates dynamically during the candidate selection phrase.
 
 ### Bopomofo Font Support (Unicode IVS)
@@ -112,6 +114,7 @@ The input method supports rendering Bopomofo alongside Chinese characters using 
 - **Running**: The server communicates via standard input/output (`stdio`). It can be started using `node output/mcp/index.js` or the wrapper `output/mcp/run.sh`.
 - **Tools**: It exposes LLM tools for text, Bopomofo, Pinyin, Bopomofo annotation font, and Braille conversion (e.g., `convertBrailleToText`, `convertTextToBraille`, `convertBpmfToBraille`, `convertBrailleToBpmf`, `convertTextToPinyin`, `convertTextToBpmfReadings`, `convertTextToBpmfAnnotatedText`, `annotateSingleCharacter`).
 - **Braille formats**: MCP Braille tools accept `format: "unicode" | "ascii"` and default to `unicode`; match this with `Service.convertTextToBraille` / `convertTextToAsciiBraille` and `Service.convertBrailleToText` / `convertAsciiBrailleToText`.
+- **Annotation-font HTML output**: When generating HTML that relies on Bopomofo annotation font code points, include the stylesheet `https://oikasu1.github.io/fonts/twfonts.css` and use supported font families such as `BpmfZihiSerif-Regular`, `BpmfZihiSans-Regular`, or `BpmfZihiKaiStd-Regular`.
 
 ### Testing Guidelines
 

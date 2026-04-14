@@ -23,20 +23,21 @@ In addition to the input method, this project also provides the following text c
 
 These text conversion services can be used not only in the Chrome browser's right-click context menu, but also as an MCP server.
 
-## Table of Contents
-
 <!-- TOC -->
 
 - [McBopomofoWeb - McBopomofo Input Method Built with Web Technologies](#mcbopomofoweb---mcbopomofo-input-method-built-with-web-technologies)
-  - [Table of Contents](#table-of-contents)
   - [Usage](#usage)
   - [Build Instructions](#build-instructions)
     - [Building Example Web Page](#building-example-web-page)
     - [Building and Testing Chrome OS Version](#building-and-testing-chrome-os-version)
     - [Building and Testing Windows PIME Version](#building-and-testing-windows-pime-version)
     - [Building MCP Service](#building-mcp-service)
+  - [Bopomofo Font Notes](#bopomofo-font-notes)
+    - [PIME](#pime)
+    - [Chrome OS](#chrome-os)
   - [Others](#others)
     - [Microsoft Word Add-in](#microsoft-word-add-in)
+  - [Development](#development)
   - [Third-party Packages](#third-party-packages)
   - [Community Guidelines](#community-guidelines)
   - [Software License](#software-license)
@@ -66,9 +67,11 @@ These commands will create corresponding files in the output directory, usually 
 
 ### Building Example Web Page
 
-After compiling with `npm run build`, directly open output/example/index.html with a browser to see the web version McBopomofo input method functionality demonstration.
+McBopomofo provides a web version that is suitable for environments where network access and a physical keyboard are available, but installing a system input method is inconvenient. Examples include public computers, school classrooms, iPads, and various e-paper devices with keyboards. Because no additional input method installation is required, it is also suitable for teaching scenarios. The web version intentionally uses a simple visual style, avoiding gradients, animations, and other elements that may distract from reading, so users can focus on input. It is also designed with e-paper devices in mind.
 
-The web version also provides the following tools and conversion features:
+After compiling with `npm run build`, directly open `output/example/index.html` in a browser to see the web version demonstration.
+
+In the web version, and also in the Chrome browser right-click menu of the Chrome OS version, the following features are available:
 
 - Dictionary generation tool: Enter a batch of words and generate their Bopomofo readings at once, making it easier to build your own dictionary.
 - Chinese to Braille: Enter a passage of Chinese text and generate the corresponding Taiwan Braille in one step.
@@ -89,8 +92,10 @@ To test the Chrome OS version, you can follow these steps:
 
 - Please first install [PIME](https://github.com/EasyIME/PIME/releases) on your Windows PC. During installation, please note that you need to check the option to install Node-related input methods. PIME supports both Python and Node input method frameworks, but Node-related input methods are not in the default installation options, while McBopomofo is based on the Node version.
 - You can install Node.js environment on your own PC, then execute `npm run build:pime`.
+- If you are not using a Traditional Chinese edition of Windows, you must first add the Traditional Chinese language pack in Windows language settings. McBopomofo will only appear after the Traditional Chinese language is installed.
 - Copy the files in the output\pime directory to the PIME installation directory, for example `C:\Program Files (x86)\PIME\node\input_methods\mcbopomofo`. You may need administrator privileges.
 - Use administrator privileges to execute `regsvr32 "C:\Program Files (X86)\PIME\x86\PIMETextService.dll"` to register the McBopomofo input method in the system.
+- If the previous step fails, it is usually because administrator privileges were not used. Another possible reason is that the DLL is not code-signed, so make sure you installed an official signed PIME release.
 - After each recompilation, you need to perform the same steps, then remember to restart the PIME service. You can right-click on the PIME Launcher icon in the system tray and select "Restart".
 - You can also refer to the content of build_pime.bat.
 
@@ -140,30 +145,30 @@ args = ["/PATH/TO/output/mcp/index.js"]
 
 After modifying the settings, restart Codex. If you compiled in this project directory, the actual path will typically be `.../McBopomofoWeb/output/mcp/index.js`.
 
-After installing the McBopomofo MCP server, you can try the following prompts with Claude:
+After installing the McBopomofo MCP server, you can try prompts like these:
 
 - Please convert the following Chinese characters to Braille.
 - Please convert the following Chinese characters into Bopomofo using the LLM's own AI capabilities, and then convert the Bopomofo into Taiwan Braille.
 - Please convert the following Braille to Chinese characters.
 - Please convert the following Braille to Bopomofo, and then use the LLM's own capabilities to convert the Bopomofo into Chinese characters.
 - Please convert the following Chinese characters to a Bopomofo annotated web page.
-- Please use the MCP tool to generate text with Bopomofo annotations.
+- Please use the McBopomofo MCP tool to convert the following Chinese text into Bopomofo annotation font code points.
 
-Note that the McBopomofo MCP supports generating the codes required for Bopomofo annotation fonts, but this feature requires additional font support. You can download the supported fonts from [here](https://github.com/ButTaiwan/bpmfvs/releases/tag/v1.500). If you want the AI to generate an HTML page with Bopomofo annotations, you can remind the AI in the prompt:
+McBopomofo MCP supports generating the code points required by Bopomofo annotation fonts, but this feature requires additional font support. You can download supported fonts from [here](https://github.com/ButTaiwan/bpmfvs/releases/tag/v1.500). If you want AI to generate an HTML page with Bopomofo annotations, you can remind it in the prompt:
 
 > Please add the CSS stylesheet `https://oikasu1.github.io/fonts/twfonts.css` to the HTML, and then apply the `BpmfZihiSerif-Regular`, `BpmfZihiSans-Regular`, or `BpmfZihiKaiStd-Regular` font to the corresponding elements.
 
 You can also deploy it to other AI services that support MCP, such as Gemini CLI, according to your own needs.
 
-## Bopomofo Font Related Instructions
+## Bopomofo Font Notes
 
 ### PIME
 
-If you use the PIME version of the McBopomofo input method, you can pair it with [ButTaiwan's Bopomofo fonts](https://github.com/ButTaiwan/bpmfvs/releases) on Windows to produce Bopomofo fonts corresponding to the correct polyphonic characters. If you use Google Docs, these Bopomofo fonts (Bpmf Zihi Serif, Bpmf Zihi Sans, etc.) are already included.
+If you use the PIME version of McBopomofo on Windows, you can pair it with [ButTaiwan's Bopomofo fonts](https://github.com/ButTaiwan/bpmfvs/releases) to produce the correct Bopomofo rendering for polyphonic characters. For example, the character 樂 is pronounced differently in 快樂 and 音樂, so it needs different Bopomofo annotations. If you use Google Docs, these Bopomofo fonts are already included there as well.
 
-ButTaiwan's Bopomofo fonts utilize Unicode IVS technology, allowing the same Chinese character to be followed by a "Variation Selector" to choose different pronunciations. However, inserting the corresponding "Variation Selector" manually can be quite troublesome. McBopomofo maps the input roots to "Variation Selectors", so when you type, the corresponding "Variation Selector" is selected at the same time.
+ButTaiwan's Bopomofo fonts use Unicode IVS technology, which allows the same Chinese character to be followed by a variation selector to choose a different pronunciation. However, manually inserting the correct variation selector is cumbersome. McBopomofo maps input roots to the corresponding variation selectors so they are chosen automatically while typing.
 
-The workflow to use this feature is:
+The workflow is:
 
 - Download the fonts and install them on Windows, or select them in Google Docs.
 - While typing, choose the "Turn on Bopomofo font support" feature.
@@ -172,7 +177,7 @@ It is generally not recommended to enable this feature all the time because it b
 
 ### Chrome OS
 
-Although the McBopomofo input method and Google Docs' Bopomofo fonts can be used on Chrome OS, currently (Chrome OS 145) Bopomofo fonts still cannot be displayed correctly. We are waiting for an update from Google.
+Although McBopomofo and Google Docs' Bopomofo fonts can also be used on Chrome OS, you need Chrome OS 146 or later to display those pronunciation-specific font variants correctly in Google Docs.
 
 ## Others
 
@@ -187,6 +192,10 @@ npm run start:desktop
 ```
 
 If you have Microsoft Word installed on your computer (Windows or macOS), it will automatically open Word and enable this Add-in in Word. If you want to test in the web version of Word, please refer to Microsoft's documentation [Sideload Office Add-ins to Office on the web](https://learn.microsoft.com/en-us/office/dev/add-ins/testing/sideload-office-add-ins-for-testing).
+
+## Development
+
+Since this project is developed with TypeScript and other web technologies, the main requirement is Node.js. Beyond that, you can use any web development tools you prefer, such as Visual Studio Code.
 
 ## Third-party Packages
 
