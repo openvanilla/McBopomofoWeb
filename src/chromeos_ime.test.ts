@@ -167,8 +167,9 @@ const installChromeMock = (): void => {
     },
     storage: {
       sync: {
-        get: jest.fn((_key, callback: (value: Record<string, unknown>) => void) =>
-          callback({})
+        get: jest.fn(
+          (_key, callback: (value: Record<string, unknown>) => void) =>
+            callback({})
         ),
         set: jest.fn(),
       },
@@ -239,7 +240,8 @@ describe("chromeos_ime", () => {
 
     activateIme();
 
-    const onPhraseChange = mockInputController.setOnPhraseChange.mock.calls[0][0];
+    const onPhraseChange =
+      mockInputController.setOnPhraseChange.mock.calls[0][0];
     const onExcludedPhraseChange =
       mockInputController.setOnExcludedPhraseChange.mock.calls[0][0];
 
@@ -268,13 +270,30 @@ describe("chromeos_ime", () => {
       ["user_phrase"],
       expect.any(Function)
     );
+    expect(mockInputController.setUserPhrases).toHaveBeenCalledWith(
+      new Map([["ㄊㄚ", ["他"]]])
+    );
+    expect(mockInputController.setExcludedPhrases).not.toHaveBeenCalled();
+    expect(sendResponse).toHaveBeenCalledWith({ status: "ok" });
+  });
+
+  test("reload_excluded_phrase reloads excluded phrases only", async () => {
+    await importChromeOsIme();
+
+    expect(messageListeners).toHaveLength(1);
+
+    const sendResponse = jest.fn();
+    messageListeners[0](
+      { command: "reload_excluded_phrase" },
+      {},
+      sendResponse
+    );
+
     expect(mockLargeSyncGet).toHaveBeenCalledWith(
       ["excluded_phrase"],
       expect.any(Function)
     );
-    expect(mockInputController.setUserPhrases).toHaveBeenCalledWith(
-      new Map([["ㄊㄚ", ["他"]]])
-    );
+    expect(mockInputController.setUserPhrases).not.toHaveBeenCalled();
     expect(mockInputController.setExcludedPhrases).toHaveBeenCalledWith(
       new Map([["ㄊㄚ", ["她"]]])
     );

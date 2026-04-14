@@ -28,8 +28,8 @@
     "build:watch": "webpack --mode development --watch",
     "prepare": "tsc",
     "prepublishOnly": "npm run test && npm run eslint",
-    "test": "./node_modules/jest/bin/jest.js",
-    "test:coverage": "./node_modules/jest/bin/jest.js --coverage",
+    "test": "jest",
+    "test:coverage": "jest --coverage",
     "test:e2e": "playwright test",
     "eslint": "eslint"
   },

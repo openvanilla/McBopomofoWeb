@@ -813,7 +813,7 @@ try {
 
   fs.watch(pimeMcBopomofo.userSettingsPath, (event, filename) => {
     if (filename) {
-      pimeMcBopomofo.loadSettings(() => { });
+      pimeMcBopomofo.loadSettings(() => {});
     }
   });
 
@@ -861,7 +861,6 @@ module.exports = {
     }
 
     if (request.method === "onActivate") {
-      pimeMcBopomofo.alreadyAddButton = false;
       const customUi = pimeMcBopomofo.customUiResponse();
       const buttonUi = pimeMcBopomofo.buttonUiResponse();
       pimeMcBopomofo.alreadyAddButton = true;
