@@ -74,7 +74,7 @@ McBopomofoWeb is a TypeScript implementation of the McBopomofo (小麥注音) in
 
 ## Coding Conventions
 
-- Use modern TypeScript (target TS 5.9). Prefer `const` + arrow functions, explicit return types on exported symbols, and named exports (no default exports in this repo).
+- Use modern TypeScript 6. Prefer `const` + arrow functions, explicit return types on exported symbols, and named exports (no default exports in this repo).
 - Keep data-structure types close to their usage (e.g., interfaces in the same file). Add brief inline comments only for non-obvious logic such as Unicode range calculations in `InputTableManager`.
 - When mutating state, create new objects instead of altering inputs in place—most consumers rely on immutability for predictable UI rendering.
 
