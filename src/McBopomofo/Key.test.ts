@@ -1,18 +1,9 @@
-import { Key, KeyName } from "./Key";
-import { KeyMapping } from "./KeyMapping";
-
-export function KeyFromSimpleKeyboardEvent(
-  button: string,
-  isShift: boolean,
-  isCtrl: boolean,
-) {
-  return KeyMapping.keyFromSimpleKeyboardEvent(button, isShift, isCtrl);
-}
-
-/** Converts a keyboard event in the web browser to a key defined by McTabim. */
-export function KeyFromKeyboardEvent(event: KeyboardEvent) {
-  return KeyMapping.keyFromKeyboardEvent(event);
-}
+import {
+  Key,
+  KeyFromKeyboardEvent,
+  KeyFromSimpleKeyboardEvent,
+  KeyName,
+} from "./Key";
 
 describe("Key", () => {
   describe("construction", () => {

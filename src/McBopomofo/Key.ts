@@ -1,9 +1,11 @@
 /**
  * @license
- * Copyright (c) 2025 and onwards The McTabIM Authors.
+ * Copyright (c) 2025 and onwards The McBopomofo Authors.
  * This code is released under the MIT license.
  * SPDX-License-Identifier: MIT
  */
+
+import { KeyMapping } from "./KeyMapping";
 
 export enum KeyName {
   ASCII = "ASCII",
@@ -90,4 +92,17 @@ export class Key {
   toString(): string {
     return `Key{ascii: ${this.ascii}, name: ${this.name}, shift: ${this.shiftPressed}, ctrl: ${this.ctrlPressed}}`;
   }
+}
+
+export function KeyFromSimpleKeyboardEvent(
+  button: string,
+  isShift: boolean,
+  isCtrl: boolean,
+) {
+  return KeyMapping.keyFromSimpleKeyboardEvent(button, isShift, isCtrl);
+}
+
+/** Converts a keyboard event in the web browser to a key defined by McBopomofo. */
+export function KeyFromKeyboardEvent(event: KeyboardEvent) {
+  return KeyMapping.keyFromKeyboardEvent(event);
 }
