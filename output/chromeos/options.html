@@ -1,164 +1,262 @@
 <html>
-
-<head>
-    <meta charset="utf-8">
+  <head>
+    <meta charset="utf-8" />
     <title>McBomopofo Options</title>
-    <link rel="icon" type="image/x-icon" href="icons/icon16.png">
-    <link rel="stylesheet" href="options.css">
+    <link rel="icon" type="image/x-icon" href="icons/icon16.png" />
+    <link rel="stylesheet" href="options.css" />
     <style>
-        body {
-            max-width: 900px;
-        }
+      body {
+        max-width: 900px;
+      }
     </style>
 
     <script src="options.js"></script>
-</head>
+  </head>
 
-<body>
+  <body>
     <h1 id="options_title">McBopomofo Options</h1>
     <table>
-        <tr>
-            <td class="option_title" id="input_mode_title">Input Mode:</td>
-            <td>
-                <input type="radio" name="input_mode" value="use_mcbopomofov" id="use_mcbopomofo" checked="checked">
-                <label for="use_mcbopomofo" id="use_mcbopomofo_label">McBomopofo</label><br>
-                <input type="radio" name="input_mode" value="use_plainbopomofo" id="use_plainbopomofo">
-                <label for="use_plainbopomofo" id="use_plainbopomofo_label">Plain Bopomofo</label>
-            </td>
-        </tr>
-        <tr>
-            <td class="option_title" id="keyboard_layout">Keyboard Layout:</td>
-            <td>
-                <select id="layout">
-                    <option id="keyboard_layout_standard" value="Standard">Standard</option>
-                    <option id="keyboard_layout_eten" value="ETen">ETen</option>
-                    <option id="keyboard_layout_hsu" value="Hsu">Hsu</option>
-                    <option id="keyboard_layout_eten26" value="ETen26">ETen 26</option>
-                    <option id="keyboard_layout_hanyupinyin" value="HanyuPinyin">Hanyu Pinyin</option>
-                    <option id="keyboard_layout_ibm" value="IBM">IBM</option>
-                </select>
-            </td>
-        </tr>
-        <tr>
-            <td class="option_title" id="candidate_keys">Candidate Keys:</td>
-            <td>
-                <select id="keys">
-                    <option value="123456789">123456789</option>
-                    <option value="asdfghjkl">asdfghjkl</option>
-                    <option value="asdfzxcvb">asdfzxcvb</option>
-                </select>
-            </td>
-        </tr>
-        <tr>
-            <td class="option_title" id="candidate_keys_count">Number of Candidate Keys:</td>
-            <td>
-                <select id="keys_count">
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                    <option value="6">6</option>
-                    <option value="7">7</option>
-                    <option value="8">8</option>
-                    <option value="9" selected="selected">9</option>
-                </select>
-            </td>
-        </tr>
+      <tr>
+        <td class="option_title" id="input_mode_title">Input Mode:</td>
+        <td>
+          <input
+            type="radio"
+            name="input_mode"
+            value="use_mcbopomofov"
+            id="use_mcbopomofo"
+            checked="checked"
+          />
+          <label for="use_mcbopomofo" id="use_mcbopomofo_label"
+            >McBomopofo</label
+          ><br />
+          <input
+            type="radio"
+            name="input_mode"
+            value="use_plainbopomofo"
+            id="use_plainbopomofo"
+          />
+          <label for="use_plainbopomofo" id="use_plainbopomofo_label"
+            >Plain Bopomofo</label
+          >
+        </td>
+      </tr>
+      <tr>
+        <td class="option_title" id="keyboard_layout">Keyboard Layout:</td>
+        <td>
+          <select id="layout">
+            <option id="keyboard_layout_standard" value="Standard">
+              Standard
+            </option>
+            <option id="keyboard_layout_eten" value="ETen">ETen</option>
+            <option id="keyboard_layout_hsu" value="Hsu">Hsu</option>
+            <option id="keyboard_layout_eten26" value="ETen26">ETen 26</option>
+            <option id="keyboard_layout_hanyupinyin" value="HanyuPinyin">
+              Hanyu Pinyin
+            </option>
+            <option id="keyboard_layout_ibm" value="IBM">IBM</option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td class="option_title" id="candidate_keys">Candidate Keys:</td>
+        <td>
+          <select id="keys">
+            <option value="123456789">123456789</option>
+            <option value="asdfghjkl">asdfghjkl</option>
+            <option value="asdfzxcvb">asdfzxcvb</option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td class="option_title" id="candidate_keys_count">
+          Number of Candidate Keys:
+        </td>
+        <td>
+          <select id="keys_count">
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9" selected="selected">9</option>
+          </select>
+        </td>
+      </tr>
 
-        <tr>
-            <td class="option_title" id="when_choosing_candidates">When Choosing Candidates:</td>
-            <td>
-                <select id="moving_cursor_option">
-                    <option value="0" selected="selected" id="moving_cursor_is_not_allowed">Moving cursor is not allowed
-                    </option>
-                    <option value="1" id="jk_keys_move_the_cursor">JK Keys move the cursor</option>
-                    <option value="2" id="hl_keys_move_the_cursor">HL Keys move the cursor</option>
-                </select>
-            </td>
-        </tr>
+      <tr>
+        <td class="option_title" id="when_choosing_candidates">
+          When Choosing Candidates:
+        </td>
+        <td>
+          <select id="moving_cursor_option">
+            <option
+              value="0"
+              selected="selected"
+              id="moving_cursor_is_not_allowed"
+            >
+              Moving cursor is not allowed
+            </option>
+            <option value="1" id="jk_keys_move_the_cursor">
+              JK Keys move the cursor
+            </option>
+            <option value="2" id="hl_keys_move_the_cursor">
+              HL Keys move the cursor
+            </option>
+          </select>
+        </td>
+      </tr>
 
-        <tr>
-            <td class="option_title" id="select_candidate">Select The Candidate:</td>
-            <td>
-                <input type="radio" name="select_phrase" value="before_cursor" id="before_cursor"
-                    checked="checked"><label for="before_cursor" id="select_candidate_before_cursor">Before the
-                    cursor</label><br>
-                <input type="radio" name="select_phrase" value="after_cursor" id="after_cursor"><label
-                    for="after_cursor" id="select_candidate_after_cursor">After the cursor</label><br>
-                <input type="checkbox" name="move_cursor" id="move_cursor"><label for="move_cursor"
-                    id="select_candidate_move_cursor">Move the cursor
-                    after selecting the candidate</label>
-            </td>
-        </tr>
-        <tr>
-            <td class="option_title" id="esc_key_title">ESC Key:</td>
-            <td>
-                <input type="checkbox" name="esc_key" id="esc_key"><label for="esc_key" id="esc_key_label">ESC Key
-                    clears entire composing buffer</label>
-            </td>
-        </tr>
-        <tr>
-            <td class="option_title" id="shift_key_title">Shift Key:</td>
-            <td>
-                <input type="checkbox" name="shift_key" id="shift_key"><label for="shift_key" id="shift_key_label">Shift
-                    key toggles English/Chinese mode</label>
-            </td>
-        </tr>
-        <tr>
-            <td class="option_title" id="shift_letter_title">Shift + Letter Keys:</td>
-            <td>
-                <input type="radio" name="letters" value="uppercase_letters" id="uppercase_letters" checked="checked">
-                <label for="uppercase_letters" id="shift_letter_uppercase">Input Uppercase
-                    Letters</label><br>
-                <input type="radio" name="letters" value="lowercase_letters" id="lowercase_letters">
-                <label for="lowercase_letters" id="shift_letter_lowercase">Input Lowercase Letters</label>
-            </td>
-        </tr>
-        <tr>
-            <td class="option_title" id="ctrl_enter_title">Ctrl + Enter Keys:</td>
-            <td>
-                <select id="ctrl_enter_option">
-                    <option value="0" id="ctrl_enter_option_0">none</option>
-                    <option value="1" id="ctrl_enter_option_1">Input Bopomofo Reading</option>
-                    <option value="2" id="ctrl_enter_option_2">Input HTML Ruby</option>
-                    <option value="3" id="ctrl_enter_option_3">Input Taiwanese Braille - Unicode</option>
-                    <option value="5" id="ctrl_enter_option_5">Input Taiwanese Braille - ASCII</option>
-                    <option value="4" id="ctrl_enter_option_4">Hanyu Pinyin</option>
-                </select>
-            </td>
-        </tr>
-        <tr>
-            <td class="option_title" id="tone_keys_title">Tone keys:</td>
-            <td>
-                <input type="checkbox" name="allow_change_prior_tone" id="allow_change_prior_tone"><label
-                    for="allow_change_prior_tone" id="allow_change_prior_tone_label">Allow changing prior tone</label>
-            </td>
-        </tr>
-        <tr>
-            <td class="option_title" id="repeated_punctuation_choose_candidate_title">Punctuation Symbols:</td>
-            <td>
-                <input type="checkbox" name="repeated_punctuation_choose_candidate"
-                    id="repeated_punctuation_choose_candidate"><label for="repeated_punctuation_choose_candidate"
-                    id="repeated_punctuation_choose_candidate_label">Repeated punctuation keys choose next
-                    candidate</label>
-            </td>
-        </tr>
+      <tr>
+        <td class="option_title" id="select_candidate">
+          Select The Candidate:
+        </td>
+        <td>
+          <input
+            type="radio"
+            name="select_phrase"
+            value="before_cursor"
+            id="before_cursor"
+            checked="checked"
+          /><label for="before_cursor" id="select_candidate_before_cursor"
+            >Before the cursor</label
+          ><br />
+          <input
+            type="radio"
+            name="select_phrase"
+            value="after_cursor"
+            id="after_cursor"
+          /><label for="after_cursor" id="select_candidate_after_cursor"
+            >After the cursor</label
+          ><br />
+          <input type="checkbox" name="move_cursor" id="move_cursor" /><label
+            for="move_cursor"
+            id="select_candidate_move_cursor"
+            >Move the cursor after selecting the candidate</label
+          >
+        </td>
+      </tr>
+      <tr>
+        <td class="option_title" id="esc_key_title">ESC Key:</td>
+        <td>
+          <input type="checkbox" name="esc_key" id="esc_key" /><label
+            for="esc_key"
+            id="esc_key_label"
+            >ESC Key clears entire composing buffer</label
+          >
+        </td>
+      </tr>
+      <tr>
+        <td class="option_title" id="shift_key_title">Shift Key:</td>
+        <td>
+          <input type="checkbox" name="shift_key" id="shift_key" /><label
+            for="shift_key"
+            id="shift_key_label"
+            >Shift key toggles English/Chinese mode</label
+          >
+        </td>
+      </tr>
+      <tr>
+        <td class="option_title" id="shift_letter_title">
+          Shift + Letter Keys:
+        </td>
+        <td>
+          <input
+            type="radio"
+            name="letters"
+            value="uppercase_letters"
+            id="uppercase_letters"
+            checked="checked"
+          />
+          <label for="uppercase_letters" id="shift_letter_uppercase"
+            >Input Uppercase Letters</label
+          ><br />
+          <input
+            type="radio"
+            name="letters"
+            value="lowercase_letters"
+            id="lowercase_letters"
+          />
+          <label for="lowercase_letters" id="shift_letter_lowercase"
+            >Input Lowercase Letters</label
+          >
+        </td>
+      </tr>
+      <tr>
+        <td class="option_title" id="ctrl_enter_title">Ctrl + Enter Keys:</td>
+        <td>
+          <select id="ctrl_enter_option">
+            <option value="0" id="ctrl_enter_option_0">none</option>
+            <option value="1" id="ctrl_enter_option_1">
+              Input Bopomofo Reading
+            </option>
+            <option value="2" id="ctrl_enter_option_2">Input HTML Ruby</option>
+            <option value="3" id="ctrl_enter_option_3">
+              Input Taiwanese Braille - Unicode
+            </option>
+            <option value="5" id="ctrl_enter_option_5">
+              Input Taiwanese Braille - ASCII
+            </option>
+            <option value="4" id="ctrl_enter_option_4">Hanyu Pinyin</option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td class="option_title" id="tone_keys_title">Tone keys:</td>
+        <td>
+          <input
+            type="checkbox"
+            name="allow_change_prior_tone"
+            id="allow_change_prior_tone"
+          /><label
+            for="allow_change_prior_tone"
+            id="allow_change_prior_tone_label"
+            >Allow changing prior tone</label
+          >
+        </td>
+      </tr>
+      <tr>
+        <td
+          class="option_title"
+          id="repeated_punctuation_choose_candidate_title"
+        >
+          Punctuation Symbols:
+        </td>
+        <td>
+          <input
+            type="checkbox"
+            name="repeated_punctuation_choose_candidate"
+            id="repeated_punctuation_choose_candidate"
+          /><label
+            for="repeated_punctuation_choose_candidate"
+            id="repeated_punctuation_choose_candidate_label"
+            >Repeated punctuation keys choose next candidate</label
+          >
+        </td>
+      </tr>
 
-        <tr>
-            <td class="option_title" id="system">System:</td>
-            <td>
-                <input type="checkbox" name="use_notification" id="use_notification"><label for="use_notification"
-                    id="use_notification_label">Use system notification</label>
-            </td>
-        </tr>
-        <tr>
-            <td class="option_title" id="others_title">Others:</td>
-            <td>
-                <a href="#" id="others_manage_user_phrases">Manage User Phrases</a><br />
-                <p id="others_keyboard_shortcut">You can also set the keyboard shortcuts by visiting
-                    chrome://extensions/shortcuts .</p>
-            </td>
-        </tr>
-
+      <tr>
+        <td class="option_title" id="system">System:</td>
+        <td>
+          <input
+            type="checkbox"
+            name="use_notification"
+            id="use_notification"
+          /><label for="use_notification" id="use_notification_label"
+            >Use system notification</label
+          >
+        </td>
+      </tr>
+      <tr>
+        <td class="option_title" id="others_title">Others:</td>
+        <td>
+          <a href="#" id="others_manage_user_phrases">Manage User Phrases</a
+          ><br />
+          <p id="others_keyboard_shortcut">
+            You can also set the keyboard shortcuts by visiting
+            chrome://extensions/shortcuts .
+          </p>
+        </td>
+      </tr>
     </table>
-</body>
-
+  </body>
 </html>
