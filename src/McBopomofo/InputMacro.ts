@@ -74,7 +74,8 @@ class InputMacroThisYearJapanese implements InputMacro {
   }
 
   get replacement() {
-    return "";
+    const year = dayjs().subtract(2018, "year").year();
+    return "令和" + year + "年";
   }
 }
 
@@ -129,7 +130,8 @@ class InputMacroLastYearJapanese implements InputMacro {
   }
 
   get replacement() {
-    return "";
+    const year = dayjs().subtract(1, "year").subtract(2018, "year").year();
+    return "令和" + year + "年";
   }
 }
 
@@ -184,7 +186,8 @@ class InputMacroNextYearJapanese implements InputMacro {
   }
 
   get replacement() {
-    return "";
+    const year = dayjs().add(1, "year").subtract(2018, "year").year();
+    return "令和" + year + "年";
   }
 }
 
@@ -400,7 +403,8 @@ class InputMacroDateTomorrowMediumJapanese implements InputMacro {
   }
 
   get replacement() {
-    return "";
+    const day = dayjs().add(1, "day").subtract(2018, "year");
+    return "令和" + day.year() + "年" + day.locale("ja").format("M月D日");
   }
 }
 
@@ -469,7 +473,17 @@ class InputMacroTimeZoneStandard implements InputMacro {
   }
 
   get replacement() {
-    return "";
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone; // "Asia/Taipei"
+
+    const zoneName = new Intl.DateTimeFormat("zh-TW", {
+      timeZone: tz,
+      timeZoneName: "longGeneric",
+      hour: "2-digit",
+    })
+      .formatToParts(new Date())
+      .find((p) => p.type === "timeZoneName")?.value;
+
+    return zoneName || "";
   }
 }
 
@@ -482,7 +496,16 @@ class InputMacroTimeZoneShortGeneric implements InputMacro {
   }
 
   get replacement() {
-    return "";
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone; // "Asia/Taipei"
+    const shortTz = new Intl.DateTimeFormat("zh-TW", {
+      timeZone: tz,
+      timeZoneName: "shortGeneric",
+      hour: "2-digit",
+    })
+      .formatToParts(new Date())
+      .find((p) => p.type === "timeZoneName")?.value;
+
+    return shortTz || "";
   }
 }
 

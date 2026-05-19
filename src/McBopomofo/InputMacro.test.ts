@@ -308,9 +308,9 @@ describe("InputMacro", () => {
       expect(result).toBe("民國113年");
     });
 
-    test("handles THIS_YEAR_JAPANESE macro (not implemented)", () => {
+    test("handles THIS_YEAR_JAPANESE macro", () => {
       const result = inputMacroController.handle("MACRO@THIS_YEAR_JAPANESE");
-      expect(result).toBe("");
+      expect(result).toBe("令和6年");
     });
 
     test("handles LAST_YEAR_PLAIN macro", () => {
@@ -331,9 +331,9 @@ describe("InputMacro", () => {
       expect(result).toMatch(/民國\d+年/); // Check ROC format
     });
 
-    test("handles LAST_YEAR_JAPANESE macro (not implemented)", () => {
+    test("handles LAST_YEAR_JAPANESE macro", () => {
       const result = inputMacroController.handle("MACRO@LAST_YEAR_JAPANESE");
-      expect(result).toBe("");
+      expect(result).toBe("令和5年");
     });
 
     test("handles NEXT_YEAR_PLAIN macro", () => {
@@ -353,9 +353,9 @@ describe("InputMacro", () => {
     //   expect(result).toBe("民國114年");
     // });
 
-    test("handles NEXT_YEAR_JAPANESE macro (not implemented)", () => {
+    test("handles NEXT_YEAR_JAPANESE macro", () => {
       const result = inputMacroController.handle("MACRO@NEXT_YEAR_JAPANESE");
-      expect(result).toBe("");
+      expect(result).toBe("令和7年");
     });
   });
 
@@ -430,7 +430,7 @@ describe("InputMacro", () => {
       ).toBe("令和6年1月14日");
       expect(
         inputMacroController.handle("MACRO@DATE_TOMORROW_MEDIUM_JAPANESE"),
-      ).toBe("");
+      ).toBe("令和6年1月16日");
       expect(
         inputMacroController.handle("MACRO@DATE_TOMORROW_FULL_JAPANESE"),
       ).toBe("令和6年1月16日");
@@ -517,10 +517,12 @@ describe("InputMacro", () => {
       expect(result).not.toBe("MACRO@TIME_NOW_MEDIUM"); // Should not return the input
     });
 
-    test("handles unimplemented timezone macros", () => {
-      expect(inputMacroController.handle("MACRO@TIMEZONE_STANDARD")).toBe("");
+    test("handles timezone macros", () => {
+      expect(inputMacroController.handle("MACRO@TIMEZONE_STANDARD")).toBe(
+        "台北標準時間",
+      );
       expect(inputMacroController.handle("MACRO@TIMEZONE_GENERIC_SHORT")).toBe(
-        "",
+        "台灣時間",
       );
     });
   });
