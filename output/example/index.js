@@ -112,6 +112,13 @@ if (typeof document !== "undefined") {
       focusElement(inputId);
       return output;
     };
+    const readTextFile = (file) =>
+      new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result || ""));
+        reader.onerror = () => reject(reader.error);
+        reader.readAsText(file, "utf-8");
+      });
     const syntaxHighlightManager = (() => {
       const that = {};
       const fields = new Map();
@@ -573,6 +580,37 @@ if (typeof document !== "undefined") {
         outputTextArea.value = finalOutput;
         syntaxHighlightManager.refresh("phrase_generate_output");
         outputTextArea.focus();
+      };
+
+      that.importVCardFile = async (file) => {
+        const importer = window.vCardPhraseImporter;
+        const status = $("vcard_import_status");
+        if (!file || !importer) {
+          return;
+        }
+
+        try {
+          const content = await readTextFile(file);
+          const names = importer.extractChineseNamesFromVCard(content);
+          if (names.length === 0) {
+            status.textContent = "找不到可匯入的中文姓名。";
+            return;
+          }
+
+          const inputArea = $("phrase_generate_input");
+          const existing = inputArea.value.trim();
+          const appended = existing
+            ? `${existing}\n${names.join("\n")}`
+            : names.join("\n");
+
+          inputArea.value = appended;
+          status.textContent = `已匯入 ${names.length} 筆中文姓名。`;
+          that.generatePhrases();
+          inputArea.focus();
+        } catch (error) {
+          console.error("Failed to import vCard:", error);
+          status.textContent = "讀取 vCard 檔案失敗。";
+        }
       };
 
       return that;
@@ -1293,6 +1331,46 @@ if (typeof document !== "undefined") {
         onHashChange();
       });
       document.addEventListener("DOMContentLoaded", (event) => {
+        const dropZone = $("vcard_drop_zone");
+        const openFileButton = $("vcard_open_file_button");
+        const fileInput = $("vcard_file_input");
+
+        const preventDefaults = (domEvent) => {
+          domEvent.preventDefault();
+          domEvent.stopPropagation();
+        };
+
+        ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
+          dropZone.addEventListener(eventName, preventDefaults);
+        });
+
+        ["dragenter", "dragover"].forEach((eventName) => {
+          dropZone.addEventListener(eventName, () => {
+            dropZone.classList.add("is-dragover");
+          });
+        });
+
+        ["dragleave", "drop"].forEach((eventName) => {
+          dropZone.addEventListener(eventName, () => {
+            dropZone.classList.remove("is-dragover");
+          });
+        });
+
+        dropZone.addEventListener("drop", async (domEvent) => {
+          const file = domEvent.dataTransfer?.files?.[0];
+          await service.importVCardFile(file);
+        });
+
+        openFileButton.addEventListener("click", () => {
+          fileInput.click();
+        });
+
+        fileInput.addEventListener("change", async () => {
+          const file = fileInput.files?.[0];
+          await service.importVCardFile(file);
+          fileInput.value = "";
+        });
+
         if (window.location.hash.length === 0) {
           window.history.replaceState(null, "", "#feature_input");
         }

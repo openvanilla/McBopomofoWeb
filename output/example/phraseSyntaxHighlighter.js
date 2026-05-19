@@ -76,7 +76,10 @@
         tokenizeLine(line)
           .map(
             (token) =>
-              `<span class="syntax-token syntax-token-${token.type}">${escapeHtml(token.value)}</span>`,
+              `<span class="syntax-token ${token.type
+                .split(" ")
+                .map((type) => `syntax-token-${type}`)
+                .join(" ")}">${escapeHtml(token.value)}</span>`,
           )
           .join(""),
       )

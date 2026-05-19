@@ -498,6 +498,7 @@
             轉換
           </button>
         </p>
+
         <hr />
 
         <p>
@@ -518,6 +519,27 @@
           <p>小麥注音輸入法 ㄒㄧㄠˇ-ㄇㄞˋ-ㄓㄨˋ-ㄧㄣ-ㄕㄨ-ㄖㄨˋ-ㄈㄚˇ</p>
         </blockquote>
         <p>產生的詞條可以用在小麥注音的 macOS、Linux 等各平台版本。</p>
+
+        <hr />
+
+        <div class="vcard_import_panel">
+          <h3>將 vCard 轉換成詞庫</h3>
+          <p>可拖拉 `.vcf` / `.vcard` 檔案到下方區域，或按按鈕選擇檔案。</p>
+          <div id="vcard_drop_zone" class="vcard_drop_zone" tabindex="0">
+            將 vCard 檔案拖拉到這裡
+          </div>
+          <br />
+          <p>
+            <button type="button" id="vcard_open_file_button">
+              選擇 vCard 檔案
+            </button>
+            <input type="file" id="vcard_file_input" accept=".vcf,.vcard,text/vcard" hidden />
+          </p>
+          <p id="vcard_import_status" class="vcard_import_status">
+            尚未匯入 vCard。
+          </p>
+        </div>
+
       </div>
     </section>
 
@@ -686,6 +708,7 @@
   crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script lang="javascript" src="bundle.js"></script>
 <script lang="javascript" src="phraseSyntaxHighlighter.js"></script>
+<script lang="javascript" src="vCardPhraseImporter.js"></script>
 <script lang="javascript" src="index.js"></script>
 
 </html>

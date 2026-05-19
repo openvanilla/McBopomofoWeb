@@ -25,7 +25,7 @@
   --syntax-comment: #6e7681;
   --syntax-phrase: #204f93;
   --syntax-separator: #8f6f2f;
-  --syntax-hyphen: #7b4bb3;
+  --syntax-hyphen: #0057b8;
   --syntax-reading-bpmf: #a73f09;
   --syntax-reading-latin: #0f7a5c;
   --syntax-error: #a32121;
@@ -609,6 +609,45 @@ blockquote {
   box-sizing: border-box;
 }
 
+.vcard_import_panel {
+  margin-top: var(--spacing-3);
+  padding: var(--spacing-3);
+  background: var(--surface-muted);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+}
+
+.vcard_import_panel h3 {
+  margin-top: 0;
+  margin-bottom: var(--spacing-2);
+  font-size: 1rem;
+}
+
+.vcard_drop_zone {
+  padding: var(--spacing-4);
+  border: 2px dashed var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text-secondary);
+  text-align: center;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.vcard_drop_zone.is-dragover {
+  border-color: var(--focus-ring);
+  background: var(--surface-strong);
+  color: var(--text-primary);
+}
+
+.vcard_import_status {
+  margin-bottom: 0;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
 .simple-keyboard {
   min-height: 230px;
   margin-top: var(--spacing-2);
@@ -729,7 +768,7 @@ blockquote {
     --syntax-comment: #98a1ad;
     --syntax-phrase: #93c5fd;
     --syntax-separator: #d6ba6a;
-    --syntax-hyphen: #c9a6ff;
+    --syntax-hyphen: #7dd3fc;
     --syntax-reading-bpmf: #ffb27d;
     --syntax-reading-latin: #7ed7b7;
     --syntax-error: #ff8f8f;
