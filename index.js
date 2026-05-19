@@ -112,6 +112,97 @@ if (typeof document !== "undefined") {
       focusElement(inputId);
       return output;
     };
+    const readTextFile = (file) =>
+      new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result || ""));
+        reader.onerror = () => reject(reader.error);
+        reader.readAsText(file, "utf-8");
+      });
+    const syntaxHighlightManager = (() => {
+      const that = {};
+      const fields = new Map();
+
+      const getRenderer = () => window.phraseSyntaxHighlighter;
+
+      const syncScroll = (textarea, backdrop) => {
+        backdrop.scrollTop = textarea.scrollTop;
+        backdrop.scrollLeft = textarea.scrollLeft;
+      };
+
+      const renderField = (id) => {
+        const field = fields.get(id);
+        const renderer = getRenderer();
+        if (!field || !renderer) {
+          return;
+        }
+
+        field.content.innerHTML = renderer.renderHtml(field.textarea.value) + "\n";
+        syncScroll(field.textarea, field.backdrop);
+      };
+
+      const attach = (id, options = {}) => {
+        const renderer = getRenderer();
+        const textarea = $(id);
+        if (!renderer || !textarea || fields.has(id)) {
+          return;
+        }
+
+        const wrapper = document.createElement("div");
+        wrapper.className = "syntax-highlight-field";
+        if (options.fill) {
+          wrapper.classList.add("syntax-highlight-field--fill");
+          textarea.style.height = "100%";
+        }
+        if (options.tall) {
+          wrapper.classList.add("syntax-highlight-field--tall");
+          textarea.style.height = "100%";
+        }
+
+        textarea.parentNode.insertBefore(wrapper, textarea);
+        wrapper.appendChild(textarea);
+
+        const backdrop = document.createElement("div");
+        backdrop.className = "syntax-highlight-backdrop";
+        const content = document.createElement("pre");
+        content.className = "syntax-highlight-content";
+        backdrop.appendChild(content);
+        wrapper.appendChild(backdrop);
+
+        const computedStyle = window.getComputedStyle(textarea);
+        backdrop.style.font = computedStyle.font;
+        backdrop.style.letterSpacing = computedStyle.letterSpacing;
+        content.style.font = computedStyle.font;
+        content.style.lineHeight = computedStyle.lineHeight;
+        content.style.letterSpacing = computedStyle.letterSpacing;
+
+        textarea.classList.add("syntax-highlight-input");
+        textarea.addEventListener("input", () => renderField(id));
+        textarea.addEventListener("scroll", () => syncScroll(textarea, backdrop));
+
+        fields.set(id, {
+          textarea,
+          backdrop,
+          content,
+        });
+        renderField(id);
+      };
+
+      that.init = () => {
+        attach("feature_user_phrases_text_area", { tall: true });
+        attach("feature_excluded_phrases_text_area", { tall: true });
+        attach("phrase_generate_output", { fill: true });
+      };
+
+      that.refresh = (id) => renderField(id);
+      that.refreshAll = () => {
+        for (const id of fields.keys()) {
+          renderField(id);
+        }
+      };
+
+      return that;
+    })();
 
     const ui = (() => {
       const that = {};
@@ -487,7 +578,43 @@ if (typeof document !== "undefined") {
         let finalOutput = output.join("\n");
         let outputTextArea = $("phrase_generate_output");
         outputTextArea.value = finalOutput;
+        syntaxHighlightManager.refresh("phrase_generate_output");
         outputTextArea.focus();
+      };
+
+      that.importVCardFile = async (file) => {
+        const importer = window.vCardPhraseImporter;
+        const status = $("vcard_import_status");
+        if (!file || !importer) {
+          return;
+        }
+
+        try {
+          const content = await readTextFile(file);
+          const phrases = importer.extractImportPhrasesFromVCard(content, {
+            includeFirstNamePhrases: getChecked(
+              "vcard_include_first_name_phrases",
+            ),
+          });
+          if (phrases.length === 0) {
+            status.textContent = "找不到可匯入的中文姓名。";
+            return;
+          }
+
+          const inputArea = $("phrase_generate_input");
+          const existing = inputArea.value.trim();
+          const appended = existing
+            ? `${existing}\n${phrases.join("\n")}`
+            : phrases.join("\n");
+
+          inputArea.value = appended;
+          status.textContent = `已匯入 ${phrases.length} 筆詞條。`;
+          that.generatePhrases();
+          inputArea.focus();
+        } catch (error) {
+          console.error("Failed to import vCard:", error);
+          status.textContent = "讀取 vCard 檔案失敗。";
+        }
       };
 
       return that;
@@ -658,6 +785,7 @@ if (typeof document !== "undefined") {
       that.loadUserPhrases = () => {
         const result = window.localStorage.getItem("user_phrases") || "";
         $("feature_user_phrases_text_area").value = result;
+        syntaxHighlightManager.refresh("feature_user_phrases_text_area");
         focusElement("feature_user_phrases_text_area");
         console.log("userPhrases:\n" + result);
         controller.setUserPhrases(result);
@@ -669,12 +797,14 @@ if (typeof document !== "undefined") {
         controller.setUserPhrases(result);
         service.service.setUserPhrases(result);
         $("feature_user_phrases_text_area").value = result;
+        syntaxHighlightManager.refresh("feature_user_phrases_text_area");
         focusElement("feature_user_phrases_text_area");
       };
 
       that.loadExcludedPhrases = () => {
         const result = window.localStorage.getItem("excluded_phrases") || "";
         $("feature_excluded_phrases_text_area").value = result;
+        syntaxHighlightManager.refresh("feature_excluded_phrases_text_area");
         focusElement("feature_excluded_phrases_text_area");
         console.log("excludedPhrases:\n" + result);
         controller.setExcludedPhrases(result);
@@ -686,6 +816,7 @@ if (typeof document !== "undefined") {
         controller.setExcludedPhrases(result);
         service.service.setExcludedPhrases(result);
         $("feature_excluded_phrases_text_area").value = result;
+        syntaxHighlightManager.refresh("feature_excluded_phrases_text_area");
         focusElement("feature_excluded_phrases_text_area");
       };
 
@@ -1204,11 +1335,53 @@ if (typeof document !== "undefined") {
         onHashChange();
       });
       document.addEventListener("DOMContentLoaded", (event) => {
+        const dropZone = $("vcard_drop_zone");
+        const openFileButton = $("vcard_open_file_button");
+        const fileInput = $("vcard_file_input");
+
+        const preventDefaults = (domEvent) => {
+          domEvent.preventDefault();
+          domEvent.stopPropagation();
+        };
+
+        ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
+          dropZone.addEventListener(eventName, preventDefaults);
+        });
+
+        ["dragenter", "dragover"].forEach((eventName) => {
+          dropZone.addEventListener(eventName, () => {
+            dropZone.classList.add("is-dragover");
+          });
+        });
+
+        ["dragleave", "drop"].forEach((eventName) => {
+          dropZone.addEventListener(eventName, () => {
+            dropZone.classList.remove("is-dragover");
+          });
+        });
+
+        dropZone.addEventListener("drop", async (domEvent) => {
+          const file = domEvent.dataTransfer?.files?.[0];
+          await service.importVCardFile(file);
+        });
+
+        openFileButton.addEventListener("click", () => {
+          fileInput.click();
+        });
+
+        fileInput.addEventListener("change", async () => {
+          const file = fileInput.files?.[0];
+          await service.importVCardFile(file);
+          fileInput.value = "";
+        });
+
         if (window.location.hash.length === 0) {
           window.history.replaceState(null, "", "#feature_input");
         }
+        syntaxHighlightManager.init();
         onHashChange({ focus: false });
         window.requestAnimationFrame(() => {
+          syntaxHighlightManager.refreshAll();
           resetInitialScrollPosition();
         });
       });
