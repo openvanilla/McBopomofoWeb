@@ -55,7 +55,7 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.59.1",
-    "@types/chrome": "^0.1.40",
+    "@types/chrome": "^0.1.42",
     "@types/jest": "^30.0.0",
     "@types/lodash": "^4.17.24",
     "@types/node": "^25.6.0",
