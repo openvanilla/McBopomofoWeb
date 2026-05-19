@@ -390,8 +390,8 @@
 
     <section id="feature_user_phrases" class="feature">
       <div class="left">
-        <textarea placeholder="小麥注音 ㄒㄧㄠˇ-ㄇㄞˋ-ㄓㄨˋ-ㄧㄣ" id="feature_user_phrases_text_area" rows="10" cols="50" title="輸入區"
-          autocapitalize="off"></textarea>
+        <textarea placeholder="# 您可以在這裡，輸入自訂詞庫，輸入後按下「更新詞庫按鈕」。例如：&#10;小麥注音 ㄒㄧㄠˇ-ㄇㄞˋ-ㄓㄨˋ-ㄧㄣ"
+          id="feature_user_phrases_text_area" rows="10" cols="50" title="輸入區" autocapitalize="off"></textarea>
       </div>
       <div class="right">
         <p>
@@ -433,8 +433,8 @@
 
     <section id="feature_excluded_phrases" class="feature">
       <div class="left">
-        <textarea placeholder="小麥注音 ㄒㄧㄠˇ-ㄇㄞˋ-ㄓㄨˋ-ㄧㄣ" id="feature_excluded_phrases_text_area" rows="10" cols="50"
-          title="輸入區" autocapitalize="off"></textarea>
+        <textarea placeholder="# 您可以在這裡，輸入想要從詞庫排除的詞彙，輸入後按下「更新詞庫」按鈕。例如&#10;小麥注音 ㄒㄧㄠˇ-ㄇㄞˋ-ㄓㄨˋ-ㄧㄣ"
+          id="feature_excluded_phrases_text_area" rows="10" cols="50" title="輸入區" autocapitalize="off"></textarea>
       </div>
       <div class="right">
         <p>
@@ -478,18 +478,18 @@
       <div class="left">
         <div class="phrase_generate">
           <div class="phrase_generate_input_output_container">
-            <textarea placeholder="請在此輸入要產生注音的詞條，一行一條" id="phrase_generate_input" rows="10" cols="50" title="詞庫輸入"
-              autocapitalize="off"></textarea>
+            <textarea placeholder="請在此輸入要產生注音的詞條，一行一條&#10;例如：&#10;小麥注音&#10;傳統注音" id="phrase_generate_input" rows="10"
+              cols="50" title="詞庫輸入" autocapitalize="off"></textarea>
           </div>
           <div class="phrase_generate_input_output_container">
-            <textarea placeholder="這邊會產生轉換結果" id="phrase_generate_output" rows="10" cols="50" title="詞庫產生結果"
-              autocapitalize="off"></textarea>
+            <textarea placeholder="這邊會產生轉換結果。&#10;例如：&#10;小麥注音 ㄒㄧㄠˇ-ㄇㄞˋ-ㄓㄨˋ-ㄧㄣ&#10;傳統注音 ㄔㄨㄢˊ-ㄊㄨㄥˇ-ㄓㄨˋ-ㄧㄣ"
+              id="phrase_generate_output" rows="10" cols="50" title="詞庫產生結果" autocapitalize="off"></textarea>
           </div>
         </div>
       </div>
       <div class="right">
         <h2>詞庫產生工具</h2>
-        <p>在輸入想要產生的詞條之後，按下下方的「轉換」按鈕。</p>
+        <p>輸入想要產生的詞條之後（一個詞條一行），按下下方的「轉換」按鈕。</p>
         <p>
           <button onclick="
                 example.service.generatePhrases();
@@ -498,9 +498,7 @@
             轉換
           </button>
         </p>
-
         <hr />
-
         <p>
           如果您有多筆詞條，想要轉換成小麥注音使用的詞庫，您可以使用這個工具，一次產生所有詞條的注音。
         </p>
@@ -508,7 +506,7 @@
         <ul>
           <li>先將要轉換的詞條輸入到左方的輸入框中</li>
           <li>按下「轉換」按鈕</li>
-          <li>轉換結果將顯示在又方的輸出框中</li>
+          <li>轉換結果將顯示在右方的輸出框中</li>
         </ul>
         <p>範例輸入</p>
         <blockquote>
@@ -532,10 +530,7 @@
           <p>可拖拉 `.vcf` / `.vcard` 檔案到下方區域，或按按鈕選擇檔案。</p>
           <p>
             <label>
-              <input
-                type="checkbox"
-                id="vcard_include_first_name_phrases"
-              />
+              <input type="checkbox" id="vcard_include_first_name_phrases" />
               同時也只產生名字的詞條，例如：除了「楊維中」以外，也產生「維中」。
             </label>
           </p>
