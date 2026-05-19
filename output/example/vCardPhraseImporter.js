@@ -61,10 +61,21 @@
     };
   };
 
+  const normalizePhrase = (value) => value.replace(/\s+/g, "").trim();
+
+  const toValidPhrase = (value) => {
+    const normalized = normalizePhrase(value);
+    if (normalized.length <= 1 || !cjkPattern.test(normalized)) {
+      return "";
+    }
+    return normalized;
+  };
+
   const extractNameFromCard = (cardText) => {
     const lines = cardText.split("\n");
     let fnValue = "";
-    let nValue = "";
+    let lastName = "";
+    let firstName = "";
 
     for (const line of lines) {
       const property = parseProperty(line);
@@ -74,41 +85,63 @@
 
       if (property.propertyName === "FN" && !fnValue) {
         fnValue = decodeValue(property.rawValue, property.metadata);
-      } else if (property.propertyName === "N" && !nValue) {
+      } else if (property.propertyName === "N" && !lastName && !firstName) {
         const decoded = decodeValue(property.rawValue, property.metadata);
         const parts = decoded.split(";");
-        nValue = `${parts[0] || ""}${parts[1] || ""}`.trim();
+        lastName = parts[0] || "";
+        firstName = parts[1] || "";
       }
     }
 
-    if (cjkPattern.test(nValue)) {
-      return nValue;
+    const fullNameFromN = toValidPhrase(`${lastName}${firstName}`);
+    const firstNameOnly = toValidPhrase(firstName);
+    if (fullNameFromN) {
+      return {
+        fullName: fullNameFromN,
+        firstName: firstNameOnly,
+      };
     }
-    if (cjkPattern.test(fnValue)) {
-      return fnValue.replace(/\s+/g, "");
+    const fullNameFromFn = toValidPhrase(fnValue);
+    if (fullNameFromFn) {
+      return {
+        fullName: fullNameFromFn,
+        firstName: "",
+      };
     }
-    return "";
+    return null;
   };
 
-  const extractChineseNamesFromVCard = (text) => {
+  const extractImportPhrasesFromVCard = (
+    text,
+    { includeFirstNamePhrases = false } = {},
+  ) => {
     const unfolded = unfoldLines(text);
     const cards = unfolded.match(/BEGIN:VCARD[\s\S]*?END:VCARD/gi) || [];
-    const names = [];
+    const phrases = [];
     const seen = new Set();
 
     for (const card of cards) {
-      const name = extractNameFromCard(card);
-      if (name && !seen.has(name)) {
-        names.push(name);
-        seen.add(name);
+      const entry = extractNameFromCard(card);
+      if (!entry) {
+        continue;
+      }
+
+      for (const phrase of [
+        entry.fullName,
+        includeFirstNamePhrases ? entry.firstName : "",
+      ]) {
+        if (phrase && !seen.has(phrase)) {
+          phrases.push(phrase);
+          seen.add(phrase);
+        }
       }
     }
 
-    return names;
+    return phrases;
   };
 
   const api = {
-    extractChineseNamesFromVCard,
+    extractImportPhrasesFromVCard,
   };
 
   if (typeof module !== "undefined" && module.exports) {

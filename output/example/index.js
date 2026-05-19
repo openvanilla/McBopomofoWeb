@@ -591,8 +591,12 @@ if (typeof document !== "undefined") {
 
         try {
           const content = await readTextFile(file);
-          const names = importer.extractChineseNamesFromVCard(content);
-          if (names.length === 0) {
+          const phrases = importer.extractImportPhrasesFromVCard(content, {
+            includeFirstNamePhrases: getChecked(
+              "vcard_include_first_name_phrases",
+            ),
+          });
+          if (phrases.length === 0) {
             status.textContent = "找不到可匯入的中文姓名。";
             return;
           }
@@ -600,11 +604,11 @@ if (typeof document !== "undefined") {
           const inputArea = $("phrase_generate_input");
           const existing = inputArea.value.trim();
           const appended = existing
-            ? `${existing}\n${names.join("\n")}`
-            : names.join("\n");
+            ? `${existing}\n${phrases.join("\n")}`
+            : phrases.join("\n");
 
           inputArea.value = appended;
-          status.textContent = `已匯入 ${names.length} 筆中文姓名。`;
+          status.textContent = `已匯入 ${phrases.length} 筆詞條。`;
           that.generatePhrases();
           inputArea.focus();
         } catch (error) {
