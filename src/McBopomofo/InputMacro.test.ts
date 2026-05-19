@@ -237,7 +237,8 @@ jest.mock("./InputMacroDate", () => {
         subtract: jest.fn((rocAmount: number, rocUnit: string) => {
           if (rocUnit === "year" && rocAmount === 1911) {
             return {
-              year: () => 113, // 2024 + amount - 1911 for tomorrow operations
+              year: () =>
+                unit === "year" ? 2024 + amount - 1911 : 2024 - 1911,
               format: jest.fn(() => "1月16日"),
               locale: jest.fn(() => ({
                 format: jest.fn(() => "1月16日"),
@@ -245,7 +246,8 @@ jest.mock("./InputMacroDate", () => {
             };
           }
           return {
-            year: () => 2024 + amount - rocAmount,
+            year: () =>
+              unit === "year" ? 2024 + amount - rocAmount : 2024 - rocAmount,
             month: () => 0,
             date: () => 16,
             format: jest.fn(() => "1月16日"),
