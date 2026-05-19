@@ -5,6 +5,8 @@
  * SPDX-License-Identifier: MIT
  */
 
+import { Solar } from "lunar-typescript";
+
 import dayjs from "./InputMacroDate";
 
 /**
@@ -321,7 +323,15 @@ class InputMacroDateTodayMediumChinese implements InputMacro {
   }
 
   get replacement() {
-    return "";
+    const day = dayjs();
+    const solar = Solar.fromYmd(day.year(), day.month() + 1, day.date());
+    return (
+      solar.getLunar().getYearInChinese() +
+      "年" +
+      solar.getLunar().getMonthInChinese() +
+      "月" +
+      solar.getLunar().getDayInChinese()
+    );
   }
 }
 
@@ -334,7 +344,8 @@ class InputMacroDateTodayMediumJapanese implements InputMacro {
   }
 
   get replacement() {
-    return "";
+    const day = dayjs().subtract(2018, "year");
+    return "令和" + day.year() + "年" + day.locale("ja").format("M月D日");
   }
 }
 
@@ -347,7 +358,15 @@ class InputMacroDateYesterdayMediumChinese implements InputMacro {
   }
 
   get replacement() {
-    return "";
+    const day = dayjs().subtract(1, "day");
+    const solar = Solar.fromYmd(day.year(), day.month() + 1, day.date());
+    return (
+      solar.getLunar().getYearInChinese() +
+      "年" +
+      solar.getLunar().getMonthInChinese() +
+      "月" +
+      solar.getLunar().getDayInChinese()
+    );
   }
 }
 
@@ -360,7 +379,15 @@ class InputMacroDateTomorrowMediumChinese implements InputMacro {
   }
 
   get replacement() {
-    return "";
+    const day = dayjs().add(1, "day");
+    const solar = Solar.fromYmd(day.year(), day.month() + 1, day.date());
+    return (
+      solar.getLunar().getYearInChinese() +
+      "年" +
+      solar.getLunar().getMonthInChinese() +
+      "月" +
+      solar.getLunar().getDayInChinese()
+    );
   }
 }
 
@@ -386,7 +413,8 @@ class InputMacroDateYesterdayMediumJapanese implements InputMacro {
   }
 
   get replacement() {
-    return "";
+    const day = dayjs().subtract(1, "day").subtract(2018, "year");
+    return "令和" + day.year() + "年" + day.locale("ja").format("M月D日");
   }
 }
 
@@ -399,7 +427,8 @@ class InputMacroDateTomorrowFullJapanese implements InputMacro {
   }
 
   get replacement() {
-    return "";
+    const day = dayjs().add(1, "day").subtract(2018, "year");
+    return "令和" + day.year() + "年" + day.locale("ja").format("M月D日");
   }
 }
 

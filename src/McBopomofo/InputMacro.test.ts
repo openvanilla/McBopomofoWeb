@@ -5,6 +5,8 @@ jest.mock("./InputMacroDate", () => {
       extend: jest.fn(),
     },
     year: () => 2024,
+    month: () => 0,
+    date: () => 15,
     format: jest.fn((formatStr: string) => {
       switch (formatStr) {
         case "YYYY年":
@@ -72,6 +74,8 @@ jest.mock("./InputMacroDate", () => {
           if (unit === "year") return 2024 - amount;
           return 2024;
         },
+        month: () => 0,
+        date: () => (unit === "day" && amount === 1 ? 14 : 15),
         format: jest.fn((formatStr: string) => {
           if (unit === "year") {
             switch (formatStr) {
@@ -79,6 +83,8 @@ jest.mock("./InputMacroDate", () => {
                 return `${2024 - amount}年`;
               case "西元YYYY年":
                 return `西元${2024 - amount}年`;
+              case "M月D日":
+                return "1月15日";
               default:
                 return `${2024 - amount}-01-15`;
             }
@@ -124,6 +130,8 @@ jest.mock("./InputMacroDate", () => {
                 return `${2024 - amount}年`;
               case "西元YYYY年":
                 return `西元${2024 - amount}年`;
+              case "M月D日":
+                return "1月15日";
               default:
                 return `${2024 - amount}-01-15`;
             }
@@ -132,7 +140,8 @@ jest.mock("./InputMacroDate", () => {
         subtract: jest.fn((rocAmount: number, rocUnit: string) => {
           if (rocUnit === "year" && rocAmount === 1911) {
             return {
-              year: () => 113, // 2024 - 1911 for yesterday/tomorrow operations
+              year: () =>
+                unit === "year" ? 2024 - amount - 1911 : 2024 - 1911,
               format: jest.fn(() =>
                 unit === "day" && amount === 1 ? "1月14日" : "1月16日",
               ),
@@ -144,7 +153,10 @@ jest.mock("./InputMacroDate", () => {
             };
           }
           return {
-            year: () => 2024 - amount - rocAmount,
+            year: () =>
+              unit === "year" ? 2024 - amount - rocAmount : 2024 - rocAmount,
+            month: () => 0,
+            date: () => 14,
             format: jest.fn(() => "1月14日"),
             locale: jest.fn(() => ({
               format: jest.fn(() => "1月14日"),
@@ -159,6 +171,8 @@ jest.mock("./InputMacroDate", () => {
           if (unit === "year") return 2024 + amount;
           return 2024;
         },
+        month: () => 0,
+        date: () => (unit === "day" && amount === 1 ? 16 : 15),
         format: jest.fn((formatStr: string) => {
           if (unit === "year") {
             switch (formatStr) {
@@ -166,6 +180,8 @@ jest.mock("./InputMacroDate", () => {
                 return `${2024 + amount}年`;
               case "西元YYYY年":
                 return `西元${2024 + amount}年`;
+              case "M月D日":
+                return "1月15日";
               default:
                 return `${2024 + amount}-01-15`;
             }
@@ -211,6 +227,8 @@ jest.mock("./InputMacroDate", () => {
                 return `${2024 + amount}年`;
               case "西元YYYY年":
                 return `西元${2024 + amount}年`;
+              case "M月D日":
+                return "1月15日";
               default:
                 return `${2024 + amount}-01-15`;
             }
@@ -228,6 +246,8 @@ jest.mock("./InputMacroDate", () => {
           }
           return {
             year: () => 2024 + amount - rocAmount,
+            month: () => 0,
+            date: () => 16,
             format: jest.fn(() => "1月16日"),
             locale: jest.fn(() => ({
               format: jest.fn(() => "1月16日"),
@@ -241,6 +261,29 @@ jest.mock("./InputMacroDate", () => {
   (mockDayjs as any).extend = jest.fn();
   return mockDayjs;
 });
+
+jest.mock("lunar-typescript", () => ({
+  Solar: {
+    fromYmd: jest.fn((_year: number, month: number, day: number) => ({
+      getLunar: () => ({
+        getYearInChinese: () => "二零二四",
+        getMonthInChinese: () => (month === 1 ? "正" : `${month}`),
+        getDayInChinese: () => {
+          switch (day) {
+            case 14:
+              return "初四";
+            case 15:
+              return "初五";
+            case 16:
+              return "初六";
+            default:
+              return `${day}`;
+          }
+        },
+      }),
+    })),
+  },
+}));
 
 import { inputMacroController } from "./InputMacro";
 
@@ -364,31 +407,31 @@ describe("InputMacro", () => {
       expect(result).toMatch(/民國\d+年\d+月\d+日/);
     });
 
-    test("handles unimplemented Chinese date macros", () => {
+    test("handles Chinese date macros", () => {
       expect(
         inputMacroController.handle("MACRO@DATE_TODAY_MEDIUM_CHINESE"),
-      ).toBe("");
+      ).toBe("二零二四年正月初五");
       expect(
         inputMacroController.handle("MACRO@DATE_YESTERDAY_MEDIUM_CHINESE"),
-      ).toBe("");
+      ).toBe("二零二四年正月初四");
       expect(
         inputMacroController.handle("MACRO@DATE_TOMORROW_MEDIUM_CHINESE"),
-      ).toBe("");
+      ).toBe("二零二四年正月初六");
     });
 
-    test("handles unimplemented Japanese date macros", () => {
+    test("handles Japanese date macros", () => {
       expect(
         inputMacroController.handle("MACRO@DATE_TODAY_MEDIUM_JAPANESE"),
-      ).toBe("");
+      ).toBe("令和6年1月15日");
       expect(
         inputMacroController.handle("MACRO@DATE_YESTERDAY_MEDIUM_JAPANESE"),
-      ).toBe("");
+      ).toBe("令和6年1月14日");
       expect(
         inputMacroController.handle("MACRO@DATE_TOMORROW_MEDIUM_JAPANESE"),
       ).toBe("");
       expect(
         inputMacroController.handle("MACRO@DATE_TOMORROW_FULL_JAPANESE"),
-      ).toBe("");
+      ).toBe("令和6年1月16日");
     });
   });
 
