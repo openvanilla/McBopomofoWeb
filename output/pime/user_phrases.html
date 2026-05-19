@@ -6,10 +6,132 @@
     <link rel="icon" type="image/x-icon" href="images/icon16.png">
     <link rel="stylesheet" href="css/options.css">
     <style>
+        :root {
+            color-scheme: light dark;
+            --surface: #ffffff;
+            --text-primary: #1d1c19;
+            --text-secondary: #57524a;
+            --border-subtle: #d2ccc2;
+            --syntax-comment: #6e7681;
+            --syntax-phrase: #204f93;
+            --syntax-separator: #8f6f2f;
+            --syntax-hyphen: #0057b8;
+            --syntax-reading-bpmf: #a73f09;
+            --syntax-reading-latin: #0f7a5c;
+            --syntax-error: #a32121;
+            --syntax-error-background: rgba(163, 33, 33, 0.1);
+            --syntax-selection: rgba(209, 148, 66, 0.28);
+        }
+
         body {
             max-width: 700px;
         }
+
+        textarea {
+            width: 100%;
+            min-height: 300px;
+            box-sizing: border-box;
+            padding: 0.8rem 0.9rem;
+            border: 1px solid var(--border-subtle);
+            background: var(--surface);
+            color: var(--text-primary);
+            font-size: 12pt;
+            line-height: 1.45;
+            resize: none;
+        }
+
+        .syntax-highlight-field {
+            position: relative;
+            width: 100%;
+            max-width: 100%;
+        }
+
+        .syntax-highlight-input {
+            position: relative;
+            z-index: 1;
+            background: transparent;
+            color: transparent;
+            caret-color: var(--text-primary);
+        }
+
+        .syntax-highlight-input::selection {
+            color: transparent;
+            background: var(--syntax-selection);
+        }
+
+        .syntax-highlight-input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .syntax-highlight-backdrop {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+            border: 1px solid transparent;
+            background: transparent;
+            color: var(--text-primary);
+        }
+
+        .syntax-highlight-content {
+            margin: 0;
+            padding: 0.8rem 0.9rem;
+            min-height: 100%;
+            box-sizing: border-box;
+            white-space: pre-wrap;
+            overflow-wrap: break-word;
+        }
+
+        .syntax-token-comment {
+            color: var(--syntax-comment);
+        }
+
+        .syntax-token-phrase {
+            color: var(--syntax-phrase);
+            font-weight: 600;
+        }
+
+        .syntax-token-separator,
+        .syntax-token-separator-space {
+            color: var(--syntax-separator);
+        }
+
+        .syntax-token-separator-hyphen {
+            color: var(--syntax-hyphen);
+        }
+
+        .syntax-token-reading-bpmf {
+            color: var(--syntax-reading-bpmf);
+        }
+
+        .syntax-token-reading-latin {
+            color: var(--syntax-reading-latin);
+        }
+
+        .syntax-token-error {
+            color: var(--syntax-error);
+            background: var(--syntax-error-background);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --surface: #181b18;
+                --text-primary: #f2f0ea;
+                --text-secondary: #c2bdb1;
+                --border-subtle: #42473f;
+                --syntax-comment: #98a1ad;
+                --syntax-phrase: #93c5fd;
+                --syntax-separator: #d6ba6a;
+                --syntax-hyphen: #7dd3fc;
+                --syntax-reading-bpmf: #ffb27d;
+                --syntax-reading-latin: #7ed7b7;
+                --syntax-error: #ff8f8f;
+                --syntax-error-background: rgba(255, 143, 143, 0.14);
+                --syntax-selection: rgba(214, 186, 106, 0.36);
+            }
+        }
     </style>
+    <script src="js/phraseSyntaxHighlighter.js"></script>
     <script src="js/user_phrases.js"></script>
 </head>
 
@@ -31,7 +153,7 @@
             <button id="reload">重新載入</button>
             <button id="open" style="float: right;">直接開啟詞彙文字檔</button>
         </p>
-        <textarea style="width: 100%; min-height: 300px;" id="user_phrases" rows="10" cols="50"
+        <textarea id="user_phrases" rows="10" cols="50"
             placeholder="請在此輸入您的使用者詞彙，每行一個詞彙。"></textarea>
         <h2>說明</h2>
         <ul>
@@ -48,7 +170,7 @@
             <button id="reload_excluded_phrases">重新載入</button>
             <button id="open_excluded_phrases" style="float: right;">直接開啟排除的詞彙文字檔</button>
         </p>
-        <textarea style="width: 100%; min-height: 300px;" id="excluded_phrases" rows="10" cols="50"
+        <textarea id="excluded_phrases" rows="10" cols="50"
             placeholder="請在此輸入您要排除的詞彙，每行一個詞彙。"></textarea>
     </div>
 </body>

@@ -1,4 +1,68 @@
 window.onload = () => {
+  const syntaxHighlightManager = (() => {
+    const fields = new Map();
+
+    function syncScroll(textarea, backdrop) {
+      backdrop.scrollTop = textarea.scrollTop;
+      backdrop.scrollLeft = textarea.scrollLeft;
+    }
+
+    function render(id) {
+      const field = fields.get(id);
+      const renderer = window.phraseSyntaxHighlighter;
+      if (!field || !renderer) {
+        return;
+      }
+
+      field.content.innerHTML = renderer.renderHtml(field.textarea.value) + "\n";
+      syncScroll(field.textarea, field.backdrop);
+    }
+
+    function attach(id) {
+      const renderer = window.phraseSyntaxHighlighter;
+      const textarea = document.getElementById(id);
+      if (!renderer || !textarea || fields.has(id)) {
+        return;
+      }
+
+      const wrapper = document.createElement("div");
+      wrapper.className = "syntax-highlight-field";
+      textarea.parentNode.insertBefore(wrapper, textarea);
+      wrapper.appendChild(textarea);
+
+      const backdrop = document.createElement("div");
+      backdrop.className = "syntax-highlight-backdrop";
+      const content = document.createElement("pre");
+      content.className = "syntax-highlight-content";
+      backdrop.appendChild(content);
+      wrapper.appendChild(backdrop);
+
+      const computedStyle = window.getComputedStyle(textarea);
+      backdrop.style.font = computedStyle.font;
+      backdrop.style.letterSpacing = computedStyle.letterSpacing;
+      content.style.font = computedStyle.font;
+      content.style.lineHeight = computedStyle.lineHeight;
+      content.style.letterSpacing = computedStyle.letterSpacing;
+
+      textarea.classList.add("syntax-highlight-input");
+      textarea.addEventListener("input", () => render(id));
+      textarea.addEventListener("scroll", () => syncScroll(textarea, backdrop));
+
+      fields.set(id, { textarea, backdrop, content });
+      render(id);
+    }
+
+    return {
+      init() {
+        attach("text_area");
+        attach("text_area_excluded_phrases");
+      },
+      refresh(id) {
+        render(id);
+      },
+    };
+  })();
+
   // On ChromeOS, we store the user phrases in JSON format, but
   // the editor convert the JSON to phrases per line.
   function mapToText(map) {
@@ -45,6 +109,7 @@ window.onload = () => {
           if (obj) {
             const s = mapToText(obj);
             document.getElementById("text_area").value = s;
+            syntaxHighlightManager.refresh("text_area");
           }
         } catch (e) {
           console.log("failed to parse user_phrase:" + e);
@@ -63,6 +128,7 @@ window.onload = () => {
           if (obj) {
             const s = mapToText(obj);
             document.getElementById("text_area_excluded_phrases").value = s;
+            syntaxHighlightManager.refresh("text_area_excluded_phrases");
           }
         } catch (e) {
           console.log("failed to parse user_phrase:" + e);
@@ -152,6 +218,7 @@ window.onload = () => {
   document.getElementById("excluded_phrases_link").innerText =
     chrome.i18n.getMessage("excluded_phrases_link");
 
+  syntaxHighlightManager.init();
   load_user_phrases();
   load_excluded_phrases();
 

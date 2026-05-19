@@ -1,4 +1,68 @@
 window.onload = () => {
+  const syntaxHighlightManager = (() => {
+    const fields = new Map();
+
+    function syncScroll(textarea, backdrop) {
+      backdrop.scrollTop = textarea.scrollTop;
+      backdrop.scrollLeft = textarea.scrollLeft;
+    }
+
+    function render(id) {
+      const field = fields.get(id);
+      const renderer = window.phraseSyntaxHighlighter;
+      if (!field || !renderer) {
+        return;
+      }
+
+      field.content.innerHTML = renderer.renderHtml(field.textarea.value) + "\n";
+      syncScroll(field.textarea, field.backdrop);
+    }
+
+    function attach(id) {
+      const renderer = window.phraseSyntaxHighlighter;
+      const textarea = document.getElementById(id);
+      if (!renderer || !textarea || fields.has(id)) {
+        return;
+      }
+
+      const wrapper = document.createElement("div");
+      wrapper.className = "syntax-highlight-field";
+      textarea.parentNode.insertBefore(wrapper, textarea);
+      wrapper.appendChild(textarea);
+
+      const backdrop = document.createElement("div");
+      backdrop.className = "syntax-highlight-backdrop";
+      const content = document.createElement("pre");
+      content.className = "syntax-highlight-content";
+      backdrop.appendChild(content);
+      wrapper.appendChild(backdrop);
+
+      const computedStyle = window.getComputedStyle(textarea);
+      backdrop.style.font = computedStyle.font;
+      backdrop.style.letterSpacing = computedStyle.letterSpacing;
+      content.style.font = computedStyle.font;
+      content.style.lineHeight = computedStyle.lineHeight;
+      content.style.letterSpacing = computedStyle.letterSpacing;
+
+      textarea.classList.add("syntax-highlight-input");
+      textarea.addEventListener("input", () => render(id));
+      textarea.addEventListener("scroll", () => syncScroll(textarea, backdrop));
+
+      fields.set(id, { textarea, backdrop, content });
+      render(id);
+    }
+
+    return {
+      init() {
+        attach("user_phrases");
+        attach("excluded_phrases");
+      },
+      refresh(id) {
+        render(id);
+      },
+    };
+  })();
+
   function saveUserPhrases(string) {
     const xhttp = new XMLHttpRequest();
     xhttp.onload = function () {
@@ -24,6 +88,7 @@ window.onload = () => {
         const userPhrases = this.responseText;
         console.log("User phrases loaded: " + userPhrases);
         document.getElementById("user_phrases").value = userPhrases;
+        syntaxHighlightManager.refresh("user_phrases");
       } catch {
         console.error("Failed to parse user phrases");
       }
@@ -68,6 +133,7 @@ window.onload = () => {
         const userPhrases = this.responseText;
         console.log("User phrases loaded: " + userPhrases);
         document.getElementById("excluded_phrases").value = userPhrases;
+        syntaxHighlightManager.refresh("excluded_phrases");
       } catch {
         console.error("Failed to parse user phrases");
       }
@@ -88,6 +154,7 @@ window.onload = () => {
   }
 
   (function () {
+    syntaxHighlightManager.init();
     getUserPhrases();
     getExcludedPhrases();
   })();
