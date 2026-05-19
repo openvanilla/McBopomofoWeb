@@ -61,7 +61,7 @@
     "@types/node": "^25.6.0",
     "@typescript-eslint/eslint-plugin": "^8.59.4",
     "@typescript-eslint/parser": "^8.59.2",
-    "eslint": "^10.3.0",
+    "eslint": "^10.4.0",
     "eslint-plugin-simple-import-sort": "^13.0.0",
     "jest": "^30.3.0",
     "jest-junit": "^17.0.0",
