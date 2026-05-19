@@ -112,6 +112,90 @@ if (typeof document !== "undefined") {
       focusElement(inputId);
       return output;
     };
+    const syntaxHighlightManager = (() => {
+      const that = {};
+      const fields = new Map();
+
+      const getRenderer = () => window.phraseSyntaxHighlighter;
+
+      const syncScroll = (textarea, backdrop) => {
+        backdrop.scrollTop = textarea.scrollTop;
+        backdrop.scrollLeft = textarea.scrollLeft;
+      };
+
+      const renderField = (id) => {
+        const field = fields.get(id);
+        const renderer = getRenderer();
+        if (!field || !renderer) {
+          return;
+        }
+
+        field.content.innerHTML = renderer.renderHtml(field.textarea.value) + "\n";
+        syncScroll(field.textarea, field.backdrop);
+      };
+
+      const attach = (id, options = {}) => {
+        const renderer = getRenderer();
+        const textarea = $(id);
+        if (!renderer || !textarea || fields.has(id)) {
+          return;
+        }
+
+        const wrapper = document.createElement("div");
+        wrapper.className = "syntax-highlight-field";
+        if (options.fill) {
+          wrapper.classList.add("syntax-highlight-field--fill");
+          textarea.style.height = "100%";
+        }
+        if (options.tall) {
+          wrapper.classList.add("syntax-highlight-field--tall");
+          textarea.style.height = "100%";
+        }
+
+        textarea.parentNode.insertBefore(wrapper, textarea);
+        wrapper.appendChild(textarea);
+
+        const backdrop = document.createElement("div");
+        backdrop.className = "syntax-highlight-backdrop";
+        const content = document.createElement("pre");
+        content.className = "syntax-highlight-content";
+        backdrop.appendChild(content);
+        wrapper.appendChild(backdrop);
+
+        const computedStyle = window.getComputedStyle(textarea);
+        backdrop.style.font = computedStyle.font;
+        backdrop.style.letterSpacing = computedStyle.letterSpacing;
+        content.style.font = computedStyle.font;
+        content.style.lineHeight = computedStyle.lineHeight;
+        content.style.letterSpacing = computedStyle.letterSpacing;
+
+        textarea.classList.add("syntax-highlight-input");
+        textarea.addEventListener("input", () => renderField(id));
+        textarea.addEventListener("scroll", () => syncScroll(textarea, backdrop));
+
+        fields.set(id, {
+          textarea,
+          backdrop,
+          content,
+        });
+        renderField(id);
+      };
+
+      that.init = () => {
+        attach("feature_user_phrases_text_area", { tall: true });
+        attach("feature_excluded_phrases_text_area", { tall: true });
+        attach("phrase_generate_output", { fill: true });
+      };
+
+      that.refresh = (id) => renderField(id);
+      that.refreshAll = () => {
+        for (const id of fields.keys()) {
+          renderField(id);
+        }
+      };
+
+      return that;
+    })();
 
     const ui = (() => {
       const that = {};
@@ -487,6 +571,7 @@ if (typeof document !== "undefined") {
         let finalOutput = output.join("\n");
         let outputTextArea = $("phrase_generate_output");
         outputTextArea.value = finalOutput;
+        syntaxHighlightManager.refresh("phrase_generate_output");
         outputTextArea.focus();
       };
 
@@ -658,6 +743,7 @@ if (typeof document !== "undefined") {
       that.loadUserPhrases = () => {
         const result = window.localStorage.getItem("user_phrases") || "";
         $("feature_user_phrases_text_area").value = result;
+        syntaxHighlightManager.refresh("feature_user_phrases_text_area");
         focusElement("feature_user_phrases_text_area");
         console.log("userPhrases:\n" + result);
         controller.setUserPhrases(result);
@@ -669,12 +755,14 @@ if (typeof document !== "undefined") {
         controller.setUserPhrases(result);
         service.service.setUserPhrases(result);
         $("feature_user_phrases_text_area").value = result;
+        syntaxHighlightManager.refresh("feature_user_phrases_text_area");
         focusElement("feature_user_phrases_text_area");
       };
 
       that.loadExcludedPhrases = () => {
         const result = window.localStorage.getItem("excluded_phrases") || "";
         $("feature_excluded_phrases_text_area").value = result;
+        syntaxHighlightManager.refresh("feature_excluded_phrases_text_area");
         focusElement("feature_excluded_phrases_text_area");
         console.log("excludedPhrases:\n" + result);
         controller.setExcludedPhrases(result);
@@ -686,6 +774,7 @@ if (typeof document !== "undefined") {
         controller.setExcludedPhrases(result);
         service.service.setExcludedPhrases(result);
         $("feature_excluded_phrases_text_area").value = result;
+        syntaxHighlightManager.refresh("feature_excluded_phrases_text_area");
         focusElement("feature_excluded_phrases_text_area");
       };
 
@@ -1207,8 +1296,10 @@ if (typeof document !== "undefined") {
         if (window.location.hash.length === 0) {
           window.history.replaceState(null, "", "#feature_input");
         }
+        syntaxHighlightManager.init();
         onHashChange({ focus: false });
         window.requestAnimationFrame(() => {
+          syntaxHighlightManager.refreshAll();
           resetInitialScrollPosition();
         });
       });
