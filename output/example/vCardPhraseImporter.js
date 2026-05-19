@@ -8,6 +8,8 @@
       .replace(/\\;/g, ";")
       .replace(/\\\\/g, "\\");
 
+  const normalizeCsvValue = (value) => value.replace(/^\uFEFF/, "").trim();
+
   const decodeQuotedPrintable = (value) => {
     const bytes = [];
     for (let index = 0; index < value.length; index += 1) {
@@ -61,7 +63,8 @@
     };
   };
 
-  const normalizePhrase = (value) => value.replace(/\s+/g, "").trim();
+  const normalizePhrase = (value) =>
+    value.replace(/[\s,，]+/g, "").trim();
 
   const toValidPhrase = (value) => {
     const normalized = normalizePhrase(value);
@@ -111,12 +114,142 @@
     return null;
   };
 
+  const parseCsv = (text) => {
+    const rows = [];
+    let row = [];
+    let field = "";
+    let inQuotes = false;
+
+    for (let index = 0; index < text.length; index += 1) {
+      const current = text[index];
+
+      if (inQuotes) {
+        if (current === '"') {
+          if (text[index + 1] === '"') {
+            field += '"';
+            index += 1;
+          } else {
+            inQuotes = false;
+          }
+        } else {
+          field += current;
+        }
+        continue;
+      }
+
+      if (current === '"') {
+        inQuotes = true;
+      } else if (current === ",") {
+        row.push(field);
+        field = "";
+      } else if (current === "\n") {
+        row.push(field);
+        rows.push(row);
+        row = [];
+        field = "";
+      } else if (current !== "\r") {
+        field += current;
+      }
+    }
+
+    if (field.length > 0 || row.length > 0) {
+      row.push(field);
+      rows.push(row);
+    }
+
+    return rows
+      .map((currentRow) => currentRow.map((value) => normalizeCsvValue(value)))
+      .filter((currentRow) => currentRow.some((value) => value.length > 0));
+  };
+
+  const getCsvField = (row, headerMap, names) => {
+    for (const name of names) {
+      const index = headerMap.get(name);
+      if (index !== undefined) {
+        return row[index] || "";
+      }
+    }
+    return "";
+  };
+
+  const extractNameFromCsvRow = (row, headerMap) => {
+    const givenName = getCsvField(row, headerMap, ["given name", "first name"]);
+    const additionalName = getCsvField(row, headerMap, [
+      "additional name",
+      "middle name",
+    ]);
+    const familyName = getCsvField(row, headerMap, ["family name", "last name"]);
+    const fullName = getCsvField(row, headerMap, ["name", "full name"]);
+
+    const fullNameFromParts = toValidPhrase(
+      `${familyName}${givenName}${additionalName}`,
+    );
+    const firstNameOnly = toValidPhrase(`${givenName}${additionalName}`);
+    if (fullNameFromParts) {
+      return {
+        fullName: fullNameFromParts,
+        firstName: firstNameOnly,
+      };
+    }
+
+    const fullNameFromSingleField = toValidPhrase(fullName);
+    if (fullNameFromSingleField) {
+      return {
+        fullName: fullNameFromSingleField,
+        firstName: firstNameOnly,
+      };
+    }
+
+    return null;
+  };
+
+  const extractImportPhrasesFromCsv = (
+    text,
+    { includeFirstNamePhrases = false } = {},
+  ) => {
+    const rows = parseCsv(text);
+    if (rows.length < 2) {
+      return [];
+    }
+
+    const headers = rows[0].map((header) => header.toLowerCase());
+    const headerMap = new Map(
+      headers.map((header, index) => [header, index]),
+    );
+    const phrases = [];
+    const seen = new Set();
+
+    for (const row of rows.slice(1)) {
+      const entry = extractNameFromCsvRow(row, headerMap);
+      if (!entry) {
+        continue;
+      }
+
+      for (const phrase of [
+        entry.fullName,
+        includeFirstNamePhrases ? entry.firstName : "",
+      ]) {
+        if (phrase && !seen.has(phrase)) {
+          phrases.push(phrase);
+          seen.add(phrase);
+        }
+      }
+    }
+
+    return phrases;
+  };
+
   const extractImportPhrasesFromVCard = (
     text,
     { includeFirstNamePhrases = false } = {},
   ) => {
     const unfolded = unfoldLines(text);
     const cards = unfolded.match(/BEGIN:VCARD[\s\S]*?END:VCARD/gi) || [];
+    if (cards.length === 0) {
+      return extractImportPhrasesFromCsv(text, {
+        includeFirstNamePhrases,
+      });
+    }
     const phrases = [];
     const seen = new Set();
 

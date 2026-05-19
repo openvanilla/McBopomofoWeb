@@ -582,7 +582,7 @@ if (typeof document !== "undefined") {
         outputTextArea.focus();
       };
 
-      that.importVCardFile = async (file) => {
+      that.importContactFile = async (file) => {
         const importer = window.vCardPhraseImporter;
         const status = $("vcard_import_status");
         if (!file || !importer) {
@@ -612,8 +612,8 @@ if (typeof document !== "undefined") {
           that.generatePhrases();
           inputArea.focus();
         } catch (error) {
-          console.error("Failed to import vCard:", error);
-          status.textContent = "讀取 vCard 檔案失敗。";
+          console.error("Failed to import contact file:", error);
+          status.textContent = "讀取通訊錄檔案失敗。";
         }
       };
 
@@ -1362,7 +1362,7 @@ if (typeof document !== "undefined") {
 
         dropZone.addEventListener("drop", async (domEvent) => {
           const file = domEvent.dataTransfer?.files?.[0];
-          await service.importVCardFile(file);
+          await service.importContactFile(file);
         });
 
         openFileButton.addEventListener("click", () => {
@@ -1371,7 +1371,7 @@ if (typeof document !== "undefined") {
 
         fileInput.addEventListener("change", async () => {
           const file = fileInput.files?.[0];
-          await service.importVCardFile(file);
+          await service.importContactFile(file);
           fileInput.value = "";
         });
 

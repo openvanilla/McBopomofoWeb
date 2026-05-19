@@ -523,13 +523,13 @@
         <div class="vcard_import_panel">
           <h3>將通訊錄匯入詞庫</h3>
           <p>
-            很多平台的通訊錄（包括 Windows 與 macOS 的系統聯絡人 app、Google 通
-            訊錄等）都使用 vCard 格式。將通訊錄匯出成vCard 之後，就可以轉換成小
-            麥的詞庫格式。
+            這個工具目前支援 <a href="https://zh.wikipedia.org/wiki/VCard" target="_top">vCard</a> 與 <a
+              href="https://zh.wikipedia.org/wiki/%E9%80%97%E5%8F%B7%E5%88%86%E9%9A%94%E5%80%BC" target="_top">CSV</a>
+            通訊錄格式，包含 Google 與 Outlook 通訊錄常見的匯出 CSV。
           </p>
           <p>這項轉換工作只會在這個網頁中，只使用前端技術完成，不會將您的資料上
             傳到任何主機上。</p>
-          <p>您可以拖拉 `.vcf` / `.vcard` 檔案到下方區域，或按按鈕選擇檔案。</p>
+          <p>您可以拖拉 <code>.vcf</code>/<code>.vcard</code>/<code>.csv</code> 檔案到下方區域，或按按鈕選擇檔案。</p>
           <p>
             <label>
               <input type="checkbox" id="vcard_include_first_name_phrases" />
@@ -537,33 +537,34 @@
             </label>
           </p>
           <div id="vcard_drop_zone" class="vcard_drop_zone" tabindex="0">
-            將 vCard 檔案拖拉到這裡
+            將通訊錄檔案拖拉到這裡
           </div>
           <br />
           <p>
             <button type="button" id="vcard_open_file_button">
-              選擇 vCard 檔案
+              選擇通訊錄檔案
             </button>
-            <input type="file" id="vcard_file_input" accept=".vcf,.vcard,text/vcard" hidden />
+            <input type="file" id="vcard_file_input" accept=".vcf,.vcard,.csv,text/vcard,text/csv" hidden />
           </p>
           <p id="vcard_import_status" class="vcard_import_status">
-            尚未匯入 vCard。
+            尚未匯入通訊錄檔案。
           </p>
           <p>相關說明</p>
           <ul>
+            <li><a href="https://support.google.com/contacts/answer/7199294" target="_top">匯出 Google 聯絡人為 CSV</a></li>
             <li><a
                 href="https://support.microsoft.com/zh-tw/office/%E5%B0%87%E8%81%AF%E7%B5%A1%E4%BA%BA%E4%BB%A5-vcard-%E6%AA%94%E6%A1%88-vcf-%E5%84%B2%E5%AD%98-94a17a6f-105f-46c7-9308-33658c1c2690#:~:text=%E4%BD%A0%E5%8F%AF%E4%BB%A5%E4%BB%A5%20vCard%20%28.vcf%29%20%E6%A0%BC%E5%BC%8F%EF%BC%8C%E5%B0%87%20Microsoft%20Outlook%20%E8%81%AF%E7%B5%A1%E8%B3%87%E8%A8%8A%E2%80%94%E2%80%94%E7%84%A1%E8%AB%96%E6%98%AF%E4%BD%A0%E8%87%AA%E5%B7%B1%E7%9A%84%E9%82%84%E6%98%AF%E5%88%A5%E4%BA%BA%E7%9A%84%E2%80%94%E2%80%94%E5%82%B3%E9%80%81%E7%B5%A6%E4%BB%96%E4%BA%BA%E3%80%82%20%E7%95%B6%E6%94%B6%E4%BB%B6%E4%BA%BA%E6%89%93%E9%96%8B%E8%A8%8A%E6%81%AF%E4%B8%AD%E6%94%B6%E5%88%B0%E7%9A%84,%E6%99%82%EF%BC%8C%E6%9C%83%E9%96%8B%E5%95%9F%E4%B8%80%E5%80%8B%20%E9%80%A3%E7%B5%A1%E4%BA%BA%E8%A1%A8%E5%96%AE%20%EF%BC%8C%E9%A1%AF%E7%A4%BA%E8%81%AF%E7%B5%A1%E8%B3%87%E8%A8%8A%E3%80%82%20%E4%BD%A0%E5%8F%AF%E4%BB%A5%E9%81%B8%E6%93%87%E4%B8%A6%E5%84%B2%E5%AD%98%E6%94%B6%E5%88%B0%E7%9A%84%20.vcf%20%E6%AA%94%E6%A1%88%EF%BC%8C%E7%9B%B4%E6%8E%A5%E5%8A%A0%E5%85%A5%20Outlook%20%E8%81%AF%E7%B5%A1%E4%BA%BA%EF%BC%8C%E5%84%B2%E5%AD%98%E6%89%80%E6%9C%89%E8%B3%87%E8%A8%8A%E3%80%82"
-                target="_top">將聯絡人以
+                target="_top">Microsoft: 將聯絡人以
                 vCard 檔案 (.vcf 儲存)
               </a></li>
-            <li><a href="https://support.apple.com/zh-tw/guide/contacts/adrbd767a069/mac" target="_top">在 Mac
-                上的「聯絡人」中分享聯絡人</a></li>
+            <li><a href="https://support.apple.com/zh-tw/guide/contacts/adrbd767a069/mac" target="_top">Apple: 在
+                Mac 上的「聯絡人」中分享聯絡人</a></li>
           </ul>
           <p>相關網路服務</p>
           <ul>
-            <li><a href="https://www.icloud.com/contacts/" target="_top">iCloud 通訊錄</a></li>
-            <li><a href="https://www.google.com/contacts" target="_top">Google 通訊錄</a></li>
-            <li><a href="https://outlook.live.com/people/" target="_top">Outlook 通訊錄</a></li>
+            <li><a href="https://www.google.com/contacts" target="_top">Google 通訊錄</a> (支援 CSV 與 vCard)</li>
+            <li><a href="https://outlook.live.com/people/" target="_top">Outlook 通訊錄</a> (支援 CSV)</li>
+            <li><a href="https://www.icloud.com/contacts/" target="_top">iCloud 通訊錄</a> (支援 vCard)</li>
           </ul>
         </div>
 
