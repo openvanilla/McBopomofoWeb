@@ -648,6 +648,43 @@ blockquote {
   font-size: 0.95rem;
 }
 
+.vcard_services_table {
+  width: 100% !important;
+  border-collapse: collapse !important;
+  margin-top: var(--spacing-3);
+  margin-bottom: var(--spacing-3);
+  font-size: 10pt !important;
+}
+
+.vcard_services_table th,
+.vcard_services_table td {
+  padding: var(--spacing-2) var(--spacing-2) !important;
+  text-align: left !important;
+  border-bottom: 1px solid var(--border-subtle) !important;
+  width: auto !important;
+}
+
+.vcard_services_table th {
+  font-weight: 600;
+  color: var(--text-primary);
+  background: var(--surface-strong);
+  border-bottom: 2px solid var(--border-strong) !important;
+}
+
+.vcard_services_table td {
+  color: var(--text-secondary);
+  vertical-align: middle;
+}
+
+.vcard_services_table tr {
+  transition: background-color 0.2s ease;
+}
+
+.vcard_services_table tr:hover {
+  background: var(--surface-strong);
+}
+
+
 .simple-keyboard {
   min-height: 230px;
   margin-top: var(--spacing-2);
