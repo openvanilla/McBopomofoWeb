@@ -518,12 +518,41 @@ describe("InputMacro", () => {
     });
 
     test("handles timezone macros", () => {
+      const dateTimeFormatSpy = jest
+        .spyOn(Intl, "DateTimeFormat")
+        .mockImplementation(
+          ((locale?: string | string[], options?: Intl.DateTimeFormatOptions) =>
+            ({
+              resolvedOptions: () =>
+                ({
+                  locale: "zh-TW",
+                  calendar: "gregory",
+                  numberingSystem: "latn",
+                  timeZone: "Asia/Taipei",
+                  year: "numeric",
+                  month: "numeric",
+                  day: "numeric",
+                }) as Intl.ResolvedDateTimeFormatOptions,
+              formatToParts: () => [
+                {
+                  type: "timeZoneName",
+                  value:
+                    options?.timeZoneName === "longGeneric"
+                      ? "台北標準時間"
+                      : "台灣時間",
+                },
+              ],
+            }) as Intl.DateTimeFormat) as typeof Intl.DateTimeFormat,
+        );
+
       expect(inputMacroController.handle("MACRO@TIMEZONE_STANDARD")).toBe(
         "台北標準時間",
       );
       expect(inputMacroController.handle("MACRO@TIMEZONE_GENERIC_SHORT")).toBe(
         "台灣時間",
       );
+
+      dateTimeFormatSpy.mockRestore();
     });
   });
 
