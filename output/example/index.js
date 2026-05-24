@@ -617,6 +617,54 @@ if (typeof document !== "undefined") {
         }
       };
 
+      that.drawGraph = async () => {
+        const text = getTrimmedValue("feature_graph_text_area");
+        const container = $("mermaid_graph_output");
+        const resultRow = $("graph_walk_result");
+        const resultText = $("graph_result_text");
+        const resultScore = $("graph_result_score");
+
+        if (text.length === 0) {
+          container.innerHTML = "graph LR\n  empty((請輸入注音符號))";
+          container.removeAttribute("data-processed");
+          if (resultRow) resultRow.style.display = "none";
+          if (typeof mermaid !== "undefined") {
+            try {
+              await mermaid.run({
+                nodes: [container]
+              });
+            } catch (err) {
+              console.error(err);
+            }
+          }
+          return;
+        }
+
+        const graphString = that.service.generateMermaidGraph(text);
+        container.innerHTML = graphString;
+        container.removeAttribute("data-processed");
+
+        const walkResult = that.service.getWalkResult(text);
+        if (resultRow && resultText && resultScore) {
+          resultText.value = walkResult.text;
+          resultScore.value = `${walkResult.score.toFixed(2)}`;
+          resultRow.style.display = "block";
+        }
+
+        if (typeof mermaid !== "undefined") {
+          try {
+            await mermaid.run({
+              nodes: [container]
+            });
+          } catch (err) {
+            console.error("Mermaid error:", err);
+            container.innerHTML = `<pre style="color:red;">${err.message}</pre>`;
+          }
+        } else {
+          container.innerHTML = `<pre>${graphString}</pre>`;
+        }
+      };
+
       return that;
     })();
 
@@ -1301,6 +1349,7 @@ if (typeof document !== "undefined") {
           "國字轉拼音",
         ],
         feature_generate_phrases: ["phrase_generate_input", "詞庫產生工具"],
+        feature_graph: ["feature_graph_text_area", "選字路徑圖"],
       };
 
       function toggle_feature(id, options = {}) {
@@ -1333,6 +1382,9 @@ if (typeof document !== "undefined") {
 
       window.addEventListener("hashchange", () => {
         onHashChange();
+        if (window.location.hash === "#feature_graph") {
+          service.drawGraph();
+        }
       });
       document.addEventListener("DOMContentLoaded", (event) => {
         const dropZone = $("vcard_drop_zone");
@@ -1375,11 +1427,231 @@ if (typeof document !== "undefined") {
           fileInput.value = "";
         });
 
+        // Bopomofo direct input helper for feature_graph_text_area
+        (() => {
+          let graphReadingBuffer = null;
+          let composingStart = null;
+          let lastValue = "";
+          // Snapshot of text that came after selectionEnd when composition began.
+          // Kept separate from lastValue so a selection range is replaced, not preserved.
+          let lastAfter = "";
+
+          function getActiveLayout() {
+            const { BopomofoKeyboardLayout } = window.mcbopomofo;
+            const name = settingsManager.settings.layout || "Standard";
+            switch (name) {
+              case "Standard":
+                return BopomofoKeyboardLayout.StandardLayout;
+              case "ETen":
+                return BopomofoKeyboardLayout.ETenLayout;
+              case "Hsu":
+                return BopomofoKeyboardLayout.HsuLayout;
+              case "ETen26":
+                return BopomofoKeyboardLayout.ETen26Layout;
+              case "HanyuPinyin":
+                return BopomofoKeyboardLayout.HanyuPinyinLayout;
+              case "IBM":
+                return BopomofoKeyboardLayout.IBMLayout;
+              default:
+                return BopomofoKeyboardLayout.StandardLayout;
+            }
+          }
+
+          function getGraphReadingBuffer() {
+            const { BopomofoReadingBuffer } = window.mcbopomofo;
+            const layout = getActiveLayout();
+            if (!graphReadingBuffer || graphReadingBuffer.keyboardLayout !== layout) {
+              graphReadingBuffer = new BopomofoReadingBuffer(layout);
+            }
+            return graphReadingBuffer;
+          }
+
+          const textarea = $("feature_graph_text_area");
+          let isGraphComposing = false;
+
+          textarea.addEventListener("compositionstart", (event) => {
+            isGraphComposing = true;
+            const warning = $("graph_ime_warning");
+            if (warning) {
+              warning.style.display = "block";
+            }
+          });
+
+          textarea.addEventListener("compositionend", (event) => {
+            isGraphComposing = false;
+            const warning = $("graph_ime_warning");
+            if (warning) {
+              warning.style.display = "none";
+            }
+          });
+
+          textarea.addEventListener("focus", () => {
+            const buffer = getGraphReadingBuffer();
+            buffer.clear();
+            composingStart = null;
+            lastAfter = "";
+          });
+
+          textarea.addEventListener("blur", () => {
+            const buffer = getGraphReadingBuffer();
+            if (!buffer.isEmpty) {
+              commitSyllable(buffer.composedString + " ", false);
+            }
+            composingStart = null;
+            lastAfter = "";
+          });
+
+          textarea.addEventListener("keydown", (event) => {
+            if (isGraphComposing || event.isComposing || event.keyCode === 229) {
+              return;
+            }
+
+            const buffer = getGraphReadingBuffer();
+
+            // Standard control keys (Ctrl+C, Cmd+A, etc.)
+            if (event.metaKey || event.ctrlKey || event.altKey) {
+              return;
+            }
+
+            const key = event.key;
+
+            if (key === "Backspace") {
+              if (!buffer.isEmpty) {
+                event.preventDefault();
+                buffer.backspace();
+                updateTextarea();
+                return;
+              } else {
+                composingStart = null;
+                lastAfter = "";
+                return;
+              }
+            }
+
+            if (key === " ") {
+              if (!buffer.isEmpty) {
+                event.preventDefault();
+                commitSyllable(buffer.composedString + " ");
+                return;
+              } else {
+                composingStart = null;
+                lastAfter = "";
+                return;
+              }
+            }
+
+            const lowerKey = key.toLowerCase();
+            if (buffer.isValidKey(lowerKey)) {
+              event.preventDefault();
+
+              const combined = buffer.combineKey(lowerKey);
+              if (combined) {
+                if (buffer.hasToneMarker) {
+                  commitSyllable(buffer.composedString + " ");
+                } else {
+                  updateTextarea();
+                }
+              } else {
+                if (!buffer.isEmpty) {
+                  commitSyllable(buffer.composedString + " ", false);
+                }
+                buffer.combineKey(lowerKey);
+                if (buffer.hasToneMarker) {
+                  commitSyllable(buffer.composedString + " ");
+                } else {
+                  updateTextarea();
+                }
+              }
+              return;
+            }
+
+            if (!buffer.isEmpty) {
+              commitSyllable(buffer.composedString + " ", false);
+            }
+            composingStart = null;
+            lastAfter = "";
+          });
+
+          function updateTextarea() {
+            const buffer = getGraphReadingBuffer();
+            const val = textarea.value;
+
+            if (composingStart === null) {
+              // Snapshot the composition anchor and the text that lies beyond
+              // selectionEnd. This correctly handles three cases:
+              //   1. Cursor at a point (selectionStart === selectionEnd) — text
+              //      after cursor is preserved.
+              //   2. A selection range — the selected text is replaced.
+              //   3. Cursor in the middle — nothing to the right is eaten.
+              composingStart = textarea.selectionStart;
+              lastValue = val;
+              lastAfter = val.substring(textarea.selectionEnd);
+            }
+
+            const before = lastValue.substring(0, composingStart);
+            const composing = buffer.composedString;
+
+            textarea.value = before + composing + lastAfter;
+            const newCursor = composingStart + composing.length;
+            textarea.setSelectionRange(newCursor, newCursor);
+          }
+
+          function commitSyllable(composedText, resetComposing = true) {
+            const buffer = getGraphReadingBuffer();
+            const val = textarea.value;
+
+            if (composingStart === null) {
+              // Same snapshot logic as updateTextarea.
+              composingStart = textarea.selectionStart;
+              lastValue = val;
+              lastAfter = val.substring(textarea.selectionEnd);
+            }
+
+            const before = lastValue.substring(0, composingStart);
+
+            textarea.value = before + composedText + lastAfter;
+            const newCursor = composingStart + composedText.length;
+            textarea.setSelectionRange(newCursor, newCursor);
+
+            buffer.clear();
+            if (resetComposing) {
+              composingStart = null;
+              lastAfter = "";
+            } else {
+              // Advance the anchor; lastAfter stays the same because the text
+              // to the right of the original selection hasn't changed.
+              composingStart = newCursor;
+              lastValue = textarea.value;
+            }
+          }
+        })();
+
         if (window.location.hash.length === 0) {
           window.history.replaceState(null, "", "#feature_input");
         }
+        function initMermaid() {
+          if (typeof mermaid === "undefined") return;
+          const isDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+          mermaid.initialize({
+            startOnLoad: false,
+            theme: isDark ? "dark" : "default"
+          });
+        }
+        initMermaid();
+        if (window.matchMedia) {
+          window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+            initMermaid();
+            // Redraw only when the graph tab is visible so we don't waste work.
+            if (window.location.hash === "#feature_graph") {
+              service.drawGraph();
+            }
+          });
+        }
         syntaxHighlightManager.init();
         onHashChange({ focus: false });
+        if (window.location.hash === "#feature_graph") {
+          service.drawGraph();
+        }
         window.requestAnimationFrame(() => {
           syntaxHighlightManager.refreshAll();
           resetInitialScrollPosition();

@@ -848,3 +848,56 @@ button {
 button:hover {
   border-width: 2px !important;
 } */
+
+#graph_walk_result {
+  display: none;
+  margin-bottom: 8px;
+}
+
+#graph_walk_result > div {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+#graph_result_text {
+  flex: 1;
+  padding: 6px 10px;
+  font-size: 1.1em;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  background: var(--surface-muted);
+  color: var(--text-primary);
+  cursor: default;
+}
+
+#graph_result_score {
+  width: 100px;
+  text-align: center;
+  padding: 6px 10px;
+  font-size: 1.1em;
+  font-family: monospace;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  background: var(--surface-muted);
+  color: var(--text-secondary);
+  cursor: default;
+}
+
+#mermaid_graph_container {
+  background: var(--surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: var(--spacing-3);
+  overflow: auto;
+  min-height: 300px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#mermaid_graph_output {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}

@@ -4,7 +4,11 @@ import {
   BrailleType,
 } from "../BopomofoBraille";
 import { ReadingGrid } from "../Gramambular2";
-import { BopomofoSyllable as MandarinBopomofoSyllable } from "../Mandarin";
+import {
+  BopomofoCharacterMap,
+  BopomofoKeyboardLayout,
+  BopomofoSyllable as MandarinBopomofoSyllable,
+} from "../Mandarin";
 import { VariantAnnotator } from "./VariantAnnotator";
 import { webBpmfvsPua } from "./WebBpmfvsPua";
 import { webBpmfvsVariants } from "./WebBpmfvsVariants";
@@ -476,5 +480,159 @@ export class Service {
    */
   public annotateSingleCharacter(input: string, reading: string): string {
     return this.vs_.annotateSingleCharacter(input, reading).annotatedString;
+  }
+
+  /**
+   * Parses `input` into Bopomofo syllables, builds a temporary ReadingGrid,
+   * and returns the grid together with the Viterbi walk result.
+   * Shared by `generateMermaidGraph` and `getWalkResult`.
+   */
+  private buildAndWalk(
+    input: string
+  ): { walkedNodes: ReturnType<ReadingGrid["walk"]>["nodes"]; tempGrid: ReadingGrid } | null {
+    const tokens = input.trim().split(/[\s-]+/).filter((t) => t.length > 0);
+    const layout = BopomofoKeyboardLayout.StandardLayout;
+    const syllables: string[] = [];
+
+    for (const token of tokens) {
+      let isBpmf = false;
+      for (let i = 0; i < token.length; i++) {
+        if (BopomofoCharacterMap.sharedInstance.characterToComponent.has(token.charAt(i))) {
+          isBpmf = true;
+          break;
+        }
+      }
+      if (isBpmf) {
+        const syllable = MandarinBopomofoSyllable.FromComposedString(token);
+        syllables.push(!syllable.isEmpty ? syllable.composedString : token);
+      } else {
+        const syllable = layout.syllableFromKeySequence(token);
+        syllables.push(!syllable.isEmpty ? syllable.composedString : token);
+      }
+    }
+
+    if (syllables.length === 0) return null;
+
+    const tempGrid = new ReadingGrid(this.lm_);
+    for (const syllable of syllables) {
+      tempGrid.insertReading(syllable);
+    }
+
+    const walkResult = tempGrid.walk();
+    return { walkedNodes: walkResult.nodes, tempGrid };
+  }
+
+  /**
+   * Returns the Viterbi-selected text and its total log-probability score
+   * for the given Bopomofo (or keyboard-sequence) input.
+   */
+  public getWalkResult(input: string): { text: string; score: number } {
+    const built = this.buildAndWalk(input);
+    if (!built) return { text: "", score: 0 };
+    const text = built.walkedNodes.map((n) => n.value).join("");
+    const score = built.walkedNodes.reduce((acc, n) => acc + n.score, 0);
+    return { text, score };
+  }
+
+  /**
+   * Generates a Mermaid graph representing candidate selections.
+   */
+  public generateMermaidGraph(input: string): string {
+    const built = this.buildAndWalk(input);
+    if (!built) return "graph LR\n  empty((Empty))";
+    const { walkedNodes, tempGrid } = built;
+
+    const walkedSegments: { start: number; end: number; node: any }[] = [];
+    let currentIdx = 0;
+    for (const walkedNode of walkedNodes) {
+      walkedSegments.push({
+        start: currentIdx,
+        end: currentIdx + walkedNode.spanningLength,
+        node: walkedNode,
+      });
+      currentIdx += walkedNode.spanningLength;
+    }
+
+    let mermaid = "graph LR\n";
+    for (let i = 0; i <= tempGrid.length; i++) {
+      mermaid += `  V${i}((V${i}))\n`;
+    }
+
+    interface Edge {
+      from: number;
+      to: number;
+      label: string;
+      isWalked: boolean;
+    }
+    const edges: Edge[] = [];
+
+    for (let i = 0; i < tempGrid.length; i++) {
+      const span = tempGrid.spans[i];
+      for (let len = 1; len <= span.maxLength; len++) {
+        const node = span.nodeOf(len);
+        if (!node) continue;
+
+        const isWalked = walkedSegments.some(
+          (seg) => seg.start === i && seg.end === i + len && seg.node === node
+        );
+
+        const value = node.value;
+        const score = node.score;
+        const label = `${value} ${score.toFixed(2)}`;
+
+        edges.push({
+          from: i,
+          to: i + len,
+          label,
+          isWalked,
+        });
+      }
+    }
+
+    edges.forEach((edge) => {
+      mermaid += `  V${edge.from} -->|"${edge.label}"| V${edge.to}\n`;
+    });
+
+    mermaid += "\n  classDef selected stroke:#e7000b,stroke-width:3px;\n";
+
+    const selectedVertices = new Set<number>([0]);
+    let accum = 0;
+    for (const walkedNode of walkedNodes) {
+      accum += walkedNode.spanningLength;
+      selectedVertices.add(accum);
+    }
+
+    const selectedList: string[] = [];
+    const stateList: string[] = [];
+    for (let i = 0; i <= tempGrid.length; i++) {
+      if (selectedVertices.has(i)) {
+        selectedList.push(`V${i}`);
+      } else {
+        stateList.push(`V${i}`);
+      }
+    }
+
+    if (selectedList.length > 0) {
+      mermaid += `  class ${selectedList.join(",")} selected;\n`;
+    }
+    if (stateList.length > 0) {
+      mermaid += `  class ${stateList.join(",")} state;\n`;
+    }
+
+    mermaid += "\n";
+    edges.forEach((edge, idx) => {
+      mermaid += `  %% Link ${idx}: V${edge.from}->V${edge.to}\n`;
+    });
+
+    const walkedLinkIndices = edges
+      .map((edge, idx) => (edge.isWalked ? idx : -1))
+      .filter((idx) => idx !== -1);
+
+    if (walkedLinkIndices.length > 0) {
+      mermaid += `\n  %% Highlight Link ${walkedLinkIndices.join(" & ")}\n`;
+      mermaid += `  linkStyle ${walkedLinkIndices.join(",")} stroke:#e7000b,stroke-width:3px,fill:none;\n`;
+    }
+    console.log(mermaid);
+    return mermaid;
   }
 }

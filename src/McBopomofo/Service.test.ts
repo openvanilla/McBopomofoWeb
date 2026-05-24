@@ -328,4 +328,45 @@ describe("Service", () => {
     const result2 = service.annotateSingleCharacter("還", "ㄏㄨㄢˊ");
     expect(result2).toBe("還󠇡");
   });
+
+  test("test generateMermaidGraph with Bopomofo input", () => {
+    const service = new Service();
+    const result = service.generateMermaidGraph("ㄕㄜˋ ㄐㄧˋ ㄔㄥˊ ㄕˋ ㄇㄚˇ");
+    expect(result).toContain("graph LR");
+    expect(result).toContain("V0");
+    expect(result).toContain("V5");
+    expect(result).toContain("classDef selected");
+    expect(result).toContain("linkStyle");
+  });
+
+  test("test generateMermaidGraph with layout keys input", () => {
+    const service = new Service();
+    const result = service.generateMermaidGraph("gk4 ru4 t/6 g4 a83");
+    expect(result).toContain("graph LR");
+    expect(result).toContain("V0");
+    expect(result).toContain("V5");
+    expect(result).toContain("classDef selected");
+    expect(result).toContain("linkStyle");
+  });
+
+  test("getWalkResult returns non-empty text for valid Bopomofo input", () => {
+    const service = new Service();
+    const result = service.getWalkResult("ㄕㄜˋ ㄐㄧˋ ㄔㄥˊ ㄕˋ ㄇㄚˇ");
+    expect(result.text.length).toBeGreaterThan(0);
+    expect(result.score).toBeLessThan(0); // log-probability is always negative
+  });
+
+  test("getWalkResult text matches expected selection for unambiguous input", () => {
+    const service = new Service();
+    const result = service.getWalkResult("ㄒㄧㄠˇ ㄇㄞˋ ㄓㄨˋ ㄧㄣ");
+    expect(result.text).toBe("小麥注音");
+    expect(result.score).toBeLessThan(0);
+  });
+
+  test("getWalkResult returns empty text for empty input", () => {
+    const service = new Service();
+    const result = service.getWalkResult("");
+    expect(result.text).toBe("");
+    expect(result.score).toBe(0);
+  });
 });

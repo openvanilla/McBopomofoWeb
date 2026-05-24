@@ -14,3 +14,5 @@
 export { InputController } from "./McBopomofo/InputController";
 /** Conversion service for text, Bopomofo, pinyin, ruby, and braille workflows. */
 export { Service } from "./McBopomofo/Service";
+/** Keyboard layout and reading buffer for Mandarin phonetic composition. */
+export { BopomofoReadingBuffer, BopomofoKeyboardLayout } from "./Mandarin";
