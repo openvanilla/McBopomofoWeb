@@ -90,6 +90,13 @@ export class ReadingGrid {
   }
 
   /**
+   * The spans in the grid.
+   */
+  get spans(): Span[] {
+    return this.spans_;
+  }
+
+  /**
    * Inserts a reading at the current cursor position.
    * @param reading The reading to insert.
    * @returns True if the reading was inserted, false otherwise.
