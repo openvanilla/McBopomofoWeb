@@ -105,6 +105,13 @@ if (typeof document !== "undefined") {
         renderEmptyInput(emptyOutputId, inputId);
         return null;
       }
+      
+      if (typeof gtag === "function") {
+        gtag("event", "use_tool", {
+          tool_name: inputId,
+        });
+      }
+
       const output = converter(text);
       $(outputId).innerHTML = renderTable(textareaId, useBrailleFont);
       console.log("Output:", output);
@@ -1444,6 +1451,13 @@ if (typeof document !== "undefined") {
         }
         console.log("Toggling feature:", id);
         setDisplay(id, "flex");
+        
+        if (typeof gtag === "function") {
+          gtag("event", "screen_view", {
+            screen_name: id,
+          });
+        }
+
         const config = featureConfig[id];
         if (config) {
           const [focusId, title] = config;

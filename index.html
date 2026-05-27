@@ -142,26 +142,29 @@
                 <input type="checkbox" name="bopomofo_font_annotation_support_enabled"
                   id="bopomofo_font_annotation_support_enabled" /><label
                   for="bopomofo_font_annotation_support_enabled">使用</label>
+              </td>
+            </tr>
+            <tr>
+              <td class="option_title">注音字體：</td>
+              <td>
+                <select name="bpmf-font" id="bpmf-font">
+                  <option value="BpmfZihiSerif-Regular">
+                    字嗨注音宋體
+                  </option>
+                  <option value="BpmfZihiKaiStd-Regular">
+                    字嗨注音楷書
+                  </option>
+                  <option value="BpmfZihiSans-Regular">字嗨注音黑體</option>
+                  <option value="ToneOZ-Pinyin-Kai-Traditional">
+                    澳聲通拼音庫楷-繁
+                  </option>
+                </select>
+                </p>
                 <p>
                   <small>這項功能支援<a href="https://github.com/ButTaiwan/bpmfvs/"
                       target="blank">「字嗨注音字型」</a>，直接將輸入法使用的注音符號，套到對應的注音字體上，啟用之後，會需要一段時間載入字體。請參考
                     <a href="https://blog.justfont.com/2024/05/bpmf-font/" target="blank">
                       justfont 上的說明</a>。</small>
-                </p>
-                <p>
-                  注音字體：
-                  <select name="bpmf-font" id="bpmf-font">
-                    <option value="BpmfZihiSerif-Regular">
-                      字嗨注音宋體
-                    </option>
-                    <option value="BpmfZihiKaiStd-Regular">
-                      字嗨注音楷書
-                    </option>
-                    <option value="BpmfZihiSans-Regular">字嗨注音黑體</option>
-                    <option value="ToneOZ-Pinyin-Kai-Traditional">
-                      澳聲通拼音庫楷-繁
-                    </option>
-                  </select>
                 </p>
               </td>
             </tr>
@@ -288,8 +291,8 @@
               <td class="option_title" id="tone_keys_title">聲調鍵：</td>
               <td>
                 <input type="checkbox" name="allow_change_prior_tone" id="allow_change_prior_tone" /><label
-                  for="allow_change_prior_tone" id="allow_change_prior_tone_label">允許在輸入聲調之後改變聲調（類似 macOS
-                  內建輸入法。僅適用於標準鍵盤佈局）。</label>
+                  for="allow_change_prior_tone" id="allow_change_prior_tone_label">允許在輸入聲調之後改變聲調
+                  <small>（類似 macOS內建輸入法。僅適用於標準鍵盤佈局）。</small></label>
               </td>
             </tr>
             <tr>
@@ -776,10 +779,8 @@
         </p>
         <div id="graph_walk_result">
           <div>
-            <input type="text" id="graph_result_text" disabled
-              title="選字演算法結果" />
-            <input type="text" id="graph_result_score" disabled
-              title="加總對數機率 (log-probability)" />
+            <input type="text" id="graph_result_text" disabled title="選字演算法結果" />
+            <input type="text" id="graph_result_score" disabled title="加總對數機率 (log-probability)" />
           </div>
         </div>
         <div id="mermaid_graph_container">
