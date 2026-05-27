@@ -665,6 +665,91 @@ if (typeof document !== "undefined") {
         }
       };
 
+      that.downloadGraphSVG = () => {
+        const container = $("mermaid_graph_output");
+        const svg = container.querySelector("svg");
+        if (!svg) return;
+
+        const svgData = new XMLSerializer().serializeToString(svg);
+        const svgBlob = new Blob([svgData], {
+          type: "image/svg+xml;charset=utf-8",
+        });
+        const svgUrl = URL.createObjectURL(svgBlob);
+        const downloadLink = document.createElement("a");
+        downloadLink.href = svgUrl;
+        downloadLink.download = "mcbopomofo-graph.svg";
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+        URL.revokeObjectURL(svgUrl);
+      };
+
+      that.downloadGraphPNG = () => {
+        const container = $("mermaid_graph_output");
+        const svg = container.querySelector("svg");
+        if (!svg) return;
+
+        let svgData = new XMLSerializer().serializeToString(svg);
+        
+        // Ensure SVG namespace is present
+        if (!svgData.match(/xmlns="http:\/\/www\.w3\.org\/2000\/svg"/)) {
+          svgData = svgData.replace('<svg', '<svg xmlns="http://www.w3.org/2000/svg"');
+        }
+
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+        const img = new Image();
+        
+        // Some browsers require base64 for SVG containing foreignObjects to render in canvas
+        const encodedData = encodeURIComponent(svgData);
+        img.src = "data:image/svg+xml;charset=utf-8," + encodedData;
+
+        img.onload = () => {
+          let width = 800;
+          let height = 600;
+          
+          try {
+            if (svg.viewBox && svg.viewBox.baseVal && svg.viewBox.baseVal.width > 0) {
+              width = svg.viewBox.baseVal.width;
+              height = svg.viewBox.baseVal.height;
+            } else {
+              const bbox = svg.getBoundingClientRect();
+              width = bbox.width;
+              height = bbox.height;
+            }
+          } catch (e) {
+            console.warn("Could not read SVG dimensions, using bounding client rect.", e);
+            const bbox = svg.getBoundingClientRect();
+            width = bbox.width || 800;
+            height = bbox.height || 600;
+          }
+
+          const scale = 2;
+          canvas.width = width * scale;
+          canvas.height = height * scale;
+          ctx.fillStyle = "white";
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.scale(scale, scale);
+          ctx.drawImage(img, 0, 0, width, height);
+
+          try {
+            const pngUrl = canvas.toDataURL("image/png");
+            const downloadLink = document.createElement("a");
+            downloadLink.href = pngUrl;
+            downloadLink.download = "mcbopomofo-graph.png";
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+          } catch (e) {
+            console.error("Canvas toDataURL failed. The canvas might be tainted.", e);
+          }
+        };
+
+        img.onerror = (e) => {
+          console.error("Failed to load SVG into Image object.", e);
+        };
+      };
+
       return that;
     })();
 
