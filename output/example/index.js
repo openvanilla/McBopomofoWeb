@@ -105,6 +105,13 @@ if (typeof document !== "undefined") {
         renderEmptyInput(emptyOutputId, inputId);
         return null;
       }
+      
+      if (typeof gtag === "function") {
+        gtag("event", "use_tool", {
+          tool_name: inputId,
+        });
+      }
+
       const output = converter(text);
       $(outputId).innerHTML = renderTable(textareaId, useBrailleFont);
       console.log("Output:", output);
