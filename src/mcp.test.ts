@@ -2,6 +2,7 @@ import { Service } from "./McBopomofo/Service";
 import {
   annotateSingleCharacterForMcp,
   convertBpmfToBrailleWithFormat,
+  convertBpmfToTextForMcp,
   convertBrailleToBpmfWithFormat,
   convertBrailleToTextWithFormat,
   convertTextToBpmfAnnotatedTextForMcp,
@@ -59,6 +60,14 @@ describe("mcp service helpers", () => {
 
     expect(convertTextToBpmfReadingsForMcp(service, "天氣好")).toBe(
       "ㄊㄧㄢㄑㄧˋㄏㄠˇ"
+    );
+  });
+
+  test("converts bopomofo readings to text", () => {
+    const service = new Service();
+
+    expect(convertBpmfToTextForMcp(service, "ㄊㄧㄢㄑㄧˋㄏㄠˇ")).toBe(
+      "天氣好"
     );
   });
 

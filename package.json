@@ -4,6 +4,9 @@
   "description": "McBopomofo input method built with TypeScript and other Web technologies",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "bin": {
+    "mcbopomofo": "./output/cli/index.js"
+  },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
   },
@@ -24,6 +27,7 @@
     "build:chromeos": "webpack --mode production --config webpack.config.chromeext.js",
     "build:pime": "webpack --mode production --config webpack.config.pime.js",
     "build:mcp": "webpack --mode production --config webpack.config.mcp.js",
+    "build:cli": "webpack --mode production --config webpack.config.cli.js",
     "build:dev": "webpack --mode development",
     "build:watch": "webpack --mode development --watch",
     "prepare": "tsc",

@@ -47,6 +47,11 @@ export const convertBrailleToBpmfWithFormat = (
 ): string =>
   BopomofoBrailleConverter.convertBrailleToBpmf(braille, toBrailleType(format));
 
+export const convertBpmfToTextForMcp = (
+  service: Service,
+  bpmf: string
+): string => service.convertBpmfToText(bpmf);
+
 export const convertTextToBpmfReadingsForMcp = (
   service: Service,
   text: string
@@ -141,6 +146,32 @@ async function runServerTransport() {
     async (args: { bpmf: string; format: BrailleFormat }) => {
       const { bpmf, format } = args;
       const result = convertBpmfToBrailleWithFormat(bpmf, format);
+      return {
+        content: [
+          {
+            type: "text",
+            text: result,
+          },
+        ],
+      };
+    }
+  );
+  server.registerTool(
+    "convertBpmfToText",
+    {
+      description:
+        "將注音字串轉換為國字 (Convert Bopomofo syllables to Chinese text). 使用 Viterbi 演算法，將一連串的注音轉換成最可能的中文句子。支援連續無空白分隔的注音。",
+      inputSchema: {
+        bpmf: z
+          .string()
+          .describe(
+            "連續或以空白分隔的注音字串 (Bopomofo string), 例如: ㄓㄨㄥㄨㄣˊ"
+          ),
+      },
+    },
+    async (args: { bpmf: string }) => {
+      const { bpmf } = args;
+      const result = convertBpmfToTextForMcp(service, bpmf);
       return {
         content: [
           {

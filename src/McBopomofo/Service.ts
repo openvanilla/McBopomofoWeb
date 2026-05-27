@@ -534,6 +534,96 @@ export class Service {
     return { text, score };
   }
 
+  private getComponentClass(syllable: MandarinBopomofoSyllable): number {
+    if (syllable.hasToneMarker) return 4;
+    if (syllable.hasVowel) return 3;
+    if (syllable.hasMiddleVowel) return 2;
+    if (syllable.hasConsonant) return 1;
+    return 0;
+  }
+
+  /**
+   * Tokenizes a continuous Bopomofo string into an array of valid Bopomofo syllables and other characters.
+   */
+  private tokenizeBopomofo(input: string): string[] {
+    const tokens: string[] = [];
+    let currentSyllable = new MandarinBopomofoSyllable(0);
+    let currentStr = "";
+
+    for (let i = 0; i < input.length; i++) {
+      const char = input.charAt(i);
+      const component =
+        BopomofoCharacterMap.sharedInstance.characterToComponent.get(char);
+
+      if (component !== undefined) {
+        const nextSyllable = new MandarinBopomofoSyllable(component);
+        const currentMaxClass = this.getComponentClass(currentSyllable);
+        const nextClass = this.getComponentClass(nextSyllable);
+
+        // A new syllable starts if the next component's class is less than or equal to the current max class.
+        // For example, if we already have a vowel (class 3) and the next component is a consonant (class 1),
+        // it must belong to a new syllable, because Bopomofo components follow a strict order.
+        if (currentMaxClass > 0 && nextClass <= currentMaxClass) {
+          tokens.push(currentStr);
+          currentSyllable = new MandarinBopomofoSyllable(component);
+          currentStr = char;
+        } else {
+          currentSyllable.addEqual(nextSyllable);
+          currentStr += char;
+        }
+      } else {
+        if (currentStr.length > 0) {
+          tokens.push(currentStr);
+          currentStr = "";
+          currentSyllable.clear();
+        }
+        tokens.push(char);
+      }
+    }
+
+    if (currentStr.length > 0) {
+      tokens.push(currentStr);
+    }
+
+    return tokens;
+  }
+
+  /**
+   * Converts a Bopomofo string (optionally containing continuous syllables) to Chinese text.
+   */
+  public convertBpmfToText(input: string): string {
+    const tokens = this.tokenizeBopomofo(input);
+    const tempGrid = new ReadingGrid(this.lm_);
+    let text = "";
+
+    for (const token of tokens) {
+      if (token === " ") continue; // Ignore space as it acts as an implicit Tone 1 marker
+
+      let isBpmf = false;
+      for (let i = 0; i < token.length; i++) {
+        if (BopomofoCharacterMap.sharedInstance.characterToComponent.has(token.charAt(i))) {
+          isBpmf = true;
+          break;
+        }
+      }
+      
+      if (isBpmf) {
+        const syllable = MandarinBopomofoSyllable.FromComposedString(token);
+        tempGrid.insertReading(!syllable.isEmpty ? syllable.composedString : token);
+      } else {
+        // Walk the grid for existing syllables, append Chinese text, then append the non-Bpmf character
+        const result = tempGrid.walk();
+        text += result.nodes.map((n) => n.value).join("");
+        tempGrid.clear();
+        text += token;
+      }
+    }
+    
+    const result = tempGrid.walk();
+    text += result.nodes.map((n) => n.value).join("");
+    return text;
+  }
+
   /**
    * Generates a Mermaid graph representing candidate selections.
    */

@@ -10,6 +10,7 @@ McBopomofoWeb is a TypeScript implementation of the McBopomofo (小麥注音) in
 - **Chrome OS**: Chrome extension for input method
 - **Windows**: PIME-based input method framework
 - **MCP Server**: Model Context Protocol server exposing LLM tools
+- **CLI Tool**: Command-line interface for text and Bopomofo conversion
 - **Additional utilities**: Text conversion services (Chinese to Braille, etc.)
 
 ## Architecture Overview
@@ -43,12 +44,13 @@ McBopomofoWeb is a TypeScript implementation of the McBopomofo (小麥注音) in
 - **`/src/Gramambular2/`**: Advanced text processing and reading grids (using the Viterbi algorithm for path selection)
 - **`/src/LargeSync/`**: Chrome storage utilities for large data synchronization
 - **`mcp.ts`**: MCP (Model Context Protocol) server exposing text and braille conversion tools to LLMs via `stdio`
+- **`cli.ts`**: CLI tool providing command-line access to conversion functions.
 
 ### Build System
 
-- **Primary builds**: `npm run build` (web), `npm run build:chromeos` (Chrome OS), `npm run build:pime` (Windows), `npm run build:mcp` (MCP server)
+- **Primary builds**: `npm run build` (web), `npm run build:chromeos` (Chrome OS), `npm run build:pime` (Windows), `npm run build:mcp` (MCP server), `npm run build:cli` (CLI tool)
 - **Type-checking**: `npm run ts-build`
-- **Webpack configurations**: `webpack.config.js`, `webpack.config.chromeext.js`, `webpack.config.pime.js`, and `webpack.config.mcp.js`
+- **Webpack configurations**: `webpack.config.js`, `webpack.config.chromeext.js`, `webpack.config.pime.js`, `webpack.config.mcp.js`, and `webpack.config.cli.js`
 - **TypeScript compilation**: ES6 target with CommonJS modules
 
 ### Output Structure (`/output/`)
@@ -115,6 +117,14 @@ The input method supports rendering Bopomofo alongside Chinese characters using 
 - **Tools**: It exposes LLM tools for text, Bopomofo, Pinyin, Bopomofo annotation font, and Braille conversion (e.g., `convertBrailleToText`, `convertTextToBraille`, `convertBpmfToBraille`, `convertBrailleToBpmf`, `convertTextToPinyin`, `convertTextToBpmfReadings`, `convertTextToBpmfAnnotatedText`, `annotateSingleCharacter`).
 - **Braille formats**: MCP Braille tools accept `format: "unicode" | "ascii"` and default to `unicode`; match this with `Service.convertTextToBraille` / `convertTextToAsciiBraille` and `Service.convertBrailleToText` / `convertAsciiBrailleToText`.
 - **Annotation-font HTML output**: When generating HTML that relies on Bopomofo annotation font code points, include the stylesheet `https://oikasu1.github.io/fonts/twfonts.css` and use supported font families such as `BpmfZihiSerif-Regular`, `BpmfZihiSans-Regular`, or `BpmfZihiKaiStd-Regular`.
+
+### Working with the CLI Tool
+
+- **Building**: Run `npm run build:cli` to compile the CLI tool to `output/cli/index.js`.
+- **Running**: Use `node output/cli/index.js` or install globally to use the `mcbopomofo` command.
+- **Commands**: Supports `text-to-braille`, `braille-to-text`, `text-to-pinyin`, `text-to-bpmf`, `bpmf-to-braille`, `braille-to-bpmf`, and `text-to-annotated`.
+- **Input**: Supports both command-line arguments and piped input from stdin.
+- **Options**: Use `--format=ascii` for ASCII braille output/input.
 
 ### Testing Guidelines
 
