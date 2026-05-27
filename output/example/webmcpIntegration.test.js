@@ -2,6 +2,8 @@ const {
   buildMcbopomofoWebMcpTools,
   initMcbopomofoWebMcp,
 } = require("./webmcpIntegration.js");
+const fs = require("fs");
+const path = require("path");
 
 const createService = () => ({
   convertAsciiBrailleToText: jest.fn((text) => `ascii text:${text}`),
@@ -103,5 +105,14 @@ describe("initMcbopomofoWebMcp", () => {
       }),
       expect.any(Function),
     );
+  });
+});
+
+describe("example WebMCP script loading", () => {
+  it("loads the local widget script instead of the documentation-only URL", () => {
+    const html = fs.readFileSync(path.join(__dirname, "index.html"), "utf8");
+
+    expect(html).toContain('src="webmcp.js"');
+    expect(html).not.toContain("https://webmcp.dev/webmcp.js");
   });
 });
