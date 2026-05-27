@@ -1444,6 +1444,13 @@ if (typeof document !== "undefined") {
         }
         console.log("Toggling feature:", id);
         setDisplay(id, "flex");
+        
+        if (typeof gtag === "function") {
+          gtag("event", "screen_view", {
+            screen_name: id,
+          });
+        }
+
         const config = featureConfig[id];
         if (config) {
           const [focusId, title] = config;
