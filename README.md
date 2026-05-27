@@ -14,6 +14,7 @@
 - [output/chromeos](https://github.com/openvanilla/McBopomofoWeb/tree/main/output/chromeos)：Chrome OS 下的輸入法
 - [output/pime](https://github.com/openvanilla/McBopomofoWeb/tree/main/output/pime)：在 Windows 上的輸入法 (基於 [PIME](https://github.com/EasyIME/PIME) 框架)
 - [output/mcp](https://github.com/openvanilla/McBopomofoWeb/tree/main/output/mcp)：MCP 服務
+- [output/cli](https://github.com/openvanilla/McBopomofoWeb/tree/main/output/cli)：CLI 工具
 
 除了輸入法之外，這個專案中也提供以下的文字轉換服務：
 
@@ -33,6 +34,8 @@
     - [編譯與測試 Chrome OS 版本](#編譯與測試-chrome-os-版本)
     - [編譯與測試 Windows 上的 PIME 版本](#編譯與測試-windows-上的-pime-版本)
     - [編譯 MCP 服務](#編譯-mcp-服務)
+      - [WebMCP](#webmcp)
+    - [編譯 CLI 工具](#編譯-cli-工具)
   - [注音字體相關說明](#注音字體相關說明)
     - [PIME](#pime)
     - [Chrome OS](#chrome-os)
@@ -62,6 +65,7 @@ npm run build # 編譯網頁版本
 npm run build:chromeos # 編譯 Chrome OS 版本
 npm run build:pime # 編譯 Windows PIME 版本
 npm run build:mcp # 編譯 MCP Server 版本
+npm run build:cli # 編譯 CLI 工具版本
 ```
 
 這個指令會在 output，分別建立對應的檔案，通常叫做 bundle.js。
@@ -77,6 +81,7 @@ npm run build:mcp # 編譯 MCP Server 版本
 - 詞庫產生工具：您可以一次輸入批詞彙，然後一次產生對應的注音，方便您建立自己的詞庫
 - 國字轉點字：您可以輸入一段國字，然後一次產生對應的台灣點字
 - 點字轉國字：您可以輸入一段台灣點字，然後一次產生對應的國字
+- 注音轉國字：您可以輸入一段注音字串（支援連續無空白輸入），透過語言模型轉換為最可能的中文句子
 - 國字加上注音：您可以輸入一段國字，然後一次產生對應的 HTML 網頁，裡面包含了對應的注音標記（HTML Ruby 形式）
 - 國字轉拼音：您可以輸入一段國字，然後一次產生對應的漢語拼音
 
@@ -110,7 +115,9 @@ powershell -noexit %COMMAND%
 
 ### 編譯 MCP 服務
 
-您可以將小麥注音當成 MCP 伺服器使用，提供國字注音、國字轉點字、點字轉國字等轉換功能。要編譯這個 MCP 服務，請執行：
+您可以將小麥注音當成 MCP 伺服器使用，提供國字注音、國字轉點字、點字轉國字等轉換功能。
+
+若要在本地端編譯並執行基於 stdio 的 MCP 服務，請執行：
 
 ```sh
 npm run build:mcp
@@ -160,6 +167,46 @@ args = ["/PATH/TO/output/mcp/index.js"]
 > 請在 HTML 中加上 CSS stylesheet `https://oikasu1.github.io/fonts/twfonts.css`，然後在對應的元素套用 `BpmfZihiSerif-Regular`、`BpmfZihiSans-Regular` 或 `BpmfZihiKaiStd-Regular` 字體。
 
 您也可以按照自己的需求，部署在其他支援 MCP 的 AI 服務上，像是 Gemini CLI 等。
+
+#### WebMCP
+
+另外，我們也將 MCP 伺服器發布為 WebMCP，您可以直接在瀏覽器中或是支援 WebMCP 的 AI 應用程式中使用。WebMCP 的服務在：
+
+```text
+https://openvanilla.github.io/McBopomofoWeb/
+```
+
+### 編譯 CLI 工具
+
+這個專案也提供了一個命令列 (CLI) 工具，方便您在終端機中直接進行各種文字轉換。要編譯這個 CLI 工具，請執行：
+
+```sh
+npm run build:cli
+```
+
+編譯完成後，產出的檔案位在 output/cli 目錄下。您可以透過 Node.js 執行：
+
+```sh
+node output/cli/index.js <command> [input] [--format=unicode|ascii]
+```
+
+也可以將命令透過標準輸入 (`stdin`) 傳遞：
+
+```sh
+echo "ㄊㄞˊㄨㄢㄖㄣˊㄒㄩㄧㄠˋㄒㄧㄠㄅㄛㄎㄨㄞˋ" | node output/cli/index.js bpmf-to-text
+# 輸出: 台灣人需要消波塊
+```
+
+可用的指令包含：
+
+- `text-to-braille`: 國字轉點字
+- `braille-to-text`: 點字轉國字
+- `text-to-pinyin`: 國字轉漢語拼音
+- `text-to-bpmf`: 國字轉注音字串
+- `bpmf-to-text`: 注音字串（支援連續無空白輸入）轉國字
+- `bpmf-to-braille`: 注音字串轉點字
+- `braille-to-bpmf`: 點字轉注音字串
+- `text-to-annotated`: 產生支援注音字體的標記文字
 
 ## 注音字體相關說明
 

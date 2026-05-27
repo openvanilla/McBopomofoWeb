@@ -32,6 +32,7 @@ These text conversion services can be used not only in the Chrome browser's righ
     - [Building and Testing Chrome OS Version](#building-and-testing-chrome-os-version)
     - [Building and Testing Windows PIME Version](#building-and-testing-windows-pime-version)
     - [Building MCP Service](#building-mcp-service)
+    - [Building CLI Tool](#building-cli-tool)
   - [Bopomofo Font Notes](#bopomofo-font-notes)
     - [PIME](#pime)
     - [Chrome OS](#chrome-os)
@@ -61,6 +62,7 @@ npm run build # Build web version
 npm run build:chromeos # Build Chrome OS version
 npm run build:pime # Build Windows PIME version
 npm run build:mcp # Build MCP Server version
+npm run build:cli # Build CLI Tool version
 ```
 
 These commands will create corresponding files in the output directory, usually called bundle.js.
@@ -76,6 +78,7 @@ In the web version, and also in the Chrome browser right-click menu of the Chrom
 - Dictionary generation tool: Enter a batch of words and generate their Bopomofo readings at once, making it easier to build your own dictionary.
 - Chinese to Braille: Enter a passage of Chinese text and generate the corresponding Taiwan Braille in one step.
 - Braille to Chinese: Enter a passage of Taiwan Braille and convert it back to Chinese text in one step.
+- Bopomofo to Chinese: Enter a continuous Bopomofo string (spaces are optional) and use the language model to convert it back to the most likely Chinese sentence.
 - Chinese with Bopomofo annotations: Enter a passage of Chinese text and generate an HTML page that includes Bopomofo annotations in HTML Ruby format.
 - Chinese to Pinyin: Enter a passage of Chinese text and generate the corresponding Hanyu Pinyin.
 
@@ -109,7 +112,13 @@ powershell -noexit %COMMAND%
 
 ### Building MCP Service
 
-You can use McBopomofo as an MCP server, providing text conversion functions such as adding Bopomofo annotations to Chinese characters, converting Chinese characters to Braille, and converting Braille to Chinese characters. To build this MCP service, please execute:
+You can use McBopomofo as an MCP server, providing text conversion functions such as adding Bopomofo annotations to Chinese characters, converting Chinese characters to Braille, and converting Braille to Chinese characters.
+
+Additionally, we have published the MCP server as a WebMCP endpoint, which you can use directly in your browser or AI applications that support WebMCP (SSE). The WebMCP endpoint is available at:
+
+`https://openvanilla.github.io/McBopomofoWeb/webmcp`
+
+To build and run the stdio-based MCP service locally, please execute:
 
 ```sh
 npm run build:mcp
@@ -159,6 +168,38 @@ McBopomofo MCP supports generating the code points required by Bopomofo annotati
 > Please add the CSS stylesheet `https://oikasu1.github.io/fonts/twfonts.css` to the HTML, and then apply the `BpmfZihiSerif-Regular`, `BpmfZihiSans-Regular`, or `BpmfZihiKaiStd-Regular` font to the corresponding elements.
 
 You can also deploy it to other AI services that support MCP, such as Gemini CLI, according to your own needs.
+
+### Building CLI Tool
+
+This project also provides a Command Line Interface (CLI) tool for performing various text conversions directly in the terminal. To build this CLI tool, please execute:
+
+```sh
+npm run build:cli
+```
+
+After building, the output files are generated in the `output/cli` directory. You can use Node.js to run it:
+
+```sh
+node output/cli/index.js <command> [input] [--format=unicode|ascii]
+```
+
+You can also pipe the input using `stdin`:
+
+```sh
+echo "ㄊㄞˊㄨㄢㄖㄣˊㄒㄩㄧㄠˋㄒㄧㄠㄅㄛㄎㄨㄞˋ" | node output/cli/index.js bpmf-to-text
+# Output: 台灣人需要消波塊
+```
+
+Available commands include:
+
+- `text-to-braille`: Convert Chinese to Braille
+- `braille-to-text`: Convert Braille to Chinese
+- `text-to-pinyin`: Convert Chinese to Hanyu Pinyin
+- `text-to-bpmf`: Convert Chinese to Bopomofo string
+- `bpmf-to-text`: Convert Bopomofo string (supports continuous input) to Chinese
+- `bpmf-to-braille`: Convert Bopomofo string to Braille
+- `braille-to-bpmf`: Convert Braille to Bopomofo string
+- `text-to-annotated`: Generate text formatted for Bopomofo annotation fonts
 
 ## Bopomofo Font Notes
 
