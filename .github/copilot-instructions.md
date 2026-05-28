@@ -114,7 +114,7 @@ The input method supports rendering Bopomofo alongside Chinese characters using 
 
 - **Building**: Run `npm run build:mcp` to compile the MCP server to `output/mcp/index.js`.
 - **Running**: The server communicates via standard input/output (`stdio`). It can be started using `node output/mcp/index.js` or the wrapper `output/mcp/run.sh`.
-- **Tools**: It exposes LLM tools for text, Bopomofo, Pinyin, Bopomofo annotation font, and Braille conversion (e.g., `convertBrailleToText`, `convertTextToBraille`, `convertBpmfToBraille`, `convertBrailleToBpmf`, `convertTextToPinyin`, `convertTextToBpmfReadings`, `convertTextToBpmfAnnotatedText`, `annotateSingleCharacter`).
+- **Tools**: It exposes LLM tools for text, Bopomofo, Pinyin, Bopomofo annotation font, and Braille conversion (e.g., `convertBrailleToText`, `convertTextToBraille`, `convertBpmfToBraille`, `convertBrailleToBpmf`, `convertTextToPinyin`, `convertTextToBpmfReadings`, `convertTextToBpmfReadingsWithSpaces`, `convertTextToBpmfAnnotatedText`, `annotateSingleCharacter`).
 - **Braille formats**: MCP Braille tools accept `format: "unicode" | "ascii"` and default to `unicode`; match this with `Service.convertTextToBraille` / `convertTextToAsciiBraille` and `Service.convertBrailleToText` / `convertAsciiBrailleToText`.
 - **Annotation-font HTML output**: When generating HTML that relies on Bopomofo annotation font code points, include the stylesheet `https://oikasu1.github.io/fonts/twfonts.css` and use supported font families such as `BpmfZihiSerif-Regular`, `BpmfZihiSans-Regular`, or `BpmfZihiKaiStd-Regular`.
 
@@ -122,7 +122,7 @@ The input method supports rendering Bopomofo alongside Chinese characters using 
 
 - **Building**: Run `npm run build:cli` to compile the CLI tool to `output/cli/index.js`.
 - **Running**: Use `node output/cli/index.js` or install globally to use the `mcbopomofo` command.
-- **Commands**: Supports `text-to-braille`, `braille-to-text`, `text-to-pinyin`, `text-to-bpmf`, `bpmf-to-braille`, `braille-to-bpmf`, and `text-to-annotated`.
+- **Commands**: Supports `text-to-braille`, `braille-to-text`, `text-to-pinyin`, `text-to-bpmf`, `text-to-bpmf-spaced`, `bpmf-to-braille`, `braille-to-bpmf`, and `text-to-annotated`.
 - **Input**: Supports both command-line arguments and piped input from stdin.
 - **Options**: Use `--format=ascii` for ASCII braille output/input.
 

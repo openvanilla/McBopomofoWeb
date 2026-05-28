@@ -12,6 +12,7 @@ function printUsage() {
   console.log("  braille-to-text <braille>     Convert Braille to Chinese text");
   console.log("  text-to-pinyin <text>         Convert Chinese text to Hanyu Pinyin");
   console.log("  text-to-bpmf <text>           Convert Chinese text to Bopomofo readings");
+  console.log("  text-to-bpmf-spaced <text>    Convert Chinese text to Bopomofo readings with spaces");
   console.log("  bpmf-to-text <bpmf>           Convert Bopomofo syllables to Chinese text");
   console.log("  bpmf-to-braille <bpmf>        Convert Bopomofo syllables to Braille");
   console.log("  braille-to-bpmf <braille>     Convert Braille to Bopomofo syllables");
@@ -87,6 +88,9 @@ export async function main(args: string[], stdinInput?: string): Promise<string>
       break;
     case "text-to-bpmf":
       result = service.convertTextToBpmfReadings(input);
+      break;
+    case "text-to-bpmf-spaced":
+      result = service.convertTextToBpmfReadingsWithSpaces(input);
       break;
     case "bpmf-to-text":
       result = service.convertBpmfToText(input);

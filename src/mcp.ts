@@ -57,6 +57,11 @@ export const convertTextToBpmfReadingsForMcp = (
   text: string
 ): string => service.convertTextToBpmfReadings(text);
 
+export const convertTextToBpmfReadingsWithSpacesForMcp = (
+  service: Service,
+  text: string
+): string => service.convertTextToBpmfReadingsWithSpaces(text);
+
 export const convertTextToPinyinForMcp = (
   service: Service,
   text: string
@@ -219,6 +224,29 @@ async function runServerTransport() {
     },
     async ({ text }) => {
       const result = convertTextToBpmfReadingsForMcp(service, text);
+      return {
+        content: [
+          {
+            type: "text",
+            text: result,
+          },
+        ],
+      };
+    }
+  );
+  server.registerTool(
+    "convertTextToBpmfReadingsWithSpaces",
+    {
+      description:
+        "將國字轉換成注音，並且在字與字之間加上空白 (Convert Chinese text to Bopomofo readings with spaces between characters).",
+      inputSchema: {
+        text: z
+          .string()
+          .describe("包含國字 、數字或英文的字串 (Text content), 例如: 你好"),
+      },
+    },
+    async ({ text }) => {
+      const result = convertTextToBpmfReadingsWithSpacesForMcp(service, text);
       return {
         content: [
           {

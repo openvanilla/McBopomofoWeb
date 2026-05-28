@@ -7,6 +7,7 @@ import {
   convertBrailleToTextWithFormat,
   convertTextToBpmfAnnotatedTextForMcp,
   convertTextToBpmfReadingsForMcp,
+  convertTextToBpmfReadingsWithSpacesForMcp,
   convertTextToBrailleWithFormat,
   convertTextToPinyinForMcp,
 } from "./mcp";
@@ -60,6 +61,14 @@ describe("mcp service helpers", () => {
 
     expect(convertTextToBpmfReadingsForMcp(service, "天氣好")).toBe(
       "ㄊㄧㄢㄑㄧˋㄏㄠˇ"
+    );
+  });
+
+  test("converts text to bopomofo readings with spaces", () => {
+    const service = new Service();
+
+    expect(convertTextToBpmfReadingsWithSpacesForMcp(service, "天氣好")).toBe(
+      "ㄊㄧㄢ ㄑㄧˋ ㄏㄠˇ"
     );
   });
 

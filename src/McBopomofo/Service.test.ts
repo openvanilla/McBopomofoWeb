@@ -320,6 +320,11 @@ describe("Service", () => {
     expect(service.convertTextToBpmfReadings("測試")).toBe("ㄘㄜˋ ㄕˋ");
   });
 
+  test("test convertTextToBpmfReadingsWithSpaces", () => {
+    const service = new Service();
+    expect(service.convertTextToBpmfReadingsWithSpaces("測試")).toBe("ㄘㄜˋ ㄕˋ");
+  });
+
   test("test annotateSingleCharacter", () => {
     const service = new Service();
     const result = service.annotateSingleCharacter("一", "ㄧ");

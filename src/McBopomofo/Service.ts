@@ -355,6 +355,32 @@ export class Service {
   }
 
   /**
+   * Converts text to Bopomofo readings with spaces between Chinese characters.
+   * @param input The text input
+   * @returns The Bopomofo output with spaces
+   * @example
+   * ``` typescript
+   * let service = new Service();
+   * let input = "小麥注音";
+   * let output = service.convertTextToBpmfReadingsWithSpaces(input);
+   * // Returns: "ㄒㄧㄠˇ ㄇㄞˋ ㄓㄨˋ ㄧㄣ"
+   * ```
+   */
+  public convertTextToBpmfReadingsWithSpaces(input: string): string {
+    return this.convertText(
+      input,
+      (reading: string, value: string) => {
+        return reading;
+      },
+      (input: string) => {
+        return input;
+      },
+      false,
+      true
+    );
+  }
+
+  /**
    * Converts text to Bopomofo annotated text.
    * @param input The text input
    * @returns The annotated text output
