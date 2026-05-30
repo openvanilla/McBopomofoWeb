@@ -1,3 +1,4 @@
+import { BopomofoKeyboardLayout } from "../Mandarin";
 import { Service } from "./Service";
 
 describe("Service", () => {
@@ -352,6 +353,78 @@ describe("Service", () => {
     expect(result).toContain("V5");
     expect(result).toContain("classDef selected");
     expect(result).toContain("linkStyle");
+  });
+
+  test.each([
+    ["Standard", "186", BopomofoKeyboardLayout.StandardLayout],
+    ["ETen", "ba2", BopomofoKeyboardLayout.ETenLayout],
+    ["Hsu", "byd", BopomofoKeyboardLayout.HsuLayout],
+    ["ETen26", "baf", BopomofoKeyboardLayout.ETen26Layout],
+    ["Hanyu Pinyin", "ba2", BopomofoKeyboardLayout.HanyuPinyinLayout],
+    ["IBM", "1fm", BopomofoKeyboardLayout.IBMLayout],
+  ])("graph key sequence input supports %s layout", (_name, input, layout) => {
+    const service = new Service();
+    const expected = service.getWalkResult("ㄅㄚˊ");
+    const result = service.getWalkResult(input, layout);
+
+    expect(result.text).toBe(expected.text);
+    expect(result.score).toBe(expected.score);
+  });
+
+  test.each([
+    ["Standard . key as ㄡ", "2.", BopomofoKeyboardLayout.StandardLayout, "ㄉㄡ"],
+    ["Standard / key as ㄥ", "2/", BopomofoKeyboardLayout.StandardLayout, "ㄉㄥ"],
+    ["Standard - key as ㄦ", "-", BopomofoKeyboardLayout.StandardLayout, "ㄦ"],
+    ["ETen . key as ㄔ", ".a", BopomofoKeyboardLayout.ETenLayout, "ㄔㄚ"],
+    ["ETen / key as ㄕ", "/a", BopomofoKeyboardLayout.ETenLayout, "ㄕㄚ"],
+    ["ETen - key as ㄥ", "d-", BopomofoKeyboardLayout.ETenLayout, "ㄉㄥ"],
+    ["IBM - key as ㄏ", "-;,", BopomofoKeyboardLayout.IBMLayout, "ㄏㄠˇ"],
+    ["IBM . key as ˋ", "-;.", BopomofoKeyboardLayout.IBMLayout, "ㄏㄠˋ"],
+    ["IBM / key as ˙", "1;/", BopomofoKeyboardLayout.IBMLayout, "ㄅㄠ˙"],
+  ])("graph key sequence input maps symbol keys: %s", (_name, input, layout, bpmf) => {
+    const service = new Service();
+    const expected = service.getWalkResult(bpmf);
+    const result = service.getWalkResult(input, layout);
+
+    expect(result.text).toBe(expected.text);
+    expect(result.score).toBe(expected.score);
+  });
+
+  test.each([
+    ["Hsu", "jxj-en", BopomofoKeyboardLayout.HsuLayout, "ㄓㄨˋ ㄧㄣ"],
+    ["ETen26", "gen-tem", BopomofoKeyboardLayout.ETen26Layout, "ㄐㄧㄣ ㄊㄧㄢ"],
+    ["Hanyu Pinyin", "zhu4-in", BopomofoKeyboardLayout.HanyuPinyinLayout, "ㄓㄨˋ ㄧㄣ"],
+  ])("graph key sequence input treats hyphen as a separator for %s layout", (
+    _name,
+    input,
+    layout,
+    bpmf
+  ) => {
+    const service = new Service();
+    const expected = service.getWalkResult(bpmf);
+    const result = service.getWalkResult(input, layout);
+
+    expect(result.text).toBe(expected.text);
+    expect(result.score).toBe(expected.score);
+  });
+
+  test("graph Bopomofo input still accepts hyphen-separated syllables", () => {
+    const service = new Service();
+    const result = service.getWalkResult("ㄓㄨˋ-ㄧㄣ");
+
+    expect(result.text).toBe("注音");
+    expect(result.score).toBeLessThan(0);
+  });
+
+  test("graph key sequence input can use Hanyu Pinyin syllables", () => {
+    const service = new Service();
+    const result = service.getWalkResult(
+      "zhu4 in",
+      BopomofoKeyboardLayout.HanyuPinyinLayout
+    );
+
+    expect(result.text).toBe("注音");
+    expect(result.score).toBeLessThan(0);
   });
 
   test("getWalkResult returns non-empty text for valid Bopomofo input", () => {

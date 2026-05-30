@@ -472,6 +472,31 @@ if (typeof document !== "undefined") {
     })();
 
     const { InputController, Service } = window.mcbopomofo;
+
+    function getGraphLayoutName() {
+      const graphLayout = $("graph_layout");
+      return graphLayout ? graphLayout.value : settingsManager.settings.layout;
+    }
+
+    function getActiveLayout() {
+      const { BopomofoKeyboardLayout } = window.mcbopomofo;
+      const name = getGraphLayoutName() || "Standard";
+      switch (name) {
+        case "ETen":
+          return BopomofoKeyboardLayout.ETenLayout;
+        case "Hsu":
+          return BopomofoKeyboardLayout.HsuLayout;
+        case "ETen26":
+          return BopomofoKeyboardLayout.ETen26Layout;
+        case "HanyuPinyin":
+          return BopomofoKeyboardLayout.HanyuPinyinLayout;
+        case "IBM":
+          return BopomofoKeyboardLayout.IBMLayout;
+        default:
+          return BopomofoKeyboardLayout.StandardLayout;
+      }
+    }
+
     const controller = (() => {
       const controller = new InputController(ui);
       controller.setUserVerticalCandidates(true);
@@ -647,11 +672,12 @@ if (typeof document !== "undefined") {
           return;
         }
 
-        const graphString = that.service.generateMermaidGraph(text);
+        const layout = getActiveLayout();
+        const graphString = that.service.generateMermaidGraph(text, layout);
         container.innerHTML = graphString;
         container.removeAttribute("data-processed");
 
-        const walkResult = that.service.getWalkResult(text);
+        const walkResult = that.service.getWalkResult(text, layout);
         if (resultRow && resultText && resultScore) {
           resultText.value = walkResult.text;
           resultScore.value = `${walkResult.score.toFixed(2)}`;
@@ -672,12 +698,68 @@ if (typeof document !== "undefined") {
         }
       };
 
+      function getGraphSvgBounds(svg) {
+        let x = 0;
+        let y = 0;
+        let width = 800;
+        let height = 600;
+
+        try {
+          const bbox = svg.getBBox();
+          if (bbox.width > 0 && bbox.height > 0) {
+            x = bbox.x;
+            y = bbox.y;
+            width = bbox.width;
+            height = bbox.height;
+          } else if (svg.viewBox && svg.viewBox.baseVal && svg.viewBox.baseVal.width > 0) {
+            x = svg.viewBox.baseVal.x;
+            y = svg.viewBox.baseVal.y;
+            width = svg.viewBox.baseVal.width;
+            height = svg.viewBox.baseVal.height;
+          } else {
+            const rect = svg.getBoundingClientRect();
+            width = rect.width || width;
+            height = rect.height || height;
+          }
+        } catch (e) {
+          console.warn("Could not read SVG content bounds, using rendered dimensions.", e);
+          const rect = svg.getBoundingClientRect();
+          width = rect.width || width;
+          height = rect.height || height;
+        }
+
+        return { x, y, width, height };
+      }
+
+      function cloneGraphSvgForExport(svg, scale = 1) {
+        const bounds = getGraphSvgBounds(svg);
+        const padding = 16;
+        const paddedX = bounds.x - padding;
+        const paddedY = bounds.y - padding;
+        const paddedWidth = bounds.width + padding * 2;
+        const paddedHeight = bounds.height + padding * 2;
+        const exportWidth = Math.ceil(paddedWidth * scale);
+        const exportHeight = Math.ceil(paddedHeight * scale);
+        const clonedSvg = svg.cloneNode(true);
+        clonedSvg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+        clonedSvg.setAttribute(
+          "viewBox",
+          `${paddedX} ${paddedY} ${paddedWidth} ${paddedHeight}`
+        );
+        clonedSvg.setAttribute("width", `${exportWidth}`);
+        clonedSvg.setAttribute("height", `${exportHeight}`);
+        clonedSvg.removeAttribute("style");
+
+        return { svg: clonedSvg, width: exportWidth, height: exportHeight };
+      }
+
       that.downloadGraphSVG = () => {
         const container = $("mermaid_graph_output");
         const svg = container.querySelector("svg");
         if (!svg) return;
 
-        const svgData = new XMLSerializer().serializeToString(svg);
+        const exportSvg = cloneGraphSvgForExport(svg);
+        const svgData = new XMLSerializer().serializeToString(exportSvg.svg);
         const svgBlob = new Blob([svgData], {
           type: "image/svg+xml;charset=utf-8",
         });
@@ -696,48 +778,18 @@ if (typeof document !== "undefined") {
         const svg = container.querySelector("svg");
         if (!svg) return;
 
-        let svgData = new XMLSerializer().serializeToString(svg);
-        
-        // Ensure SVG namespace is present
-        if (!svgData.match(/xmlns="http:\/\/www\.w3\.org\/2000\/svg"/)) {
-          svgData = svgData.replace('<svg', '<svg xmlns="http://www.w3.org/2000/svg"');
-        }
-
+        const exportSvg = cloneGraphSvgForExport(svg, 4);
+        const svgData = new XMLSerializer().serializeToString(exportSvg.svg);
         const canvas = document.createElement("canvas");
         const ctx = canvas.getContext("2d");
         const img = new Image();
-        
-        // Some browsers require base64 for SVG containing foreignObjects to render in canvas
-        const encodedData = encodeURIComponent(svgData);
-        img.src = "data:image/svg+xml;charset=utf-8," + encodedData;
 
         img.onload = () => {
-          let width = 800;
-          let height = 600;
-          
-          try {
-            if (svg.viewBox && svg.viewBox.baseVal && svg.viewBox.baseVal.width > 0) {
-              width = svg.viewBox.baseVal.width;
-              height = svg.viewBox.baseVal.height;
-            } else {
-              const bbox = svg.getBoundingClientRect();
-              width = bbox.width;
-              height = bbox.height;
-            }
-          } catch (e) {
-            console.warn("Could not read SVG dimensions, using bounding client rect.", e);
-            const bbox = svg.getBoundingClientRect();
-            width = bbox.width || 800;
-            height = bbox.height || 600;
-          }
-
-          const scale = 2;
-          canvas.width = width * scale;
-          canvas.height = height * scale;
+          canvas.width = exportSvg.width;
+          canvas.height = exportSvg.height;
           ctx.fillStyle = "white";
           ctx.fillRect(0, 0, canvas.width, canvas.height);
-          ctx.scale(scale, scale);
-          ctx.drawImage(img, 0, 0, width, height);
+          ctx.drawImage(img, 0, 0, exportSvg.width, exportSvg.height);
 
           try {
             const pngUrl = canvas.toDataURL("image/png");
@@ -755,6 +807,10 @@ if (typeof document !== "undefined") {
         img.onerror = (e) => {
           console.error("Failed to load SVG into Image object.", e);
         };
+
+        // Some browsers require percent encoding for SVG data URLs before canvas rendering.
+        const encodedData = encodeURIComponent(svgData);
+        img.src = "data:image/svg+xml;charset=utf-8," + encodedData;
       };
 
       return that;
@@ -852,6 +908,7 @@ if (typeof document !== "undefined") {
         applySelectSetting("layout", settings.layout, (value) =>
           controller.setKeyboardLayout(value),
         );
+        applySelectSetting("graph_layout", settings.layout, () => undefined);
         applySelectSetting("keys", settings.candidate_keys, (value) =>
           controller.setCandidateKeys(value),
         );
@@ -1255,12 +1312,27 @@ if (typeof document !== "undefined") {
         controller.setKeyboardLayout(value);
         settingsManager.settings.layout = value;
         settingsManager.saveSettings();
+        setSelectValue("graph_layout", value);
         screenKeyboard.loadLayout();
         focusElement("text_area");
       };
 
       $("layout").onblur = (event) => {
         focusElement("text_area");
+      };
+
+      $("graph_layout").onchange = (event) => {
+        const value = getValue("graph_layout");
+        controller.setKeyboardLayout(value);
+        settingsManager.settings.layout = value;
+        settingsManager.saveSettings();
+        setSelectValue("layout", value);
+        screenKeyboard.loadLayout();
+        focusElement("feature_graph_text_area");
+      };
+
+      $("graph_layout").onblur = (event) => {
+        focusElement("feature_graph_text_area");
       };
 
       $("keys").onchange = (event) => {
@@ -1534,27 +1606,6 @@ if (typeof document !== "undefined") {
           // Snapshot of text that came after selectionEnd when composition began.
           // Kept separate from lastValue so a selection range is replaced, not preserved.
           let lastAfter = "";
-
-          function getActiveLayout() {
-            const { BopomofoKeyboardLayout } = window.mcbopomofo;
-            const name = settingsManager.settings.layout || "Standard";
-            switch (name) {
-              case "Standard":
-                return BopomofoKeyboardLayout.StandardLayout;
-              case "ETen":
-                return BopomofoKeyboardLayout.ETenLayout;
-              case "Hsu":
-                return BopomofoKeyboardLayout.HsuLayout;
-              case "ETen26":
-                return BopomofoKeyboardLayout.ETen26Layout;
-              case "HanyuPinyin":
-                return BopomofoKeyboardLayout.HanyuPinyinLayout;
-              case "IBM":
-                return BopomofoKeyboardLayout.IBMLayout;
-              default:
-                return BopomofoKeyboardLayout.StandardLayout;
-            }
-          }
 
           function getGraphReadingBuffer() {
             const { BopomofoReadingBuffer } = window.mcbopomofo;

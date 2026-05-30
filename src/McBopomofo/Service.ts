@@ -512,27 +512,22 @@ export class Service {
    * Parses `input` into Bopomofo syllables, builds a temporary ReadingGrid,
    * and returns the grid together with the Viterbi walk result.
    * Shared by `generateMermaidGraph` and `getWalkResult`.
+   * @param keyboardLayout The layout used to parse keyboard-sequence tokens.
    */
   private buildAndWalk(
-    input: string
+    input: string,
+    keyboardLayout: BopomofoKeyboardLayout = BopomofoKeyboardLayout.StandardLayout
   ): { walkedNodes: ReturnType<ReadingGrid["walk"]>["nodes"]; tempGrid: ReadingGrid } | null {
-    const tokens = input.trim().split(/[\s-]+/).filter((t) => t.length > 0);
-    const layout = BopomofoKeyboardLayout.StandardLayout;
+    const tokens = this.tokenizeWalkInput(input, keyboardLayout);
     const syllables: string[] = [];
 
     for (const token of tokens) {
-      let isBpmf = false;
-      for (let i = 0; i < token.length; i++) {
-        if (BopomofoCharacterMap.sharedInstance.characterToComponent.has(token.charAt(i))) {
-          isBpmf = true;
-          break;
-        }
-      }
+      const isBpmf = this.containsBopomofoComponent(token);
       if (isBpmf) {
         const syllable = MandarinBopomofoSyllable.FromComposedString(token);
         syllables.push(!syllable.isEmpty ? syllable.composedString : token);
       } else {
-        const syllable = layout.syllableFromKeySequence(token);
+        const syllable = this.syllableFromKeyboardSequence(token, keyboardLayout);
         syllables.push(!syllable.isEmpty ? syllable.composedString : token);
       }
     }
@@ -548,12 +543,71 @@ export class Service {
     return { walkedNodes: walkResult.nodes, tempGrid };
   }
 
+  private tokenizeWalkInput(
+    input: string,
+    keyboardLayout: BopomofoKeyboardLayout
+  ): string[] {
+    const tokens: string[] = [];
+    const rawTokens = input.trim().split(/\s+/).filter((t) => t.length > 0);
+
+    for (const rawToken of rawTokens) {
+      // Hyphen is a reading separator for Bopomofo and Hanyu Pinyin graph input,
+      // but it is also a real key in layouts such as Standard, ETen, and IBM.
+      // Split only when the active keyboard layout does not use hyphen as a key.
+      const shouldSplitHyphen =
+        keyboardLayout === BopomofoKeyboardLayout.HanyuPinyinLayout ||
+        this.containsBopomofoComponent(rawToken) ||
+        !this.keyboardLayoutUsesHyphenKey(keyboardLayout);
+      if (shouldSplitHyphen) {
+        tokens.push(...rawToken.split(/-+/).filter((t) => t.length > 0));
+      } else {
+        tokens.push(rawToken);
+      }
+    }
+
+    return tokens;
+  }
+
+  private keyboardLayoutUsesHyphenKey(
+    keyboardLayout: BopomofoKeyboardLayout
+  ): boolean {
+    return !keyboardLayout.syllableFromKeySequence("-").isEmpty;
+  }
+
+  private containsBopomofoComponent(token: string): boolean {
+    for (let i = 0; i < token.length; i++) {
+      if (
+        BopomofoCharacterMap.sharedInstance.characterToComponent.has(
+          token.charAt(i)
+        )
+      ) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private syllableFromKeyboardSequence(
+    token: string,
+    keyboardLayout: BopomofoKeyboardLayout
+  ): MandarinBopomofoSyllable {
+    if (keyboardLayout === BopomofoKeyboardLayout.HanyuPinyinLayout) {
+      return MandarinBopomofoSyllable.FromHanyuPinyin(token);
+    }
+    return keyboardLayout.syllableFromKeySequence(token);
+  }
+
   /**
    * Returns the Viterbi-selected text and its total log-probability score
    * for the given Bopomofo (or keyboard-sequence) input.
+   * @param input Bopomofo syllables or keyboard sequences.
+   * @param keyboardLayout The layout used to parse keyboard-sequence tokens.
    */
-  public getWalkResult(input: string): { text: string; score: number } {
-    const built = this.buildAndWalk(input);
+  public getWalkResult(
+    input: string,
+    keyboardLayout: BopomofoKeyboardLayout = BopomofoKeyboardLayout.StandardLayout
+  ): { text: string; score: number } {
+    const built = this.buildAndWalk(input, keyboardLayout);
     if (!built) return { text: "", score: 0 };
     const text = built.walkedNodes.map((n) => n.value).join("");
     const score = built.walkedNodes.reduce((acc, n) => acc + n.score, 0);
@@ -652,19 +706,26 @@ export class Service {
 
   /**
    * Generates a Mermaid graph representing candidate selections.
+   * @param input Bopomofo syllables or keyboard sequences.
+   * @param keyboardLayout The layout used to parse keyboard-sequence tokens.
    */
-  public generateMermaidGraph(input: string): string {
-    const built = this.buildAndWalk(input);
+  public generateMermaidGraph(
+    input: string,
+    keyboardLayout: BopomofoKeyboardLayout = BopomofoKeyboardLayout.StandardLayout
+  ): string {
+    const built = this.buildAndWalk(input, keyboardLayout);
     if (!built) return "graph LR\n  empty((Empty))";
     const { walkedNodes, tempGrid } = built;
 
-    const walkedSegments: { start: number; end: number; node: any }[] = [];
+    const walkedSegments: {
+      start: number;
+      end: number;
+    }[] = [];
     let currentIdx = 0;
     for (const walkedNode of walkedNodes) {
       walkedSegments.push({
         start: currentIdx,
         end: currentIdx + walkedNode.spanningLength,
-        node: walkedNode,
       });
       currentIdx += walkedNode.spanningLength;
     }
@@ -682,14 +743,15 @@ export class Service {
     }
     const edges: Edge[] = [];
 
+    const spans = tempGrid.spans;
     for (let i = 0; i < tempGrid.length; i++) {
-      const span = tempGrid.spans[i];
+      const span = spans[i];
       for (let len = 1; len <= span.maxLength; len++) {
         const node = span.nodeOf(len);
         if (!node) continue;
 
         const isWalked = walkedSegments.some(
-          (seg) => seg.start === i && seg.end === i + len && seg.node === node
+          (seg) => seg.start === i && seg.end === i + len
         );
 
         const value = node.value;
@@ -748,7 +810,6 @@ export class Service {
       mermaid += `\n  %% Highlight Link ${walkedLinkIndices.join(" & ")}\n`;
       mermaid += `  linkStyle ${walkedLinkIndices.join(",")} stroke:#e7000b,stroke-width:3px,fill:none;\n`;
     }
-    console.log(mermaid);
     return mermaid;
   }
 }

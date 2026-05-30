@@ -92,8 +92,8 @@ export class ReadingGrid {
   /**
    * The spans in the grid.
    */
-  get spans(): Span[] {
-    return this.spans_;
+  get spans(): readonly Span[] {
+    return this.spans_.map((span) => span.clone());
   }
 
   /**
@@ -639,6 +639,18 @@ export class Node {
   }
 
   /**
+   * Returns a copy of the node state.
+   */
+  clone(): Node {
+    const node = new Node(this.reading, this.spanningLength, [
+      ...this.unigrams,
+    ]);
+    node.selectedIndex_ = this.selectedIndex_;
+    node.overrideType_ = this.overrideType_;
+    return node;
+  }
+
+  /**
    * A sufficiently high score to cause the walk to go through an overriding
    * node. Although this can be 0, setting it to a positive value has the
    * desirable side effect that it reduces the competition of "free-floating"
@@ -831,6 +843,16 @@ export class Span {
   nodeOf(length: number): Node | undefined {
     // assert(length > 0 && length <= ReadingGrid.kMaximumSpanLength);
     return this.nodes_[length - 1];
+  }
+
+  /**
+   * Returns a copy of the span state.
+   */
+  clone(): Span {
+    const span = new Span();
+    span.nodes_ = this.nodes_.map((node) => node?.clone());
+    span.maxLength_ = this.maxLength_;
+    return span;
   }
 }
 

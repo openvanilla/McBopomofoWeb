@@ -817,9 +817,24 @@
         </p>
         <ul>
           <li>每個節點代表音節之間的分隔位置 (例如 5 個音節有 V0 ~ V5)</li>
-          <li>有向邊代表從某個位置開始、跨越特定長度的候選詞彙與其權重 (對數機率)</li>
+          <li>有向邊代表從某個位置開始，跨越特定長度的候選詞彙與其權重 (對數機率)</li>
           <li>著色路徑代表最終被演算法選中的最佳結果</li>
         </ul>
+        <table>
+          <tr>
+            <td class="option_title">鍵盤配置：</td>
+            <td>
+              <select id="graph_layout" title="選字路徑圖鍵盤配置">
+                <option value="Standard">標準</option>
+                <option value="ETen">倚天</option>
+                <option value="Hsu">許式</option>
+                <option value="ETen26">倚天 26</option>
+                <option value="HanyuPinyin">漢語拼音</option>
+                <option value="IBM">IBM</option>
+              </select>
+            </td>
+          </tr>
+        </table>
       </div>
     </section>
 
