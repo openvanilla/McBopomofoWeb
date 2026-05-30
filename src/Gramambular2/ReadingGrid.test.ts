@@ -76,6 +76,19 @@ describe("ReadingGrid", () => {
     expect(grid.cursor).toBe(2);
   });
 
+  it("should not expose mutable internal spans", () => {
+    const mockLM = new MockLanguageModel();
+    const grid = new ReadingGrid(mockLM);
+    grid.insertReading("testReading");
+
+    const exposedSpans = grid.spans as Span[];
+    exposedSpans.length = 0;
+    grid.spans[0].clear();
+
+    expect(grid.spans.length).toBe(1);
+    expect(grid.walk().valuesAsStrings()).toEqual(["testValue"]);
+  });
+
   it("should remove the reading before the cursor", () => {
     const mockLM = new MockLanguageModel();
     const grid = new ReadingGrid(mockLM);
