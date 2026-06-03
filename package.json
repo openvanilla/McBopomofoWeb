@@ -51,7 +51,7 @@
     "@cfworker/json-schema": "^4.1.1",
     "@modelcontextprotocol/sdk": "^1.29.0",
     "chinese_convert": "^1.0.8",
-    "dayjs": "^1.11.20",
+    "dayjs": "^1.11.21",
     "lodash": "^4.18.1",
     "lunar-typescript": "^1.8.6",
     "lz-string": "^1.5.0",
