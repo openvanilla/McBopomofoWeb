@@ -1331,7 +1331,7 @@ class WebMCP {
     _handleGetPrompt(message) {
         const {id, name, arguments: args} = message;
 
-        console.log(`Prompt request: ${name} with args:`, args);
+        console.log('Prompt request: %s with args: %o', name, args);
 
         if (!this.availablePrompts.has(name)) {
             this._sendMessage({
