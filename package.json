@@ -59,7 +59,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@playwright/test": "^1.60.0",
+    "@playwright/test": "^1.61.0",
     "@types/chrome": "^0.1.43",
     "@types/jest": "^30.0.0",
     "@types/lodash": "^4.17.24",
