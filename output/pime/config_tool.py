@@ -101,7 +101,7 @@ class OpenUserPhrasesHandler(BaseHandler):
             self.write(response)
         except Exception as e:
             print(e)
-            response = """{"return": false, "error":"%s"}""" % str(e)
+            response = """{"return": false, "error":"internal error"}"""
             self.write(response)
 
 
@@ -132,7 +132,7 @@ class UserPhrasesHandler(BaseHandler):
             self.write('{"return":true}')
         except Exception as e:
             print(e)
-            self.write('{"return":false, "error":"%s"}' % str(e))
+            self.write('{"return":false, "error":"internal error"}')
 
 
 class ExcludedPhrasesHandler(BaseHandler):
@@ -163,7 +163,7 @@ class ExcludedPhrasesHandler(BaseHandler):
             self.write('{"return":true}')
         except Exception as e:
             print(e)
-            self.write('{"return":false, "error":"%s"}' % str(e))
+            self.write('{"return":false, "error":"internal error"}')
 
 
 class ConfigHandler(BaseHandler):
