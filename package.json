@@ -62,7 +62,7 @@
   "devDependencies": {
     "@babel/preset-env": "^7.29.7",
     "@playwright/test": "^1.61.0",
-    "@types/chrome": "^0.1.43",
+    "@types/chrome": "^0.2.0",
     "@types/jest": "^30.0.0",
     "@types/lodash": "^4.17.24",
     "@types/node": "^25.9.3",
