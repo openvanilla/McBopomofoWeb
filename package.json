@@ -60,14 +60,15 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@babel/preset-env": "^8.0.2",
+    "@babel/core": "^7.29.7",
+    "@babel/preset-env": "^7.29.7",
     "@playwright/test": "^1.61.0",
     "@types/chrome": "^0.2.0",
     "@types/jest": "^30.0.0",
     "@types/lodash": "^4.17.24",
-    "@types/node": "^25.9.3",
+    "@types/node": "^26.0.0",
     "@typescript-eslint/eslint-plugin": "^8.62.0",
-    "@typescript-eslint/parser": "^8.61.0",
+    "@typescript-eslint/parser": "^8.62.0",
     "core-js": "^3.49.0",
     "eslint": "^10.5.0",
     "eslint-plugin-simple-import-sort": "^13.0.0",
