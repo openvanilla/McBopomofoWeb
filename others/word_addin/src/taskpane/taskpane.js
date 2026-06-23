@@ -1,4 +1,4 @@
-/* global document, Office, Word */
+/* global document, Office, Word, service */
 
 Office.onReady((info) => {
   if (info.host === Office.HostType.Word) {
