@@ -1,5 +1,7 @@
 module.exports = {
-  preset: "ts-jest",
+  transform: {
+    "^.+\\.[tj]s$": "babel-jest",
+  },
   testEnvironment: "node",
   collectCoverage: true,
   reporters: ["default", "jest-junit"],

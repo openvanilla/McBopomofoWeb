@@ -8,17 +8,17 @@
 // This mock must come before any import of inputMacroController to cover the
 // `year < 4` branch in getYearBase (InputMacro.ts line 463).
 
-function createMockDateResult(yearValue: number) {
+function mockCreateDateResult(yearValue: number) {
   return {
     year: () => yearValue,
     locale: jest.fn().mockReturnValue({ format: jest.fn().mockReturnValue("mock") }),
     format: jest.fn().mockReturnValue("mock"),
-    subtract: jest.fn().mockReturnValue(createMockDateLeaf(yearValue)),
-    add: jest.fn().mockReturnValue(createMockDateLeaf(yearValue + 1)),
+    subtract: jest.fn().mockReturnValue(mockCreateDateLeaf(yearValue)),
+    add: jest.fn().mockReturnValue(mockCreateDateLeaf(yearValue + 1)),
   };
 }
 
-function createMockDateLeaf(yearValue: number) {
+function mockCreateDateLeaf(yearValue: number) {
   return {
     year: () => yearValue,
     locale: jest.fn().mockReturnValue({ format: jest.fn().mockReturnValue("mock") }),
@@ -33,7 +33,7 @@ function createMockDateLeaf(yearValue: number) {
 
 jest.mock("./InputMacroDate", () => {
   const mockDayjs: jest.Mock & { extend?: jest.Mock } = jest.fn(() =>
-    createMockDateResult(1)
+    mockCreateDateResult(1)
   );
   mockDayjs.extend = jest.fn();
   return mockDayjs;

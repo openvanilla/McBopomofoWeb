@@ -257,9 +257,7 @@ export class KeyHandler {
   private latestWalk_: WalkResult | undefined;
 
   /** The dictionary services. */
-  readonly dictionaryServices: DictionaryServices = new DictionaryServices(
-    this.localizedStrings_
-  );
+  readonly dictionaryServices: DictionaryServices;
   public get onOpenUrl(): ((input: string) => void) | undefined {
     return this.dictionaryServices.onOpenUrl;
   }
@@ -277,6 +275,7 @@ export class KeyHandler {
     protected localizedStrings_: LocalizedStrings
   ) {
     // this.languageModel_ = languageModel;
+    this.dictionaryServices = new DictionaryServices(this.localizedStrings_);
     this.reading_ = new BopomofoReadingBuffer(
       BopomofoKeyboardLayout.StandardLayout
     );

@@ -83,6 +83,18 @@ describe("KeyHandler", () => {
       expect(settings.allowChangingPriorTone).toBe(false);
     });
 
+    test("wires dictionary services with localized strings", () => {
+      const handler = new KeyHandler(
+        new WebLanguageModel(webData),
+        new LocalizedStrings()
+      );
+
+      expect(handler.dictionaryServices.localizedStrings).toBeDefined();
+      expect(handler.dictionaryServices.buildMenu("測試")).toContain(
+        "Character Information"
+      );
+    });
+
     test("exports and restores settings across handler instances", () => {
       const openUrl = jest.fn();
       keyHandler.languageCode = "ja";

@@ -52,6 +52,7 @@ McBopomofoWeb is a TypeScript implementation of the McBopomofo (小麥注音) in
 - **Type-checking**: `npm run ts-build`
 - **Webpack configurations**: `webpack.config.js`, `webpack.config.chromeext.js`, `webpack.config.pime.js`, `webpack.config.mcp.js`, and `webpack.config.cli.js`
 - **TypeScript compilation**: ES6 target with CommonJS modules
+- **Babel runtime compatibility**: PIME output must remain compatible with older Node runtimes used by the PIME host process. That is why Babel stays in the toolchain for downleveling, even though the rest of the repo is TypeScript.
 
 ### Output Structure (`/output/`)
 
@@ -70,7 +71,7 @@ McBopomofoWeb is a TypeScript implementation of the McBopomofo (小麥注音) in
 ### Code Style
 
 - **Language**: TypeScript with strict mode enabled
-- **Testing**: Jest with `ts-jest`, `jest-junit`, and checked-in coverage artifacts during local development
+- **Testing**: Jest with `babel-jest`, `@babel/preset-typescript`, `jest-junit`, and checked-in coverage artifacts during local development
 - **Linting**: ESLint flat config in `eslint.config.js`
 - **File naming**: PascalCase for classes, camelCase for files
 
@@ -132,6 +133,8 @@ The input method supports rendering Bopomofo alongside Chinese characters using 
 - Test coverage: `npm run test:coverage`
 - Focus areas: Input state transitions, phonetic parsing, character selection logic
 - Mock external dependencies and platform-specific APIs
+- Jest is configured through `babel-jest` plus `@babel/preset-typescript`.
+- Keep `.ts` test files flowing through Babel so Jest can run without `ts-jest`, which avoids the dependency conflict with modern Babel while preserving the PIME-compatible runtime path.
 
 ## Testing & tooling
 
@@ -164,7 +167,7 @@ npm run eslint             # Code linting
 ### Configuration Files
 
 - **`tsconfig.json`**: TypeScript configuration (ES6 target, strict mode)
-- **`jest.config.js`**: Testing configuration with ts-jest
+- **`jest.config.js`**: Testing configuration with Babel/Jest transforms
 - **`webpack.config.*.js`**: Platform-specific build configurations
 - **`eslint.config.js`**: Flat ESLint configuration and ignore rules
 
@@ -241,7 +244,7 @@ AI agents may call a subagent to run `npm run test:coverage` to find code that i
 - Always follow Kent Beck's TDD flow: write a failing test, make it pass, then refactor.
 - Unit tests are required for all new or modified code. Place tests beside implementation files as `*.test.ts`.
 - When code is modified, also update this copilot-instructions.md file if relevant.
-- Jest with `ts-jest` is configured; high-signal tests already exist beside the implementation files (`*.test.ts`).
+- Jest runs through `babel-jest` with `@babel/preset-typescript` because the repo still needs a Babel layer for PIME-compatible output; `ts-jest` is intentionally not part of the test pipeline.
 - Playwright E2E coverage for the local web demo lives under `e2e/`, serves `output/example/` via a local static server, and runs with `npm run test:e2e`.
 - Use `npm run ts-build` for type-checking and `npm run eslint` to enforce the TypeScript ESLint ruleset. Keep CI-friendly scripts free of watch flags.
 - AI agents may call `test:coverage` (via agent) to find code not covered by tests and should address coverage gaps.
