@@ -62,6 +62,7 @@
   "devDependencies": {
     "@babel/core": "^7.28.5",
     "@babel/preset-env": "^7.28.5",
+    "@babel/preset-typescript": "^7.28.5",
     "@playwright/test": "^1.61.1",
     "@types/chrome": "^0.2.1",
     "@types/jest": "^30.0.0",
@@ -75,7 +76,7 @@
     "jest": "^30.4.2",
     "jest-junit": "^17.0.0",
     "shx": "^0.4.0",
-    "@babel/preset-typescript": "^7.28.5",
+    "terser-webpack-plugin": "^5.6.1",
     "ts-loader": "^9.6.2",
     "typescript": "^6.0.3",
     "webpack": "^5.108.3",
