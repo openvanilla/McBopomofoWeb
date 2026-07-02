@@ -205,6 +205,11 @@ const httpBasedDictionaryServices = {
         "https://sutian.moe.edu.tw/zh-hant/tshiau/?lui=tai_su&tsha=(encoded)",
     },
     {
+      name: "全字庫",
+      url_template:
+        "https://www.cns11643.gov.tw/searchQ.jsp?WORD=(encoded)&x=0&y=0",
+    },
+    {
       name: "Wiktionary",
       url_template:
         "https://zh.wiktionary.org/wiki/Special:Search?search=(encoded)",
