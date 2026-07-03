@@ -1017,7 +1017,7 @@ describe("InputController", () => {
       key = new Key("", KeyName.END, true);
       controller.mcbopomofoKeyEvent(key);
       const { candidates } = uiState;
-      expect(candidates[0]["candidate"]["value"]).toBe("彣");
+      expect(candidates[0]["candidate"]["value"]).toBe("鴍");
       key = new Key("", KeyName.END, true);
     }
     {
