@@ -84,7 +84,6 @@ export class UserPhrases implements LanguageModel {
  * The main language model.
  */
 export class WebLanguageModel implements LanguageModel {
-
   private userPhrases_: UserPhrases = new UserPhrases();
   private excludedPhrases_: UserPhrases = new UserPhrases();
 
@@ -116,6 +115,28 @@ export class WebLanguageModel implements LanguageModel {
   public convertMacro(input: string): string {
     const result = this.macroConverter_?.(input);
     return result ?? input;
+  }
+
+  private scoreConverter_?: (
+    key: string,
+    value: string,
+    original: number
+  ) => number | undefined;
+
+  setScoreConverter(
+    converter?: (
+      key: string,
+      value: string,
+      original: number
+    ) => number | undefined
+  ): void {
+    this.scoreConverter_ = converter;
+  }
+
+  getScoreConverter():
+    | ((key: string, value: string, original: number) => number | undefined)
+    | undefined {
+    return this.scoreConverter_;
   }
 
   private addUserPhraseConverter?: (input: string) => string | undefined;
@@ -275,6 +296,7 @@ export class WebLanguageModel implements LanguageModel {
     if (this.userPhrases_.hasUnigrams(key)) {
       const rawUserUnigrams = this.userPhrases_.getUnigrams(key);
       userUnigrams = this.filterAndTransformUnigrams(
+        key,
         rawUserUnigrams,
         excludedValues,
         insertedValues
@@ -292,6 +314,7 @@ export class WebLanguageModel implements LanguageModel {
         rawGlobalUnigrams.push(unigram);
       }
       allUnigrams = this.filterAndTransformUnigrams(
+        key,
         rawGlobalUnigrams,
         excludedValues,
         insertedValues
@@ -321,8 +344,20 @@ export class WebLanguageModel implements LanguageModel {
       // Find the highest score from the existing allUnigrams.
       let topScore = Number.MIN_SAFE_INTEGER;
       for (const unigram of allUnigrams) {
-        if (unigram.score > topScore) {
-          topScore = unigram.score;
+        let score = unigram.score;
+        if (this.scoreConverter_ !== undefined) {
+          const convertedScore = this.scoreConverter_(
+            key,
+            unigram.value,
+            score
+          );
+          if (convertedScore !== undefined) {
+            score = convertedScore;
+          }
+        }
+
+        if (score > topScore) {
+          topScore = score;
         }
       }
 
@@ -351,6 +386,7 @@ export class WebLanguageModel implements LanguageModel {
   }
 
   filterAndTransformUnigrams(
+    key: string,
     unigrams: Unigram[],
     excludedValues: Set<string>,
     insertedValues: Set<string>
@@ -370,7 +406,7 @@ export class WebLanguageModel implements LanguageModel {
           value = replacement;
         }
       }
-      if (this.converter_) {
+      if (this.converter_ !== undefined) {
         const replacement = this.converter_(value);
         if (replacement !== undefined) {
           value = replacement;
@@ -380,7 +416,14 @@ export class WebLanguageModel implements LanguageModel {
         continue;
       }
       if (!insertedValues.has(value)) {
-        results.push(new Unigram(value, unigram.score));
+        let score = unigram.score;
+        if (this.scoreConverter_ !== undefined) {
+          const convertedScore = this.scoreConverter_(key, value, score);
+          if (convertedScore !== undefined) {
+            score = convertedScore;
+          }
+        }
+        results.push(new Unigram(value, score));
         insertedValues.add(value);
       }
     }

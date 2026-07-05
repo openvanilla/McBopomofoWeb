@@ -465,6 +465,25 @@ export class InputController {
     );
   }
 
+  public setPreferLongerPhrases(flag: boolean): void {
+    (this.lm_ as WebLanguageModel).setScoreConverter(
+      flag
+        ? (key, value, original) => {
+            let length = key.split("-").length - 1;
+            if (length) {
+              let weighted = original + 1.0 * length;
+              let newScore = Math.min(weighted, 0);
+              // console.log(
+              //   `Prefer longer phrases enabled. Key: ${key}, Value: ${value}, Original Score: ${original}, Length: ${length}, New Score: ${newScore}`
+              // );
+              return newScore;
+            }
+            return original;
+          }
+        : undefined
+    );
+  }
+
   /**
    * Sets the error handler function for the input controller.
    * @param onError - The callback function to handle errors

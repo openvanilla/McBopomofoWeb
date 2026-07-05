@@ -413,6 +413,7 @@ describe("WebLanguageModel", () => {
       const insertedValues = new Set<string>();
 
       const result = model.filterAndTransformUnigrams(
+        "test",
         unigrams,
         excludedValues,
         insertedValues
@@ -433,6 +434,7 @@ describe("WebLanguageModel", () => {
       const insertedValues = new Set<string>();
 
       const result = model.filterAndTransformUnigrams(
+        "test",
         unigrams,
         excludedValues,
         insertedValues
@@ -449,6 +451,7 @@ describe("WebLanguageModel", () => {
       const insertedValues = new Set<string>();
 
       const result = model.filterAndTransformUnigrams(
+        "test",
         unigrams,
         excludedValues,
         insertedValues

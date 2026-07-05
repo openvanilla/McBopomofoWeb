@@ -835,6 +835,7 @@ if (typeof document !== "undefined") {
         repeated_punctuation_choose_candidate: false,
         bopomofo_font_annotation_support_enabled: false,
         allow_changing_prior_tone: false,
+        prefer_longer_phrases: false,
       };
 
       that.settings = that.defaultSettings;
@@ -947,6 +948,11 @@ if (typeof document !== "undefined") {
           "allow_change_prior_tone",
           settings.allow_changing_prior_tone,
           (checked) => controller.setAllowChangingPriorTone(checked),
+        );
+        applyCheckboxSetting(
+          "prefer_longer_phrases",
+          settings.prefer_longer_phrases,
+          (checked) => controller.setPreferLongerPhrases(checked)
         );
         applyCheckboxSetting(
           "repeated_punctuation_choose_candidate",
@@ -1397,6 +1403,14 @@ if (typeof document !== "undefined") {
         focusElement("text_area");
       };
 
+      $("prefer_longer_phrases").onchange = (event) => {
+        const checked = getChecked("prefer_longer_phrases");
+        controller.setPreferLongerPhrases(checked);
+        settingsManager.settings.prefer_longer_phrases = checked;
+        settingsManager.saveSettings();
+        focusElement("text_area");
+      };
+      
       $("repeated_punctuation_choose_candidate").onchange = (event) => {
         const checked = getChecked("repeated_punctuation_choose_candidate");
         controller.setRepeatedPunctuationChooseCandidate(checked);
