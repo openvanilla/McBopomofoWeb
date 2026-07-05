@@ -473,9 +473,6 @@ export class InputController {
             if (length) {
               let weighted = original + 1.0 * length;
               let newScore = Math.min(weighted, 0);
-              // console.log(
-              //   `Prefer longer phrases enabled. Key: ${key}, Value: ${value}, Original Score: ${original}, Length: ${length}, New Score: ${newScore}`
-              // );
               return newScore;
             }
             return original;

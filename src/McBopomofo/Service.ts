@@ -517,7 +517,10 @@ export class Service {
   private buildAndWalk(
     input: string,
     keyboardLayout: BopomofoKeyboardLayout = BopomofoKeyboardLayout.StandardLayout
-  ): { walkedNodes: ReturnType<ReadingGrid["walk"]>["nodes"]; tempGrid: ReadingGrid } | null {
+  ): {
+    walkedNodes: ReturnType<ReadingGrid["walk"]>["nodes"];
+    tempGrid: ReadingGrid;
+  } | null {
     const tokens = this.tokenizeWalkInput(input, keyboardLayout);
     const syllables: string[] = [];
 
@@ -527,7 +530,10 @@ export class Service {
         const syllable = MandarinBopomofoSyllable.FromComposedString(token);
         syllables.push(!syllable.isEmpty ? syllable.composedString : token);
       } else {
-        const syllable = this.syllableFromKeyboardSequence(token, keyboardLayout);
+        const syllable = this.syllableFromKeyboardSequence(
+          token,
+          keyboardLayout
+        );
         syllables.push(!syllable.isEmpty ? syllable.composedString : token);
       }
     }
@@ -548,7 +554,10 @@ export class Service {
     keyboardLayout: BopomofoKeyboardLayout
   ): string[] {
     const tokens: string[] = [];
-    const rawTokens = input.trim().split(/\s+/).filter((t) => t.length > 0);
+    const rawTokens = input
+      .trim()
+      .split(/\s+/)
+      .filter((t) => t.length > 0);
 
     for (const rawToken of rawTokens) {
       // Hyphen is a reading separator for Bopomofo and Hanyu Pinyin graph input,
@@ -681,15 +690,21 @@ export class Service {
 
       let isBpmf = false;
       for (let i = 0; i < token.length; i++) {
-        if (BopomofoCharacterMap.sharedInstance.characterToComponent.has(token.charAt(i))) {
+        if (
+          BopomofoCharacterMap.sharedInstance.characterToComponent.has(
+            token.charAt(i)
+          )
+        ) {
           isBpmf = true;
           break;
         }
       }
-      
+
       if (isBpmf) {
         const syllable = MandarinBopomofoSyllable.FromComposedString(token);
-        tempGrid.insertReading(!syllable.isEmpty ? syllable.composedString : token);
+        tempGrid.insertReading(
+          !syllable.isEmpty ? syllable.composedString : token
+        );
       } else {
         // Walk the grid for existing syllables, append Chinese text, then append the non-Bpmf character
         const result = tempGrid.walk();
@@ -698,10 +713,26 @@ export class Service {
         text += token;
       }
     }
-    
+
     const result = tempGrid.walk();
     text += result.nodes.map((n) => n.value).join("");
     return text;
+  }
+
+  public setPreferLongerPhrases(flag: boolean): void {
+    (this.lm_ as WebLanguageModel).setScoreConverter(
+      flag
+        ? (key, value, original) => {
+            let length = key.split("-").length - 1;
+            if (length) {
+              let weighted = original + 1.0 * length;
+              let newScore = Math.min(weighted, 0);
+              return newScore;
+            }
+            return original;
+          }
+        : undefined
+    );
   }
 
   /**
@@ -808,7 +839,9 @@ export class Service {
 
     if (walkedLinkIndices.length > 0) {
       mermaid += `\n  %% Highlight Link ${walkedLinkIndices.join(" & ")}\n`;
-      mermaid += `  linkStyle ${walkedLinkIndices.join(",")} stroke:#e7000b,stroke-width:3px,fill:none;\n`;
+      mermaid += `  linkStyle ${walkedLinkIndices.join(
+        ","
+      )} stroke:#e7000b,stroke-width:3px,fill:none;\n`;
     }
     return mermaid;
   }
