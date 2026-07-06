@@ -168,7 +168,7 @@ describe("KeyHandler", () => {
       const state = handleKeySequence(keyHandler, keys);
       expect(state).toBeInstanceOf(ChoosingCandidate);
       const choosingCandidate = state as ChoosingCandidate;
-      expect(choosingCandidate.candidates[4].value).toBe("好");
+      expect(choosingCandidate.candidates[2].value).toBe("好");
     });
 
     test("skips phrase after cursor when feature is disabled", () => {
@@ -182,7 +182,7 @@ describe("KeyHandler", () => {
       const state = handleKeySequence(keyHandler, keys);
       expect(state).toBeInstanceOf(ChoosingCandidate);
       const choosingCandidate = state as ChoosingCandidate;
-      expect(choosingCandidate.candidates[4].value).toBe("你");
+      expect(choosingCandidate.candidates[2].value).toBe("你");
     });
 
     test("manages bopomofoFontAnnotationSupportEnabled property", () => {
@@ -460,7 +460,7 @@ describe("KeyHandler", () => {
       let state = handleKeySequence(keyHandler, keys);
       const choosingCandidate = state as ChoosingCandidate;
       keyHandler.candidateSelected(
-        choosingCandidate.candidates[6],
+        choosingCandidate.candidates[4],
         1,
         (newState) => {
           state = newState;
