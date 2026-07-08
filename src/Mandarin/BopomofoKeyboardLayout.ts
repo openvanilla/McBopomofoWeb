@@ -545,7 +545,7 @@ export class BopomofoKeyboardLayout {
       ["p", [BopomofoSyllable.EN]],
       [";", [BopomofoSyllable.ZH, BopomofoSyllable.Tone2]],
     ]);
-    return new BopomofoKeyboardLayout(ktcm, "Hsu");
+    return new BopomofoKeyboardLayout(ktcm, "Su");
   }
 
   private static readableKeyMap_: Map<number, string> = new Map([
