@@ -420,7 +420,8 @@ export class KeyHandler {
       this.reading_.hasToneMarkerOnly &&
       this.grid_.length > 0 &&
       this.grid_.cursor > 0 &&
-      this.allowChangingPriorTone
+      this.allowChangingPriorTone &&
+      this.keyboardLayout === BopomofoKeyboardLayout.StandardLayout
     ) {
       const cursor = this.grid_.cursor - 1;
       const reading = this.grid_.readings[cursor];
