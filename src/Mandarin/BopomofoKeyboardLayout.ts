@@ -53,8 +53,20 @@ export class BopomofoKeyboardLayout {
   static readonly HanyuPinyinLayout =
     BopomofoKeyboardLayout.CreateHanyuPinyinLayout_();
 
+  /**
+   * The Su layout.
+   */
   static readonly SuLayout = BopomofoKeyboardLayout.CreateSuLayout_();
+
+  /**
+   * The Gin Yieh layout.
+   */
   static readonly GinYiehLayout = BopomofoKeyboardLayout.CreateGinYiehLayout_();
+
+  /**
+   * The Mitac layout.
+   */
+  static readonly MitacLayout = BopomofoKeyboardLayout.CreateMitacLayout_();
 
   private name_: string;
   private componentToKey_: BopomofoComponentToKeyMap = new Map();
@@ -594,6 +606,53 @@ export class BopomofoKeyboardLayout {
       ["=", [BopomofoSyllable.ERR]],
     ]);
     return new BopomofoKeyboardLayout(ktcm, "GinYieh");
+  }
+
+  private static CreateMitacLayout_(): BopomofoKeyboardLayout {
+    const ktcm: BopomofoKeyToComponentMap = new Map([
+      ["a", [BopomofoSyllable.A]],
+      ["b", [BopomofoSyllable.B]],
+      ["c", [BopomofoSyllable.C]],
+      ["d", [BopomofoSyllable.D]],
+      ["e", [BopomofoSyllable.ER]],
+      ["f", [BopomofoSyllable.F]],
+      ["g", [BopomofoSyllable.G]],
+      ["h", [BopomofoSyllable.H]],
+      ["i", [BopomofoSyllable.EI]],
+      ["j", [BopomofoSyllable.J]],
+      ["k", [BopomofoSyllable.K]],
+      ["l", [BopomofoSyllable.L]],
+      ["m", [BopomofoSyllable.M]],
+      ["n", [BopomofoSyllable.N]],
+      ["o", [BopomofoSyllable.O]],
+      ["p", [BopomofoSyllable.P]],
+      ["q", [BopomofoSyllable.Q]],
+      ["r", [BopomofoSyllable.R]],
+      ["s", [BopomofoSyllable.S]],
+      ["t", [BopomofoSyllable.T]],
+      ["u", [BopomofoSyllable.OU]],
+      ["v", [BopomofoSyllable.UE]],
+      ["w", [BopomofoSyllable.U]],
+      ["x", [BopomofoSyllable.X]],
+      ["y", [BopomofoSyllable.I]],
+      ["z", [BopomofoSyllable.Z]],
+      ["1", [BopomofoSyllable.Tone5]],
+      ["2", [BopomofoSyllable.Tone2]],
+      ["3", [BopomofoSyllable.Tone3]],
+      ["4", [BopomofoSyllable.Tone4]],
+      ["5", [BopomofoSyllable.AI]],
+      ["6", [BopomofoSyllable.AO]],
+      ["7", [BopomofoSyllable.AN]],
+      ["8", [BopomofoSyllable.EN]],
+      ["9", [BopomofoSyllable.ANG]],
+      ["0", [BopomofoSyllable.ENG]],
+      ["-", [BopomofoSyllable.ER]],
+      [";", [BopomofoSyllable.EI]],
+      [",", [BopomofoSyllable.ZH]],
+      [".", [BopomofoSyllable.CH]],
+      ["/", [BopomofoSyllable.SH]],
+    ]);
+    return new BopomofoKeyboardLayout(ktcm, "MITAC");
   }
 
   private static readableKeyMap_: Map<number, string> = new Map([

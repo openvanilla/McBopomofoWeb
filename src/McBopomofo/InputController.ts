@@ -293,6 +293,9 @@ export class InputController {
       case "GinYieh":
         this.keyHandler_.keyboardLayout = BopomofoKeyboardLayout.GinYiehLayout;
         break;
+      case "MITAC":
+        this.keyHandler_.keyboardLayout = BopomofoKeyboardLayout.MitacLayout;
+        break;
       default:
         this.keyHandler_.keyboardLayout = BopomofoKeyboardLayout.StandardLayout;
         break;
