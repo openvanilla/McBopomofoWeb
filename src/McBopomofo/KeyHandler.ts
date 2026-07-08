@@ -92,6 +92,8 @@ function GetKeyboardLayoutName(layout: BopomofoKeyboardLayout): string {
     return "GinYieh";
   } else if (layout === BopomofoKeyboardLayout.MitacLayout) {
     return "MITAC";
+  } else if (layout === BopomofoKeyboardLayout.ZeroOne2025Layout) {
+    return "ZeroOne2025";
   }
   return "Standard";
 }

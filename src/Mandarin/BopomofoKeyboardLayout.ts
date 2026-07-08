@@ -68,6 +68,12 @@ export class BopomofoKeyboardLayout {
    */
   static readonly MitacLayout = BopomofoKeyboardLayout.CreateMitacLayout_();
 
+  /**
+   * The ZeroOne 2025 layout.
+   */
+  static readonly ZeroOne2025Layout =
+    BopomofoKeyboardLayout.CreateZeroOne2025Layout_();
+
   private name_: string;
   private componentToKey_: BopomofoComponentToKeyMap = new Map();
   private keyToComponent_: BopomofoKeyToComponentMap = new Map();
@@ -548,7 +554,7 @@ export class BopomofoKeyboardLayout {
       ["y", [BopomofoSyllable.Z]],
       ["h", [BopomofoSyllable.C]],
       ["n", [BopomofoSyllable.S]],
-      ["u", [BopomofoSyllable.I]],
+      ["u", [BopomofoSyllable.I, BopomofoSyllable.E]],
       ["j", [BopomofoSyllable.U]],
       ["m", [BopomofoSyllable.UE]],
       ["i", [BopomofoSyllable.O]],
@@ -653,6 +659,52 @@ export class BopomofoKeyboardLayout {
       ["/", [BopomofoSyllable.SH]],
     ]);
     return new BopomofoKeyboardLayout(ktcm, "MITAC");
+  }
+
+  private static CreateZeroOne2025Layout_(): BopomofoKeyboardLayout {
+    const ktcm: BopomofoKeyToComponentMap = new Map([
+      ["1", [BopomofoSyllable.Tone5]],
+      ["q", [BopomofoSyllable.EI]],
+      ["a", [BopomofoSyllable.A]],
+      ["z", [BopomofoSyllable.AO]],
+      ["2", [BopomofoSyllable.Tone2]],
+      ["w", [BopomofoSyllable.E]],
+      ["s", [BopomofoSyllable.S]],
+      ["x", [BopomofoSyllable.OU]],
+      ["3", [BopomofoSyllable.Tone3]],
+      ["e", [BopomofoSyllable.ER]],
+      ["d", [BopomofoSyllable.SH]],
+      ["c", [BopomofoSyllable.J]],
+      ["4", [BopomofoSyllable.Tone4]],
+      ["r", [BopomofoSyllable.T]],
+      ["f", [BopomofoSyllable.F]],
+      ["v", [BopomofoSyllable.Q]],
+      ["t", [BopomofoSyllable.D]],
+      ["g", [BopomofoSyllable.K]],
+      ["b", [BopomofoSyllable.X]],
+      ["y", [BopomofoSyllable.UE]],
+      ["h", [BopomofoSyllable.H]],
+      ["n", [BopomofoSyllable.N]],
+      ["u", [BopomofoSyllable.U]],
+      ["j", [BopomofoSyllable.R]],
+      ["m", [BopomofoSyllable.M]],
+      ["i", [BopomofoSyllable.I]],
+      ["k", [BopomofoSyllable.G]],
+      [",", [BopomofoSyllable.ZH]],
+      ["o", [BopomofoSyllable.O]],
+      ["l", [BopomofoSyllable.L]],
+      [".", [BopomofoSyllable.CH]],
+      ["p", [BopomofoSyllable.B]],
+      [";", [BopomofoSyllable.Z]],
+      ["/", [BopomofoSyllable.AN]],
+      ["-", [BopomofoSyllable.ENG]],
+      ["[", [BopomofoSyllable.P]],
+      ["'", [BopomofoSyllable.C]],
+      ["=", [BopomofoSyllable.ERR]],
+      ["]", [BopomofoSyllable.ANG]],
+      ["\\", [BopomofoSyllable.EI]],
+    ]);
+    return new BopomofoKeyboardLayout(ktcm, "ZeroOne2025");
   }
 
   private static readableKeyMap_: Map<number, string> = new Map([

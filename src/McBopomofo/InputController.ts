@@ -270,35 +270,22 @@ export class InputController {
    * - "IBM"
    */
   public setKeyboardLayout(layout: string): void {
-    switch (layout) {
-      case "ETen":
-        this.keyHandler_.keyboardLayout = BopomofoKeyboardLayout.ETenLayout;
-        break;
-      case "Hsu":
-        this.keyHandler_.keyboardLayout = BopomofoKeyboardLayout.HsuLayout;
-        break;
-      case "ETen26":
-        this.keyHandler_.keyboardLayout = BopomofoKeyboardLayout.ETen26Layout;
-        break;
-      case "HanyuPinyin":
-        this.keyHandler_.keyboardLayout =
-          BopomofoKeyboardLayout.HanyuPinyinLayout;
-        break;
-      case "IBM":
-        this.keyHandler_.keyboardLayout = BopomofoKeyboardLayout.IBMLayout;
-        break;
-      case "Su":
-        this.keyHandler_.keyboardLayout = BopomofoKeyboardLayout.SuLayout;
-        break;
-      case "GinYieh":
-        this.keyHandler_.keyboardLayout = BopomofoKeyboardLayout.GinYiehLayout;
-        break;
-      case "MITAC":
-        this.keyHandler_.keyboardLayout = BopomofoKeyboardLayout.MitacLayout;
-        break;
-      default:
-        this.keyHandler_.keyboardLayout = BopomofoKeyboardLayout.StandardLayout;
-        break;
+    const map = new Map([
+      ["ETen", BopomofoKeyboardLayout.ETenLayout],
+      ["Hsu", BopomofoKeyboardLayout.HsuLayout],
+      ["ETen26", BopomofoKeyboardLayout.ETen26Layout],
+      ["HanyuPinyin", BopomofoKeyboardLayout.HanyuPinyinLayout],
+      ["IBM", BopomofoKeyboardLayout.IBMLayout],
+      ["Su", BopomofoKeyboardLayout.SuLayout],
+      ["GinYieh", BopomofoKeyboardLayout.GinYiehLayout],
+      ["MITAC", BopomofoKeyboardLayout.MitacLayout],
+      ["ZeroOne2025", BopomofoKeyboardLayout.ZeroOne2025Layout],
+    ]);
+    let keyboardLayout = map.get(layout);
+    if (keyboardLayout !== undefined) {
+      this.keyHandler_.keyboardLayout = keyboardLayout;
+    } else {
+      this.keyHandler_.keyboardLayout = BopomofoKeyboardLayout.StandardLayout;
     }
   }
 
