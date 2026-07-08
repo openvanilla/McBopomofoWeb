@@ -88,6 +88,8 @@ function GetKeyboardLayoutName(layout: BopomofoKeyboardLayout): string {
     return "IBM";
   } else if (layout === BopomofoKeyboardLayout.SuLayout) {
     return "Su";
+  } else if (layout === BopomofoKeyboardLayout.GinYiehLayout) {
+    return "GinYieh";
   }
   return "Standard";
 }

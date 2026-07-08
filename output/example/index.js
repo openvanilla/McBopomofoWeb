@@ -495,6 +495,10 @@ if (typeof document !== "undefined") {
           return BopomofoKeyboardLayout.HanyuPinyinLayout;
         case "IBM":
           return BopomofoKeyboardLayout.IBMLayout;
+        case "Su":
+          return BopomofoKeyboardLayout.SuLayout;
+        case "GinYieh":
+          return BopomofoKeyboardLayout.GinYiehLayout;
         default:
           return BopomofoKeyboardLayout.StandardLayout;
       }

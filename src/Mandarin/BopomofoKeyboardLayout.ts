@@ -54,6 +54,7 @@ export class BopomofoKeyboardLayout {
     BopomofoKeyboardLayout.CreateHanyuPinyinLayout_();
 
   static readonly SuLayout = BopomofoKeyboardLayout.CreateSuLayout_();
+  static readonly GinYiehLayout = BopomofoKeyboardLayout.CreateGinYiehLayout_();
 
   private name_: string;
   private componentToKey_: BopomofoComponentToKeyMap = new Map();
@@ -546,6 +547,53 @@ export class BopomofoKeyboardLayout {
       [";", [BopomofoSyllable.ZH, BopomofoSyllable.Tone2]],
     ]);
     return new BopomofoKeyboardLayout(ktcm, "Su");
+  }
+
+  private static CreateGinYiehLayout_(): BopomofoKeyboardLayout {
+    const ktcm: BopomofoKeyToComponentMap = new Map([
+      ["a", [BopomofoSyllable.Tone3]],
+      ["b", [BopomofoSyllable.X]],
+      ["c", [BopomofoSyllable.L]],
+      ["d", [BopomofoSyllable.N]],
+      ["e", [BopomofoSyllable.T]],
+      ["f", [BopomofoSyllable.K]],
+      ["g", [BopomofoSyllable.Q]],
+      ["h", [BopomofoSyllable.SH]],
+      ["i", [BopomofoSyllable.O]],
+      ["j", [BopomofoSyllable.C]],
+      ["k", [BopomofoSyllable.ER]],
+      ["l", [BopomofoSyllable.AO]],
+      ["m", [BopomofoSyllable.S]],
+      ["n", [BopomofoSyllable.R]],
+      ["o", [BopomofoSyllable.EI]],
+      ["p", [BopomofoSyllable.EN]],
+      ["q", [BopomofoSyllable.Tone2]],
+      ["r", [BopomofoSyllable.G]],
+      ["s", [BopomofoSyllable.M]],
+      ["t", [BopomofoSyllable.J]],
+      ["u", [BopomofoSyllable.Z]],
+      ["v", [BopomofoSyllable.H]],
+      ["w", [BopomofoSyllable.P]],
+      ["x", [BopomofoSyllable.F]],
+      ["y", [BopomofoSyllable.CH]],
+      ["z", [BopomofoSyllable.Tone4]],
+      ["1", [BopomofoSyllable.Tone5]],
+      ["2", [BopomofoSyllable.B]],
+      ["3", [BopomofoSyllable.D]],
+      ["6", [BopomofoSyllable.ZH]],
+      ["8", [BopomofoSyllable.A]],
+      ["9", [BopomofoSyllable.AI]],
+      ["0", [BopomofoSyllable.AN]],
+      ["-", [BopomofoSyllable.I]],
+      [";", [BopomofoSyllable.ANG]],
+      [",", [BopomofoSyllable.E]],
+      [".", [BopomofoSyllable.OU]],
+      ["/", [BopomofoSyllable.ENG]],
+      ["'", [BopomofoSyllable.UE]],
+      ["[", [BopomofoSyllable.U]],
+      ["=", [BopomofoSyllable.ERR]],
+    ]);
+    return new BopomofoKeyboardLayout(ktcm, "GinYieh");
   }
 
   private static readableKeyMap_: Map<number, string> = new Map([
