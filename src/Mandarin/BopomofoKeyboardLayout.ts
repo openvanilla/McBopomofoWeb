@@ -21,9 +21,6 @@ export type BopomofoComponentToKeyMap = Map<Component, string>;
  * @class
  */
 export class BopomofoKeyboardLayout {
-  private static StandardLayout_: BopomofoKeyboardLayout =
-    BopomofoKeyboardLayout.CreateStandardLayout_();
-
   /**
    * The standard layout.
    */
@@ -236,13 +233,11 @@ export class BopomofoKeyboardLayout {
           syllable.maskType === follow.maskType &&
           syllable.maskType === BopomofoSyllable.VowelMask
         ) {
-          // if the existing syllable contains only a vowel, and the next
-          // character has 2+ possibilities, and the second (follow) one is also
-          // a vowel, we know that the user may have typed the sequence in the
-          // wrong order (since the first or head is always a consonant); if we
-          // come all the way here, the only possibility for the second is an EI
-          // or E, but since we don't allow them to be standalone in Hsu or
-          // ETen26, we will pick the consonant.
+          // if the existing syllable contains only a vowel, and the current
+          // character has 2+ possibilities, and the second (follow) choice is
+          // also a vowel, we run into the case where the user may have typed
+          // the consonant-vowel sequence in the wrong order, and so the first
+          // (head) choice, which is always a consonant, must be taken.
           syllable.addEqual(head);
         } else {
           syllable.addEqual(ending);
