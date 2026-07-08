@@ -21,65 +21,37 @@ export type BopomofoComponentToKeyMap = Map<Component, string>;
  * @class
  */
 export class BopomofoKeyboardLayout {
-  private static StandardLayout_: BopomofoKeyboardLayout =
-    BopomofoKeyboardLayout.CreateStandardLayout_();
-
   /**
    * The standard layout.
    */
-  static get StandardLayout(): BopomofoKeyboardLayout {
-    return BopomofoKeyboardLayout.StandardLayout_;
-  }
-
-  private static IBMLayout_: BopomofoKeyboardLayout =
-    BopomofoKeyboardLayout.CreateIBMLayout_();
+  static readonly StandardLayout =
+    BopomofoKeyboardLayout.CreateStandardLayout_();
 
   /**
    * The IBM layout.
    */
-  static get IBMLayout(): BopomofoKeyboardLayout {
-    return BopomofoKeyboardLayout.IBMLayout_;
-  }
-
-  private static ETenLayout_: BopomofoKeyboardLayout =
-    BopomofoKeyboardLayout.CreateETenLayout_();
+  static readonly IBMLayout = BopomofoKeyboardLayout.CreateIBMLayout_();
 
   /**
    * The ETen layout.
    */
-  static get ETenLayout(): BopomofoKeyboardLayout {
-    return BopomofoKeyboardLayout.ETenLayout_;
-  }
-
-  private static HsuLayout_: BopomofoKeyboardLayout =
-    BopomofoKeyboardLayout.CreateHsuLayout_();
+  static readonly ETenLayout = BopomofoKeyboardLayout.CreateETenLayout_();
 
   /**
    * The Hsu layout.
    */
-  static get HsuLayout(): BopomofoKeyboardLayout {
-    return BopomofoKeyboardLayout.HsuLayout_;
-  }
-
-  private static ETen26Layout_: BopomofoKeyboardLayout =
-    BopomofoKeyboardLayout.CreateETen26Layout_();
+  static readonly HsuLayout = BopomofoKeyboardLayout.CreateHsuLayout_();
 
   /**
    * The ETen26 layout.
    */
-  static get ETen26Layout(): BopomofoKeyboardLayout {
-    return BopomofoKeyboardLayout.ETen26Layout_;
-  }
-
-  private static HanyuPinyinLayout_: BopomofoKeyboardLayout =
-    BopomofoKeyboardLayout.CreateHanyuPinyinLayout_();
+  static readonly ETen26Layout = BopomofoKeyboardLayout.CreateETen26Layout_();
 
   /**
    * The Hanyu Pinyin layout.
    */
-  static get HanyuPinyinLayout(): BopomofoKeyboardLayout {
-    return BopomofoKeyboardLayout.HanyuPinyinLayout_;
-  }
+  static readonly HanyuPinyinLayout =
+    BopomofoKeyboardLayout.CreateHanyuPinyinLayout_();
 
   private name_: string;
   private componentToKey_: BopomofoComponentToKeyMap = new Map();
@@ -131,7 +103,7 @@ export class BopomofoKeyboardLayout {
 
     function STKS_COMBINE(
       component: Component,
-      layout: BopomofoKeyboardLayout,
+      layout: BopomofoKeyboardLayout
     ) {
       if ((c = component)) {
         const k: string = layout.componentToKey(c);
@@ -156,12 +128,12 @@ export class BopomofoKeyboardLayout {
       const beforeSeqHasIorUE: boolean = this.sequenceContainsIorUE(
         sequence,
         0,
-        i,
+        i
       );
       const aheadSeqHasIorUE: boolean = this.sequenceContainsIorUE(
         sequence,
         i + 1,
-        sequence.length,
+        sequence.length
       );
 
       const components = this.keyToComponents(sequence.charAt(i));
@@ -239,7 +211,7 @@ export class BopomofoKeyboardLayout {
           this.endAheadOrAheadHasToneMarkKey(
             sequence,
             i + 1,
-            sequence.length,
+            sequence.length
           ) &&
           head.belongsToZCSRClass &&
           syllable.isEmpty
@@ -247,7 +219,17 @@ export class BopomofoKeyboardLayout {
           syllable.addEqual(head);
         } else if (syllable.maskType < follow.maskType) {
           syllable.addEqual(follow);
-        } else {
+        }
+        else if ((syllable.maskType === follow.maskType) &&
+                   syllable.maskType === BopomofoSyllable.VowelMask) {
+          // if the existing syllable contains only a vowel, and the current
+          // character has 2+ possibilities, and the second (follow) choice is
+          // also a vowel, we run into the case where the user may have typed
+          // the consonant-vowel sequence in the wrong order, and so the first
+          // (head) choice, which is always a consonant, must be taken.
+          syllable.addEqual(head);
+        }
+        else {
           syllable.addEqual(ending);
         }
       }
@@ -278,7 +260,7 @@ export class BopomofoKeyboardLayout {
   private endAheadOrAheadHasToneMarkKey(
     seq: string,
     ahead: number,
-    end: number,
+    end: number
   ): boolean {
     if (ahead === end) return true;
 
