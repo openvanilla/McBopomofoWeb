@@ -27,59 +27,36 @@ export class BopomofoKeyboardLayout {
   /**
    * The standard layout.
    */
-  static get StandardLayout(): BopomofoKeyboardLayout {
-    return BopomofoKeyboardLayout.StandardLayout_;
-  }
-
-  private static IBMLayout_: BopomofoKeyboardLayout =
-    BopomofoKeyboardLayout.CreateIBMLayout_();
+  static readonly StandardLayout =
+    BopomofoKeyboardLayout.CreateStandardLayout_();
 
   /**
    * The IBM layout.
    */
-  static get IBMLayout(): BopomofoKeyboardLayout {
-    return BopomofoKeyboardLayout.IBMLayout_;
-  }
-
-  private static ETenLayout_: BopomofoKeyboardLayout =
-    BopomofoKeyboardLayout.CreateETenLayout_();
+  static readonly IBMLayout = BopomofoKeyboardLayout.CreateIBMLayout_();
 
   /**
    * The ETen layout.
    */
-  static get ETenLayout(): BopomofoKeyboardLayout {
-    return BopomofoKeyboardLayout.ETenLayout_;
-  }
-
-  private static HsuLayout_: BopomofoKeyboardLayout =
-    BopomofoKeyboardLayout.CreateHsuLayout_();
+  static readonly ETenLayout = BopomofoKeyboardLayout.CreateETenLayout_();
 
   /**
    * The Hsu layout.
    */
-  static get HsuLayout(): BopomofoKeyboardLayout {
-    return BopomofoKeyboardLayout.HsuLayout_;
-  }
-
-  private static ETen26Layout_: BopomofoKeyboardLayout =
-    BopomofoKeyboardLayout.CreateETen26Layout_();
+  static readonly HsuLayout = BopomofoKeyboardLayout.CreateHsuLayout_();
 
   /**
    * The ETen26 layout.
    */
-  static get ETen26Layout(): BopomofoKeyboardLayout {
-    return BopomofoKeyboardLayout.ETen26Layout_;
-  }
-
-  private static HanyuPinyinLayout_: BopomofoKeyboardLayout =
-    BopomofoKeyboardLayout.CreateHanyuPinyinLayout_();
+  static readonly ETen26Layout = BopomofoKeyboardLayout.CreateETen26Layout_();
 
   /**
    * The Hanyu Pinyin layout.
    */
-  static get HanyuPinyinLayout(): BopomofoKeyboardLayout {
-    return BopomofoKeyboardLayout.HanyuPinyinLayout_;
-  }
+  static readonly HanyuPinyinLayout =
+    BopomofoKeyboardLayout.CreateHanyuPinyinLayout_();
+
+  static readonly SuLayout = BopomofoKeyboardLayout.CreateSuLayout_();
 
   private name_: string;
   private componentToKey_: BopomofoComponentToKeyMap = new Map();
@@ -131,7 +108,7 @@ export class BopomofoKeyboardLayout {
 
     function STKS_COMBINE(
       component: Component,
-      layout: BopomofoKeyboardLayout,
+      layout: BopomofoKeyboardLayout
     ) {
       if ((c = component)) {
         const k: string = layout.componentToKey(c);
@@ -156,12 +133,12 @@ export class BopomofoKeyboardLayout {
       const beforeSeqHasIorUE: boolean = this.sequenceContainsIorUE(
         sequence,
         0,
-        i,
+        i
       );
       const aheadSeqHasIorUE: boolean = this.sequenceContainsIorUE(
         sequence,
         i + 1,
-        sequence.length,
+        sequence.length
       );
 
       const components = this.keyToComponents(sequence.charAt(i));
@@ -199,7 +176,11 @@ export class BopomofoKeyboardLayout {
       // components vector here
       if (head.belongsToJQXClass && !follow.belongsToJQXClass) {
         if (!syllable.isEmpty) {
-          if (ending !== follow) syllable.addEqual(ending);
+          if (ending !== follow) {
+            syllable.addEqual(ending);
+          } else if ((syllable.maskType & follow.maskType) === 0) {
+            syllable.addEqual(follow);
+          }
         } else {
           syllable.addEqual(aheadSeqHasIorUE ? head : follow);
         }
@@ -208,7 +189,11 @@ export class BopomofoKeyboardLayout {
 
       if (!head.belongsToJQXClass && follow.belongsToJQXClass) {
         if (!syllable.isEmpty) {
-          if (ending !== follow) syllable.addEqual(ending);
+          if (ending !== follow) {
+            syllable.addEqual(ending);
+          } else if ((syllable.maskType & follow.maskType) === 0) {
+            syllable.addEqual(follow);
+          }
         } else {
           syllable.addEqual(aheadSeqHasIorUE ? follow : head);
         }
@@ -239,7 +224,7 @@ export class BopomofoKeyboardLayout {
           this.endAheadOrAheadHasToneMarkKey(
             sequence,
             i + 1,
-            sequence.length,
+            sequence.length
           ) &&
           head.belongsToZCSRClass &&
           syllable.isEmpty
@@ -247,6 +232,18 @@ export class BopomofoKeyboardLayout {
           syllable.addEqual(head);
         } else if (syllable.maskType < follow.maskType) {
           syllable.addEqual(follow);
+        } else if (
+          syllable.maskType === follow.maskType &&
+          syllable.maskType === BopomofoSyllable.VowelMask
+        ) {
+          // if the existing syllable contains only a vowel, and the next
+          // character has 2+ possibilities, and the second (follow) one is also
+          // a vowel, we know that the user may have typed the sequence in the
+          // wrong order (since the first or head is always a consonant); if we
+          // come all the way here, the only possibility for the second is an EI
+          // or E, but since we don't allow them to be standalone in Hsu or
+          // ETen26, we will pick the consonant.
+          syllable.addEqual(head);
         } else {
           syllable.addEqual(ending);
         }
@@ -278,7 +275,7 @@ export class BopomofoKeyboardLayout {
   private endAheadOrAheadHasToneMarkKey(
     seq: string,
     ahead: number,
-    end: number,
+    end: number
   ): boolean {
     if (ahead === end) return true;
 
@@ -520,6 +517,40 @@ export class BopomofoKeyboardLayout {
   private static CreateHanyuPinyinLayout_(): BopomofoKeyboardLayout {
     const ktcm: BopomofoKeyToComponentMap = new Map();
     return new BopomofoKeyboardLayout(ktcm, "HanyuPinyin");
+  }
+
+  // http://www.eztyping.com.tw/fram/EzNewPH_std3_Right.htm
+  private static CreateSuLayout_(): BopomofoKeyboardLayout {
+    const ktcm: BopomofoKeyToComponentMap = new Map([
+      ["q", [BopomofoSyllable.P, BopomofoSyllable.ANG]],
+      ["a", [BopomofoSyllable.M, BopomofoSyllable.Tone5]],
+      ["z", [BopomofoSyllable.F, BopomofoSyllable.A]],
+      ["w", [BopomofoSyllable.T, BopomofoSyllable.AI]],
+      ["s", [BopomofoSyllable.N, BopomofoSyllable.ENG]],
+      ["x", [BopomofoSyllable.L]],
+      ["e", [BopomofoSyllable.G, BopomofoSyllable.OU]],
+      ["d", [BopomofoSyllable.K, BopomofoSyllable.Tone3]],
+      ["c", [BopomofoSyllable.H]],
+      ["r", [BopomofoSyllable.J, BopomofoSyllable.AN]],
+      ["f", [BopomofoSyllable.Q, BopomofoSyllable.Tone4]],
+      ["v", [BopomofoSyllable.X, BopomofoSyllable.ERR]],
+      ["t", [BopomofoSyllable.CH]],
+      ["g", [BopomofoSyllable.SH]],
+      ["b", [BopomofoSyllable.R]],
+      ["y", [BopomofoSyllable.Z]],
+      ["h", [BopomofoSyllable.C]],
+      ["n", [BopomofoSyllable.S]],
+      ["u", [BopomofoSyllable.I]],
+      ["j", [BopomofoSyllable.U]],
+      ["m", [BopomofoSyllable.UE]],
+      ["i", [BopomofoSyllable.O]],
+      ["k", [BopomofoSyllable.D, BopomofoSyllable.ER]],
+      ["o", [BopomofoSyllable.EI]],
+      ["l", [BopomofoSyllable.B, BopomofoSyllable.AO]],
+      ["p", [BopomofoSyllable.EN]],
+      [";", [BopomofoSyllable.ZH, BopomofoSyllable.Tone2]],
+    ]);
+    return new BopomofoKeyboardLayout(ktcm, "Hsu");
   }
 
   private static readableKeyMap_: Map<number, string> = new Map([

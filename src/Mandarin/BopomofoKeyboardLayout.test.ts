@@ -316,9 +316,9 @@ describe("BopomofoKeyboardLayout", () => {
 
       expect(layout.keyToComponents("a")).toEqual([]);
       expect(layout.componentToKey(BopomofoSyllable.B)).toBe("");
-      expect(layout.keySequenceFromSyllable(new BopomofoSyllable(BopomofoSyllable.B))).toBe(
-        ""
-      );
+      expect(
+        layout.keySequenceFromSyllable(new BopomofoSyllable(BopomofoSyllable.B))
+      ).toBe("");
       expect(layout.syllableFromKeySequence("abc").isEmpty).toBe(true);
     });
   });
@@ -363,7 +363,10 @@ describe("BopomofoKeyboardLayout", () => {
         new Map([
           ["b", [BopomofoSyllable.B]],
           ["i", [BopomofoSyllable.I]],
-          ["x", [BopomofoSyllable.J, BopomofoSyllable.A, BopomofoSyllable.Tone2]],
+          [
+            "x",
+            [BopomofoSyllable.J, BopomofoSyllable.A, BopomofoSyllable.Tone2],
+          ],
         ]),
         "Custom-JQX-Head"
       );
@@ -377,7 +380,9 @@ describe("BopomofoKeyboardLayout", () => {
 
       const withExistingSyllable = layout.syllableFromKeySequence("bx");
       expect(withExistingSyllable.consonantComponent).toBe(BopomofoSyllable.B);
-      expect(withExistingSyllable.toneMarkerComponent).toBe(BopomofoSyllable.Tone2);
+      expect(withExistingSyllable.toneMarkerComponent).toBe(
+        BopomofoSyllable.Tone2
+      );
     });
 
     test("resolves JQX-class follow keys based on upcoming I or UE and existing syllables", () => {
@@ -385,7 +390,10 @@ describe("BopomofoKeyboardLayout", () => {
         new Map([
           ["b", [BopomofoSyllable.B]],
           ["i", [BopomofoSyllable.I]],
-          ["x", [BopomofoSyllable.A, BopomofoSyllable.J, BopomofoSyllable.Tone2]],
+          [
+            "x",
+            [BopomofoSyllable.A, BopomofoSyllable.J, BopomofoSyllable.Tone2],
+          ],
         ]),
         "Custom-JQX-Follow"
       );
@@ -399,7 +407,9 @@ describe("BopomofoKeyboardLayout", () => {
 
       const withExistingSyllable = layout.syllableFromKeySequence("bx");
       expect(withExistingSyllable.consonantComponent).toBe(BopomofoSyllable.B);
-      expect(withExistingSyllable.toneMarkerComponent).toBe(BopomofoSyllable.Tone2);
+      expect(withExistingSyllable.toneMarkerComponent).toBe(
+        BopomofoSyllable.Tone2
+      );
     });
 
     test("falls back to ending component for single ambiguous consonant keys", () => {
@@ -457,14 +467,14 @@ describe("BopomofoKeyboardLayout", () => {
 
     test("Should handle Hsu layout ambiguous key resolution with I/UE", () => {
       const layout = BopomofoKeyboardLayout.HsuLayout;
-      
+
       // Test complex scenarios with multiple components per key
       // "d" in Hsu has both K and ANG components
       const syllable1 = layout.syllableFromKeySequence("de");
       // Just verify it produces a valid syllable
       expect(syllable1).toBeDefined();
       expect(syllable1.isEmpty).toBe(false);
-      
+
       // Test J/Q/X class handling with syllable not empty
       const syllable2 = layout.syllableFromKeySequence("rce");
       expect(syllable2).toBeDefined();
@@ -472,11 +482,11 @@ describe("BopomofoKeyboardLayout", () => {
 
     test("Should handle E vowel disambiguation in ETen layout", () => {
       const layout = BopomofoKeyboardLayout.ETenLayout;
-      
+
       // Test I/UE + E rule
       const syllable1 = layout.syllableFromKeySequence("ke");
       expect(syllable1).toBeDefined();
-      
+
       // Another E rule test
       const syllable2 = layout.syllableFromKeySequence("ek");
       expect(syllable2).toBeDefined();
@@ -484,11 +494,11 @@ describe("BopomofoKeyboardLayout", () => {
 
     test("Should handle single character with multiple components", () => {
       const layout = BopomofoKeyboardLayout.HsuLayout;
-      
+
       // Test "j" alone (has J, ZH, Tone4)
       const syllable1 = layout.syllableFromKeySequence("j");
       expect(syllable1).toBeDefined();
-      
+
       // Test "d" alone (has K, ANG)
       const syllable2 = layout.syllableFromKeySequence("d");
       expect(syllable2).toBeDefined();
@@ -496,7 +506,7 @@ describe("BopomofoKeyboardLayout", () => {
 
     test("Should handle ZCSR class consonants", () => {
       const layout = BopomofoKeyboardLayout.HsuLayout;
-      
+
       // Test with Z class consonant
       const syllable = layout.syllableFromKeySequence("a2");
       expect(syllable).toBeDefined();
@@ -504,7 +514,7 @@ describe("BopomofoKeyboardLayout", () => {
 
     test("Should handle endAheadOrAheadHasToneMarkKey for tone markers", () => {
       const layout = BopomofoKeyboardLayout.StandardLayout;
-      
+
       // Test sequence ending with tone
       const syllable = layout.syllableFromKeySequence("18" + "6");
       expect(syllable.toneMarkerComponent).toBe(BopomofoSyllable.Tone2);
@@ -610,5 +620,21 @@ describe("BopomofoKeyboardLayout", () => {
       expect(readable.get("x")).toBe("ㄧㄜㄚ");
       expect(readable.get("y")).toBe("ㄛ");
     });
+  });
+
+  describe("Test Su keyboard", () => {
+    test("Test ;js", () => {
+      const layout = BopomofoKeyboardLayout.SuLayout;
+      const a = layout.syllableFromKeySequence(";js");
+      expect(a.consonantComponent).toBe(BopomofoSyllable.ZH);
+      expect(a.middleVowelComponent).toBe(BopomofoSyllable.U);
+      expect(a.vowelComponent).toBe(BopomofoSyllable.ENG);
+    });
+
+    // test("Test uf", () => {
+    //   const layout = BopomofoKeyboardLayout.SuLayout;
+    //   const a = layout.syllableFromKeySequence("uf");
+    //   console.log(a.composedString);
+    // });
   });
 });

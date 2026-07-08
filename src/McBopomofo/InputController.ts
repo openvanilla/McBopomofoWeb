@@ -287,6 +287,9 @@ export class InputController {
       case "IBM":
         this.keyHandler_.keyboardLayout = BopomofoKeyboardLayout.IBMLayout;
         break;
+      case "Su":
+        this.keyHandler_.keyboardLayout = BopomofoKeyboardLayout.SuLayout;
+        break;
       default:
         this.keyHandler_.keyboardLayout = BopomofoKeyboardLayout.StandardLayout;
         break;

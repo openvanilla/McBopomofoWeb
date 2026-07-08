@@ -86,6 +86,8 @@ function GetKeyboardLayoutName(layout: BopomofoKeyboardLayout): string {
     return "HanyuPinyin";
   } else if (layout === BopomofoKeyboardLayout.IBMLayout) {
     return "IBM";
+  } else if (layout === BopomofoKeyboardLayout.SuLayout) {
+    return "Su";
   }
   return "Standard";
 }
