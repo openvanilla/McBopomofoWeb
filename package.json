@@ -61,7 +61,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.28.5",
-    "@babel/preset-env": "^7.28.5",
+    "@babel/preset-env": "^8.0.2",
     "@babel/preset-typescript": "^7.28.5",
     "@playwright/test": "^1.61.1",
     "@types/chrome": "^0.2.1",
