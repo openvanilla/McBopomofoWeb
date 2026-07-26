@@ -922,3 +922,9 @@ button:hover {
   display: flex;
   justify-content: center;
 }
+
+
+#keyhandle_time {
+  font-size: 10pt;
+  color: var(--text-secondary);
+}

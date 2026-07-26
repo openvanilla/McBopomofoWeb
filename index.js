@@ -1290,7 +1290,14 @@ if (typeof document !== "undefined") {
           return;
         }
 
+        const keyhandleTime = $("keyhandle_time");
+        const startedAt = performance.now();
         const accepted = controller.keyEvent(event);
+        if (keyhandleTime) {
+          keyhandleTime.textContent = `${(performance.now() - startedAt).toFixed(
+            2
+          )} ms`;
+        }
         if (accepted) {
           event.preventDefault();
         }
