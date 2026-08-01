@@ -49,7 +49,7 @@
   "homepage": "https://github.com/openvanilla/McBopomofoWeb#readme",
   "dependencies": {
     "@cfworker/json-schema": "^4.1.1",
-    "@modelcontextprotocol/sdk": "^1.29.0",
+    "@modelcontextprotocol/sdk": "^1.30.0",
     "babel-loader": "^10.1.1",
     "chinese_convert": "^1.0.8",
     "dayjs": "^1.11.21",
