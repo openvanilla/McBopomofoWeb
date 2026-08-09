@@ -1675,6 +1675,13 @@ export class KeyHandler {
     originalCursorIndex: number,
     useMoveCursorAfterSelectionSetting: boolean = true
   ): void {
+    // Since WalkResult makes references to the current nodes, we must make a
+    // copy of the walk that *has a copy* of the current nodes to capture the
+    // current state. ReadingGrid.overrideCandidate() changes the state, and
+    // so having a simple copy of latestWalk_ (const prevWalk = this.latestWalk_)
+    // is NOT enough.
+    const prevWalk = this.latestWalk_?.copyWithFixedNodes();
+
     const actualCursor = this.actualCandidateCursorIndex;
     const gridCandidate = new Candidate(
       candidate.reading,
@@ -1685,7 +1692,6 @@ export class KeyHandler {
       return;
     }
 
-    const prevWalk = this.latestWalk_;
     this.walk();
 
     // Update the user override model if warranted.

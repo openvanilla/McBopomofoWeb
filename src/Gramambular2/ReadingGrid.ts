@@ -716,6 +716,26 @@ export class WalkResult {
   }
 
   /**
+   * Makes a copy with the nodes also being copies instead of references to
+   * those in the current grid.
+   *
+   * For performance reasons, nodes is an array of nodes in the referenced
+   * grid. If the intent is to have the walk capture the current state of the
+   * grid before the grid mutates, the default behavior will not be enough.
+   * Instead, use this to make sure that the nodes are correctly copied.
+   */
+  copyWithFixedNodes(): WalkResult {
+    const copiedNodes = this.nodes.map((node) => node.clone());
+    return new WalkResult(
+      copiedNodes,
+      this.vertices,
+      this.edges,
+      this.elapsedMicroseconds,
+      this.totalReadings,
+    );
+  }
+
+  /**
    * The readings of the nodes as a list of strings.
    * @returns A list of strings.
    */
