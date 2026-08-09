@@ -24,7 +24,7 @@ unigrams as nodes on the grid, a simple DAG shortest-path walk will give us
 the maximum likelihood estimation (MLE) for the hidden values.</p>
 </div></section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/openvanilla/McBopomofoWeb/blob/e5bb80ffd50134fb93dfb9a73068c268817c96d9/src/Gramambular2/ReadingGrid.ts#L39">work/McBopomofoWeb/McBopomofoWeb/src/Gramambular2/ReadingGrid.ts:39</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/openvanilla/McBopomofoWeb/blob/9352f5d9b7b0cf7fa413d6699276651e1525f832/src/Gramambular2/ReadingGrid.ts#L44">work/McBopomofoWeb/McBopomofoWeb/src/Gramambular2/ReadingGrid.ts:44</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -53,6 +53,7 @@ the maximum likelihood estimation (MLE) for the hidden values.</p>
 <a href="#clear" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>clear</span></a>
 <a href="#deletereadingaftercursor" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>delete<wbr/>Reading<wbr/>After<wbr/>Cursor</span></a>
 <a href="#deletereadingbeforecursor" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>delete<wbr/>Reading<wbr/>Before<wbr/>Cursor</span></a>
+<a href="#findinspan" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>find<wbr/>In<wbr/>Span?</span></a>
 <a href="#insertreading" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>insert<wbr/>Reading</span></a>
 <a href="#overlappingnodesat" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>overlapping<wbr/>Nodes<wbr/>At</span></a>
 <a href="#overridecandidate" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>override<wbr/>Candidate</span></a>
@@ -74,7 +75,7 @@ the maximum likelihood estimation (MLE) for the hidden values.</p>
 <li><span><span class="tsd-kind-parameter">lm_</span>: <a href="../interfaces/Gramambular2_LanguageModel.LanguageModel.html" class="tsd-signature-type tsd-kind-interface">LanguageModel</a></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="" class="tsd-signature-type tsd-kind-class">ReadingGrid</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/openvanilla/McBopomofoWeb/blob/e5bb80ffd50134fb93dfb9a73068c268817c96d9/src/Gramambular2/ReadingGrid.ts#L45">work/McBopomofoWeb/McBopomofoWeb/src/Gramambular2/ReadingGrid.ts:45</a></li></ul></aside></div></li></ul></section></section></details>
+<li>Defined in <a href="https://github.com/openvanilla/McBopomofoWeb/blob/9352f5d9b7b0cf7fa413d6699276651e1525f832/src/Gramambular2/ReadingGrid.ts#L50">work/McBopomofoWeb/McBopomofoWeb/src/Gramambular2/ReadingGrid.ts:50</a></li></ul></aside></div></li></ul></section></section></details>
 <details class="tsd-panel-group tsd-member-group tsd-accordion" open><summary class="tsd-accordion-summary" data-key="section-Properties"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
 <h2 class="tsd-anchor-link" id="properties-1">Properties<a href="#properties-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2></summary>
 <section>
@@ -82,12 +83,12 @@ the maximum likelihood estimation (MLE) for the hidden values.</p>
 <h3 class="tsd-anchor-link" id="kdefaultseparator"><code class="tsd-tag">Static</code><span>k<wbr/>Default<wbr/>Separator</span><a href="#kdefaultseparator" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">kDefaultSeparator</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &quot;-&quot;</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/openvanilla/McBopomofoWeb/blob/e5bb80ffd50134fb93dfb9a73068c268817c96d9/src/Gramambular2/ReadingGrid.ts#L150">work/McBopomofoWeb/McBopomofoWeb/src/Gramambular2/ReadingGrid.ts:150</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/openvanilla/McBopomofoWeb/blob/9352f5d9b7b0cf7fa413d6699276651e1525f832/src/Gramambular2/ReadingGrid.ts#L173">work/McBopomofoWeb/McBopomofoWeb/src/Gramambular2/ReadingGrid.ts:173</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="kmaximumspanlength"><code class="tsd-tag">Static</code><span>k<wbr/>Maximum<wbr/>Span<wbr/>Length</span><a href="#kmaximumspanlength" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">kMaximumSpanLength</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 8</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/openvanilla/McBopomofoWeb/blob/e5bb80ffd50134fb93dfb9a73068c268817c96d9/src/Gramambular2/ReadingGrid.ts#L149">work/McBopomofoWeb/McBopomofoWeb/src/Gramambular2/ReadingGrid.ts:149</a></li></ul></aside></section></section></details>
+<li>Defined in <a href="https://github.com/openvanilla/McBopomofoWeb/blob/9352f5d9b7b0cf7fa413d6699276651e1525f832/src/Gramambular2/ReadingGrid.ts#L172">work/McBopomofoWeb/McBopomofoWeb/src/Gramambular2/ReadingGrid.ts:172</a></li></ul></aside></section></section></details>
 <details class="tsd-panel-group tsd-member-group tsd-accordion" open><summary class="tsd-accordion-summary" data-key="section-Accessors"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
 <h2 class="tsd-anchor-link" id="accessors-1">Accessors<a href="#accessors-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2></summary>
 <section>
@@ -101,7 +102,7 @@ the maximum likelihood estimation (MLE) for the hidden values.</p>
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/openvanilla/McBopomofoWeb/blob/e5bb80ffd50134fb93dfb9a73068c268817c96d9/src/Gramambular2/ReadingGrid.ts#L73">work/McBopomofoWeb/McBopomofoWeb/src/Gramambular2/ReadingGrid.ts:73</a></li></ul></aside></div></li>
+<li>Defined in <a href="https://github.com/openvanilla/McBopomofoWeb/blob/9352f5d9b7b0cf7fa413d6699276651e1525f832/src/Gramambular2/ReadingGrid.ts#L78">work/McBopomofoWeb/McBopomofoWeb/src/Gramambular2/ReadingGrid.ts:78</a></li></ul></aside></div></li>
 <li>
 <div class="tsd-signature" id="cursorcursor-1"><span class="tsd-signature-keyword">set</span> <span class="tsd-kind-set-signature">cursor</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">cursor</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">void</span></div>
 <div class="tsd-description">
@@ -111,7 +112,7 @@ the maximum likelihood estimation (MLE) for the hidden values.</p>
 <li><span><span class="tsd-kind-parameter">cursor</span>: <span class="tsd-signature-type">number</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/openvanilla/McBopomofoWeb/blob/e5bb80ffd50134fb93dfb9a73068c268817c96d9/src/Gramambular2/ReadingGrid.ts#L77">work/McBopomofoWeb/McBopomofoWeb/src/Gramambular2/ReadingGrid.ts:77</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/openvanilla/McBopomofoWeb/blob/9352f5d9b7b0cf7fa413d6699276651e1525f832/src/Gramambular2/ReadingGrid.ts#L82">work/McBopomofoWeb/McBopomofoWeb/src/Gramambular2/ReadingGrid.ts:82</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="length"><span>length</span><a href="#length" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -122,7 +123,7 @@ the maximum likelihood estimation (MLE) for the hidden values.</p>
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/openvanilla/McBopomofoWeb/blob/e5bb80ffd50134fb93dfb9a73068c268817c96d9/src/Gramambular2/ReadingGrid.ts#L66">work/McBopomofoWeb/McBopomofoWeb/src/Gramambular2/ReadingGrid.ts:66</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/openvanilla/McBopomofoWeb/blob/9352f5d9b7b0cf7fa413d6699276651e1525f832/src/Gramambular2/ReadingGrid.ts#L71">work/McBopomofoWeb/McBopomofoWeb/src/Gramambular2/ReadingGrid.ts:71</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="readings"><span>readings</span><a href="#readings" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -133,7 +134,7 @@ the maximum likelihood estimation (MLE) for the hidden values.</p>
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/openvanilla/McBopomofoWeb/blob/e5bb80ffd50134fb93dfb9a73068c268817c96d9/src/Gramambular2/ReadingGrid.ts#L59">work/McBopomofoWeb/McBopomofoWeb/src/Gramambular2/ReadingGrid.ts:59</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/openvanilla/McBopomofoWeb/blob/9352f5d9b7b0cf7fa413d6699276651e1525f832/src/Gramambular2/ReadingGrid.ts#L64">work/McBopomofoWeb/McBopomofoWeb/src/Gramambular2/ReadingGrid.ts:64</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="readingseparator"><span>reading<wbr/>Separator</span><a href="#readingseparator" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -144,7 +145,7 @@ the maximum likelihood estimation (MLE) for the hidden values.</p>
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/openvanilla/McBopomofoWeb/blob/e5bb80ffd50134fb93dfb9a73068c268817c96d9/src/Gramambular2/ReadingGrid.ts#L84">work/McBopomofoWeb/McBopomofoWeb/src/Gramambular2/ReadingGrid.ts:84</a></li></ul></aside></div></li>
+<li>Defined in <a href="https://github.com/openvanilla/McBopomofoWeb/blob/9352f5d9b7b0cf7fa413d6699276651e1525f832/src/Gramambular2/ReadingGrid.ts#L89">work/McBopomofoWeb/McBopomofoWeb/src/Gramambular2/ReadingGrid.ts:89</a></li></ul></aside></div></li>
 <li>
 <div class="tsd-signature" id="readingseparatorreadingseparator-1"><span class="tsd-signature-keyword">set</span> <span class="tsd-kind-set-signature">readingSeparator</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">readingSeparator</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">void</span></div>
 <div class="tsd-description">
@@ -154,7 +155,7 @@ the maximum likelihood estimation (MLE) for the hidden values.</p>
 <li><span><span class="tsd-kind-parameter">readingSeparator</span>: <span class="tsd-signature-type">string</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/openvanilla/McBopomofoWeb/blob/e5bb80ffd50134fb93dfb9a73068c268817c96d9/src/Gramambular2/ReadingGrid.ts#L88">work/McBopomofoWeb/McBopomofoWeb/src/Gramambular2/ReadingGrid.ts:88</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/openvanilla/McBopomofoWeb/blob/9352f5d9b7b0cf7fa413d6699276651e1525f832/src/Gramambular2/ReadingGrid.ts#L93">work/McBopomofoWeb/McBopomofoWeb/src/Gramambular2/ReadingGrid.ts:93</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="spans"><span>spans</span><a href="#spans" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -165,7 +166,7 @@ the maximum likelihood estimation (MLE) for the hidden values.</p>
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-keyword">readonly</span> <a href="Gramambular2_ReadingGrid.Span.html" class="tsd-signature-type tsd-kind-class">Span</a><span class="tsd-signature-symbol">[]</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/openvanilla/McBopomofoWeb/blob/e5bb80ffd50134fb93dfb9a73068c268817c96d9/src/Gramambular2/ReadingGrid.ts#L95">work/McBopomofoWeb/McBopomofoWeb/src/Gramambular2/ReadingGrid.ts:95</a></li></ul></aside></div></li></ul></section></section></details>
+<li>Defined in <a href="https://github.com/openvanilla/McBopomofoWeb/blob/9352f5d9b7b0cf7fa413d6699276651e1525f832/src/Gramambular2/ReadingGrid.ts#L100">work/McBopomofoWeb/McBopomofoWeb/src/Gramambular2/ReadingGrid.ts:100</a></li></ul></aside></div></li></ul></section></section></details>
 <details class="tsd-panel-group tsd-member-group tsd-accordion" open><summary class="tsd-accordion-summary" data-key="section-Methods"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
 <h2 class="tsd-anchor-link" id="methods-1">Methods<a href="#methods-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2></summary>
 <section>
@@ -188,7 +189,7 @@ not have to care about this boundary condition.</p>
 <h4 class="tsd-returns-title">Returns <a href="Gramambular2_ReadingGrid.Candidate.html" class="tsd-signature-type tsd-kind-class">Candidate</a><span class="tsd-signature-symbol">[]</span></h4><p>A list of candidates.</p>
 <aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/openvanilla/McBopomofoWeb/blob/e5bb80ffd50134fb93dfb9a73068c268817c96d9/src/Gramambular2/ReadingGrid.ts#L263">work/McBopomofoWeb/McBopomofoWeb/src/Gramambular2/ReadingGrid.ts:263</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/openvanilla/McBopomofoWeb/blob/9352f5d9b7b0cf7fa413d6699276651e1525f832/src/Gramambular2/ReadingGrid.ts#L286">work/McBopomofoWeb/McBopomofoWeb/src/Gramambular2/ReadingGrid.ts:286</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="clear"><span>clear</span><a href="#clear" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -199,7 +200,7 @@ not have to care about this boundary condition.</p>
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/openvanilla/McBopomofoWeb/blob/e5bb80ffd50134fb93dfb9a73068c268817c96d9/src/Gramambular2/ReadingGrid.ts#L50">work/McBopomofoWeb/McBopomofoWeb/src/Gramambular2/ReadingGrid.ts:50</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/openvanilla/McBopomofoWeb/blob/9352f5d9b7b0cf7fa413d6699276651e1525f832/src/Gramambular2/ReadingGrid.ts#L55">work/McBopomofoWeb/McBopomofoWeb/src/Gramambular2/ReadingGrid.ts:55</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="deletereadingaftercursor"><span>delete<wbr/>Reading<wbr/>After<wbr/>Cursor</span><a href="#deletereadingaftercursor" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -208,10 +209,10 @@ not have to care about this boundary condition.</p>
 <div class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>Delete the reading after the cursor, like Del. Cursor is unmoved.</p>
 </div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4><p>Always returns false.</p>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4><p>Always returns true if a reading was deleted.</p>
 <aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/openvanilla/McBopomofoWeb/blob/e5bb80ffd50134fb93dfb9a73068c268817c96d9/src/Gramambular2/ReadingGrid.ts#L139">work/McBopomofoWeb/McBopomofoWeb/src/Gramambular2/ReadingGrid.ts:139</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/openvanilla/McBopomofoWeb/blob/9352f5d9b7b0cf7fa413d6699276651e1525f832/src/Gramambular2/ReadingGrid.ts#L147">work/McBopomofoWeb/McBopomofoWeb/src/Gramambular2/ReadingGrid.ts:147</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="deletereadingbeforecursor"><span>delete<wbr/>Reading<wbr/>Before<wbr/>Cursor</span><a href="#deletereadingbeforecursor" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -224,7 +225,21 @@ by one.</p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4><p>Always returns false.</p>
 <aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/openvanilla/McBopomofoWeb/blob/e5bb80ffd50134fb93dfb9a73068c268817c96d9/src/Gramambular2/ReadingGrid.ts#L124">work/McBopomofoWeb/McBopomofoWeb/src/Gramambular2/ReadingGrid.ts:124</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/openvanilla/McBopomofoWeb/blob/9352f5d9b7b0cf7fa413d6699276651e1525f832/src/Gramambular2/ReadingGrid.ts#L132">work/McBopomofoWeb/McBopomofoWeb/src/Gramambular2/ReadingGrid.ts:132</a></li></ul></aside></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="findinspan"><code class="tsd-tag">Optional</code><span>find<wbr/>In<wbr/>Span</span><a href="#findinspan" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="findinspan-1"><span class="tsd-kind-call-signature">findInSpan</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">cursor</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">predicate</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">node</span><span class="tsd-signature-symbol">:</span> <a href="Gramambular2_ReadingGrid.Node.html" class="tsd-signature-type tsd-kind-class">Node</a><span class="tsd-signature-symbol">)</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="Gramambular2_ReadingGrid.Node.html" class="tsd-signature-type tsd-kind-class">Node</a> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">undefined</span><a href="#findinspan-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><span class="tsd-kind-parameter">cursor</span>: <span class="tsd-signature-type">number</span></span></li>
+<li><span><span class="tsd-kind-parameter">predicate</span>: <span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">node</span><span class="tsd-signature-symbol">:</span> <a href="Gramambular2_ReadingGrid.Node.html" class="tsd-signature-type tsd-kind-class">Node</a><span class="tsd-signature-symbol">)</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">boolean</span></span></li></ul></div>
+<h4 class="tsd-returns-title">Returns <a href="Gramambular2_ReadingGrid.Node.html" class="tsd-signature-type tsd-kind-class">Node</a> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">undefined</span></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/openvanilla/McBopomofoWeb/blob/9352f5d9b7b0cf7fa413d6699276651e1525f832/src/Gramambular2/ReadingGrid.ts#L157">work/McBopomofoWeb/McBopomofoWeb/src/Gramambular2/ReadingGrid.ts:157</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="insertreading"><span>insert<wbr/>Reading</span><a href="#insertreading" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -242,7 +257,7 @@ by one.</p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4><p>True if the reading was inserted, false otherwise.</p>
 <aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/openvanilla/McBopomofoWeb/blob/e5bb80ffd50134fb93dfb9a73068c268817c96d9/src/Gramambular2/ReadingGrid.ts#L104">work/McBopomofoWeb/McBopomofoWeb/src/Gramambular2/ReadingGrid.ts:104</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/openvanilla/McBopomofoWeb/blob/9352f5d9b7b0cf7fa413d6699276651e1525f832/src/Gramambular2/ReadingGrid.ts#L109">work/McBopomofoWeb/McBopomofoWeb/src/Gramambular2/ReadingGrid.ts:109</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="overlappingnodesat"><span>overlapping<wbr/>Nodes<wbr/>At</span><a href="#overlappingnodesat" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -261,7 +276,7 @@ of nodes along with their starting location in the grid.</p>
 <h4 class="tsd-returns-title">Returns <a href="Gramambular2_ReadingGrid.NodeInSpan.html" class="tsd-signature-type tsd-kind-class">NodeInSpan</a><span class="tsd-signature-symbol">[]</span></h4><p>A list of nodes that overlap with the location.</p>
 <aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/openvanilla/McBopomofoWeb/blob/e5bb80ffd50134fb93dfb9a73068c268817c96d9/src/Gramambular2/ReadingGrid.ts#L504">work/McBopomofoWeb/McBopomofoWeb/src/Gramambular2/ReadingGrid.ts:504</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/openvanilla/McBopomofoWeb/blob/9352f5d9b7b0cf7fa413d6699276651e1525f832/src/Gramambular2/ReadingGrid.ts#L527">work/McBopomofoWeb/McBopomofoWeb/src/Gramambular2/ReadingGrid.ts:527</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="overridecandidate"><span>override<wbr/>Candidate</span><a href="#overridecandidate" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -288,7 +303,7 @@ through it.</p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4><p>True if the override was successful, false otherwise.</p>
 <aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/openvanilla/McBopomofoWeb/blob/e5bb80ffd50134fb93dfb9a73068c268817c96d9/src/Gramambular2/ReadingGrid.ts#L300">work/McBopomofoWeb/McBopomofoWeb/src/Gramambular2/ReadingGrid.ts:300</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/openvanilla/McBopomofoWeb/blob/9352f5d9b7b0cf7fa413d6699276651e1525f832/src/Gramambular2/ReadingGrid.ts#L323">work/McBopomofoWeb/McBopomofoWeb/src/Gramambular2/ReadingGrid.ts:323</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="overridecandidatewithstring"><span>override<wbr/>Candidate<wbr/>With<wbr/>String</span><a href="#overridecandidatewithstring" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -314,7 +329,7 @@ unigram value, it's not guaranteed which node will be selected.</p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4><p>True if the override was successful, false otherwise.</p>
 <aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/openvanilla/McBopomofoWeb/blob/e5bb80ffd50134fb93dfb9a73068c268817c96d9/src/Gramambular2/ReadingGrid.ts#L321">work/McBopomofoWeb/McBopomofoWeb/src/Gramambular2/ReadingGrid.ts:321</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/openvanilla/McBopomofoWeb/blob/9352f5d9b7b0cf7fa413d6699276651e1525f832/src/Gramambular2/ReadingGrid.ts#L344">work/McBopomofoWeb/McBopomofoWeb/src/Gramambular2/ReadingGrid.ts:344</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="walk"><span>walk</span><a href="#walk" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -333,7 +348,7 @@ grid is large.</p>
 <h4 class="tsd-returns-title">Returns <a href="Gramambular2_ReadingGrid.WalkResult.html" class="tsd-signature-type tsd-kind-class">WalkResult</a></h4><p>The result of the walk.</p>
 <aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/openvanilla/McBopomofoWeb/blob/e5bb80ffd50134fb93dfb9a73068c268817c96d9/src/Gramambular2/ReadingGrid.ts#L181">work/McBopomofoWeb/McBopomofoWeb/src/Gramambular2/ReadingGrid.ts:181</a></li></ul></aside></div></li></ul></section></section></details></div>
+<li>Defined in <a href="https://github.com/openvanilla/McBopomofoWeb/blob/9352f5d9b7b0cf7fa413d6699276651e1525f832/src/Gramambular2/ReadingGrid.ts#L204">work/McBopomofoWeb/McBopomofoWeb/src/Gramambular2/ReadingGrid.ts:204</a></li></ul></aside></div></li></ul></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
@@ -356,7 +371,7 @@ grid is large.</p>
 <details open class="tsd-accordion tsd-page-navigation-section"><summary class="tsd-accordion-summary" data-key="section-Accessors"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>Accessors</summary>
 <div><a href="#cursor"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Accessor"><use href="../assets/icons.svg#icon-262144"></use></svg><span>cursor</span></a><a href="#length"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Accessor"><use href="../assets/icons.svg#icon-262144"></use></svg><span>length</span></a><a href="#readings"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Accessor"><use href="../assets/icons.svg#icon-262144"></use></svg><span>readings</span></a><a href="#readingseparator"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Accessor"><use href="../assets/icons.svg#icon-262144"></use></svg><span>reading<wbr/>Separator</span></a><a href="#spans"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Accessor"><use href="../assets/icons.svg#icon-262144"></use></svg><span>spans</span></a></div></details>
 <details open class="tsd-accordion tsd-page-navigation-section"><summary class="tsd-accordion-summary" data-key="section-Methods"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>Methods</summary>
-<div><a href="#candidatesat"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>candidates<wbr/>At</span></a><a href="#clear"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>clear</span></a><a href="#deletereadingaftercursor"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>delete<wbr/>Reading<wbr/>After<wbr/>Cursor</span></a><a href="#deletereadingbeforecursor"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>delete<wbr/>Reading<wbr/>Before<wbr/>Cursor</span></a><a href="#insertreading"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>insert<wbr/>Reading</span></a><a href="#overlappingnodesat"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>overlapping<wbr/>Nodes<wbr/>At</span></a><a href="#overridecandidate"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>override<wbr/>Candidate</span></a><a href="#overridecandidatewithstring"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>override<wbr/>Candidate<wbr/>With<wbr/>String</span></a><a href="#walk"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>walk</span></a></div></details></div></details></div>
+<div><a href="#candidatesat"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>candidates<wbr/>At</span></a><a href="#clear"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>clear</span></a><a href="#deletereadingaftercursor"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>delete<wbr/>Reading<wbr/>After<wbr/>Cursor</span></a><a href="#deletereadingbeforecursor"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>delete<wbr/>Reading<wbr/>Before<wbr/>Cursor</span></a><a href="#findinspan"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>find<wbr/>In<wbr/>Span</span></a><a href="#insertreading"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>insert<wbr/>Reading</span></a><a href="#overlappingnodesat"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>overlapping<wbr/>Nodes<wbr/>At</span></a><a href="#overridecandidate"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>override<wbr/>Candidate</span></a><a href="#overridecandidatewithstring"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>override<wbr/>Candidate<wbr/>With<wbr/>String</span></a><a href="#walk"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>walk</span></a></div></details></div></details></div>
 <div class="site-menu">
 <nav class="tsd-navigation"><a href="../modules.html">@openvanilla/mcbopomofoweb</a>
 <ul class="tsd-small-nested-navigation" id="tsd-nav-container">
