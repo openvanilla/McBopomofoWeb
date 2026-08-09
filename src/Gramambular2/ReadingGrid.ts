@@ -137,12 +137,12 @@ export class ReadingGrid {
     --this.cursor_;
     this.shrinkGridAt(this.cursor_);
     this.update(this.cursor_, EditType.DELETION);
-    return false;
+    return true;
   }
 
   /**
    * Delete the reading after the cursor, like Del. Cursor is unmoved.
-   * @returns Always returns false.
+   * @returns Always returns true if a reading was deleted.
    */
   deleteReadingAfterCursor(): boolean {
     if (this.cursor_ >= this.readings_.length) {
@@ -151,7 +151,7 @@ export class ReadingGrid {
     this.readings_.splice(this.cursor_, 1);
     this.shrinkGridAt(this.cursor_);
     this.update(this.cursor_, EditType.DELETION);
-    return false;
+    return true;
   }
 
   findInSpan?(
@@ -492,8 +492,7 @@ export class ReadingGrid {
     // include an insertion or cross a deletion boundary need to be queried.
     const affectedLength = ReadingGrid.kMaximumSpanLength - 1;
     const begin = loc <= affectedLength ? 0 : loc - affectedLength;
-    let end = type === EditType.INSERTION ? loc + 1 : loc;
-    end = Math.min(end, this.readings_.length);
+    const end = Math.min(loc + 1, this.readings_.length);
 
     for (let pos = begin; pos < end; pos++) {
       let minimumLength = loc - pos + 1;
@@ -502,9 +501,10 @@ export class ReadingGrid {
         this.readings_.length - pos,
       );
       for (let len = minimumLength; len <= maximumLength; len++) {
-        const combinedReading = this.combineReading(
-          this.readings_.slice(pos, pos + len),
-        );
+        const combinedReading =
+          len === 1
+            ? this.readings_[pos]
+            : this.combineReadingRange(pos, len);
 
         if (!this.hasNodeAt(pos, len, combinedReading)) {
           const unigrams = this.lm_.getUnigrams(combinedReading);

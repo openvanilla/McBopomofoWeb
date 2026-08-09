@@ -237,7 +237,10 @@ describe("ReadingGrid", () => {
   it("should bypass range combining for single-reading updates", () => {
     const mockLM = new MockLanguageModel();
     const grid = new ReadingGrid(mockLM);
-    const combineReadingRangeSpy = jest.spyOn(grid as any, "combineReadingRange");
+    const combineReadingRangeSpy = jest.spyOn(
+      grid as any,
+      "combineReadingRange"
+    );
 
     grid.insertReading("testReading");
 
