@@ -22,6 +22,11 @@ class ViterbiState {
   }
 }
 
+enum EditType {
+  INSERTION,
+  DELETION,
+}
+
 /**
  * A grid for deriving the most likely hidden values from a series of
  * observations. For our purpose, the observations are Bopomofo readings, and
@@ -42,7 +47,7 @@ export class ReadingGrid {
   private spans_: Span[] = [];
   private readings_: string[] = [];
 
-  constructor(private lm_: LanguageModel) { }
+  constructor(private lm_: LanguageModel) {}
 
   /**
    * Clears the grid.
@@ -105,13 +110,16 @@ export class ReadingGrid {
     if (reading.length === 0 || reading === this.separator_) {
       return false;
     }
-    if (!this.lm_.hasUnigrams(reading)) {
+    let insertedReading = reading;
+    let unigrams = this.lm_.getUnigrams(insertedReading);
+    if (unigrams.length === 0) {
       return false;
     }
-
-    this.readings_.splice(this.cursor_, 0, reading);
+    this.readings_.splice(this.cursor_, 0, insertedReading);
     this.expandGridAt(this.cursor_);
-    this.update();
+    this.insert(this.cursor_, new Node(insertedReading, 1, unigrams));
+    this.update(this.cursor_, EditType.INSERTION);
+    // Cursor must only move after update().
     ++this.cursor_;
     return true;
   }
@@ -128,7 +136,7 @@ export class ReadingGrid {
     this.readings_.splice(this.cursor_ - 1, 1);
     --this.cursor_;
     this.shrinkGridAt(this.cursor_);
-    this.update();
+    this.update(this.cursor_, EditType.DELETION);
     return false;
   }
 
@@ -142,8 +150,23 @@ export class ReadingGrid {
     }
     this.readings_.splice(this.cursor_, 1);
     this.shrinkGridAt(this.cursor_);
-    this.update();
+    this.update(this.cursor_, EditType.DELETION);
     return false;
+  }
+
+  findInSpan?(
+    cursor: number,
+    predicate: (node: Node) => boolean,
+  ): Node | undefined {
+    const nodes = this.overlappingNodesAt(
+      cursor === this.readings_.length ? cursor - 1 : cursor,
+    );
+    for (const nodeInSpan of nodes) {
+      if (predicate(nodeInSpan.node)) {
+        return nodeInSpan.node;
+      }
+    }
+    return undefined;
   }
 
   static kMaximumSpanLength: number = 8;
@@ -248,7 +271,7 @@ export class ReadingGrid {
       vertices,
       edges,
       GetEpochNowInMicroseconds() - start,
-      totalReadingLen
+      totalReadingLen,
     );
     return result;
   }
@@ -271,7 +294,7 @@ export class ReadingGrid {
     }
 
     const nodes = this.overlappingNodesAt(
-      loc === this.readings_.length ? loc - 1 : loc
+      loc === this.readings_.length ? loc - 1 : loc,
     );
 
     // Sort nodes by reading length.
@@ -280,7 +303,7 @@ export class ReadingGrid {
     for (const nodeInSpan of nodes) {
       for (const unigram of nodeInSpan.node.unigrams) {
         result.push(
-          new Candidate(nodeInSpan.node.reading, unigram.value, unigram.value)
+          new Candidate(nodeInSpan.node.reading, unigram.value, unigram.value),
         );
       }
     }
@@ -300,13 +323,13 @@ export class ReadingGrid {
   overrideCandidate = (
     loc: number,
     candidate: Candidate,
-    overrideType: OverrideType = OverrideType.kOverrideValueWithHighScore
+    overrideType: OverrideType = OverrideType.kOverrideValueWithHighScore,
   ) =>
     this.overrideCandidate_(
       loc,
       candidate.reading,
       candidate.value,
-      overrideType
+      overrideType,
     );
 
   /**
@@ -321,21 +344,21 @@ export class ReadingGrid {
   overrideCandidateWithString = (
     loc: number,
     candidate: string,
-    overrideType: OverrideType = OverrideType.kOverrideValueWithHighScore
+    overrideType: OverrideType = OverrideType.kOverrideValueWithHighScore,
   ) => this.overrideCandidate_(loc, undefined, candidate, overrideType);
 
   private overrideCandidate_(
     loc: number,
     reading: string | undefined,
     value: string,
-    overrideType: OverrideType
+    overrideType: OverrideType,
   ): boolean {
     if (loc > this.readings_.length) {
       return false;
     }
 
     const overlappingNodes = this.overlappingNodesAt(
-      loc === this.readings_.length ? loc - 1 : loc
+      loc === this.readings_.length ? loc - 1 : loc,
     );
     let overridden: NodeInSpan | undefined = undefined;
 
@@ -462,26 +485,26 @@ export class ReadingGrid {
     return reading === n.reading;
   }
 
-  private update() {
-    const begin =
-      this.cursor_ <= ReadingGrid.kMaximumSpanLength
-        ? 0
-        : this.cursor_ - ReadingGrid.kMaximumSpanLength;
-    let end = this.cursor_ + ReadingGrid.kMaximumSpanLength;
-    if (end > this.readings_.length) {
-      end = this.readings_.length;
-    }
+  private update(loc: number, type: EditType) {
+    // Spans that do not cross the edit retain their previous lookup result. A
+    // node means that the lookup succeeded, while a null slot means that the
+    // same reading was already looked up and did not exist. Only spans that
+    // include an insertion or cross a deletion boundary need to be queried.
+    const affectedLength = ReadingGrid.kMaximumSpanLength - 1;
+    const begin = loc <= affectedLength ? 0 : loc - affectedLength;
+    let end = type === EditType.INSERTION ? loc + 1 : loc;
+    end = Math.min(end, this.readings_.length);
+
     for (let pos = begin; pos < end; pos++) {
-      let combinedReading = "";
-      for (
-        let len = 1;
-        len <= ReadingGrid.kMaximumSpanLength && pos + len <= end;
-        len++
-      ) {
-        combinedReading =
-          len === 1
-            ? this.readings_[pos]
-            : this.combineReadingRange(pos, len);
+      let minimumLength = loc - pos + 1;
+      let maximumLength = Math.min(
+        ReadingGrid.kMaximumSpanLength,
+        this.readings_.length - pos,
+      );
+      for (let len = minimumLength; len <= maximumLength; len++) {
+        const combinedReading = this.combineReading(
+          this.readings_.slice(pos, pos + len),
+        );
 
         if (!this.hasNodeAt(pos, len, combinedReading)) {
           const unigrams = this.lm_.getUnigrams(combinedReading);
@@ -565,8 +588,8 @@ export class Node {
   constructor(
     public readonly reading: string,
     public readonly spanningLength: number,
-    public readonly unigrams: Unigram[]
-  ) { }
+    public readonly unigrams: Unigram[],
+  ) {}
 
   /**
    * The current unigram of the node.
@@ -676,8 +699,8 @@ export class WalkResult {
     public readonly vertices: number,
     public readonly edges: number,
     public readonly elapsedMicroseconds: number,
-    public readonly totalReadings: number
-  ) { }
+    public readonly totalReadings: number,
+  ) {}
 
   /**
    * The values of the nodes as a list of strings.
@@ -711,12 +734,12 @@ export class WalkResult {
    * @returns A tuple containing the found node, the cursor index, and the node index.
    */
   findNodeAt(
-    cursor: number
+    cursor: number,
   ): Readonly<
     [
       Node | undefined /* found node */,
       number /* cursor index */,
-      number | undefined /* node index */
+      number | undefined /* node index */,
     ]
   > {
     if (this.nodes.length === 0) {
@@ -763,8 +786,8 @@ export class Candidate {
     /** The exact text displayed in the candidate windows. For example, we may
      * have multiple duplicated candidate whose value is "你", but the displayed
      * text could be "你 1", "你 2" and so on. */
-    public readonly displayedText: string
-  ) { }
+    public readonly displayedText: string,
+  ) {}
 }
 
 /**
@@ -862,7 +885,7 @@ export class Span {
  * @implements {LanguageModel}
  */
 export class ScoreRankedLanguageModel implements LanguageModel {
-  constructor(private lm_: LanguageModel) { }
+  constructor(private lm_: LanguageModel) {}
 
   getUnigrams(key: string): Unigram[] {
     throw new Error("Method not implemented.");
@@ -877,7 +900,96 @@ export class ScoreRankedLanguageModel implements LanguageModel {
  * @class
  */
 export class NodeInSpan {
-  constructor(public readonly node: Node, public readonly spanIndex: number) { }
+  constructor(
+    public readonly node: Node,
+    public readonly spanIndex: number,
+  ) {}
+}
+
+class Vertex {
+  edges: Vertex[] = [];
+  /** Used during topological-sort. */
+  topologicallySorted = false;
+  /**
+   * Used during shortest-path computation. We are actually computing the path
+   * with the *largest* weight, hence distance's initial value being negative
+   * infinity. If we were to compute the *shortest* weight/distance, we would
+   * have initialized this to infinity.
+   */
+  distance: number = Number.NEGATIVE_INFINITY;
+  prev: Vertex | undefined = undefined;
+
+  constructor(public node: Node) {}
+}
+
+/**
+ * Cormen et al. 2001 explains the historical origin of the term "relax."
+ * @param u The source vertex.
+ * @param v The destination vertex.
+ */
+function Relax(u: Vertex, v: Vertex) {
+  // The distance from u to w is simply v's score.
+  const w = v.node.score;
+
+  // Since we are computing the largest weight, we update v's distance and prev
+  // if the current distance to v is *less* than that of u's plus the distance
+  // to v (which is represented by w).
+
+  if (v.distance < u.distance + w) {
+    v.distance = u.distance + w;
+    v.prev = u;
+  }
+}
+
+type VertexSpan = Vertex[];
+
+// Topological-sorts a DAG that has a single root and returns the vertices in
+// topological order. Here, a non-recursive version is implemented using our own
+// stack and state definitions, so that we are not constrained by the current
+// thread's stack size. This is the equivalent to this recursive version:
+//
+//  void TopologicalSort(Vertex* v) {
+//    for (Vertex* nv : v->edges) {
+//      if (!nv->topologicallySorted) {
+//        dfs(nv, result);
+//      }
+//    }
+//    v->topologicallySorted = true;
+//    result.push_back(v);
+//  }
+//
+// The recursive version is similar to the TOPOLOGICAL-SORT algorithm found in
+// Cormen et al. 2001.
+function TopologicalSort(root: Vertex): Vertex[] {
+  class State {
+    v: Vertex;
+    iterIndex: number;
+    constructor(v: Vertex, iterIndex: number = 0) {
+      this.v = v;
+      this.iterIndex = iterIndex;
+    }
+  }
+
+  const result: Vertex[] = [];
+  const stack: State[] = [];
+  stack.push(new State(root));
+
+  while (stack.length > 0) {
+    const state = stack[stack.length - 1];
+    const v = state.v;
+    if (state.iterIndex < state.v.edges.length) {
+      const nv = state.v.edges[state.iterIndex];
+      state.iterIndex++;
+      if (!nv.topologicallySorted) {
+        stack.push(new State(nv));
+        continue;
+      }
+    }
+    v.topologicallySorted = true;
+    result.push(v);
+    stack.pop();
+  }
+  return result;
 }
 
 function GetEpochNowInMicroseconds(): number {
