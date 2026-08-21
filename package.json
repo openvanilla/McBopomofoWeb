@@ -56,7 +56,7 @@
     "lodash": "^4.18.1",
     "lunar-typescript": "^1.8.6",
     "lz-string": "^1.5.0",
-    "minimatch": ">=10.2.5",
+    "minimatch": ">=10.2.6",
     "zod": "^4.4.3"
   },
   "devDependencies": {
