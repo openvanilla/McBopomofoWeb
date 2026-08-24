@@ -25,14 +25,17 @@
 
 #include <algorithm>
 #include <cctype>
+#include <map>
+#include <string>
+#include <vector>
 
 namespace Formosa {
 namespace Mandarin {
 
 class PinyinParseHelper {
  public:
-  static const bool ConsumePrefix(std::string& target,
-                                  const std::string& prefix) {
+  // Returns true after `target` got stripped the specified `prefix`.
+  static bool ConsumePrefix(std::string& target, const std::string& prefix) {
     if (target.length() < prefix.length()) {
       return false;
     }
@@ -59,7 +62,7 @@ class BopomofoCharacterMap {
 };
 
 const BPMF BPMF::FromHanyuPinyin(const std::string& str) {
-  if (!str.length()) {
+  if (str.empty()) {
     return BPMF();
   }
 
@@ -74,9 +77,11 @@ const BPMF BPMF::FromHanyuPinyin(const std::string& str) {
   // lookup consonants and consume them
   bool independentConsonant = false;
 
+  // disable this check for if-else/switch blocks below
+  // NOLINTBEGIN(bugprone-branch-clone)
+
   // the y exceptions fist
-  if (0) {
-  } else if (PinyinParseHelper::ConsumePrefix(pinyin, "yuan")) {
+  if (PinyinParseHelper::ConsumePrefix(pinyin, "yuan")) {
     secondComponent = BPMF::UE;
     thirdComponent = BPMF::AN;
   } else if (PinyinParseHelper::ConsumePrefix(pinyin, "ying")) {
@@ -102,7 +107,7 @@ const BPMF BPMF::FromHanyuPinyin(const std::string& str) {
   }
 
   // try the first character
-  char c = pinyin.length() ? pinyin[0] : 0;
+  char c = !pinyin.empty() ? pinyin[0] : '\0';
   switch (c) {
     case 'b':
       firstComponent = BPMF::B;
@@ -161,7 +166,7 @@ const BPMF BPMF::FromHanyuPinyin(const std::string& str) {
       pinyin = pinyin.substr(1);
       break;
 
-    // special hanlding for w and y
+    // special handling for w and y
     case 'w':
       secondComponent = BPMF::U;
       pinyin = pinyin.substr(1);
@@ -175,8 +180,7 @@ const BPMF BPMF::FromHanyuPinyin(const std::string& str) {
   }
 
   // then we try ZH, CH, SH, R, Z, C, S (in that order)
-  if (0) {
-  } else if (PinyinParseHelper::ConsumePrefix(pinyin, "zh")) {
+  if (PinyinParseHelper::ConsumePrefix(pinyin, "zh")) {
     firstComponent = BPMF::ZH;
     independentConsonant = true;
   } else if (PinyinParseHelper::ConsumePrefix(pinyin, "ch")) {
@@ -201,8 +205,7 @@ const BPMF BPMF::FromHanyuPinyin(const std::string& str) {
 
   // consume exceptions first: (ien, in), (iou, iu), (uen, un), (veng, iong),
   // (ven, vn), (uei, ui), ung but longer sequence takes precedence
-  if (0) {
-  } else if (PinyinParseHelper::ConsumePrefix(pinyin, "veng")) {
+  if (PinyinParseHelper::ConsumePrefix(pinyin, "veng")) {
     secondComponent = BPMF::UE;
     thirdComponent = BPMF::ENG;
   } else if (PinyinParseHelper::ConsumePrefix(pinyin, "iong")) {
@@ -265,13 +268,13 @@ const BPMF BPMF::FromHanyuPinyin(const std::string& str) {
   } else if (PinyinParseHelper::ConsumePrefix(pinyin, "ue")) {
     secondComponent = BPMF::UE;
     thirdComponent = BPMF::E;
-  } else if (PinyinParseHelper::ConsumePrefix(pinyin, u8"ü")) {
+  } else if (PinyinParseHelper::ConsumePrefix(
+                 pinyin, reinterpret_cast<const char*>(u8"ü"))) {
     secondComponent = BPMF::UE;
   }
 
   // then consume the middle component...
-  if (0) {
-  } else if (PinyinParseHelper::ConsumePrefix(pinyin, "i")) {
+  if (PinyinParseHelper::ConsumePrefix(pinyin, "i")) {
     secondComponent = independentConsonant ? 0 : BPMF::I;
   } else if (PinyinParseHelper::ConsumePrefix(pinyin, "u")) {
     if (firstComponent == BPMF::J || firstComponent == BPMF::Q ||
@@ -285,8 +288,7 @@ const BPMF BPMF::FromHanyuPinyin(const std::string& str) {
   }
 
   // the vowels, longer sequence takes precedence
-  if (0) {
-  } else if (PinyinParseHelper::ConsumePrefix(pinyin, "ang")) {
+  if (PinyinParseHelper::ConsumePrefix(pinyin, "ang")) {
     thirdComponent = BPMF::ANG;
   } else if (PinyinParseHelper::ConsumePrefix(pinyin, "eng")) {
     thirdComponent = BPMF::ENG;
@@ -317,10 +319,10 @@ const BPMF BPMF::FromHanyuPinyin(const std::string& str) {
       thirdComponent = BPMF::ER;
     }
   }
+  // NOLINTEND(bugprone-branch-clone)
 
   // at last!
-  if (0) {
-  } else if (PinyinParseHelper::ConsumePrefix(pinyin, "1")) {
+  if (PinyinParseHelper::ConsumePrefix(pinyin, "1")) {
     toneComponent = BPMF::Tone1;
   } else if (PinyinParseHelper::ConsumePrefix(pinyin, "2")) {
     toneComponent = BPMF::Tone2;
@@ -380,43 +382,63 @@ const std::string BPMF::HanyuPinyinString(bool includesTone,
       break;
     case J:
       consonant = "j";
-      if (hasNoMVCOrVC) middle = "i";
+      if (hasNoMVCOrVC) {
+        middle = "i";
+      }
       break;
     case Q:
       consonant = "q";
-      if (hasNoMVCOrVC) middle = "i";
+      if (hasNoMVCOrVC) {
+        middle = "i";
+      }
       break;
     case X:
       consonant = "x";
-      if (hasNoMVCOrVC) middle = "i";
+      if (hasNoMVCOrVC) {
+        middle = "i";
+      }
       break;
     case ZH:
       consonant = "zh";
-      if (hasNoMVCOrVC) middle = "i";
+      if (hasNoMVCOrVC) {
+        middle = "i";
+      }
       break;
     case CH:
       consonant = "ch";
-      if (hasNoMVCOrVC) middle = "i";
+      if (hasNoMVCOrVC) {
+        middle = "i";
+      }
       break;
     case SH:
       consonant = "sh";
-      if (hasNoMVCOrVC) middle = "i";
+      if (hasNoMVCOrVC) {
+        middle = "i";
+      }
       break;
     case R:
       consonant = "r";
-      if (hasNoMVCOrVC) middle = "i";
+      if (hasNoMVCOrVC) {
+        middle = "i";
+      }
       break;
     case Z:
       consonant = "z";
-      if (hasNoMVCOrVC) middle = "i";
+      if (hasNoMVCOrVC) {
+        middle = "i";
+      }
       break;
     case C:
       consonant = "c";
-      if (hasNoMVCOrVC) middle = "i";
+      if (hasNoMVCOrVC) {
+        middle = "i";
+      }
       break;
     case S:
       consonant = "s";
-      if (hasNoMVCOrVC) middle = "i";
+      if (hasNoMVCOrVC) {
+        middle = "i";
+      }
       break;
   }
 
@@ -448,6 +470,7 @@ const std::string BPMF::HanyuPinyinString(bool includesTone,
       break;
   }
 
+  // NOLINTBEGIN(bugprone-branch-clone)
   switch (vc) {
     case A:
       vowel = "a";
@@ -489,6 +512,7 @@ const std::string BPMF::HanyuPinyinString(bool includesTone,
       vowel = "er";
       break;
   }
+  // NOLINTEND(bugprone-branch-clone)
 
   // combination rules
 
@@ -562,12 +586,15 @@ const BPMF BPMF::FromComposedString(const std::string& str) {
     // the Bopomofo character map or to split the input by codepoints. This
     // suffices for now.
 
+    // disable for check for code points below
+    // NOLINTBEGIN(readability-magic-numbers)
+
     // Illegal.
     if (!(*iter & 0x80)) {
       break;
     }
 
-    size_t utf8_length = -1;
+    std::string::difference_type utf8_length = -1;
 
     // These are the code points for the tone markers.
     if ((*iter & (0x80 | 0x40)) && !(*iter & 0x20)) {
@@ -578,6 +605,7 @@ const BPMF BPMF::FromComposedString(const std::string& str) {
       // Illegal.
       break;
     }
+    // NOLINTEND(readability-magic-numbers)
 
     if (iter + (utf8_length - 1) == str.end()) {
       break;
@@ -590,9 +618,8 @@ const BPMF BPMF::FromComposedString(const std::string& str) {
         charToComp.find(component);
     if (result == charToComp.end()) {
       break;
-    } else {
-      syllable += BPMF((*result).second);
     }
+    syllable += BPMF((*result).second);
     iter += utf8_length;
   }
   return syllable;
@@ -601,10 +628,10 @@ const BPMF BPMF::FromComposedString(const std::string& str) {
 const std::string BPMF::composedString() const {
   std::string result;
 #define APPEND(c)                                                         \
-  if (syllable_ & c)                                                     \
+  if (syllable_ & (c))                                                    \
   result +=                                                               \
       (*BopomofoCharacterMap::SharedInstance().componentToCharacter.find( \
-           syllable_ & c))                                               \
+           syllable_ & (c)))                                              \
           .second
   APPEND(ConsonantMask);
   APPEND(MiddleVowelMask);
@@ -614,62 +641,61 @@ const std::string BPMF::composedString() const {
   return result;
 }
 
-
-
 const BopomofoCharacterMap& BopomofoCharacterMap::SharedInstance() {
   static BopomofoCharacterMap* map = new BopomofoCharacterMap();
   return *map;
 }
 
 BopomofoCharacterMap::BopomofoCharacterMap() {
-  characterToComponent[u8"ㄅ"] = BPMF::B;
-  characterToComponent[u8"ㄆ"] = BPMF::P;
-  characterToComponent[u8"ㄇ"] = BPMF::M;
-  characterToComponent[u8"ㄈ"] = BPMF::F;
-  characterToComponent[u8"ㄉ"] = BPMF::D;
-  characterToComponent[u8"ㄊ"] = BPMF::T;
-  characterToComponent[u8"ㄋ"] = BPMF::N;
-  characterToComponent[u8"ㄌ"] = BPMF::L;
-  characterToComponent[u8"ㄎ"] = BPMF::K;
-  characterToComponent[u8"ㄍ"] = BPMF::G;
-  characterToComponent[u8"ㄏ"] = BPMF::H;
-  characterToComponent[u8"ㄐ"] = BPMF::J;
-  characterToComponent[u8"ㄑ"] = BPMF::Q;
-  characterToComponent[u8"ㄒ"] = BPMF::X;
-  characterToComponent[u8"ㄓ"] = BPMF::ZH;
-  characterToComponent[u8"ㄔ"] = BPMF::CH;
-  characterToComponent[u8"ㄕ"] = BPMF::SH;
-  characterToComponent[u8"ㄖ"] = BPMF::R;
-  characterToComponent[u8"ㄗ"] = BPMF::Z;
-  characterToComponent[u8"ㄘ"] = BPMF::C;
-  characterToComponent[u8"ㄙ"] = BPMF::S;
-  characterToComponent[u8"ㄧ"] = BPMF::I;
-  characterToComponent[u8"ㄨ"] = BPMF::U;
-  characterToComponent[u8"ㄩ"] = BPMF::UE;
-  characterToComponent[u8"ㄚ"] = BPMF::A;
-  characterToComponent[u8"ㄛ"] = BPMF::O;
-  characterToComponent[u8"ㄜ"] = BPMF::ER;
-  characterToComponent[u8"ㄝ"] = BPMF::E;
-  characterToComponent[u8"ㄞ"] = BPMF::AI;
-  characterToComponent[u8"ㄟ"] = BPMF::EI;
-  characterToComponent[u8"ㄠ"] = BPMF::AO;
-  characterToComponent[u8"ㄡ"] = BPMF::OU;
-  characterToComponent[u8"ㄢ"] = BPMF::AN;
-  characterToComponent[u8"ㄣ"] = BPMF::EN;
-  characterToComponent[u8"ㄤ"] = BPMF::ANG;
-  characterToComponent[u8"ㄥ"] = BPMF::ENG;
-  characterToComponent[u8"ㄦ"] = BPMF::ERR;
-  characterToComponent[u8"ˊ"] = BPMF::Tone2;
-  characterToComponent[u8"ˇ"] = BPMF::Tone3;
-  characterToComponent[u8"ˋ"] = BPMF::Tone4;
-  characterToComponent[u8"˙"] = BPMF::Tone5;
+  characterToComponent[reinterpret_cast<const char*>(u8"ㄅ")] = BPMF::B;
+  characterToComponent[reinterpret_cast<const char*>(u8"ㄆ")] = BPMF::P;
+  characterToComponent[reinterpret_cast<const char*>(u8"ㄇ")] = BPMF::M;
+  characterToComponent[reinterpret_cast<const char*>(u8"ㄈ")] = BPMF::F;
+  characterToComponent[reinterpret_cast<const char*>(u8"ㄉ")] = BPMF::D;
+  characterToComponent[reinterpret_cast<const char*>(u8"ㄊ")] = BPMF::T;
+  characterToComponent[reinterpret_cast<const char*>(u8"ㄋ")] = BPMF::N;
+  characterToComponent[reinterpret_cast<const char*>(u8"ㄌ")] = BPMF::L;
+  characterToComponent[reinterpret_cast<const char*>(u8"ㄎ")] = BPMF::K;
+  characterToComponent[reinterpret_cast<const char*>(u8"ㄍ")] = BPMF::G;
+  characterToComponent[reinterpret_cast<const char*>(u8"ㄏ")] = BPMF::H;
+  characterToComponent[reinterpret_cast<const char*>(u8"ㄐ")] = BPMF::J;
+  characterToComponent[reinterpret_cast<const char*>(u8"ㄑ")] = BPMF::Q;
+  characterToComponent[reinterpret_cast<const char*>(u8"ㄒ")] = BPMF::X;
+  characterToComponent[reinterpret_cast<const char*>(u8"ㄓ")] = BPMF::ZH;
+  characterToComponent[reinterpret_cast<const char*>(u8"ㄔ")] = BPMF::CH;
+  characterToComponent[reinterpret_cast<const char*>(u8"ㄕ")] = BPMF::SH;
+  characterToComponent[reinterpret_cast<const char*>(u8"ㄖ")] = BPMF::R;
+  characterToComponent[reinterpret_cast<const char*>(u8"ㄗ")] = BPMF::Z;
+  characterToComponent[reinterpret_cast<const char*>(u8"ㄘ")] = BPMF::C;
+  characterToComponent[reinterpret_cast<const char*>(u8"ㄙ")] = BPMF::S;
+  characterToComponent[reinterpret_cast<const char*>(u8"ㄧ")] = BPMF::I;
+  characterToComponent[reinterpret_cast<const char*>(u8"ㄨ")] = BPMF::U;
+  characterToComponent[reinterpret_cast<const char*>(u8"ㄩ")] = BPMF::UE;
+  characterToComponent[reinterpret_cast<const char*>(u8"ㄚ")] = BPMF::A;
+  characterToComponent[reinterpret_cast<const char*>(u8"ㄛ")] = BPMF::O;
+  characterToComponent[reinterpret_cast<const char*>(u8"ㄜ")] = BPMF::ER;
+  characterToComponent[reinterpret_cast<const char*>(u8"ㄝ")] = BPMF::E;
+  characterToComponent[reinterpret_cast<const char*>(u8"ㄞ")] = BPMF::AI;
+  characterToComponent[reinterpret_cast<const char*>(u8"ㄟ")] = BPMF::EI;
+  characterToComponent[reinterpret_cast<const char*>(u8"ㄠ")] = BPMF::AO;
+  characterToComponent[reinterpret_cast<const char*>(u8"ㄡ")] = BPMF::OU;
+  characterToComponent[reinterpret_cast<const char*>(u8"ㄢ")] = BPMF::AN;
+  characterToComponent[reinterpret_cast<const char*>(u8"ㄣ")] = BPMF::EN;
+  characterToComponent[reinterpret_cast<const char*>(u8"ㄤ")] = BPMF::ANG;
+  characterToComponent[reinterpret_cast<const char*>(u8"ㄥ")] = BPMF::ENG;
+  characterToComponent[reinterpret_cast<const char*>(u8"ㄦ")] = BPMF::ERR;
+  characterToComponent[reinterpret_cast<const char*>(u8"ˊ")] = BPMF::Tone2;
+  characterToComponent[reinterpret_cast<const char*>(u8"ˇ")] = BPMF::Tone3;
+  characterToComponent[reinterpret_cast<const char*>(u8"ˋ")] = BPMF::Tone4;
+  characterToComponent[reinterpret_cast<const char*>(u8"˙")] = BPMF::Tone5;
 
-  for (std::map<std::string, BPMF::Component>::iterator iter =
-           characterToComponent.begin();
-       iter != characterToComponent.end(); ++iter)
-    componentToCharacter[(*iter).second] = (*iter).first;
+  for (const auto& [character, component] : characterToComponent) {
+    componentToCharacter[component] = character;
+  }
 }
 
+// we don't need parentheses for these macros
+// NOLINTBEGIN(bugprone-macro-parentheses)
 #define ASSIGNKEY1(m, vec, k, val) \
   m[k] = (vec.clear(), vec.push_back((BPMF::Component)val), vec)
 #define ASSIGNKEY2(m, vec, k, val1, val2)                    \
@@ -679,6 +705,7 @@ BopomofoCharacterMap::BopomofoCharacterMap() {
   m[k] = (vec.clear(), vec.push_back((BPMF::Component)val1), \
           vec.push_back((BPMF::Component)val2),              \
           vec.push_back((BPMF::Component)val3), vec)
+// NOLINTEND(bugprone-macro-parentheses)
 
 static BopomofoKeyboardLayout* CreateStandardLayout() {
   std::vector<BPMF::Component> vec;

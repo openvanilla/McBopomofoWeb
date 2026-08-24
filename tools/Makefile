@@ -1,7 +1,7 @@
 .PHONY: all clean
 
 CXX = c++
-CXXFLAGS = -std=c++11 -I./.
+CXXFLAGS = -std=c++20 -I./.
 TARGET_DIR = ../src/McBopomofo
 
 all: $(TARGET_DIR)/WebData.ts $(TARGET_DIR)/WebDataPlain.ts

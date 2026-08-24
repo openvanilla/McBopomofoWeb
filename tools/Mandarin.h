@@ -21,9 +21,10 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 // OTHER DEALINGS IN THE SOFTWARE.
 
-#ifndef MANDARIN_H_
-#define MANDARIN_H_
+#ifndef SRC_ENGINE_MANDARIN_MANDARIN_H_
+#define SRC_ENGINE_MANDARIN_MANDARIN_H_
 
+#include <cstdint>
 #include <iostream>
 #include <map>
 #include <string>
@@ -67,9 +68,7 @@ class BopomofoSyllable {
 
   Component consonantComponent() const { return syllable_ & ConsonantMask; }
 
-  Component middleVowelComponent() const {
-    return syllable_ & MiddleVowelMask;
-  }
+  Component middleVowelComponent() const { return syllable_ & MiddleVowelMask; }
 
   Component vowelComponent() const { return syllable_ & VowelMask; }
 
@@ -113,8 +112,8 @@ class BopomofoSyllable {
 
   const BopomofoSyllable operator+(const BopomofoSyllable& another) const {
     Component newSyllable = syllable_;
-#define OP_SOVER(mask) \
-  if (another.syllable_ & mask) { \
+#define OP_SOVER(mask)                                                \
+  if (another.syllable_ & mask) {                                     \
     newSyllable = (newSyllable & ~mask) | (another.syllable_ & mask); \
   }
     OP_SOVER(ConsonantMask);
@@ -126,8 +125,8 @@ class BopomofoSyllable {
   }
 
   BopomofoSyllable& operator+=(const BopomofoSyllable& another) {
-#define OPE_SOVER(mask) \
-  if (another.syllable_ & mask) { \
+#define OPE_SOVER(mask)                                           \
+  if (another.syllable_ & mask) {                                 \
     syllable_ = (syllable_ & ~mask) | (another.syllable_ & mask); \
   }
     OPE_SOVER(ConsonantMask);
@@ -215,28 +214,26 @@ class BopomofoKeyboardLayout {
 
   BopomofoKeyboardLayout(const BopomofoKeyToComponentMap& ktcm,
                          const std::string& name)
-      : m_keyToComponent(ktcm), m_name(name) {
-    for (BopomofoKeyToComponentMap::const_iterator miter =
-             m_keyToComponent.begin();
-         miter != m_keyToComponent.end(); ++miter)
-      for (std::vector<BPMF::Component>::const_iterator viter =
-               (*miter).second.begin();
-           viter != (*miter).second.end(); ++viter)
-        m_componentToKey[*viter] = (*miter).first;
+      : name_(name), keyToComponent_(ktcm) {
+    for (const auto& [key, components] : keyToComponent_) {
+      for (const auto& component : components) {
+        componentToKey_[component] = key;
+      }
+    }
   }
 
-  const std::string name() const { return m_name; }
+  const std::string name() const { return name_; }
 
   char componentToKey(BPMF::Component component) const {
     BopomofoComponentToKeyMap::const_iterator iter =
-        m_componentToKey.find(component);
-    return (iter == m_componentToKey.end()) ? 0 : (*iter).second;
+        componentToKey_.find(component);
+    return (iter == componentToKey_.end()) ? 0 : (*iter).second;
   }
 
   const std::vector<BPMF::Component> keyToComponents(char key) const {
-    BopomofoKeyToComponentMap::const_iterator iter = m_keyToComponent.find(key);
-    return (iter == m_keyToComponent.end()) ? std::vector<BPMF::Component>()
-                                            : (*iter).second;
+    BopomofoKeyToComponentMap::const_iterator iter = keyToComponent_.find(key);
+    return (iter == keyToComponent_.end()) ? std::vector<BPMF::Component>()
+                                           : (*iter).second;
   }
 
   const std::string keySequenceFromSyllable(BPMF syllable) const {
@@ -337,6 +334,15 @@ class BopomofoKeyboardLayout {
           syllable += head;
         } else if (syllable.maskType() < follow.maskType()) {
           syllable += follow;
+        } else if ((syllable.maskType() == follow.maskType()) &&
+                   syllable.maskType() == BPMF::VowelMask) {
+          // if the existing syllable contains only a vowel, and the
+          // current character has 2+ possibilities, and the second (follow)
+          // choice is also a vowel, we run into the case where the user
+          // may have typed the consonant-vowel sequence in the wrong
+          // order, and so the first (head) choice, which is always a
+          // consonant, must be taken.
+          syllable += head;
         } else {
           syllable += ending;
         }
@@ -390,9 +396,9 @@ class BopomofoKeyboardLayout {
     return false;
   }
 
-  std::string m_name;
-  BopomofoKeyToComponentMap m_keyToComponent;
-  BopomofoComponentToKeyMap m_componentToKey;
+  std::string name_;
+  BopomofoKeyToComponentMap keyToComponent_;
+  BopomofoComponentToKeyMap componentToKey_;
 };
 
 class BopomofoReadingBuffer {
@@ -407,12 +413,14 @@ class BopomofoReadingBuffer {
 
   void setKeyboardLayout(const BopomofoKeyboardLayout* layout) {
     layout_ = layout;
+    pinyin_mode_ = layout == BopomofoKeyboardLayout::HanyuPinyinLayout();
 
-    if (layout == BopomofoKeyboardLayout::HanyuPinyinLayout()) {
-      pinyin_mode_ = true;
+    if (pinyin_mode_) {
       pinyin_sequence_ = "";
     }
   }
+
+  const BopomofoKeyboardLayout* keyboardLayout() const { return layout_; }
 
   bool isValidKey(char k) const {
     if (!pinyin_mode_) {
@@ -496,18 +504,13 @@ class BopomofoReadingBuffer {
         syllable_);
   }
 
-  const std::string absoluteOrderQueryString() const {
-    return syllable_.absoluteOrderString();
-  }
-
   bool hasToneMarker() const { return syllable_.hasToneMarker(); }
 
   bool hasToneMarkerOnly() const {
     return syllable_.hasToneMarker() &&
-          !(syllable_.hasConsonant() || syllable_.hasMiddleVowel() ||
-            syllable_.hasVowel());
+           !(syllable_.hasConsonant() || syllable_.hasMiddleVowel() ||
+             syllable_.hasVowel());
   }
-
 
  protected:
   const BopomofoKeyboardLayout* layout_;
@@ -519,4 +522,4 @@ class BopomofoReadingBuffer {
 }  // namespace Mandarin
 }  // namespace Formosa
 
-#endif  // MANDARIN_H_
+#endif  // SRC_ENGINE_MANDARIN_MANDARIN_H_
