@@ -67,7 +67,7 @@
     "@types/chrome": "^0.2.1",
     "@types/jest": "^30.0.0",
     "@types/lodash": "^4.17.24",
-    "@types/node": "^26.1.2",
+    "@types/node": "^26.2.0",
     "@typescript-eslint/eslint-plugin": "^8.62.1",
     "@typescript-eslint/parser": "^8.66.0",
     "core-js": "^3.49.0",
