@@ -484,7 +484,7 @@ export class BopomofoBrailleConverter {
     let isUppercase = false;
     let consumed = 1;
     const prefix = type === BrailleType.ASCII ? "," : "⠠";
-    if (substring === prefix) {
+    if (substring === prefix && cursor.remaining > 1) {
       isUppercase = true;
       substring = cursor.peek(1);
       consumed = 2;
