@@ -3126,3 +3126,69 @@ describe("Changing reading using tone key", () => {
     checkChangingReadingUsingToneKey("vul3a947", "小麥˙");
   });
 });
+
+describe("literal reading persistence", () => {
+  test("literal candidate selection does not train user override keys", () => {
+    const lm = new WebLanguageModel(webData);
+    const handler = new KeyHandler(lm, new LocalizedStrings());
+    let state = handleKeySequence(handler, [
+      ...asciiKey(["5", "j", "/"]),
+      Key.namedKey(KeyName.SPACE),
+    ]);
+    handler.handleMixedInput(Key.asciiKey("2"), state, (next) => {
+      state = next;
+    });
+    const choosing = handler.buildChoosingCandidateState(handler.cursor);
+    handler.candidateSelected(
+      choosing.candidates[0],
+      choosing.originalCursorIndex,
+      (next) => {
+        state = next;
+      }
+    );
+    expect(
+      JSON.stringify((handler as any).userOverrideModel_.m_lruList)
+    ).not.toContain("_literal_");
+  });
+  test("Chinese candidate learning treats literal context as a boundary", () => {
+    const handler = new KeyHandler(new WebLanguageModel(webData), new LocalizedStrings());
+    let state = handleKeySequence(handler, [
+      ...asciiKey(["5", "j", "/"]),
+      Key.namedKey(KeyName.SPACE),
+    ]);
+    handler.handleMixedInput(Key.asciiKey("2"), state, (next) => {
+      state = next;
+    });
+    for (const key of asciiKey(["j", "o", "6"])) handler.handle(key, state, (next) => {
+      state = next;
+    }, () => {});
+    const choosing = handler.buildChoosingCandidateState(handler.cursor);
+    handler.candidateSelected(
+      choosing.candidates[1],
+      choosing.originalCursorIndex,
+      (next) => {
+        state = next;
+      }
+    );
+    const observations = (handler as any).userOverrideModel_.m_lruList;
+    expect(observations.length).toBeGreaterThan(0);
+    expect(JSON.stringify(observations)).not.toContain("_literal_");
+    expect((state as Inputting).composingBuffer).toContain("中2");
+  });
+  test("direct phrase addition and exclusion reject literal readings", () => {
+    const lm = new WebLanguageModel(webData);
+    const handler = new KeyHandler(lm, new LocalizedStrings());
+    const added = jest.fn();
+    const excluded = jest.fn();
+    lm.setOnPhraseChange(added);
+    lm.setOnExcludedPhraseChange(excluded);
+    for (const reading of ["_literal_50", "ㄓㄨㄥ-_literal_50", "_literal_50-ㄓㄨㄥ"]) {
+      handler.addUserPhrase(reading, "中2");
+      handler.addExcludedPhrase(reading, "中2");
+    }
+    expect(added).not.toHaveBeenCalled();
+    expect(excluded).not.toHaveBeenCalled();
+    expect(lm.getUserPhrases().size).toBe(0);
+    expect(lm.getExcludedPhrases().size).toBe(0);
+  });
+});

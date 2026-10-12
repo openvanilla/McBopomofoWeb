@@ -269,3 +269,15 @@ AI agents may call a subagent to run `npm run test:coverage` to find code that i
 - Codecov uploads in GitHub Actions use `codecov/codecov-action@v5` from the Node 24.x coverage job and currently still pass `secrets.CODECOV_TOKEN`.
 - New language model data must include a short note in `README.md` summarizing changes for translators.
 - `AGENTS.md` is a symlink to this file, so edits here also update agent-facing instructions.
+
+### PIME mixed composition
+
+- Single Shift preserves a completed Inputting composition; unfinished readings, candidates, and Marking cannot toggle. Empty alphabet mode passes keys through.
+- Active alphabet input uses InputController.mcbopomofoKeyEvent(key, true). Printable ASCII ends Marking or cancels ChoosingCandidate before literal insertion; configured selection keycaps retain native handling even for empty slots. Reserved _literal_<ASCII code> grid readings bypass converters and phrase dictionaries.
+- Keep canHandleMixedInput (Shift eligibility), canInsertLiteral (literal eligibility), and hasActiveInputState (interactive routing) separate. Route all active feature/input states in alphabet mode; Empty, EmptyIgnoringPrevious, and Committing have no active interaction.
+- Apply Caps Lock XOR Shift only to alphabet-mode literal letters. Preserve the upstream Chinese-mode Caps Lock reset behavior.
+- Decode literals only for UI/export; keep internal candidate readings unchanged. Dictionary lookup and character information use actual text.
+- Reject literal ranges for vocabulary changes with a localized hint. Filter loaded phrase maps and PIME writers; exclude literals from override learning. Chinese-only ranges retain normal behavior.
+- PIME tests mock filesystem and child processes; never access real user configuration.
+
+- Normalize Committing to Empty before PIME key-down/key-up routing; do not depend on onCompositionTerminated. The transition must not reset UI or commit text again.

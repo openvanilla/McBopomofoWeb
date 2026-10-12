@@ -12,6 +12,7 @@ import {
   Candidate,
   LanguageModel,
   ReadingGrid,
+  Unigram,
   WalkResult,
 } from "../Gramambular2";
 import { OverrideType } from "../Gramambular2/ReadingGrid";
@@ -41,6 +42,11 @@ import {
   SelectingFeature,
 } from "./InputState";
 import { Key, KeyName } from "./Key";
+import {
+  containsLiteralReading,
+  literalReadingValue,
+  readingForDisplay,
+} from "./LiteralReading";
 import { LocalizedStrings } from "./LocalizedStrings";
 import { UserOverrideModel } from "./UserOverrideModel";
 import {
@@ -285,8 +291,65 @@ export class KeyHandler {
     this.reading_ = new BopomofoReadingBuffer(
       BopomofoKeyboardLayout.StandardLayout
     );
-    this.grid_ = new ReadingGrid(this.languageModel_);
+    // Keep literal readings in the grid, bypassing converters and dictionaries.
+    this.grid_ = new ReadingGrid({
+      getUnigrams: (key) => {
+        const value = literalReadingValue(key);
+        if (value !== undefined) {
+          return [new Unigram(value, 0)];
+        }
+        return containsLiteralReading(key)
+          ? []
+          : this.languageModel_.getUnigrams(key);
+      },
+      hasUnigrams: (key) =>
+        literalReadingValue(key) !== undefined ||
+        (!containsLiteralReading(key) && this.languageModel_.hasUnigrams(key)),
+    });
     this.grid_.readingSeparator = kJoinSeparator;
+  }
+
+  /** Whether ordinary composition contains text and no unfinished Bopomofo. */
+  public canHandleMixedInput(state: InputState): boolean {
+    return (
+      state instanceof Inputting &&
+      this.reading_.isEmpty &&
+      this.grid_.length > 0
+    );
+  }
+
+  /** Whether literal input can resume without leaving an unfinished reading. */
+  public canInsertLiteral(state: InputState): boolean {
+    return (
+      (state instanceof Inputting ||
+        state instanceof Marking ||
+        state instanceof ChoosingCandidate) &&
+      this.reading_.isEmpty
+    );
+  }
+
+  /** Inserts printable ASCII literally, before any Bopomofo or punctuation mapping. */
+  public handleMixedInput(
+    key: Key,
+    state: InputState,
+    stateCallback: (state: InputState) => void
+  ): boolean {
+    if (!this.canInsertLiteral(state) || key.ctrlPressed) {
+      return false;
+    }
+    let value = key.name === KeyName.SPACE ? " " : key.ascii;
+    if (!/^[\x20-\x7e]$/.test(value)) {
+      return false;
+    }
+    if (/^[a-zA-Z]$/.test(value)) {
+      value = key.shiftPressed ? value.toUpperCase() : value.toLowerCase();
+    }
+    if (!this.grid_.insertReading("_literal_" + value.charCodeAt(0))) {
+      return false;
+    }
+    this.walk();
+    stateCallback(this.buildInputtingState());
+    return true;
   }
 
   handleNumberInput(
@@ -633,7 +696,9 @@ export class KeyHandler {
       if (this.traditionalMode_ === false && key.ctrlPressed) {
         if (this.ctrlEnterOption_ === CtrlEnterOption.BpmfReadings) {
           const readings = this.grid_.readings;
-          const readingValue = readings.join(kJoinSeparator);
+          const readingValue = readings
+            .map(readingForDisplay)
+            .join(kJoinSeparator);
 
           const committing = new Committing(readingValue);
           stateCallback(committing);
@@ -719,7 +784,7 @@ export class KeyHandler {
       // See if we are in Marking state, and, if a valid mark, accept it.
       if (state instanceof Marking) {
         const marking = state as Marking;
-        if (marking.acceptable) {
+        if (marking.acceptable && !containsLiteralReading(marking.reading)) {
           if (this.languageModel_ instanceof WebLanguageModel) {
             (this.languageModel_ as WebLanguageModel).addUserPhrase(
               marking.reading,
@@ -1132,8 +1197,10 @@ export class KeyHandler {
         // builderCursor. It is also guaranteed to be less than the size of the
         // builder's readings for the same reason: runningCursor would have
         // already caught up.
-        const prevReading = this.grid_.readings[builderCursor - 1];
-        const nextReading = this.grid_.readings[builderCursor];
+        const prevReading = readingForDisplay(
+          this.grid_.readings[builderCursor - 1]
+        );
+        const nextReading = readingForDisplay(this.grid_.readings[builderCursor]);
         tooltip = this.localizedStrings_.cursorIsBetweenSyllables(
           prevReading,
           nextReading
@@ -1609,13 +1676,15 @@ export class KeyHandler {
     // Collect the readings.
     const readings = this.grid_.readings.slice(fromIndex, toIndex);
 
-    const readingUiText = _.join(readings, " "); // What the user sees.
+    const readingUiText = readings.map(readingForDisplay).join(" "); // What the user sees.
     const readingValue = _.join(readings, "-"); // What is used for adding a user phrase.
 
     let isValid = false;
     let status = "";
     // Validate the marking.
-    if (readings.length < kMinValidMarkingReadingCount) {
+    if (readings.some(containsLiteralReading)) {
+      status = this.localizedStrings_.literalPhraseUnsupported();
+    } else if (readings.length < kMinValidMarkingReadingCount) {
       status = this.localizedStrings_.syllablesRequired(
         kMinValidMarkingReadingCount
       );
@@ -1707,7 +1776,10 @@ export class KeyHandler {
       return;
     }
 
-    if (currentNode.currentUnigram.score > kNoOverrideThreshold) {
+    if (
+      !containsLiteralReading(candidate.reading) &&
+      currentNode.currentUnigram.score > kNoOverrideThreshold
+    ) {
       this.userOverrideModel_.observe(
         prevWalk,
         this.latestWalk_,
@@ -1728,12 +1800,18 @@ export class KeyHandler {
   }
 
   addUserPhrase(reading: string, phrase: string) {
+    if (containsLiteralReading(reading)) {
+      return;
+    }
     if (this.languageModel_ instanceof WebLanguageModel) {
       (this.languageModel_ as WebLanguageModel).addUserPhrase(reading, phrase);
     }
   }
 
   addExcludedPhrase(reading: string, phrase: string) {
+    if (containsLiteralReading(reading)) {
+      return;
+    }
     if (this.languageModel_ instanceof WebLanguageModel) {
       (this.languageModel_ as WebLanguageModel).addExcludedPhrase(
         reading,

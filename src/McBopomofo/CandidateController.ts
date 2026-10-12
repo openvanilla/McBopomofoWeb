@@ -45,6 +45,15 @@ export class CandidateController {
   private currentSelectedIndex_: number = 0;
 
   /**
+   * Checks whether an actual key is a selection keycap, including empty slots.
+   * @param key The actual key received from the keyboard.
+   * @returns True if the key matches a configured selection keycap.
+   */
+  public isSelectionKey(key: string): boolean {
+    return this.keyCaps_.some((keyCap) => keyCap.actual === key);
+  }
+
+  /**
    * Pass a key and return the corresponding candidate.
    * @param key The key from the keyboard, such as "1", "2", "a" and so on.
    * @returns The corresponding candidate or the undefined value.

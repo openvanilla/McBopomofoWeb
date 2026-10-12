@@ -40,6 +40,11 @@ describe("public API documentation", () => {
   test("documents public InputController methods used by integrators", () => {
     const source = readSource("McBopomofo/InputController.ts");
 
+    expectDocumented(source, "public finishCommitting(): void {");
+    expectDocumented(source, "public get canInsertLiteral(): boolean {");
+    expectDocumented(source, "public get hasActiveInputState(): boolean {");
+    expectDocumented(source, "public get canHandleMixedInput(): boolean {");
+    expectDocumented(source, "public mcbopomofoKeyEvent(");
     expectDocumented(source, "get readableLayoutKeys(): Map<string, string> {");
     expectDocumented(
       source,
@@ -71,4 +76,23 @@ describe("public API documentation", () => {
       "public simpleKeyboardEvent(",
     );
   });
+});
+
+test("documents literal reading boundary helpers", () => {
+  const source = readSource("McBopomofo/LiteralReading.ts");
+  for (const name of [
+    "containsLiteralReading",
+    "literalReadingValue",
+    "readingForDisplay",
+  ]) {
+    expectDocumented(source, "export const " + name);
+  }
+});
+
+
+test("documents selection keycap matching independently from available candidates", () => {
+  expectDocumented(
+    readSource("McBopomofo/CandidateController.ts"),
+    "public isSelectionKey(key: string): boolean {"
+  );
 });
