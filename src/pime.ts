@@ -18,7 +18,14 @@ import {
 } from "./McBopomofo/InputController";
 import { Empty, Inputting, NotEmpty } from "./McBopomofo/InputState";
 import { InputUI } from "./McBopomofo/InputUI";
+import { Key } from "./McBopomofo/Key";
+import { containsLiteralReading } from "./McBopomofo/LiteralReading";
 import { KeyFromKeyboardEvent, VK_Keys } from "./pime_keys";
+
+const isShiftKey = (keyCode: number): boolean =>
+  keyCode === VK_Keys.VK_SHIFT ||
+  keyCode === VK_Keys.VK_LSHIFT ||
+  keyCode === VK_Keys.VK_RSHIFT;
 
 /**
  * The McBopomofo Settings.
@@ -305,6 +312,9 @@ class PimeMcBopomofo {
 
     let string = "";
     for (const key of map.keys()) {
+      if (containsLiteralReading(key)) {
+        continue;
+      }
       const phrases = map.get(key);
       if (phrases === undefined) {
         continue;
@@ -334,6 +344,7 @@ class PimeMcBopomofo {
 
     let string = "";
     for (const key of map.keys()) {
+      if (containsLiteralReading(key)) continue;
       const phrases = map.get(key);
       if (phrases === undefined) {
         continue;
@@ -353,10 +364,12 @@ class PimeMcBopomofo {
   }
 
   /** Toggles the alphabet mode. */
-  public toggleAlphabetMode(): void {
-    // Changes the alphabet mode, also commits current composing buffer.
+  public toggleAlphabetMode(preserveComposition: boolean = false): void {
+    // Command/menu switches keep committing; single Shift may retain the grid.
     this.isAlphabetMode = !this.isAlphabetMode;
-    this.resetController();
+    if (!preserveComposition) {
+      this.resetController();
+    }
   }
 
   /** Applies the settings to the input controller. */
@@ -883,8 +896,12 @@ module.exports = {
     }
 
     if (request.method === "filterKeyUp") {
+      // Decide whether to eat the key-up before normalizing Committing, so the
+      // key-up of a committing key (e.g. Enter) is still consumed as before.
+      let handled =
+        pimeMcBopomofo.inputController.state instanceof Empty === false;
+      pimeMcBopomofo.inputController.finishCommitting();
       const state = pimeMcBopomofo.inputController.state;
-      let handled = state instanceof Empty === false;
       if (
         lastRequest &&
         lastRequest.method === "filterKeyUp" &&
@@ -899,7 +916,7 @@ module.exports = {
       }
 
       // Single Shift to toggle alphabet mode.
-      let uiState = {
+      let uiState: UiState = {
         commitString: "",
         compositionString: "",
         compositionCursor: 0,
@@ -910,8 +927,28 @@ module.exports = {
         hideMessage: true,
       };
 
-      if (pimeMcBopomofo.isShiftHold) {
-        pimeMcBopomofo.toggleAlphabetMode();
+      if (pimeMcBopomofo.isShiftHold && isShiftKey(request.keyCode)) {
+        pimeMcBopomofo.isShiftHold = false;
+        const preserve = pimeMcBopomofo.inputController.canHandleMixedInput;
+        const allowed =
+          pimeMcBopomofo.settings.shift_key_toggle_alphabet_mode &&
+          (state instanceof Empty || preserve);
+
+        if (allowed) {
+          pimeMcBopomofo.toggleAlphabetMode(preserve);
+        }
+        if (preserve && state instanceof Inputting) {
+          uiState = {
+            ...pimeMcBopomofo.uiState,
+            commitString: "",
+            compositionString: state.composingBuffer,
+            compositionCursor: Array.from(
+              state.composingBuffer.substring(0, state.cursorIndex)
+            ).length,
+            showCandidates: false,
+            candidateList: [],
+          };
+        }
         // Note: Since we are toggling alphabet mode on key up event, we should
         // update the icons here.
         const customUi = pimeMcBopomofo.customUiResponse();
@@ -947,6 +984,7 @@ module.exports = {
     }
 
     if (request.method === "filterKeyDown") {
+      pimeMcBopomofo.inputController.finishCommitting();
       if (
         lastRequest &&
         lastRequest.method === "filterKeyDown" &&
@@ -1006,16 +1044,18 @@ module.exports = {
         return response;
       }
 
-      // Note: We only allow Shift key to toggle Alphabet/Chinese mode when the
-      // state is Empty.
+      // A completed ordinary composition may keep its grid while switching.
       let shouldHandleShift =
         pimeMcBopomofo.settings.shift_key_toggle_alphabet_mode === true;
       const state = pimeMcBopomofo.inputController.state;
-      if (state instanceof Empty === false) {
+      if (
+        !(state instanceof Empty) &&
+        !pimeMcBopomofo.inputController.canHandleMixedInput
+      ) {
         shouldHandleShift = false;
       }
 
-      const isPressingShiftOnly = key.ascii === "Shift";
+      const isPressingShiftOnly = isShiftKey(keyCode);
 
       // Note: The way we detect if a user is trying to press a single Shift key
       // to toggle Alphabet/Chinese mode, is to check if there is any key other
@@ -1025,7 +1065,12 @@ module.exports = {
       // key only. Then, if there is any other key coming, we will reset
       // isShiftHold. Finally, if isShiftHold is still true in the key up event,
       // we will toggle Alphabet/Chinese.
-      if (shouldHandleShift && isPressingShiftOnly) {
+      if (
+        shouldHandleShift &&
+        isPressingShiftOnly &&
+        !key.ctrlPressed &&
+        (keyStates[VK_Keys.VK_MENU] & 128) === 0
+      ) {
         pimeMcBopomofo.isShiftHold = true;
         const response = Object.assign({}, responseTemplate, {
           return: false,
@@ -1037,7 +1082,8 @@ module.exports = {
 
       pimeMcBopomofo.resetBeforeHandlingKey();
 
-      if ((keyStates[VK_Keys.VK_CAPITAL] & 1) !== 0) {
+      const capsLockOn = (keyStates[VK_Keys.VK_CAPITAL] & 1) !== 0;
+      if (capsLockOn && !pimeMcBopomofo.isAlphabetMode) {
         // Ignores caps lock.
         pimeMcBopomofo.resetController();
         pimeMcBopomofo.isCapsLockHold = true;
@@ -1050,12 +1096,42 @@ module.exports = {
         pimeMcBopomofo.isCapsLockHold = false;
       }
 
-      if (pimeMcBopomofo.isAlphabetMode) {
+      const mixedInput =
+        pimeMcBopomofo.isAlphabetMode &&
+        pimeMcBopomofo.settings.shift_key_toggle_alphabet_mode &&
+        pimeMcBopomofo.inputController.hasActiveInputState;
+      if (pimeMcBopomofo.isAlphabetMode && !mixedInput) {
         const response = Object.assign({}, responseTemplate, { return: false });
         return response;
       }
 
-      const handled = pimeMcBopomofo.inputController.mcbopomofoKeyEvent(key);
+      // Alt shortcuts belong to the application, rather than literal input.
+      if (mixedInput && (keyStates[VK_Keys.VK_MENU] & 128) !== 0) {
+        return responseTemplate;
+      }
+
+      // Encode Caps Lock XOR Shift only for letters eligible for literal input.
+      let controllerKey = key;
+      if (
+        mixedInput &&
+        capsLockOn &&
+        !key.ctrlPressed &&
+        pimeMcBopomofo.inputController.canInsertLiteral &&
+        /^[a-zA-Z]$/.test(key.ascii)
+      ) {
+        controllerKey = new Key(
+          key.ascii,
+          key.name,
+          !key.shiftPressed,
+          key.ctrlPressed,
+          key.isNumpadKey
+        );
+      }
+
+      const handled = pimeMcBopomofo.inputController.mcbopomofoKeyEvent(
+        controllerKey,
+        mixedInput
+      );
       pimeMcBopomofo.isLastFilterKeyDownHandled = handled;
       const response = Object.assign({}, responseTemplate, {
         return: handled,
@@ -1065,7 +1141,7 @@ module.exports = {
 
     if (request.method === "onKeyDown") {
       // Ignore caps lock.
-      if (pimeMcBopomofo.isCapsLockHold) {
+      if (pimeMcBopomofo.isCapsLockHold && !pimeMcBopomofo.isAlphabetMode) {
         pimeMcBopomofo.resetController();
         const response = Object.assign({}, responseTemplate, {
           return: false,

@@ -1370,3 +1370,174 @@ describe("InputController", () => {
     });
   });
 });
+
+describe("literal ASCII composition", () => {
+  test("keeps every printable ASCII character literal regardless of letter mode or punctuation settings", () => {
+    const ui = createMockUI();
+    const controller = new InputController(ui);
+    controller.setLetterMode("upper");
+    controller.setHalfWidthPunctuationEnabled(false);
+    inputCStr(controller, "5j/ ");
+    expect(controller.canHandleMixedInput).toBe(true);
+    let text = "";
+    for (let code = 32; code <= 126; code++) {
+      const c = String.fromCharCode(code);
+      const key = new Key(
+        c,
+        code === 32 ? KeyName.SPACE : KeyName.ASCII,
+        c >= "A" && c <= "Z"
+      );
+      expect(controller.mcbopomofoKeyEvent(key, true)).toBe(true);
+      text += c;
+    }
+    expect((controller.state as Inputting).composingBuffer).toBe("中" + text);
+    inputKey(controller, KeyName.RETURN);
+    expect(ui.commitString).toHaveBeenCalledWith("中" + text);
+  });
+  test("rejects unfinished readings and non Inputting states", () => {
+    const controller = new InputController(createMockUI());
+    expect(controller.canHandleMixedInput).toBe(false);
+    inputCStr(controller, "5");
+    expect(controller.canHandleMixedInput).toBe(false);
+    inputCStr(controller, "j/ ");
+    expect(controller.canHandleMixedInput).toBe(true);
+    inputKey(controller, KeyName.DOWN);
+    expect(controller.canHandleMixedInput).toBe(false);
+  });
+});
+describe("literal reading privacy", () => {
+  const mixedController = (literal: string) => {
+    const ui = createMockUI();
+    const controller = new InputController(ui);
+    controller.setLanguageCode("zh-TW");
+    inputCStr(controller, "5j/ ");
+    for (const c of literal) {
+      controller.mcbopomofoKeyEvent(
+        new Key(c, c === " " ? KeyName.SPACE : KeyName.ASCII),
+        true
+      );
+    }
+    return {
+      controller,
+      ui
+    };
+  };
+  test.each(["23", "aZ", " -"])("Marking %s displays characters and blocks vocabulary writes", (text) => {
+    const {
+      controller,
+      ui
+    } = mixedController(text);
+    const added = jest.fn();
+    const excluded = jest.fn();
+    controller.setOnPhraseChange(added);
+    controller.setOnExcludedPhraseChange(excluded);
+    inputKey(controller, KeyName.LEFT, "", true);
+    inputKey(controller, KeyName.LEFT, "", true);
+    const marking = controller.state as Marking;
+    expect(marking).toBeInstanceOf(Marking);
+    expect(marking.tooltip).not.toContain("_literal_");
+    expect(marking.tooltip).toContain(marking.markedText);
+    expect(marking.acceptable).toBe(false);
+    inputKey(controller, KeyName.RETURN);
+    expect((controller.state as Marking).tooltip).toContain("含英數字的範圍無法加入詞庫");
+    expect(added).not.toHaveBeenCalled();
+    expect(excluded).not.toHaveBeenCalled();
+    expect(ui.commitString).not.toHaveBeenCalled();
+  });
+  test("Chinese-only selection in a mixed buffer may still be added", () => {
+    const {
+      controller
+    } = mixedController("23");
+    inputKey(controller, KeyName.HOME);
+    inputCStr(controller, "jo6");
+    inputKey(controller, KeyName.RIGHT);
+    const added = jest.fn();
+    controller.setOnPhraseChange(added);
+    inputKey(controller, KeyName.HOME, "", true);
+    expect((controller.state as Marking).acceptable).toBe(true);
+    inputKey(controller, KeyName.RETURN);
+    expect(added).toHaveBeenCalled();
+    expect(JSON.stringify(Array.from(added.mock.calls[0][0]))).not.toContain("_literal_");
+  });
+  test.each([
+    CtrlEnterOption.BpmfReadings,
+    CtrlEnterOption.HtmlRuby,
+    CtrlEnterOption.HanyuPinyin,
+    CtrlEnterOption.BopomofoBrailleUnicode,
+    CtrlEnterOption.BopomofoBrailleASCII,
+  ])("Ctrl+Enter option %s does not export internal readings", (option) => {
+    const {
+      controller,
+      ui
+    } = mixedController("23");
+    controller.setCtrlEnterOption(option);
+    inputKey(controller, KeyName.RETURN, "", false, true);
+    expect(ui.commitString).toHaveBeenCalled();
+    expect(ui.commitString.mock.calls[0][0]).not.toContain("_literal_");
+    if (option === CtrlEnterOption.BpmfReadings) {
+      expect(ui.commitString.mock.calls[0][0]).toBe("ㄓㄨㄥ-2-3");
+    }
+  });
+  test("candidate UI serialization exposes actual characters while internal selection still works", () => {
+    const {
+      controller,
+      ui
+    } = mixedController("2");
+    inputKey(controller, KeyName.DOWN);
+    const candidate = (controller.state as ChoosingCandidate).candidates[0];
+    expect(candidate.reading).toBe("_literal_50");
+    const displayed = ui.update.mock.calls[ui.update.mock.calls.length - 1][0];
+    expect(displayed).not.toContain("_literal_");
+    expect(JSON.parse(displayed).candidates[0].candidate.reading).toBe("2");
+    inputKey(controller, KeyName.RETURN);
+    expect((controller.state as Inputting).composingBuffer).toBe("中2");
+  });
+  test.each(["+", "-"])("literal candidate %s refuses vocabulary changes with a clear hint", (key) => {
+    const {
+      controller
+    } = mixedController("2");
+    const added = jest.fn();
+    const excluded = jest.fn();
+    controller.setOnPhraseChange(added);
+    controller.setOnExcludedPhraseChange(excluded);
+    inputKey(controller, KeyName.DOWN);
+    inputChar(controller, key);
+    expect(controller.state).toBeInstanceOf(Inputting);
+    expect((controller.state as Inputting).tooltip).toContain("含英數字的範圍無法加入詞庫");
+    expect(added).not.toHaveBeenCalled();
+    expect(excluded).not.toHaveBeenCalled();
+  });
+  test("dictionary character information uses literal text with sanitized inherited tooltips", () => {
+    const {
+      controller
+    } = mixedController("23");
+    inputKey(controller, KeyName.LEFT, "", true);
+    inputKey(controller, KeyName.LEFT, "", true);
+    inputChar(controller, "?");
+    expect(controller.state).toBeInstanceOf(SelectingDictionary);
+    const dictionary = controller.state as SelectingDictionary;
+    const info = new ShowingCharInfo(dictionary, dictionary.selectedPrase);
+    expect(info.tooltip).not.toContain("_literal_");
+    expect(info.menu.join(" ")).not.toContain("_literal_");
+    expect(info.selectedPhrase).toBe("23");
+    expect(info.menu.join(" ")).toContain("U+0032U+0033");
+  });
+});
+
+
+test("finishing Committing does not reset UI or commit text again", () => {
+  const ui = createMockUI();
+  const controller = new InputController(ui);
+  inputCStr(controller, "5j/ ");
+  inputKey(controller, KeyName.RETURN);
+  expect(controller.state).toBeInstanceOf(Committing);
+  ui.reset.mockClear();
+  ui.update.mockClear();
+  controller.finishCommitting();
+  controller.finishCommitting();
+  expect(controller.state).toBeInstanceOf(Empty);
+  expect(ui.commitString).toHaveBeenCalledTimes(1);
+  expect(ui.commitString).toHaveBeenCalledWith("中");
+  expect(ui.reset).not.toHaveBeenCalled();
+  expect(ui.update).not.toHaveBeenCalled();
+});

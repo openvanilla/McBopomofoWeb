@@ -44,6 +44,7 @@ import {
 import { Key, KeyName } from "./Key";
 import { KeyHandler } from "./KeyHandler";
 import { KeyMapping } from "./KeyMapping";
+import { containsLiteralReading, readingForDisplay } from "./LiteralReading";
 import { LocalizedStrings } from "./LocalizedStrings";
 import { webData } from "./WebData";
 import { webDataPlain } from "./WebDataPlain";
@@ -129,7 +130,11 @@ class InputUIController {
       this.candidateTotalPageCount_,
       this.candidateCurrentPageIndex_
     );
-    const json = JSON.stringify(state);
+    const json = JSON.stringify(state, (key, value) =>
+      key === "reading" && typeof value === "string"
+        ? readingForDisplay(value)
+        : value
+    );
     this.ui.update(json);
   }
 }
@@ -587,16 +592,63 @@ export class InputController {
     return this.mcbopomofoKeyEvent(key);
   }
 
-  /**
-   * Handles a McBopomofo-specific key event.
-   * @param key The key event to handle.
-   * @returns True if the key event was handled, false otherwise.
-   */
-  public mcbopomofoKeyEvent(key: Key): boolean {
-    const simpleAscii = key.ascii;
+  /** Whether composition can accept literal ASCII without finishing a reading. */
+  public get canHandleMixedInput(): boolean {
+    return this.keyHandler_.canHandleMixedInput(this.state_);
+  }
+
+  /** Returns a completed commit transition to Empty without changing the UI. */
+  public finishCommitting(): void {
     if (this.state_ instanceof Committing) {
       this.state_ = new Empty();
     }
+  }
+
+  /** Whether literal input can resume from composition, marking, or candidates. */
+  public get canInsertLiteral(): boolean {
+    return this.keyHandler_.canInsertLiteral(this.state_);
+  }
+
+  /** Whether the controller has an interactive state that still needs key events. */
+  public get hasActiveInputState(): boolean {
+    return (
+      this.state_ instanceof Inputting ||
+      this.state_ instanceof Marking ||
+      this.state_ instanceof ChoosingCandidate ||
+      this.state_ instanceof SelectingFeature ||
+      this.state_ instanceof NumberInput ||
+      this.state_ instanceof Big5 ||
+      this.state_ instanceof Iroha ||
+      this.state_ instanceof IrohaCandidate ||
+      this.state_ instanceof SelectingDateMacro ||
+      this.state_ instanceof SelectingDictionary ||
+      this.state_ instanceof ShowingCharInfo ||
+      this.state_ instanceof CustomMenu
+    );
+  }
+
+  /**
+   * Handles a McBopomofo-specific key event.
+   * @param key The key event to handle.
+   * @param literalAscii Inserts printable ASCII literally during ordinary composition.
+   * @returns True if the key event was handled, false otherwise.
+   */
+  public mcbopomofoKeyEvent(
+    key: Key,
+    literalAscii: boolean = false
+  ): boolean {
+    const isCandidateSelectionKey =
+      this.state_ instanceof ChoosingCandidate &&
+      this.candidateController_.isSelectionKey(key.ascii);
+    if (
+      literalAscii &&
+      !isCandidateSelectionKey &&
+      this.handleLiteralAsciiKey(key)
+    ) {
+      return true;
+    }
+    const simpleAscii = key.ascii;
+    this.finishCommitting();
     if (
       (simpleAscii === "Shift" && key.name === KeyName.ASCII) ||
       (simpleAscii === "Ctrl" && key.name === KeyName.ASCII) ||
@@ -669,6 +721,40 @@ export class InputController {
     }
 
     return accepted;
+  }
+
+  private handleLiteralAsciiKey(key: Key): boolean {
+    const character = key.name === KeyName.SPACE ? " " : key.ascii;
+    if (
+      key.ctrlPressed ||
+      !/^[\x20-\x7e]$/.test(character) ||
+      !this.canInsertLiteral
+    ) {
+      return false;
+    }
+
+    if (this.state_ instanceof ChoosingCandidate) {
+      // Reuse cancellation to restore the candidate window's original cursor.
+      this.handleCandidateKeyEvent_(
+        this.state_,
+        Key.namedKey(KeyName.ESC),
+        (state) => this.enterNewState(state),
+        () => this.onError_?.()
+      );
+    } else if (this.state_ instanceof Marking) {
+      // End the selection at the current grid cursor without moving it.
+      this.enterNewState(this.keyHandler_.buildInputtingState());
+    }
+    if (
+      this.state_ instanceof Empty ||
+      this.state_ instanceof EmptyIgnoringPrevious
+    ) {
+      // Cancelling a punctuation-only window removes its final grid node.
+      this.enterNewState(this.keyHandler_.buildInputtingState());
+    }
+    return this.keyHandler_.handleMixedInput(key, this.state_, (state) =>
+      this.enterNewState(state)
+    );
   }
 
   private handleSelectedCandidate_(
@@ -908,6 +994,16 @@ export class InputController {
           return true;
         }
         const reading = current.reading;
+        if (containsLiteralReading(reading)) {
+          stateCallback(
+            new Inputting(
+              state.composingBuffer,
+              state.cursorIndex,
+              this.localizedStrings_.literalPhraseUnsupported()
+            )
+          );
+          return true;
+        }
         for (const prefix of invalidPrefixArray) {
           if (reading.startsWith(prefix)) {
             return true;
