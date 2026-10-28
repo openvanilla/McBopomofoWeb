@@ -7,6 +7,7 @@
 
 import { LanguageModel, Unigram } from "../Gramambular2";
 import { BopomofoSyllable } from "../Mandarin";
+import { containsLiteralReading } from "./LiteralReading";
 
 /**
  * The model for user phrases.
@@ -19,7 +20,9 @@ export class UserPhrases implements LanguageModel {
     if (map === null || map === undefined) {
       return;
     }
-    this.userPhrases_ = map;
+    this.userPhrases_ = new Map(
+      Array.from(map).filter(([key]) => !containsLiteralReading(key))
+    );
   }
 
   setOnPhraseChange(callback: (map: Map<string, string[]>) => void): void {
@@ -39,6 +42,9 @@ export class UserPhrases implements LanguageModel {
   }
 
   addUserPhrase(key: string, phrase: string): void {
+    if (containsLiteralReading(key)) {
+      return;
+    }
     let list = this.userPhrases_.get(key);
     if (list !== undefined) {
       if (list.includes(phrase)) {
@@ -266,6 +272,9 @@ export class WebLanguageModel implements LanguageModel {
   }
 
   addExcludedPhrase(key: string, phrase: string): void {
+    if (containsLiteralReading(key)) {
+      return;
+    }
     if (this.excludedPhraseConverter !== undefined) {
       phrase = this.excludedPhraseConverter(phrase) ?? phrase;
     }

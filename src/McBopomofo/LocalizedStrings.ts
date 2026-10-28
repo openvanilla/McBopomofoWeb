@@ -87,6 +87,13 @@ export class LocalizedStrings {
     );
   }
 
+  /** Explains why literal text cannot be saved as a phonetic phrase. */
+  literalPhraseUnsupported(): string {
+    return this.languageCode === "zh-TW"
+      ? "含英數字的範圍無法加入詞庫或排除詞庫"
+      : "A range containing literal characters cannot be added to or excluded from the phrase dictionary.";
+  }
+
   boostTitle(phrase: string) {
     if (this.languageCode === "zh-TW") {
       return "您想要增加「" + phrase + "」這個詞彙的權重嗎？";

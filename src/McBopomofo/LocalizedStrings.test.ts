@@ -343,3 +343,17 @@ describe("LocalizedStrings", () => {
     });
   });
 });
+
+describe("literal phrase rejection", () => {
+  test.each(["zh-TW", "en"])("explains both vocabulary operations in %s", (language) => {
+    const strings = new LocalizedStrings();
+    strings.languageCode = language;
+    const hint = strings.literalPhraseUnsupported();
+    if (language === "zh-TW") {
+      expect(hint).toBe("含英數字的範圍無法加入詞庫或排除詞庫");
+    } else {
+      expect(hint).toContain("literal characters");
+      expect(hint).toContain("excluded");
+    }
+  });
+});

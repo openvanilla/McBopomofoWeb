@@ -598,3 +598,36 @@ describe("WebLanguageModel", () => {
     });
   });
 });
+
+describe("literal readings are never persisted", () => {
+  test.each(["user", "excluded"])("rejects literal keys when adding or loading %s phrases", (kind) => {
+    const lm = new WebLanguageModel(webData);
+    const callback = jest.fn();
+    if (kind === "user") {
+      lm.setOnPhraseChange(callback);
+    } else {
+      lm.setOnExcludedPhraseChange(callback);
+    }
+    const add = (key: string) =>
+      kind === "user"
+        ? lm.addUserPhrase(key, "詞")
+        : lm.addExcludedPhrase(key, "詞");
+    const load = (input: Map<string, string[]> | string) =>
+      kind === "user"
+        ? lm.setUserPhrases(input)
+        : lm.setExcludedPhrases(input);
+    const phrases = () =>
+      kind === "user" ? lm.getUserPhrases() : lm.getExcludedPhrases();
+    for (const key of ["_literal_50", "ㄓㄨㄥ-_literal_50", "_literal_50-ㄓㄨㄥ"]) add(key);
+    expect(callback).not.toHaveBeenCalled();
+    expect(phrases().size).toBe(0);
+    load("壞 _literal_50\n中 ㄓㄨㄥ");
+    expect(phrases().has("_literal_50")).toBe(false);
+    const input = new Map([["ㄓㄨㄥ", ["中"]], ["_literal_51", ["壞"]]]);
+    load(input);
+    add("ㄨㄣˊ");
+    expect(phrases().has("_literal_51")).toBe(false);
+    expect(input.has("_literal_51")).toBe(true);
+    expect(JSON.stringify(Array.from(callback.mock.calls[0][0]))).not.toContain("_literal_");
+  });
+});

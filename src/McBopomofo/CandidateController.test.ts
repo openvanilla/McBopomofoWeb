@@ -379,3 +379,29 @@ describe("CandidateController currentPageIndex with no keyCaps", () => {
     expect(emptyCapController.currentPageIndex).toBe(0);
   });
 });
+
+
+describe("selection keycaps", () => {
+  test("recognizes keycaps without candidates on the last page", () => {
+    const controller = new CandidateController();
+    controller.update(
+      [
+        new Candidate("", "a", "a"),
+        new Candidate("", "b", "b"),
+        new Candidate("", "c", "c"),
+      ],
+      ["1", "2"]
+    );
+    controller.goToLast();
+    expect(controller.isSelectionKey("2")).toBe(true);
+    expect(controller.selectedCandidateWithKey("2")).toBeUndefined();
+    expect(controller.isSelectionKey("0")).toBe(false);
+  });
+  test("matches actual keys rather than displayed keycap labels", () => {
+    const controller = new CandidateController();
+    controller.update([], [{ displayed: "Shift+1", actual: "!" }]);
+    expect(controller.isSelectionKey("!")).toBe(true);
+    expect(controller.isSelectionKey("Shift+1")).toBe(false);
+    expect(controller.isSelectionKey("1")).toBe(false);
+  });
+});
